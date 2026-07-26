@@ -89,7 +89,11 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     UTXO index — builds a 121-block chain and **validates a real spend of a matured
     coinbase**, rejecting double-spend, inflation, tampered sig, immature-coinbase
     spend, and coinbase over-claim. Covers the ledger's core guarantees headlessly.
-    Remaining boundary: Berkeley-DB persistence, P2P (`net.*`), the unmodified binary.
+    Remaining boundary: Berkeley-DB persistence, the unmodified binary.
+- [x] Headless **P2P relay** → `derivatives/p2p/` (MODEL, wire anchored to source):
+  two nodes over localhost TCP speak the real v0.1 protocol (magic `f9beb4d9`, **no
+  checksum, no verack**) — `version` handshake + `inv`/`getdata`/`block`/`tx`; the
+  receiver **re-verifies PoW** before accepting and relays onward. 2 tests, no VM.
 - [ ] True JAN09-EXECUTED — **plan + binary staging ready**
   (`docs/R3_HISTORICAL_NODE.md`, `scripts/stage-jan09-binary.sh`; staged
   `bitcoin.exe` sha256 `fbcac071…` matches the manifest). Awaits an isolated-VM
