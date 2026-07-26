@@ -19,6 +19,27 @@ values: MD5/SHA-1 (SNI catalogue) plus SHA-256 matching the 2012 Hal Finney
 recovery thread — `bitcoin-0.1.0.rar` = `8b17eb9a…`, `bitcoin-0.1.0.tgz` =
 `ce9da465…`.
 
+## Reproduce the executable reconstruction
+
+`derivatives/` is v0.1.0 made to **run, with nothing disabled**: the full Script engine
+(Python MODEL + C++ PORT), sighash, `OP_CHECKSIG`/`CHECKMULTISIG` on real secp256k1,
+native instruments (escrow / hash‑lock / assurance), a UTXO `ConnectInputs`/`ConnectBlock`
+ledger, a wallet, the P2P wire + chain sync, persistence, the neutral descendant matrix
+(BTC + BSV **executed**), the commerce subsystem (signed listings + atoms reputation), a
+script **debugger**, a **full‑stack console**, and two live counterfactual networks —
+**NOV08‑X** and **JAN09‑X**.
+
+```bash
+python scripts/reproduce.py        # every derivatives suite + regenerated artifacts
+python scripts/verify_genesis.py   # both experimental genesis blocks re-derive from source
+```
+
+The unmodified 2009 `bitcoin.exe` was also run and hash‑verified against these
+reconstructions — the exact genesis reproduces three independent ways (`r3-findings/run1/`,
+level `JAN09-EXECUTED`). Findings, the honest claim, and scope live in the umbrella:
+[`../common/README.md`](../common/README.md) · [`../common/CLAIMS.md`](../common/CLAIMS.md).
+These chains are **not money** (stamped in the coinbase): a research microscope, not a coin.
+
 ## Layout
 
 ```text
