@@ -44,7 +44,15 @@ The complete original financial machine — Script interpreter (`script.cpp`,
 `BITCOIN.EXE` are all present, corroborating that this edition is the intended
 behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
 
-## Next
+## Release 1 — source inventory (started)
 
-`v0.1.0-source-inventory`: line-numbered class / function / opcode enumeration
-(`script.h`, `script.cpp`, `main.*`) and a formal NOV08 → JAN09 structural diff.
+- [x] Full opcode & SIGHASH inventory, **reproducible** via
+  `scripts/inventory-symbols.py` → `inventory/OPCODES.md` + `OPCODES.json`:
+  **106 opcodes (+2 aliases), 94 implemented in `EvalScript`**, 4 SIGHASH modes,
+  only `OP_NOTEQUAL` disabled. The later-BTC-disabled family (`OP_CAT`, `OP_MUL`,
+  `OP_DIV`, `OP_LSHIFT`, `OP_INVERT`, …) is **live** in v0.1.
+- [x] File/class map for all 26 `src/` units → `inventory/SOURCE_INVENTORY.md`
+  (noted `market.*` commerce + a dormant poker UI in `uibase`).
+- [x] NOV08 → JAN09 structural diff → `../../common/conformance/NOV08_JAN09_DIFF.md`.
+- [ ] Line-numbered function catalog for the consensus path
+  (`ConnectInputs → VerifyScript → EvalScript`) + per-opcode reachability (→ R4).
