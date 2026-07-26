@@ -59,4 +59,9 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   AddToBlockIndex → ConnectBlock → ConnectInputs → VerifySignature → EvalScript`
   with `src:line` anchors + consensus-constants table; flags height-based chain
   selection (`main.cpp:1097`) and global-`nBestHeight` subsidy (`main.cpp:680`).
-- [ ] Executable per-opcode reachability / block-acceptance witnesses (→ R3–R4).
+- [x] Executable opcode-semantics **MODEL** harness → `derivatives/model/`
+  (24 vectors pass): runnable cross-check of the disabled-in-BTC vocabulary
+  (`OP_CAT`/`OP_MUL`/`OP_DIV`/`OP_LSHIFT`/`OP_INVERT`/…) + the sign-magnitude
+  number codec. Evidence level **MODEL**, *not* JAN09-EXECUTED.
+- [ ] True JAN09-EXECUTED witnesses — build/port the v0.1 C++ interpreter
+  (blocked here: no C++ toolchain) — and block-acceptance witnesses (→ R3–R4).
