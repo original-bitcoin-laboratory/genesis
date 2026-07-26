@@ -94,6 +94,10 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   two nodes over localhost TCP speak the real v0.1 protocol (magic `f9beb4d9`, **no
   checksum, no verack**) — `version` handshake + `inv`/`getdata`/`block`/`tx`; the
   receiver **re-verifies PoW** before accepting and relays onward. 2 tests, no VM.
+- [x] **Descendant-conformance matrix** → `derivatives/conformance/` — v0.1's broad
+  vocabulary **executes in v0.1** and is **disabled in BTC**, verified by running the
+  vectors through an independent BTC impl (`python-bitcoinlib`), not read from BIPs;
+  BCH/BSV documented (restored subset / full). MATRIX.md + JSON, tests pass.
 - [ ] True JAN09-EXECUTED — **plan + binary staging ready**
   (`docs/R3_HISTORICAL_NODE.md`, `scripts/stage-jan09-binary.sh`; staged
   `bitcoin.exe` sha256 `fbcac071…` matches the manifest). Awaits an isolated-VM

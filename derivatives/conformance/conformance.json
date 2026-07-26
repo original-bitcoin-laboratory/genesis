@@ -1,0 +1,150 @@
+{
+  "schema": 1,
+  "btc_executed": true,
+  "rows": [
+    {
+      "family": "splice",
+      "opcode": "OP_CAT",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "restored",
+      "bsv": "restored"
+    },
+    {
+      "family": "splice",
+      "opcode": "OP_SUBSTR",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "\u2192OP_SPLIT",
+      "bsv": "\u2192OP_SPLIT"
+    },
+    {
+      "family": "splice",
+      "opcode": "OP_LEFT",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "\u2192OP_SPLIT",
+      "bsv": "\u2192OP_SPLIT"
+    },
+    {
+      "family": "splice",
+      "opcode": "OP_RIGHT",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "\u2192OP_SPLIT",
+      "bsv": "\u2192OP_SPLIT"
+    },
+    {
+      "family": "bitwise",
+      "opcode": "OP_INVERT",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "disabled",
+      "bsv": "restored"
+    },
+    {
+      "family": "bitwise",
+      "opcode": "OP_AND",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "restored",
+      "bsv": "restored"
+    },
+    {
+      "family": "bitwise",
+      "opcode": "OP_OR",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "restored",
+      "bsv": "restored"
+    },
+    {
+      "family": "bitwise",
+      "opcode": "OP_XOR",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "restored",
+      "bsv": "restored"
+    },
+    {
+      "family": "arith",
+      "opcode": "OP_MUL",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "disabled",
+      "bsv": "restored"
+    },
+    {
+      "family": "arith",
+      "opcode": "OP_DIV",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "restored",
+      "bsv": "restored"
+    },
+    {
+      "family": "arith",
+      "opcode": "OP_MOD",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "restored",
+      "bsv": "restored"
+    },
+    {
+      "family": "arith",
+      "opcode": "OP_LSHIFT",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "disabled",
+      "bsv": "restored"
+    },
+    {
+      "family": "arith",
+      "opcode": "OP_RSHIFT",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "disabled",
+      "bsv": "restored"
+    },
+    {
+      "family": "arith",
+      "opcode": "OP_2MUL",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "disabled",
+      "bsv": "restored"
+    },
+    {
+      "family": "arith",
+      "opcode": "OP_2DIV",
+      "v0_1": "execute",
+      "btc": "disabled",
+      "bch": "disabled",
+      "bsv": "restored"
+    },
+    {
+      "family": "kept",
+      "opcode": "OP_ADD",
+      "v0_1": "execute",
+      "btc": "execute",
+      "bch": "kept",
+      "bsv": "kept"
+    },
+    {
+      "family": "kept",
+      "opcode": "OP_EQUAL",
+      "v0_1": "execute",
+      "btc": "execute",
+      "bch": "kept",
+      "bsv": "kept"
+    },
+    {
+      "family": "kept",
+      "opcode": "OP_SHA256",
+      "v0_1": "execute",
+      "btc": "execute",
+      "bch": "kept",
+      "bsv": "kept"
+    }
+  ]
+}
