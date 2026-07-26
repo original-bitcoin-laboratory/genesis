@@ -26,7 +26,22 @@ in C++ with real OpenSSL for hashing and big numbers.
 4. **Difficulty retarget** (`GetNextWorkRequired`, `main.cpp:685`): faster
    timespan → harder target, slower → easier (clamped ×4).
 
-Run: `./run.sh` (or `GXX=/c/msys64/mingw64/bin/g++ ./run.sh`) → `12 PASS, 0 FAIL`.
+## `chain_port.cpp` — UTXO block-connect (headless, with real spends)
+
+Builds a real 121-block chain (mined coinbases) and validates it with faithful
+reproductions of `CheckTransaction`, `ConnectInputs`, and `ConnectBlock`
+(`main.cpp:772-954`) over an **in-memory tx index** — the Berkeley-DB `CTxDB` is only
+persistence; the consensus logic *is* these functions. Spends are pay-to-pubkey and
+the signature check is the real sighash + secp256k1. Self-checks **8/8**:
+
+- a **valid spend of a matured coinbase** (50 → 49 + 1 fee) connects and commits;
+- **rejects** double-spend (`vSpent`), inflation (`nTxFee < 0`), a tampered signature
+  (`VerifySignature`), spending an **immature coinbase** (`COINBASE_MATURITY`), and a
+  **coinbase over-claim** (> subsidy + fees) — with a positive control that a fresh
+  valid spend still passes the dry-run.
+
+Run `./run.sh` to build and run **both** ports (`node_port` → 12 PASS,
+`chain_port` → 8 PASS).
 
 ## Original vs ported
 
@@ -37,10 +52,11 @@ Run: `./run.sh` (or `GXX=/c/msys64/mingw64/bin/g++ ./run.sh`) → `12 PASS, 0 FA
 | double-SHA-256, big-number arithmetic | real OpenSSL |
 | tx/block **serialization** (CompactSize length-prefixed script fields) | reproduced from `serialize.h` |
 
-## Boundary (not included)
+## Boundary (still the VM's / a bigger port's job)
 
-Full **UTXO block validation** (`ConnectInputs`/`ConnectBlock`) and chain storage
-pull in the Berkeley-DB layer (`db.*`) — the hard porting boundary — and the P2P
-node loop (`net.*`). Those, and the unmodified `bitcoin.exe`, remain the VM's job
-(see `../../docs/R3_HISTORICAL_NODE.md`). This port covers the **stateless**
-consensus core: genesis, issuance, PoW, difficulty.
+What remains beyond these two ports: **disk persistence** (the Berkeley-DB `db.*`
+layer — here the tx/block index is in-memory), the **P2P node loop**
+(`net.*` / `irc.*`), the **wallet**, and of course the **unmodified `bitcoin.exe`**
+itself (GUI-only) — see `../../docs/R3_HISTORICAL_NODE.md`. Together the two ports now
+cover the consensus core: genesis, issuance, PoW, difficulty, **and UTXO block
+validation with real spends** (double-spend / inflation / maturity / signatures).
