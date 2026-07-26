@@ -28,7 +28,7 @@ SUITES = [
     ("p2p        (wire relay + chain sync)",                        DERIV / "p2p"),
     ("wallet     (SelectCoins / CreateTransaction)",               DERIV / "wallet"),
     ("persist    (CDiskBlockIndex save/reload)",                    DERIV / "persist"),
-    ("conformance(descendant matrix, BTC+BSV executed)",           DERIV / "conformance"),
+    ("conformance(6-chain matrix, every column execution-checked)", DERIV / "conformance"),
     ("nov08x     (NOV08 counterfactual + live network)",           DERIV / "nov08x"),
     ("jan09x     (released chain, full vocab + live network)",     DERIV / "jan09x"),
     ("ledger     (UTXO ConnectInputs/ConnectBlock; transacting)",   DERIV / "ledger"),
