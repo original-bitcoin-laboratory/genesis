@@ -20,9 +20,9 @@
 /reports/
 /build/
 
-# C++ port build artifacts (derivatives/port)
-/derivatives/port/*.exe
-/derivatives/port/*.o
+# C++ port build artifacts (derivatives/)
+/derivatives/**/*.exe
+/derivatives/**/*.o
 /derivatives/port/*_out.txt
 /derivatives/port/scenario.txt
 *.log

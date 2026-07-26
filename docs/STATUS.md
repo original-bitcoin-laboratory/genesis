@@ -80,6 +80,12 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     2-of-3 escrow, hash-lock (preimage) claim, hash-lock/refund `OP_IF` branch, and
     an assurance/crowdfund contract via `SIGHASH_ANYONECANPAY`. Model pytest: 51.
   - Evidence level **MODEL** (Python) / **PORT** (C++ + real OpenSSL EC/BN).
+- [x] Headless **consensus PORT** → `derivatives/node/` (12/12): reproduces the
+  **exact genesis block** from the original construction — Merkle `4a5e1e…` **and**
+  hash `000000000019d668…` (the live-chain anchor, the same startup assertion) —
+  plus subsidy/halving, a real PoW mine, and difficulty retarget, all headless.
+  Covers the *stateless* consensus core; full UTXO block-connect (Berkeley-DB) and
+  the unmodified binary remain the VM's job.
 - [ ] True JAN09-EXECUTED — **plan + binary staging ready**
   (`docs/R3_HISTORICAL_NODE.md`, `scripts/stage-jan09-binary.sh`; staged
   `bitcoin.exe` sha256 `fbcac071…` matches the manifest). Awaits an isolated-VM
