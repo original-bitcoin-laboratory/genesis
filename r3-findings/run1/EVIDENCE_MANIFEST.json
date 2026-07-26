@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "evidence_level": "JAN09-EXECUTED",
+  "run": "run1",
+  "generated": "2026-07-26",
+  "evidence_dir": "r3-evidence/run1 (gitignored)",
+  "file_count": 5,
+  "files": [
+    {
+      "path": "host/blk0001.dat",
+      "size": 293,
+      "sha256": "299611849f86b25f1d4ea101bb43d61667b5bd23aaff7930c65a373a76f11794"
+    },
+    {
+      "path": "host/blkindex.dat",
+      "size": 32768,
+      "sha256": "295cee7430fe194f22e9f534299933af2f451d66d59a7de241c3fbaf5d1fcff8"
+    },
+    {
+      "path": "host/db.log",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host/debug.log",
+      "size": 5928,
+      "sha256": "6810d665888610894cc067beb1f9f5dfc7a290ba9e2ada279c6a945a2cc2b8a2"
+    },
+    {
+      "path": "host/wallet.dat",
+      "size": 32768,
+      "sha256": "3893f8ecc7eecfa0b7aa910d5ed3fc5ad6de1197034b9763d695fdb854c908a6"
+    }
+  ]
+}

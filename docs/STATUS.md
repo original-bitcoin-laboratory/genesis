@@ -124,8 +124,16 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   profile (Genesis restores the set **except `OP_2MUL`/`OP_2DIV`**, still disabled;
   `0x7f`=`OP_SPLIT`). BCH/XEC documented-only (no installable interpreter). MATRIX.md
   + JSON, 37 tests pass.
-- [ ] True JAN09-EXECUTED — **plan + binary staging ready**
-  (`docs/R3_HISTORICAL_NODE.md`, `scripts/stage-jan09-binary.sh`; staged
-  `bitcoin.exe` sha256 `fbcac071…` matches the manifest). Awaits an isolated-VM
-  run (user-driven VirtualBox/Hyper-V; IRC-discovery two-node net). + block-
-  acceptance witnesses.
+- [~] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
+  unmodified v0.1.0 `bitcoin.exe` (sha256 `fbcac071…`, verified pre-run) was run and
+  **reconstructed the exact genesis block** — hash `000000000019d668…`, merkle
+  `4a5e1e…`, nonce `2083236893`, nTime `1231006505`, nBits `1d00ffff`, the Times-
+  headline coinbase, 50-coin reward, `AddToBlockIndex … height=0`. Independently
+  re-parsed the `blk0001.dat` it wrote → same canonical hash. **Live binary = PORT
+  (`node_port.cpp`) = MODEL.** Wallet key-gen executed (addr `18YDsakg…`). Full GUI
+  documented; observed **"version 0.1.1 Alpha"** (`VERSION=101`) and the historical
+  **pay-to-IP** send mode. Findings + hashed manifest committed (raw bytes gitignored).
+  - Boundary / deferred: **sustained mining (block 1+) and the two-node network**
+    (relay / tx / reorg) — the 2009 GUI is stable only online on Win11 and difficulty-1
+    mining is a long grind; best done in a Windows-XP VM. Those behaviours are already
+    covered headlessly by `derivatives/node` + `derivatives/p2p`.
