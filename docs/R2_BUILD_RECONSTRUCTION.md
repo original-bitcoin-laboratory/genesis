@@ -22,6 +22,26 @@ period Docker/VM image, then patching the source for compat — at which point a
 build is compromised by the patches. This is genuinely hard and is **not attempted here**
 as a byte‑reproducing period build. Claiming otherwise would be dishonest.
 
+## Attempt log (2026‑07‑26 — modern g++, honest first wall)
+
+Attempted a modern‑toolchain compile of the extracted `src/` (MSYS2 g++ 16.1.0,
+`-std=c++03 -fpermissive`), to see how far it gets before the period deps bite:
+
+- Every core unit `#include "headers.h"`, which pulls in **`wx/wx.h`** (wxWidgets 2.8),
+  **`openssl/ecdsa.h` … (0.9.8 API)**, **`windows.h` / `winsock2.h` / `mswsock.h`** — the
+  GUI/OS/crypto wall named above.
+- Even the most self‑contained header, `uint256.h`, **does not compile verbatim**: it
+  refers to `vector<string>` unqualified (`uint256.h:19`), because in 2009 it relied on
+  `headers.h` having already done `using namespace std;` (and provided the 2009 API
+  context) *before* including it. Modern g++ (stricter scoping) rejects it outright.
+
+**Finding:** the original source is **not modularly compilable on a modern toolchain** —
+it assumes the `headers.h` precompiled‑header world (global `using namespace std`, wx 2.8,
+OpenSSL 0.9.8, Win32). A verbatim build therefore genuinely needs the period image; any
+"just add `std::`/patch the includes" fixes would compromise the *verbatim* claim (each
+such edit would have to be logged as a patch, per the plan below). This is exactly why R2
+is deferred rather than faked.
+
 ## What the lab already achieves toward R2
 
 R2's deeper intent — *an executable reconstruction whose behaviour matches the released
