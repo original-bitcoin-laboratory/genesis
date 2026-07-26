@@ -89,7 +89,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     UTXO index — builds a 121-block chain and **validates a real spend of a matured
     coinbase**, rejecting double-spend, inflation, tampered sig, immature-coinbase
     spend, and coinbase over-claim. Covers the ledger's core guarantees headlessly.
-    Remaining boundary: Berkeley-DB persistence, the unmodified binary.
+    Remaining boundary: the unmodified binary (persistence now covered below).
 - [x] Headless **P2P relay** → `derivatives/p2p/` (MODEL, wire anchored to source):
   two nodes over localhost TCP speak the real v0.1 protocol (magic `f9beb4d9`, **no
   checksum, no verack**) — `version` handshake + `inv`/`getdata`/`block`/`tx`; the
@@ -108,6 +108,13 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   input. Every created tx is **independently re-verified** by the lab's EvalScript
   (the v0.1 `VerifySignature` path) with value conserved; the change output is
   **re-spent** in a round-trip. 11 tests, no VM.
+- [x] Headless **persistence** → `derivatives/persist/` (MODEL): the save/reload that
+  lets a node restart at the same tip — byte-faithful **`CDiskBlockIndex`** record
+  (128 B; main.h:1151) + `"hashBestChain"` (db.cpp:282,297) and a **`LoadBlockIndex`**
+  reconstruction (db.cpp:322) that rebuilds tip/heights/main-chain/`in_main` **incl.
+  after a reorg**; wallet keys as `CWalletDB ("key", pubkey)` records — a **DER-reloaded
+  private key still signs a valid spend**. Boundary: the Berkeley DB 4.x *engine* /
+  `.dat` container isn't reproduced (records live in a length-prefixed KV file). 7 tests.
 - [x] **Descendant-conformance matrix** → `derivatives/conformance/` — **neutral,
   from the v0.1 origin**: v0.1 is the sole executed baseline / ground truth and every
   descendant (BTC, BCH, BSV, XEC) is treated identically via a documented rule-profile
