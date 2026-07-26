@@ -32,23 +32,32 @@ identical, 48/48). `scripts/stage-jan09-binary.sh` copies them into a gitignored
 ## VM
 
 - Guest that runs 2009 Win32 GUI apps (Windows XP/7-era). VirtualBox or Hyper-V.
-- Build **VM-A**, then clone to **VM-B**. Attach both to one **host-only** network
-  (e.g. `192.168.56.0/24`); confirm no default route / no DNS to the internet.
+- Build **VM-A**, then clone to **VM-B**. Attach both to one isolated **host-only /
+  internal** network with **no gateway and no DNS** to the internet.
+- **Use a `172.20.0.0/24` subnet** (VM-A `172.20.0.1`, VM-B `172.20.0.2`) — not
+  `10.x` or `192.168.x`. This matters: v0.1 only advertises its address over IRC
+  when the local IP `IsRoutable()`, and `IsRoutable()` excludes **only `10.x` and
+  `192.168.x`** (net.h:265). On `192.168.x` a node would announce a random `x…`
+  nick and peers could not learn its address. `172.16–31.x` is RFC1918 (safely
+  isolatable) yet routable to v0.1 — the sweet spot.
 - Copy `r3-stage/` into each VM (into its own folder). Snapshot both as "clean".
 
 ## Two-node private network (IRC discovery, faithfully)
 
-v0.1 finds peers only via IRC, so stand up a **local IRC daemon** on the host-only
-net and make the VMs resolve the hardcoded hostname to it:
+v0.1 finds peers only via IRC, so run a local IRC daemon and make the VMs resolve
+the hardcoded hostname to it. The lab ships a minimal one:
+`derivatives/r3/mini_ircd.py` (self-tested; implements exactly the handshake v0.1
+needs — hostname notice, 001–004, JOIN/WHO relay of the address-carrying nicks).
 
-1. Run a tiny ircd (e.g. on the host or a third small guest) reachable at, say,
-   `192.168.56.10:6667`.
-2. In **each** VM's `hosts` file add: `192.168.56.10   chat.freenode.net`.
-3. Start `BITCOIN.EXE` on both. Each joins `#bitcoin`, `WHO #bitcoin` returns the
-   other's encoded address, and they connect on port **8333**.
+1. On the host (or a third small guest) on the isolated net at `172.20.0.10`, run:
+   `python mini_ircd.py --host 0.0.0.0 --port 6667`.
+2. In **each** VM's `hosts` file add: `172.20.0.10   chat.freenode.net`.
+3. Start `BITCOIN.EXE` on both. Each `JOIN #bitcoin`; `WHO #bitcoin` returns the
+   other's encoded (`u…`) nick → address; they connect on port **8333**.
 
-(Fallback if IRC is fussy: pre-seed `addr.dat`; but the IRC + hosts-override path
-is the faithful mechanism and preferred.)
+(Fallback if IRC is fussy: pre-seed `addr.dat`. The IRC + hosts-override path is the
+faithful mechanism and is preferred; the mini-ircd's two-node discovery is already
+verified by `derivatives/r3/test_mini_ircd.py`.)
 
 ## Run + mine
 
