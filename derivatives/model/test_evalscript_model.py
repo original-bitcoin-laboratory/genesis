@@ -11,6 +11,27 @@ import pytest
 
 from evalscript_model import bn_from_vch, bn_to_vch, cast_to_bool, num, run, valid
 
+
+def test_control_flow_if_else():
+    assert run([num(1), "OP_IF", num(11), "OP_ELSE", num(22), "OP_ENDIF"])[1][-1] == num(11)
+    assert run([num(0), "OP_IF", num(11), "OP_ELSE", num(22), "OP_ENDIF"])[1][-1] == num(22)
+    # nested: outer true, inner false -> inner else
+    assert run([num(5), "OP_IF", num(0), "OP_IF", num(1), "OP_ELSE", num(2),
+                "OP_ENDIF", "OP_ELSE", num(9), "OP_ENDIF"])[1][-1] == num(2)
+
+
+def test_verify_and_return():
+    assert valid([num(1), "OP_VERIFY", "OP_1"]) is True
+    assert valid([num(0), "OP_VERIFY", "OP_1"]) is False   # verify-false stops, top=false
+    ok, stack = run([num(3), "OP_RETURN", num(9)])         # RETURN stops execution
+    assert ok and stack == [num(3)]
+
+
+def test_altstack_and_stackops():
+    assert run([num(1), num(2), "OP_TOALTSTACK", "OP_DROP", "OP_FROMALTSTACK"])[1][-1] == num(2)
+    assert run([num(1), num(2), num(3), "OP_ROT"])[1] == [num(2), num(3), num(1)]
+    assert run([b"\xaa", b"\xbb", b"\xcc", num(2), "OP_ROLL"])[1] == [b"\xbb", b"\xcc", b"\xaa"]
+
 try:
     hashlib.new("ripemd160")
     HAVE_RIPEMD160 = True

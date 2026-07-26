@@ -12,7 +12,7 @@ GXX="${GXX:-g++}"
 python diff_runner.py vectors.txt > py_out.txt
 
 if diff -u cxx_out.txt py_out.txt; then
-  echo "IDENTICAL on $(grep -c . vectors.txt) vectors — Python MODEL == real OpenSSL BN port"
+  echo "IDENTICAL on $(grep -cvE '^#|^[[:space:]]*$' vectors.txt) vectors — Python MODEL == real OpenSSL BN port"
 else
   echo "DIFFERENCES (OpenSSL is authoritative)"; exit 1
 fi

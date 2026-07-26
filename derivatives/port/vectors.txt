@@ -37,3 +37,29 @@ n:5 n:0 OP_DIV
 x:616263 OP_SHA256
 x:616263 OP_HASH256
 x:00 OP_SHA1
+# --- control flow ---
+n:1 OP_IF n:11 OP_ELSE n:22 OP_ENDIF
+n:0 OP_IF n:11 OP_ELSE n:22 OP_ENDIF
+n:1 OP_NOTIF n:11 OP_ELSE n:22 OP_ENDIF
+n:5 OP_IF n:0 OP_IF n:1 OP_ELSE n:2 OP_ENDIF OP_ELSE n:9 OP_ENDIF
+x:aa OP_SHA256 x:aa OP_SHA256 OP_EQUAL OP_VERIFY n:7
+n:0 OP_VERIFY n:7
+n:1 OP_VERIFY n:7
+n:3 OP_RETURN n:9
+n:0 OP_IF n:99 OP_ENDIF n:8
+# --- stack / alt-stack ops ---
+n:1 n:2 n:3 OP_ROT
+n:1 n:2 OP_2DUP
+n:1 n:2 n:3 n:4 OP_2SWAP
+n:1 n:2 n:3 n:4 OP_2OVER
+n:1 n:2 n:3 n:4 n:5 n:6 OP_2ROT
+n:1 n:2 OP_TUCK
+n:1 n:2 OP_NIP
+n:9 OP_IFDUP
+n:0 OP_IFDUP
+n:1 n:2 n:3 OP_DEPTH
+x:aa x:bb x:cc n:2 OP_PICK
+x:aa x:bb x:cc n:2 OP_ROLL
+n:1 n:2 OP_TOALTSTACK OP_DROP OP_FROMALTSTACK
+n:7 OP_DUP OP_ADD
+n:1 n:2 n:3 n:4 OP_2DROP
