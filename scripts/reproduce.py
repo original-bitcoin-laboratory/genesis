@@ -34,6 +34,7 @@ SUITES = [
     ("ledger     (UTXO ConnectInputs/ConnectBlock; transacting)",   DERIV / "ledger"),
     ("market     (R6 commerce model: signatures + atoms reputation)", DERIV / "market"),
     ("studio     (R7 script debugger / stack tracer)",              DERIV / "studio"),
+    ("console    (R7 capstone: full-stack driver on both X-chains)", DERIV / "console"),
 ]
 
 # (label, script, dir) — regenerate a committed artifact and confirm it still runs

@@ -171,7 +171,20 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   headless **stack tracer**: step any script through EvalScript, stack after every op +
   verdict (structural-fail / ran-not-true / VALID), full vocabulary (watch `OP_CAT`/`OP_MUL`
   run). Via a back-compat `trace` hook in `model/evalscript_model.run`. **5 tests.**
-  reproduce.py now **10 suites / 171 tests** (12/12 steps incl. artifact regeneration).
+- [x] **Full-stack console (R7 capstone)** → `derivatives/console/` (MODEL) — one driver
+  (`XConsole`) wiring Rules + Ledger + Wallet + studio + market. One session **mines, pays,
+  creates + spends an `OP_CAT` contract (BTC-disabled), lists a signed product + review with
+  reputation, and exports an evidence bundle** — on **both** NOV08-X and JAN09-X (same
+  machine, two constitutions). NOV08-X here is **NOV08-Full's executable form**. **6 tests.**
+- [x] **NOV08-Full (R8 step 7)** → `common/nov08x/NOV08_FULL.md` — the one **interpretive**
+  artifact, walled off: the full financial machine assembled on November's constitution
+  (= the console under `nov08` rules), every completion decision disclosed + classed, **never
+  presented as recovered code / "true Bitcoin"**. N-ORIG rules still win over J-DONOR/NEW-EXP.
+- [x] **R2 status** → `docs/R2_BUILD_RECONSTRUCTION.md` — honest: a verbatim **period build**
+  (MinGW 3.4 / wxWidgets 2.8 / OpenSSL 0.9.8 / BDB 4.x) is toolchain-hard and **not attempted**;
+  R2's behavioural intent is **met** (the C++ PORT reproduces consensus + exact genesis, and
+  the released binary was **run** — `r3-findings/run1`); NOV08's max reconstruction ceiling
+  established (= NOV08-Minimal). reproduce.py now **11 suites / 177 tests** (13/13 steps).
 - [~] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
   unmodified v0.1.0 `bitcoin.exe` (sha256 `fbcac071…`, verified pre-run) was run and
   **reconstructed the exact genesis block** — hash `000000000019d668…`, merkle
