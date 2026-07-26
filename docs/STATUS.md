@@ -80,5 +80,8 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     2-of-3 escrow, hash-lock (preimage) claim, hash-lock/refund `OP_IF` branch, and
     an assurance/crowdfund contract via `SIGHASH_ANYONECANPAY`. Model pytest: 51.
   - Evidence level **MODEL** (Python) / **PORT** (C++ + real OpenSSL EC/BN).
-- [ ] True JAN09-EXECUTED (unmodified `bitcoin.exe` in an isolated VM, R3);
-  block-acceptance witnesses.
+- [ ] True JAN09-EXECUTED — **plan + binary staging ready**
+  (`docs/R3_HISTORICAL_NODE.md`, `scripts/stage-jan09-binary.sh`; staged
+  `bitcoin.exe` sha256 `fbcac071…` matches the manifest). Awaits an isolated-VM
+  run (user-driven VirtualBox/Hyper-V; IRC-discovery two-node net). + block-
+  acceptance witnesses.

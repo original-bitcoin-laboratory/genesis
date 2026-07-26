@@ -8,6 +8,10 @@
 # Extracted original trees remain local until licensing/provenance policy is finalized.
 /extracted/
 
+# R3 isolated-VM staging (binary bytes) and captured evidence — never committed
+/r3-stage/
+/r3-evidence/
+
 # Redundant local bootstrap archive (scaffold is now materialized in-tree)
 /original-bitcoin-laboratory-bootstrap.zip
 
