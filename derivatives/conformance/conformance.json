@@ -1,150 +1,193 @@
 {
-  "schema": 1,
-  "btc_executed": true,
+  "schema": 2,
+  "baseline": "v0.1 (executed)",
+  "descendants": [
+    "BTC",
+    "BCH",
+    "BSV",
+    "XEC"
+  ],
+  "btc_profile_cross_checked_by_execution": true,
   "rows": [
     {
       "family": "splice",
       "opcode": "OP_CAT",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "restored",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "restored",
+      "BSV": "restored",
+      "XEC": "restored",
+      "btc_executed": "disabled"
     },
     {
       "family": "splice",
       "opcode": "OP_SUBSTR",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "\u2192OP_SPLIT",
-      "bsv": "\u2192OP_SPLIT"
+      "BTC": "disabled",
+      "BCH": "\u2192OP_SPLIT",
+      "BSV": "\u2192OP_SPLIT",
+      "XEC": "\u2192OP_SPLIT",
+      "btc_executed": "disabled"
     },
     {
       "family": "splice",
       "opcode": "OP_LEFT",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "\u2192OP_SPLIT",
-      "bsv": "\u2192OP_SPLIT"
+      "BTC": "disabled",
+      "BCH": "\u2192OP_SPLIT",
+      "BSV": "\u2192OP_SPLIT",
+      "XEC": "\u2192OP_SPLIT",
+      "btc_executed": "disabled"
     },
     {
       "family": "splice",
       "opcode": "OP_RIGHT",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "\u2192OP_SPLIT",
-      "bsv": "\u2192OP_SPLIT"
+      "BTC": "disabled",
+      "BCH": "\u2192OP_SPLIT",
+      "BSV": "\u2192OP_SPLIT",
+      "XEC": "\u2192OP_SPLIT",
+      "btc_executed": "disabled"
     },
     {
       "family": "bitwise",
       "opcode": "OP_INVERT",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "disabled",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "disabled",
+      "BSV": "restored",
+      "XEC": "disabled",
+      "btc_executed": "disabled"
     },
     {
       "family": "bitwise",
       "opcode": "OP_AND",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "restored",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "restored",
+      "BSV": "restored",
+      "XEC": "restored",
+      "btc_executed": "disabled"
     },
     {
       "family": "bitwise",
       "opcode": "OP_OR",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "restored",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "restored",
+      "BSV": "restored",
+      "XEC": "restored",
+      "btc_executed": "disabled"
     },
     {
       "family": "bitwise",
       "opcode": "OP_XOR",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "restored",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "restored",
+      "BSV": "restored",
+      "XEC": "restored",
+      "btc_executed": "disabled"
     },
     {
       "family": "arith",
       "opcode": "OP_MUL",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "disabled",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "disabled",
+      "BSV": "restored",
+      "XEC": "disabled",
+      "btc_executed": "disabled"
     },
     {
       "family": "arith",
       "opcode": "OP_DIV",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "restored",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "restored",
+      "BSV": "restored",
+      "XEC": "restored",
+      "btc_executed": "disabled"
     },
     {
       "family": "arith",
       "opcode": "OP_MOD",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "restored",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "restored",
+      "BSV": "restored",
+      "XEC": "restored",
+      "btc_executed": "disabled"
     },
     {
       "family": "arith",
       "opcode": "OP_LSHIFT",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "disabled",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "disabled",
+      "BSV": "restored",
+      "XEC": "disabled",
+      "btc_executed": "disabled"
     },
     {
       "family": "arith",
       "opcode": "OP_RSHIFT",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "disabled",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "disabled",
+      "BSV": "restored",
+      "XEC": "disabled",
+      "btc_executed": "disabled"
     },
     {
       "family": "arith",
       "opcode": "OP_2MUL",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "disabled",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "disabled",
+      "BSV": "restored",
+      "XEC": "disabled",
+      "btc_executed": "disabled"
     },
     {
       "family": "arith",
       "opcode": "OP_2DIV",
       "v0_1": "execute",
-      "btc": "disabled",
-      "bch": "disabled",
-      "bsv": "restored"
+      "BTC": "disabled",
+      "BCH": "disabled",
+      "BSV": "restored",
+      "XEC": "disabled",
+      "btc_executed": "disabled"
     },
     {
       "family": "kept",
       "opcode": "OP_ADD",
       "v0_1": "execute",
-      "btc": "execute",
-      "bch": "kept",
-      "bsv": "kept"
+      "BTC": "preserved",
+      "BCH": "preserved",
+      "BSV": "preserved",
+      "XEC": "preserved",
+      "btc_executed": "execute"
     },
     {
       "family": "kept",
       "opcode": "OP_EQUAL",
       "v0_1": "execute",
-      "btc": "execute",
-      "bch": "kept",
-      "bsv": "kept"
+      "BTC": "preserved",
+      "BCH": "preserved",
+      "BSV": "preserved",
+      "XEC": "preserved",
+      "btc_executed": "execute"
     },
     {
       "family": "kept",
       "opcode": "OP_SHA256",
       "v0_1": "execute",
-      "btc": "execute",
-      "bch": "kept",
-      "bsv": "kept"
+      "BTC": "preserved",
+      "BCH": "preserved",
+      "BSV": "preserved",
+      "XEC": "preserved",
+      "btc_executed": "execute"
     }
   ]
 }
