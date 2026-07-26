@@ -73,6 +73,12 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     C++ signs + self-checks (8/8: P2PK + 2-of-3 escrow/arbitration; tamper /
     wrong-key / wrong-order rejected) and the **Python interpreter independently
     verifies the C++-signed scenarios** (4/4). Model pytest: 44.
+  - Byte-level `CScript` (`cscript.py`, opcode bytes from our own `OPCODES.json`):
+    `scriptCode` is now the **real subscript** (`scriptSig + OP_CODESEPARATOR +
+    scriptPubKey`, script.cpp:1126), not a configured constant.
+  - Executed native **instrument corpus** (`INSTRUMENTS.md`): buyer–seller–arbiter
+    2-of-3 escrow, hash-lock (preimage) claim, hash-lock/refund `OP_IF` branch, and
+    an assurance/crowdfund contract via `SIGHASH_ANYONECANPAY`. Model pytest: 51.
   - Evidence level **MODEL** (Python) / **PORT** (C++ + real OpenSSL EC/BN).
 - [ ] True JAN09-EXECUTED (unmodified `bitcoin.exe` in an isolated VM, R3);
-  byte-level `CScript` parser; block-acceptance witnesses.
+  block-acceptance witnesses.
