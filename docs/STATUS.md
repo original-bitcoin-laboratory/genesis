@@ -100,6 +100,14 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   and an **orphan-driven** catch-up (peer announces only its tip → orphan →
   `getblocks(GetOrphanRoot)` → gap filled → reconnected). Height-based best chain
   (`nHeight > nBestHeight`) incl. a **reorg to a longer competing branch**. 5 tests.
+- [x] Headless **wallet** → `derivatives/wallet/` (MODEL, real secp256k1): the v0.1
+  key store (`mapKeys`/`mapPubKeys`), `IsMine`/`ExtractPubKey` over both Solver
+  templates, `GetBalance`, faithful **`SelectCoins`** (exact / lowest-larger /
+  stochastic subset-sum, main.cpp:2410) and **`CreateTransaction`** (main.cpp:2514)
+  — payee `vout[0]`, **change-to-self as bare P2PK** `vout[1]`, `SignSignature` per
+  input. Every created tx is **independently re-verified** by the lab's EvalScript
+  (the v0.1 `VerifySignature` path) with value conserved; the change output is
+  **re-spent** in a round-trip. 11 tests, no VM.
 - [x] **Descendant-conformance matrix** → `derivatives/conformance/` — **neutral,
   from the v0.1 origin**: v0.1 is the sole executed baseline / ground truth and every
   descendant (BTC, BCH, BSV, XEC) is treated identically via a documented rule-profile
