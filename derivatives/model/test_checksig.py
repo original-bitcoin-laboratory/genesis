@@ -1,52 +1,53 @@
 """End-to-end OP_CHECKSIG / OP_CHECKMULTISIG through the MODEL interpreter with
-real secp256k1 (via `cryptography`). Evidence level: MODEL.
-
-Signs the demo transaction and asserts the interpreter validates a P2PK spend and
-a 2-of-3 escrow (arbitration) — and rejects tampered / wrong-key / wrong-order
-signatures. The v0.1 CHECKMULTISIG off-by-one dummy (leading OP_0) is included.
+real secp256k1 — now with scriptCode derived from the real subscript (byte-level),
+the way v0.1 VerifySignature runs scriptSig + OP_CODESEPARATOR + scriptPubKey.
+Evidence level: MODEL.
 """
 
-from evalscript_model import valid
-from tx_sighash import demo_tx, new_key, sign_input, SigChecker
+import cscript
+from spend import scriptcode, sign, verify_spend
+from tx_sighash import demo_tx, new_key
 
 
-def test_checksig_p2pk():
-    tx, spk0 = demo_tx()
+def test_p2pk_scriptcode_is_scriptpubkey():
+    tx, _ = demo_tx()
     priv, pub = new_key()
-    sig = sign_input(priv, tx, 0, spk0)
-    ck = SigChecker(tx, 0, spk0)
-    assert valid([sig, pub, "OP_CHECKSIG"], ck) is True
+    spk = [pub, "OP_CHECKSIG"]                       # scriptPubKey
+    # scriptCode a signature commits to == the scriptPubKey bytes
+    assert scriptcode(spk) == cscript.assemble([pub, "OP_CHECKSIG"])
+    sig = sign(priv, spk, tx, 0)
+    assert verify_spend([sig], spk, tx, 0) is True
     bad = bytearray(sig); bad[10] ^= 1
-    assert valid([bytes(bad), pub, "OP_CHECKSIG"], ck) is False
+    assert verify_spend([bytes(bad)], spk, tx, 0) is False
     _, other = new_key()
-    assert valid([sig, other, "OP_CHECKSIG"], ck) is False
+    assert verify_spend([sig], [other, "OP_CHECKSIG"], tx, 0) is False
 
 
-def test_checksigverify_then_continue():
-    tx, spk0 = demo_tx()
+def test_checksigverify_then_true():
+    tx, _ = demo_tx()
     priv, pub = new_key()
-    sig = sign_input(priv, tx, 0, spk0)
-    ck = SigChecker(tx, 0, spk0)
-    # CHECKSIGVERIFY consumes the true result, then OP_1 leaves true
-    assert valid([sig, pub, "OP_CHECKSIGVERIFY", "OP_1"], ck) is True
+    spk = [pub, "OP_CHECKSIGVERIFY", "OP_1"]
+    sig = sign(priv, spk, tx, 0)
+    assert verify_spend([sig], spk, tx, 0) is True
 
 
 def test_escrow_2of3():
-    tx, spk0 = demo_tx()
+    tx, _ = demo_tx()
     ks = [new_key() for _ in range(3)]
     pubs = [p for _, p in ks]
-    ck = SigChecker(tx, 0, spk0)
+    spk = ["OP_2"] + pubs + ["OP_3", "OP_CHECKMULTISIG"]   # bare 2-of-3
 
     def sig(i):
-        return sign_input(ks[i][0], tx, 0, spk0)
+        return sign(ks[i][0], spk, tx, 0)
 
-    def escrow(sigs):
-        return valid(["OP_0"] + sigs + ["OP_2"] + pubs + ["OP_3", "OP_CHECKMULTISIG"], ck)
+    def spend(sigs):
+        return verify_spend(["OP_0"] + sigs, spk, tx, 0)   # OP_0 = the off-by-one dummy
 
-    assert escrow([sig(0), sig(1)]) is True     # A,B
-    assert escrow([sig(0), sig(2)]) is True     # A,C  (buyer + arbiter)
-    assert escrow([sig(1), sig(2)]) is True     # B,C
+    assert spend([sig(0), sig(1)]) is True     # buyer + seller
+    assert spend([sig(0), sig(2)]) is True     # buyer + arbiter
+    assert spend([sig(1), sig(2)]) is True     # seller + arbiter
     xpriv, _ = new_key()
-    xsig = sign_input(xpriv, tx, 0, spk0)
-    assert escrow([sig(0), xsig]) is False      # outsider signature
-    assert escrow([sig(2), sig(0)]) is False    # wrong (descending) order
+    xsig = sign(xpriv, spk, tx, 0)
+    assert spend([sig(0), xsig]) is False      # outsider signature
+    assert spend([sig(2), sig(0)]) is False    # wrong (descending) order
+    assert spend([sig(0)]) is False            # only one of two required

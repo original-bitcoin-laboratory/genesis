@@ -132,7 +132,7 @@ class SigChecker:
     spend), consistent with the C++ port's CheckSig.
     """
 
-    def __init__(self, tx: Tx, n_in: int, script_code: bytes):
+    def __init__(self, tx: Tx, n_in: int, script_code: bytes = None):
         self.tx, self.n_in, self.script_code = tx, n_in, script_code
 
     def check_sig(self, sig, pubkey, subscript=None) -> bool:
@@ -143,7 +143,10 @@ class SigChecker:
         if not sig:
             return False
         hash_type, der = sig[-1], sig[:-1]
-        h = signature_hash(self.script_code, self.tx, self.n_in, hash_type)
+        # Prefer the scriptCode derived from the real subscript (byte-level);
+        # fall back to a configured scriptCode only if none was passed.
+        script_code = subscript if subscript is not None else self.script_code
+        h = signature_hash(script_code, self.tx, self.n_in, hash_type)
         try:
             pub = ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256K1(), bytes(pubkey))
             pub.verify(der, h, ec.ECDSA(utils.Prehashed(hashes.SHA256())))

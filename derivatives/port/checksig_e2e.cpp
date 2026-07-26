@@ -45,6 +45,8 @@ static bytes signature_hash(bytes sc, Tx tx, unsigned nIn, int ht){
 }
 static bytes hexb(const string& h){ bytes b; for(size_t i=0;i+1<h.size();i+=2) b.push_back((unsigned char)strtol(h.substr(i,2).c_str(),0,16)); return b; }
 static string tohex(const bytes& b){ string s; char t[3]; for(unsigned char c:b){ sprintf(t,"%02x",c); s+=t; } return s; }
+// CScript data push (script.h operator<<): [len]|[OP_PUSHDATA1 len]|[OP_PUSHDATA2 len:2]
+static bytes push_data(const bytes& d){ bytes o; size_t n=d.size(); if(n<76) o.push_back((unsigned char)n); else if(n<=0xff){ o.push_back(0x4c); o.push_back((unsigned char)n);} else { o.push_back(0x4d); o.push_back(n&0xff); o.push_back((n>>8)&0xff);} o.insert(o.end(),d.begin(),d.end()); return o; }
 static void demo_tx(Tx& tx, bytes& spk0){
     tx.version=1; tx.locktime=0;
     tx.vin.push_back({bytes(32,0x11),0,bytes{0xde,0xad},0xffffffff});
@@ -96,28 +98,31 @@ int main(){
     printf("== single-sig OP_CHECKSIG ==\n");
     CKey key; key.make();
     bytes pub=key.pubkey();
-    bytes h=signature_hash(spk0,tx,nIn,SIGHASH_ALL);
+    bytes p2pk=push_data(pub); p2pk.push_back(0xac);   // scriptPubKey: <pubkey> OP_CHECKSIG
+    bytes h=signature_hash(p2pk,tx,nIn,SIGHASH_ALL);
     bytes sig=key.sign(h); sig.push_back(SIGHASH_ALL);
-    check("valid sig", CheckSig(sig,pub,spk0,tx,nIn), true);
+    check("valid sig", CheckSig(sig,pub,p2pk,tx,nIn), true);
     bytes bad=sig; bad[10]^=1;
-    check("tampered sig", CheckSig(bad,pub,spk0,tx,nIn), false);
+    check("tampered sig", CheckSig(bad,pub,p2pk,tx,nIn), false);
     CKey other; other.make();
-    check("wrong pubkey", CheckSig(sig,other.pubkey(),spk0,tx,nIn), false);
+    check("wrong pubkey", CheckSig(sig,other.pubkey(),p2pk,tx,nIn), false);
     scen << "CHECKSIG " << tohex(pub) << " " << tohex(sig) << " 1\n";
     scen << "CHECKSIG " << tohex(other.pubkey()) << " " << tohex(sig) << " 0\n";
 
     printf("== 2-of-3 escrow OP_CHECKMULTISIG ==\n");
     CKey A,B,C; A.make(); B.make(); C.make();
     vector<bytes> keys={A.pubkey(),B.pubkey(),C.pubkey()};
-    auto mk=[&](CKey& kk){ bytes s=kk.sign(signature_hash(spk0,tx,nIn,SIGHASH_ALL)); s.push_back(SIGHASH_ALL); return s; };
+    // scriptPubKey: OP_2 <pkA> <pkB> <pkC> OP_3 OP_CHECKMULTISIG
+    bytes msPub; msPub.push_back(0x52); for(auto&k:keys){ bytes p=push_data(k); msPub.insert(msPub.end(),p.begin(),p.end()); } msPub.push_back(0x53); msPub.push_back(0xae);
+    auto mk=[&](CKey& kk){ bytes s=kk.sign(signature_hash(msPub,tx,nIn,SIGHASH_ALL)); s.push_back(SIGHASH_ALL); return s; };
     bytes sA=mk(A), sB=mk(B), sC=mk(C);
     // buyer+arbiter etc.: any 2 of {A,B,C}, sigs in ascending key order
-    check("A,C -> ok", CheckMultisig({sA,sC},keys,spk0,tx,nIn), true);
-    check("A,B -> ok", CheckMultisig({sA,sB},keys,spk0,tx,nIn), true);
-    check("B,C -> ok", CheckMultisig({sB,sC},keys,spk0,tx,nIn), true);
+    check("A,C -> ok", CheckMultisig({sA,sC},keys,msPub,tx,nIn), true);
+    check("A,B -> ok", CheckMultisig({sA,sB},keys,msPub,tx,nIn), true);
+    check("B,C -> ok", CheckMultisig({sB,sC},keys,msPub,tx,nIn), true);
     CKey X; X.make(); bytes sX=mk(X);
-    check("A,X -> fail (X not in set)", CheckMultisig({sA,sX},keys,spk0,tx,nIn), false);
-    check("C,A wrong order -> fail", CheckMultisig({sC,sA},keys,spk0,tx,nIn), false);
+    check("A,X -> fail (X not in set)", CheckMultisig({sA,sX},keys,msPub,tx,nIn), false);
+    check("C,A wrong order -> fail", CheckMultisig({sC,sA},keys,msPub,tx,nIn), false);
     // scenario for python: <m> <n> pk1..pkn sig1..sigm expected
     scen << "CHECKMULTISIG 2 3 " << tohex(keys[0]) << " " << tohex(keys[1]) << " " << tohex(keys[2])
          << " " << tohex(sA) << " " << tohex(sC) << " 1\n";

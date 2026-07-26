@@ -17,6 +17,8 @@ from __future__ import annotations
 
 import hashlib
 
+import cscript
+
 # ---- number codec (bignum.h getvch/setvch; sign-magnitude LE) ----------------
 
 def bn_from_vch(vch: bytes) -> int:
@@ -270,7 +272,13 @@ def run(script: list, checker=None) -> tuple[bool, list]:
                 if checker is None:
                     return False, stack
                 pub = stack.pop(); sig = stack.pop()
-                ok = checker.check_sig(sig, pub, script[codesep:pc])
+                # scriptCode = subscript from the last OP_CODESEPARATOR to END,
+                # minus the signature (script.cpp:707-710). This is the scriptPubKey
+                # for a standard spend (VerifySignature inserts a separator between
+                # scriptSig and scriptPubKey, script.cpp:1126).
+                sub = cscript.find_and_delete(cscript.assemble(script[codesep:]),
+                                              cscript.assemble([sig]))
+                ok = checker.check_sig(sig, pub, sub)
                 stack.append(VCH_TRUE if ok else VCH_FALSE)
                 if op == "OP_CHECKSIGVERIFY":
                     if ok:
@@ -280,7 +288,7 @@ def run(script: list, checker=None) -> tuple[bool, list]:
             elif op in ("OP_CHECKMULTISIG", "OP_CHECKMULTISIGVERIFY"):
                 if checker is None:
                     return False, stack
-                ok = _checkmultisig(stack, checker, script[codesep:pc])
+                ok = _checkmultisig(stack, checker, script[codesep:])
                 if ok is None:
                     return False, stack
                 stack.append(VCH_TRUE if ok else VCH_FALSE)
@@ -298,7 +306,7 @@ def run(script: list, checker=None) -> tuple[bool, list]:
     return True, stack
 
 
-def _checkmultisig(stack, checker, subscript):
+def _checkmultisig(stack, checker, subscript_tokens):
     # ([dummy] sig..sig <m> pub..pub <n> -- bool); faithfully replicates the v0.1
     # off-by-one that consumes one extra element below the sigs.
     i = 1
@@ -318,11 +326,14 @@ def _checkmultisig(stack, checker, subscript):
         return None
     keys = [stack[-(ikey + k)] for k in range(nkeys)]
     sigs = [stack[-(isig + s)] for s in range(nsigs)]
+    sc = cscript.assemble(subscript_tokens)             # scriptCode = subscript ...
+    for s in sigs:
+        sc = cscript.find_and_delete(sc, cscript.assemble([s]))   # ... minus each sig
     success = True
     si = ki = 0
     remaining_sigs = nsigs
     while success and remaining_sigs > 0:
-        if checker.check_sig(sigs[si], keys[ki], subscript):
+        if checker.check_sig(sigs[si], keys[ki], sc):
             si += 1; remaining_sigs -= 1
         ki += 1
         if remaining_sigs > (nkeys - ki):

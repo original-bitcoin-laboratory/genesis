@@ -11,8 +11,8 @@ from tx_sighash import SigChecker, demo_tx     # noqa: E402
 
 
 def main(path: str) -> int:
-    tx, spk0 = demo_tx()
-    checker = SigChecker(tx, 0, spk0)
+    tx, _ = demo_tx()
+    checker = SigChecker(tx, 0)   # scriptCode derived from the subscript, not configured
     npass = nfail = 0
     for line in open(path):
         p = line.split()
@@ -20,14 +20,16 @@ def main(path: str) -> int:
             continue
         if p[0] == "CHECKSIG":
             pub = bytes.fromhex(p[1]); sig = bytes.fromhex(p[2]); exp = p[3] == "1"
-            got = valid([sig, pub, "OP_CHECKSIG"], checker)
+            # scriptSig + OP_CODESEPARATOR + scriptPubKey  (v0.1 VerifySignature)
+            got = valid([sig, "OP_CODESEPARATOR", pub, "OP_CHECKSIG"], checker)
         elif p[0] == "CHECKMULTISIG":
             m, n = int(p[1]), int(p[2]); rest = p[3:]
             keys = [bytes.fromhex(x) for x in rest[:n]]
             sigs = [bytes.fromhex(x) for x in rest[n:n + m]]
             exp = rest[n + m] == "1"
-            script = ["OP_0"] + sigs + [f"OP_{m}"] + keys + [f"OP_{n}"] + ["OP_CHECKMULTISIG"]
-            got = valid(script, checker)
+            script_sig = ["OP_0"] + sigs
+            script_pubkey = [f"OP_{m}"] + keys + [f"OP_{n}", "OP_CHECKMULTISIG"]
+            got = valid(script_sig + ["OP_CODESEPARATOR"] + script_pubkey, checker)
         else:
             continue
         ok = got == exp
