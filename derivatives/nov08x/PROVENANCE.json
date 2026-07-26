@@ -1,0 +1,128 @@
+{
+  "profile": "NOV08-X",
+  "authority": "pre-genesis archive (bitcoin-nov08), hash-verified; anchors are main.cpp / main.h line numbers in the extracted tree",
+  "classes": {
+    "N-ORIG": "verbatim from the surviving NOV08 source",
+    "N-IFACE": "reconstructed from an interface NOV08 references",
+    "J-DONOR": "imported from JAN09 where NOV08 is silent",
+    "NEW-EXP": "new experimental decision (never a semantics change)"
+  },
+  "n_orig_rules": [
+    {
+      "rule": "monetary.COIN",
+      "value": 1000000,
+      "source": "main.h:34",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "monetary.CENT",
+      "value": 10000,
+      "source": "main.h:35",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "monetary.subsidy_base",
+      "value": 100000000,
+      "source": "main.cpp:654",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "monetary.halving_interval",
+      "value": 100000,
+      "source": "main.cpp:655",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "monetary.tx_fee_fixed",
+      "value": 10000,
+      "source": "main.h:36",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "monetary.min_tx_value",
+      "value": 10000,
+      "source": "main.cpp:2185",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "timing.target_spacing_sec",
+      "value": 900,
+      "source": "main.cpp:663",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "timing.target_timespan_sec",
+      "value": 2592000,
+      "source": "main.cpp:662",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "timing.retarget_intervals",
+      "value": 2880,
+      "source": "main.cpp:664",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "timing.retarget_algo",
+      "value": "nudge",
+      "source": "main.cpp:660-705",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "pow.encoding",
+      "value": "leading-zero-bits",
+      "source": "main.h:875",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "pow.min_proof_of_work",
+      "value": 20,
+      "source": "main.h:38",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "coinbase_value_rule",
+      "value": "equal",
+      "source": "main.cpp:739",
+      "class": "N-ORIG"
+    },
+    {
+      "rule": "orphan_root_return",
+      "value": "hashPrevBlock",
+      "source": "main.cpp:713",
+      "class": "N-ORIG"
+    }
+  ],
+  "reconstructed_substrate": [
+    {
+      "component": "Script engine (full vocabulary, nothing disabled)",
+      "class": "N-IFACE",
+      "from": "derivatives/model + derivatives/port"
+    },
+    {
+      "component": "keys / ECDSA / sighash",
+      "class": "N-IFACE",
+      "from": "derivatives/model"
+    },
+    {
+      "component": "persistence (CDiskBlockIndex)",
+      "class": "J-DONOR",
+      "from": "derivatives/persist"
+    },
+    {
+      "component": "block plumbing / PoW loop",
+      "class": "J-DONOR",
+      "from": "derivatives/p2p/chainsync"
+    }
+  ],
+  "network_identity": {
+    "class": "NEW-EXP",
+    "items": [
+      "new genesis",
+      "new magic",
+      "new ports",
+      "new address version",
+      "no inherited balances"
+    ]
+  }
+}

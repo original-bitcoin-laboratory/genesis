@@ -1,0 +1,25 @@
+{
+  "profile": "NOV08",
+  "authority": "pre-genesis archive (bitcoin-nov08), hash-verified; anchors are main.cpp / main.h line numbers in the extracted tree",
+  "note": "N-ORIG rules read directly from the surviving November 2008 source. These are the settings NOV08-X MUST run. See common/nov08x/DESIGN_LEDGER.md.",
+  "monetary": {
+    "COIN":            { "units": 1000000,   "source": "main.h:34",   "class": "N-ORIG", "note": "base unit is 1e6 — NO 'satoshi' (that is a JAN09 property)" },
+    "CENT":            { "units": 10000,      "source": "main.h:35",   "class": "N-ORIG" },
+    "subsidy_base":    { "units": 100000000,  "coins": 100, "expr": "10000 * CENT", "source": "main.cpp:654", "class": "N-ORIG" },
+    "halving_interval":{ "blocks": 100000,    "expr": "for (i=100000; i<=nBestHeight; i+=100000) subsidy/=2", "on": "global nBestHeight", "source": "main.cpp:655", "class": "N-ORIG" },
+    "tx_fee_fixed":    { "units": 10000,      "coins": 0.01, "expr": "1 * CENT (TRANSACTIONFEE)", "source": "main.h:36", "class": "N-ORIG" },
+    "min_tx_value":    { "units": 10000,      "expr": "nValue < TRANSACTIONFEE rejects", "source": "main.cpp:2185", "class": "N-ORIG" }
+  },
+  "timing": {
+    "target_spacing_sec":  { "value": 900,     "expr": "15 * 60", "source": "main.cpp:663", "class": "N-ORIG" },
+    "target_timespan_sec": { "value": 2592000, "expr": "30 * 24 * 60 * 60", "source": "main.cpp:662", "class": "N-ORIG" },
+    "retarget_intervals":  { "value": 2880,    "expr": "timespan / spacing", "source": "main.cpp:664", "class": "N-ORIG" },
+    "retarget_algo":       { "value": "nudge", "expr": "if actual>2x target: nBits-- (easier); elif actual<target/2: nBits++ (harder); one change per window, only when first.nBits==last.nBits", "source": "main.cpp:660-705", "class": "N-ORIG" }
+  },
+  "pow": {
+    "encoding":         { "value": "leading-zero-bits", "expr": "nBits = required leading zero bits; target = (~uint256(0)) >> nBits; reject if GetHash() > target", "source": "main.h:875", "class": "N-ORIG", "note": "NOT the compact mantissa/exponent format JAN09 uses" },
+    "min_proof_of_work":{ "value": 20, "expr": "reject if nBits < MINPROOFOFWORK", "source": "main.h:38", "class": "N-ORIG", "note": "Satoshi's comment: 'ridiculously easy for testing'" }
+  },
+  "coinbase_value_rule": { "value": "equal", "expr": "vtx[0].GetValueOut() != GetBlockValue(nFees) rejects (exact equality)", "source": "main.cpp:739", "class": "N-ORIG" },
+  "orphan_root_return":  { "value": "hashPrevBlock", "expr": "GetOrphanRoot returns pblock->hashPrevBlock (the missing parent)", "source": "main.cpp:713", "class": "N-ORIG", "note": "JAN09 returns the orphan's own GetHash()" }
+}

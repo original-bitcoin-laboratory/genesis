@@ -1,0 +1,24 @@
+{
+  "profile": "JAN09",
+  "authority": "genesis archive (bitcoin-0.1.0), hash-verified; anchors are main.cpp / main.h line numbers. Used only as the differential baseline (the oracle).",
+  "note": "The released v0.1.0 rules, for side-by-side comparison with NOV08-X. These are the values NOV08-X diverges from.",
+  "monetary": {
+    "COIN":            { "units": 100000000, "source": "main.h:18",   "note": "1e8 — the 'satoshi' base unit is genesis-born" },
+    "CENT":            { "units": 1000000,   "source": "main.h:19" },
+    "subsidy_base":    { "units": 5000000000, "coins": 50, "expr": "50 * COIN", "source": "main.cpp:677" },
+    "halving_interval":{ "blocks": 210000,   "expr": "nSubsidy >>= (nBestHeight / 210000)", "on": "global nBestHeight", "source": "main.cpp:680" },
+    "tx_fee_fixed":    { "units": 0, "expr": "dynamic: fee = sum(inputs) - sum(outputs)", "source": "—" }
+  },
+  "timing": {
+    "target_spacing_sec":  { "value": 600,     "expr": "10 * 60", "source": "main.cpp:688" },
+    "target_timespan_sec": { "value": 1209600, "expr": "14 * 24 * 60 * 60", "source": "main.cpp:687" },
+    "retarget_intervals":  { "value": 2016,    "expr": "timespan / spacing" },
+    "retarget_algo":       { "value": "proportional", "expr": "bnNew *= nActualTimespan; bnNew /= nTargetTimespan (clamped 4x)", "source": "main.cpp:GetNextWorkRequired" }
+  },
+  "pow": {
+    "encoding":         { "value": "compact", "expr": "nBits = compact mantissa/exponent (e.g. 0x1d00ffff); target = mantissa * 256^(exp-3)", "source": "bignum.h SetCompact" },
+    "min_proof_of_work":{ "value": "bnProofOfWorkLimit", "expr": "0x1d00ffff (difficulty 1)", "source": "main.cpp" }
+  },
+  "coinbase_value_rule": { "value": "le", "expr": "vtx[0].GetValueOut() > GetBlockValue(nFees) rejects (upper bound)", "source": "main.cpp:953" },
+  "orphan_root_return":  { "value": "GetHash", "expr": "GetOrphanRoot returns pblock->GetHash() (the orphan root itself)", "source": "main.cpp" }
+}
