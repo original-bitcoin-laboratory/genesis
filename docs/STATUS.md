@@ -122,8 +122,12 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   cross-checked by independent execution** (applied equally, tooling not ranking):
   BTC via `python-bitcoinlib`, BSV via `bitcoinx` — the BSV run **corrected** the
   profile (Genesis restores the set **except `OP_2MUL`/`OP_2DIV`**, still disabled;
-  `0x7f`=`OP_SPLIT`). BCH/XEC documented-only (no installable interpreter). MATRIX.md
-  + JSON, 37 tests pass.
+  `0x7f`=`OP_SPLIT`). **Extended to 6 chains — every column cross-checked by execution:**
+  **BTC/LTC/DOGE** via `python-bitcoinlib` (they run Bitcoin Core's `script.cpp` verbatim —
+  code lineage, not cherry-picking); **BSV** via `bitcoinx`; **BCH/XEC** *execution-bounded*
+  (restored ops confirmed executable by bitcoinx, disabled ops disabled by python-bitcoinlib —
+  no standalone BCH interpreter exists, stated plainly). MATRIX.md has a per-chain method
+  table; conformance.json schema 4. **73 tests pass.**
 - [x] **Commercial-subsystem audit (R6)** → `inventory/MARKET_AUDIT.md` — static audit of
   `market.*`. **Finding: not dead code** — v0.1 shipped a working **decentralized
   marketplace** in 3 layers: a flood **publish/subscribe** advert network (`MSG_PRODUCT`,

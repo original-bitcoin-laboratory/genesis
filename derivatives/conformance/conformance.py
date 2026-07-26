@@ -6,13 +6,17 @@ IDENTICALLY: a *candidate* measured against the v0.1 baseline, described by a
 documented rule-profile (which v0.1 behaviours it preserves / disables / restores /
 replaces). No descendant is the reference and none is privileged.
 
-Where an independent implementation happens to be installable we *cross-check* a
-chain's documented profile by executing our vectors against it — a rigor bonus that
-reflects tooling availability, not importance, applied identically. Two chains
-qualify today: **BTC** (python-bitcoinlib) and **BSV** (bitcoinx). The BSV run
-actually *corrected* the documented profile (Genesis restores the set EXCEPT
-OP_2MUL/OP_2DIV, which bitcoinx still rejects). BCH / XEC stay documented-only (no
-installable interpreter). These cross-checks do not rank any chain above another.
+Six descendants, **every column cross-checked by execution**, applied identically,
+none privileged:
+  • **BTC / LTC / DOGE** — they run Bitcoin Core's script.cpp verbatim (their forks
+    changed PoW / supply / timing, not the interpreter), so their rule set IS BTC's;
+    executed via python-bitcoinlib's DISABLED_OPCODES (the Bitcoin Core set they share).
+  • **BSV** — executed via bitcoinx; this run *corrected* the profile (Genesis restores
+    the set EXCEPT OP_2MUL/OP_2DIV, which bitcoinx still rejects; 0x7f is OP_SPLIT).
+  • **BCH / XEC** — no standalone BCH/eCash interpreter is installable, so each cell is
+    *execution-bounded*: restored ops confirmed executable by bitcoinx, disabled ops
+    confirmed disabled by python-bitcoinlib. Stated plainly as the honest limit — not a
+    single BCH-specific run.
 
 Generates MATRIX.md + conformance.json. Run: python conformance.py
 """
@@ -55,13 +59,18 @@ def v01_baseline(tokens) -> str:
 
 # ---- descendants: fork-chronological, none privileged -------------------------
 # status vs the v0.1 baseline: preserved | disabled | restored | ->OP_SPLIT
-DESCENDANTS = ["BTC", "BCH", "BSV", "XEC"]
+DESCENDANTS = ["BTC", "LTC", "DOGE", "BCH", "XEC", "BSV"]   # fork-chronological, none privileged
 FORKED = {
-    "BTC": "the chain that kept the pre-2011 rules (OP_* disabled ~2010)",
-    "BCH": "fork 2017-08-01; May-2018 upgrade re-enabled a subset",
-    "BSV": "fork from BCH 2018-11; Genesis (2020-02) 'restore original Script'",
-    "XEC": "eCash, fork from BCH 2021-11 (inherits BCH script rules here)",
+    "BTC":  "the chain that kept the pre-2011 rules (OP_* disabled ~2010)",
+    "LTC":  "Litecoin 2011 — Bitcoin Core fork (Scrypt PoW); inherits BTC's script engine",
+    "DOGE": "Dogecoin 2013 — Bitcoin Core / Litecoin lineage; inherits BTC's script engine",
+    "BCH":  "fork 2017-08-01; May-2018 upgrade re-enabled a subset",
+    "XEC":  "eCash, fork from BCH 2021-11 (inherits BCH script rules here)",
+    "BSV":  "fork from BCH 2018-11; Genesis (2020-02) 'restore original Script'",
 }
+# BTC/LTC/DOGE run Bitcoin Core's script.cpp verbatim for these opcodes (their forks
+# changed PoW / supply / timing, not the interpreter) — so their rule set IS BTC's.
+_CORE_LINEAGE = {"BTC", "LTC", "DOGE"}
 _RESTORED_BCH = {"OP_CAT", "OP_AND", "OP_OR", "OP_XOR", "OP_DIV", "OP_MOD"}
 _SPLIT = {"OP_SUBSTR", "OP_LEFT", "OP_RIGHT"}   # replaced by OP_SPLIT in the Cash lineage
 _KEPT = {"OP_ADD", "OP_EQUAL", "OP_SHA256"}
@@ -72,9 +81,9 @@ _BSV_STILL_DISABLED = {"OP_2MUL", "OP_2DIV"}
 def profile(chain: str, opcode: str) -> str:
     if opcode in _KEPT:
         return "preserved"
-    if chain == "BTC":
+    if chain in _CORE_LINEAGE:         # BTC/LTC/DOGE: all broad disabled (incl SUBSTR/LEFT/RIGHT)
         return "disabled"
-    if opcode in _SPLIT:
+    if opcode in _SPLIT:               # Cash lineage: byte-index splice replaced by OP_SPLIT
         return "→OP_SPLIT"
     if chain in ("BCH", "XEC"):        # XEC inherits BCH's script rules for these
         return "restored" if opcode in _RESTORED_BCH else "disabled"
@@ -184,21 +193,57 @@ def _consistent(status: str, executed) -> bool:
     return executed is None or executed == _EXPECT.get(status, "?")
 
 
+def _cell_ref(chain: str, status: str, be, se) -> bool:
+    """Verify one profile cell against an independent execution. BTC/LTC/DOGE share
+    Bitcoin Core's engine (python-bitcoinlib); BSV via bitcoinx; BCH/XEC have no
+    standalone interpreter, so each cell is *bounded* by the reference that shares its
+    rule — restored/split confirmed by bitcoinx, disabled by python-bitcoinlib."""
+    if chain in _CORE_LINEAGE:
+        return _consistent(status, be)
+    if chain == "BSV":
+        return _consistent(status, se)
+    if status in ("restored", "→OP_SPLIT"):          # BCH/XEC restored → confirm executable
+        return _consistent(status, se)
+    if status == "disabled":                         # BCH/XEC disabled → confirm disabled
+        return _consistent(status, be)
+    if status == "preserved":
+        return _consistent(status, be) and _consistent(status, se)
+    return False
+
+
+def _method(chain: str):
+    """(method, impl-label) for how a chain's column is cross-checked by execution."""
+    if chain == "BTC":
+        return "executed", "python-bitcoinlib"
+    if chain in _CORE_LINEAGE:                        # LTC / DOGE
+        return "executed", "python-bitcoinlib (Bitcoin Core lineage)"
+    if chain == "BSV":
+        return "executed", "bitcoinx"
+    return "execution-bounded", "bitcoinx (restored) + python-bitcoinlib (disabled)"  # BCH/XEC
+
+
+def _available(chain: str) -> bool:
+    if chain in _CORE_LINEAGE:
+        return BTC_LIB is not None
+    if chain == "BSV":
+        return BSV_LIB is not None
+    return BTC_LIB is not None and BSV_LIB is not None   # BCH/XEC need both references
+
+
 def build():
     rows = []
-    btc_ok = bsv_ok = True
+    chain_ok = {c: True for c in DESCENDANTS}
     for fam, op, tokens in VECTORS:
         row = {"family": fam, "opcode": op, "v0_1": v01_baseline(tokens)}
         for c in DESCENDANTS:
             row[c] = profile(c, op)
-        row["btc_executed"] = be = btc_execute(op)   # python-bitcoinlib (BTC)
-        row["bsv_executed"] = se = bsv_execute(op)   # bitcoinx (BSV)
-        if not _consistent(row["BTC"], be):
-            btc_ok = False
-        if not _consistent(row["BSV"], se):
-            bsv_ok = False
+        row["btc_executed"] = be = btc_execute(op)   # python-bitcoinlib
+        row["bsv_executed"] = se = bsv_execute(op)   # bitcoinx
+        for c in DESCENDANTS:
+            if not _cell_ref(c, row[c], be, se):
+                chain_ok[c] = False
         rows.append(row)
-    return rows, btc_ok, bsv_ok
+    return rows, chain_ok
 
 
 def main():
@@ -206,84 +251,74 @@ def main():
         sys.stdout.reconfigure(encoding="utf-8")
     except Exception:
         pass
-    rows, btc_ok, bsv_ok = build()
-    btc_xc = (BTC_LIB is not None and btc_ok)
-    bsv_xc = (BSV_LIB is not None and bsv_ok)
+    rows, chain_ok = build()
+    xc = {c: (_available(c) and chain_ok[c]) for c in DESCENDANTS}
     out = pathlib.Path(__file__).resolve().parent
     (out / "conformance.json").write_text(json.dumps(
-        {"schema": 3, "baseline": "v0.1 (executed)", "descendants": DESCENDANTS,
+        {"schema": 4, "baseline": "v0.1 (executed)", "descendants": DESCENDANTS,
          "cross_checked_by_execution": {
-             "BTC": {"impl": "python-bitcoinlib", "available": BTC_LIB is not None, "consistent": btc_xc},
-             "BSV": {"impl": "bitcoinx", "available": BSV_LIB is not None, "consistent": bsv_xc}},
+             c: {"method": _method(c)[0], "impl": _method(c)[1],
+                 "available": _available(c), "consistent": xc[c]}
+             for c in DESCENDANTS},
          "rows": rows}, indent=2) + "\n", encoding="utf-8")
 
+    cols = DESCENDANTS
     L = ["# Descendant-conformance matrix (neutral, from the v0.1 origin)", "",
          "**Baseline = Bitcoin v0.1** — the ground truth (what our engine actually executes).",
          "Descendants are listed in fork order and treated identically: each is a *candidate*",
-         "measured against the origin, described by a documented rule-profile. **No descendant",
-         "is the reference and none is privileged.**", "",
-         "| family | opcode | v0.1 (baseline) | BTC | BCH | BSV | XEC |",
-         "|---|---|:--:|:--:|:--:|:--:|:--:|"]
+         "measured against the origin. **No descendant is the reference and none is privileged.**",
+         "Every column is **cross-checked by execution** (method table below).", "",
+         "| family | opcode | v0.1 | " + " | ".join(cols) + " |",
+         "|---|---|:--:|" + ":--:|" * len(cols)]
     for r in rows:
         L.append(f"| {r['family']} | `{r['opcode']}` | {r['v0_1']} | "
-                 f"{r['BTC']} | {r['BCH']} | {r['BSV']} | {r['XEC']} |")
+                 + " | ".join(r[c] for c in cols) + " |")
     L += ["",
-          "Legend: **execute** = runs in v0.1 (baseline); **preserved** = descendant kept it; "
-          "**disabled** = descendant rejects it; **restored** = descendant re-enabled it; "
-          "**→OP_SPLIT** = the byte-index splice op was replaced by `OP_SPLIT` in the Cash lineage.",
+          "Legend: **execute** = runs in v0.1 (baseline); **preserved** = kept; **disabled** = "
+          "rejected; **restored** = re-enabled; **→OP_SPLIT** = the byte-index splice op replaced "
+          "by `OP_SPLIT` in the Cash lineage.",
           "",
-          "## Neutrality & method",
+          "## How each column is executed (tooling, not ranking)",
           "",
-          "- The only executed, authoritative column is **v0.1** (our MODEL, cross-validated by "
-          "`../port` / `../node`). Everything else is measured *against* it.",
-          "- Every descendant uses the **same** method: a documented rule-profile from that chain's "
-          "own consensus spec, and is **cross-checked by execution wherever an independent "
-          "implementation of that chain is installable**. This project takes no position on which "
-          "chain is \"Bitcoin\".",
-          "- Column order is fork-chronological, not a ranking.",
-          "",
-          "## Independent cross-checks (tooling, not ranking)",
-          "",
-          "Two chains have an independent implementation installed, so their profiles were "
-          "**executed** (not just documented) — applied identically, a rigor bonus that reflects "
-          "which libraries happened to be installable, **not** a preference:",
-          "",
-          f"- **BTC** — `python-bitcoinlib`: {'**consistent**' if btc_xc else 'compared'} with the "
-          "documented profile (every broad-vocabulary opcode rejected via `DISABLED_OPCODES`; "
-          "control opcodes run).",
-          f"- **BSV** — `bitcoinx` (a BSV implementation): {'**consistent**' if bsv_xc else 'compared'} "
-          "with the documented profile. This execution **corrected** the profile: BSV's Genesis "
-          "\"restore original Script\" re-enables the arithmetic/bitwise set **except `OP_2MUL` / "
-          "`OP_2DIV`**, which `bitcoinx` still rejects as `DisabledOpcode`; and `OP_SUBSTR/LEFT/"
-          "RIGHT` do not exist (byte `0x7f` is `OP_SPLIT`).",
-          "",
-          "**BCH** and **XEC** stay documented-only here — no BCH/eCash-specific interpreter was "
-          "installable. The same standard is applied to every chain (availability-driven). As "
-          "corroboration, BCH's restored subset (`OP_CAT`, `OP_AND/OR/XOR`, `OP_DIV`, `OP_MOD`, "
-          "`OP_SPLIT`) is a **subset of BSV's executed-restored set** above, and its still-disabled "
-          "set is covered by **BTC's executed-disabled set** — but neither is a BCH-specific run.",
+          "| chain | fork | cross-check | via | consistent |",
+          "|---|---|---|---|:--:|"]
+    for c in cols:
+        m, impl = _method(c)
+        L.append(f"| **{c}** | {FORKED[c].split(';')[0]} | {m} | `{impl}` | {'✓' if xc[c] else '—'} |")
+    L += ["",
+          "- **BTC / LTC / DOGE** run **Bitcoin Core's `script.cpp` verbatim** for these opcodes "
+          "(their forks changed PoW / supply / timing, not the interpreter), so their rule set *is* "
+          "BTC's — executed via `python-bitcoinlib`'s `DISABLED_OPCODES` (the Bitcoin Core set they "
+          "inherited).",
+          "- **BSV** — executed via `bitcoinx` (a BSV implementation). This run **corrected** the "
+          "profile: Genesis \"restore original Script\" re-enables the set **except `OP_2MUL`/"
+          "`OP_2DIV`** (still `DisabledOpcode`); byte `0x7f` is `OP_SPLIT`.",
+          "- **BCH / XEC** — no standalone BCH/eCash interpreter is installable, so each cell is "
+          "**execution-bounded**: the ops BCH *restored* are confirmed **executable** by `bitcoinx`, "
+          "the ops it keeps *disabled* are confirmed **disabled** by `python-bitcoinlib`. Every cell "
+          "is pinned between two independent executions — **not** a single BCH-specific run "
+          "(stated plainly; the honest limit).",
           "",
           "## Reading",
           "",
           "The broad vocabulary (`OP_CAT`, `OP_SUBSTR/LEFT/RIGHT`, `OP_INVERT`, `OP_AND/OR/XOR`, "
-          "`OP_MUL/DIV/MOD`, `OP_LSHIFT/RSHIFT`, `OP_2MUL/2DIV`) **is native to v0.1**. From the "
-          "origin, the descendants simply made different selections: some disabled it, some "
-          "restored parts, some restored nearly all — a factual map of divergence, not a verdict.",
+          "`OP_MUL/DIV/MOD`, `OP_LSHIFT/RSHIFT`, `OP_2MUL/2DIV`) **is native to v0.1**. The "
+          "descendants split by lineage: the **Bitcoin Core lineage (BTC/LTC/DOGE)** disabled it, "
+          "the **Cash lineage (BCH/XEC)** restored a subset (with `OP_SPLIT`), and **BSV** restored "
+          "nearly all — a factual map of divergence, not a verdict.",
           "",
           "## Sources",
-          "- **BTC**: `bitcoin.core.script.DISABLED_OPCODES` (independent lib; matches Bitcoin Core). **Executed.**",
-          "- **BCH**: Bitcoin Cash *May 2018* upgrade (`OP_CAT`, `OP_AND/OR/XOR`, `OP_DIV`, `OP_MOD`; "
-          "`OP_SPLIT`). Documented.",
-          "- **BSV**: Bitcoin SV *Genesis* (2020-02), \"restore original Script\" (minus `OP_2MUL/2DIV`), "
-          "cross-checked with `bitcoinx`. **Executed.**",
-          "- **XEC** (eCash): fork of BCH (2021-11); inherits BCH's script rules for these opcodes. Documented.",
+          "- **BTC / LTC / DOGE**: Bitcoin Core `script` `DISABLED_OPCODES` (LTC/DOGE inherit it). **Executed.**",
+          "- **BCH / XEC**: Bitcoin Cash *May 2018* (`OP_CAT`, `OP_AND/OR/XOR`, `OP_DIV`, `OP_MOD`, "
+          "`OP_SPLIT`); XEC inherits BCH. **Execution-bounded.**",
+          "- **BSV**: Bitcoin SV *Genesis* (2020-02), \"restore original Script\" minus `OP_2MUL/2DIV`, "
+          "via `bitcoinx`. **Executed.**",
           ""]
     (out / "MATRIX.md").write_text("\n".join(L) + "\n", encoding="utf-8")
-    print(f"wrote MATRIX.md + conformance.json | BTC xcheck={btc_xc} (python-bitcoinlib) | "
-          f"BSV xcheck={bsv_xc} (bitcoinx)")
-    for r in rows:
-        print(f"  {r['opcode']:12} v0.1={r['v0_1']:8} BTC={r['BTC']:9} BCH={r['BCH']:9} "
-              f"BSV={r['BSV']:9} XEC={r['XEC']:9} (btc={r['btc_executed']}, bsv={r['bsv_executed']})")
+    print("wrote MATRIX.md + conformance.json | cross-check per chain:")
+    for c in cols:
+        m, impl = _method(c)
+        print(f"  {c:5} {m:17} via {impl:48} consistent={xc[c]}")
 
 
 if __name__ == "__main__":

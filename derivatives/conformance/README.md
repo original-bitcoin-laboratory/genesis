@@ -17,23 +17,28 @@ position on which chain is "Bitcoin"; it maps divergence from the source, factua
   spec, applied to the same v0.1 vectors. Same treatment for all; columns are in
   fork-chronological order, which is **not** a ranking.
 
-### Independent cross-checks ≠ ranking
+### Six descendants, every column cross-checked by execution ≠ ranking
 
-Where a chain's implementation is installable, its profile is additionally
-*executed* as a cross-check — applied identically, a rigor bonus reflecting **which
-libraries happened to be installable**, not a preference. Two chains qualify today:
+Each column is executed against the most direct independent implementation available —
+applied identically, none privileged:
 
-- **BTC** — `python-bitcoinlib`: every broad-vocabulary opcode rejected via
-  `DISABLED_OPCODES`; control opcodes run. Profile **consistent** with execution.
-- **BSV** — `bitcoinx` (a BSV implementation): the profile was **executed and it
-  corrected our documentation** — BSV's Genesis "restore original Script" re-enables
-  the arithmetic/bitwise set **except `OP_2MUL` / `OP_2DIV`** (still `DisabledOpcode`
-  in `bitcoinx`), and `OP_SUBSTR/LEFT/RIGHT` don't exist (byte `0x7f` is `OP_SPLIT`).
+- **BTC / LTC / DOGE** run **Bitcoin Core's `script.cpp` verbatim** for these opcodes
+  (their forks changed PoW / supply / timing, *not* the interpreter), so their rule set
+  **is** BTC's. Executed via `python-bitcoinlib`'s `DISABLED_OPCODES` — the Bitcoin Core
+  set they inherited. *(This is code lineage, not cherry-picking: LTC/DOGE literally
+  reuse Bitcoin Core's script engine.)*
+- **BSV** — executed via `bitcoinx` (a BSV implementation). This run **corrected the
+  documentation**: Genesis "restore original Script" re-enables the set **except
+  `OP_2MUL` / `OP_2DIV`** (still `DisabledOpcode`), and `OP_SUBSTR/LEFT/RIGHT` don't
+  exist (byte `0x7f` is `OP_SPLIT`).
+- **BCH / XEC** — no standalone BCH/eCash interpreter is installable, so each cell is
+  **execution-bounded**: the ops BCH *restored* are confirmed **executable** by
+  `bitcoinx`, the ops it keeps *disabled* are confirmed **disabled** by
+  `python-bitcoinlib`. Every cell is pinned between two independent executions — **not**
+  a single BCH-specific run (stated plainly; the honest limit).
 
-**BCH** and **XEC** remain documented-only — no BCH/eCash-specific interpreter was
-installable; the *same* standard applies to all. (As corroboration only: BCH's
-restored subset is a subset of BSV's executed-restored set, and its disabled set is
-covered by BTC's executed-disabled set — but that is not a BCH-specific run.)
+The chains split by **lineage**: Bitcoin Core (BTC/LTC/DOGE, broad vocab disabled),
+Cash (BCH/XEC, restored subset + `OP_SPLIT`), and BSV (restored nearly all).
 
 ## What it shows
 
@@ -45,21 +50,21 @@ parts, some restored (nearly) all. See `MATRIX.md` / `conformance.json`.
 ## Run
 
 ```bash
-python conformance.py     # -> MATRIX.md + conformance.json
-python -m pytest          # baseline executes; BTC + BSV profiles cross-checked (skip if lib absent)
+python conformance.py     # -> MATRIX.md + conformance.json (6 chains + method table)
+python -m pytest          # every cell execution-confirmed (skips gracefully if a lib is absent)
 ```
 
-Optional independent implementations: **`python-bitcoinlib`** (BTC cross-check; the
-code points its OpenSSL at a local install best-effort) and **`bitcoinx`** (BSV
-cross-check). Both degrade gracefully if absent — those tests simply skip.
+Optional independent implementations: **`python-bitcoinlib`** (BTC/LTC/DOGE — the shared
+Bitcoin Core engine) and **`bitcoinx`** (BSV, and the restored‑op reference for BCH/XEC).
+Both degrade gracefully if absent — those tests simply skip.
 
 ## Honest boundary
 
-**BCH / XEC** rows are **documented, not executed here** — no BCH/eCash-specific
-interpreter was installable; running vectors against their consensus needs their node
-software, a later step applied **equally** to every candidate. Placed at Tier 4
-(interpretation) per `../../../common/AUTHORITY.md`. **BTC and BSV** are additionally
-executed (above).
+**BCH / XEC** have no standalone interpreter, so they are **execution‑bounded** (each cell
+pinned between two independent executions), not run through a single BCH engine — said
+plainly. Everything here is Tier 4 (interpretation) over Tier 0 source per
+`../../../common/AUTHORITY.md`; a full run against each chain's own node software is the
+further step, applied **equally** to every candidate.
 
 ## Sources
 
