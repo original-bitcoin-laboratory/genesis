@@ -151,6 +151,14 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   malleability caveat** — tests reproduce the `0x01 != 0x0001` footgun. Own identity (magic
   `f00ba709`, port 18009, addr 0x36, genesis message), two isolated nodes sync (compact PoW).
   **13 tests.** Together nov08x+jan09x answer the counterfactual both ways.
+- [x] **Transacting on the X-chains (R8)** → `derivatives/ledger/` (MODEL) — a
+  **Rules-parameterized UTXO ledger** (`ConnectInputs`/`ConnectBlock`, the Python
+  counterpart of `node/chain_port.cpp`) enforcing, per chain: no double-spend, no
+  inflation, coinbase maturity (100), and the chain's coinbase rule (NOV08 `==` / JAN09
+  `≤`); inputs validated by the v0.1 VerifySignature path (`model` EvalScript, full
+  vocabulary) with real secp256k1 via `wallet`. A wallet payment settles on JAN09-X; a
+  coin locked by an **`OP_CAT` hash-lock** (unspendable on BTC) is **spent + validated on
+  both X-chains**. **8 tests.** reproduce.py now 10 suites.
 - [~] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
   unmodified v0.1.0 `bitcoin.exe` (sha256 `fbcac071…`, verified pre-run) was run and
   **reconstructed the exact genesis block** — hash `000000000019d668…`, merkle
