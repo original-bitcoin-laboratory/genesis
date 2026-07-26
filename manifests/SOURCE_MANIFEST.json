@@ -1,0 +1,247 @@
+{
+  "schema": 1,
+  "root": "extracted",
+  "file_count": 48,
+  "files": [
+    {
+      "path": "bitcoin/bitcoin.exe",
+      "size": 6440960,
+      "sha256": "fbcac071d92e26d82ec917214e334bd43850c0691f113bab1d4741c9bdd30d2d"
+    },
+    {
+      "path": "bitcoin/libeay32.dll",
+      "size": 1306630,
+      "sha256": "d108cdff2922a60e0054718a84178a40526ba00401fa34a87fb055947c77a182"
+    },
+    {
+      "path": "bitcoin/license.txt",
+      "size": 1079,
+      "sha256": "bf78d9cb6275b70fc0dd8af1248e9fd8cb4327d854a0e39ceb1b2d9993a96220"
+    },
+    {
+      "path": "bitcoin/mingwm10.dll",
+      "size": 11673,
+      "sha256": "1badf3972d9a861a69fafb2c5e3282aecc30007b9d51c199806e542b32d7708f"
+    },
+    {
+      "path": "bitcoin/readme.txt",
+      "size": 1856,
+      "sha256": "db5528d95fb71b2102a09ff7b58de1e4b0a68358feaf3986c22893288bddb3bc"
+    },
+    {
+      "path": "bitcoin/src/base58.h",
+      "size": 5639,
+      "sha256": "f74d61273812f0966968f4bdf5e42ff8cc28837f0df463fe09980065e84209eb"
+    },
+    {
+      "path": "bitcoin/src/bignum.h",
+      "size": 14096,
+      "sha256": "c946d2678051772a771ec2ba9c33fee64d8c1d0c92b6a791d6637ba673b36fc0"
+    },
+    {
+      "path": "bitcoin/src/db.cpp",
+      "size": 16382,
+      "sha256": "2b83d2432aa19ba3faceca58c0b610a715747089ec2d6ed580cd915b53c1a5ac"
+    },
+    {
+      "path": "bitcoin/src/db.h",
+      "size": 10979,
+      "sha256": "6f0abeb8ae108f9823783a71ef214824e9f6ab72e93990bc70838cd55a433eda"
+    },
+    {
+      "path": "bitcoin/src/headers.h",
+      "size": 1639,
+      "sha256": "dac61d922a9cdce5f6f6a8acd0e5628721d865ce9bb54ded32b5fa9a7a6e202f"
+    },
+    {
+      "path": "bitcoin/src/irc.cpp",
+      "size": 6568,
+      "sha256": "1713317ea55c88d5a0a61e2b72845d273eb8ca9a409b6a567fd5090eb2d5a2ff"
+    },
+    {
+      "path": "bitcoin/src/irc.h",
+      "size": 317,
+      "sha256": "f3c40402a7809562de6cc659e099ba9ccfee6f119958b7811ba82414edc42e7a"
+    },
+    {
+      "path": "bitcoin/src/key.h",
+      "size": 4639,
+      "sha256": "f631451db96081b0eeb4ca74d2f9c221de934f1079b166077055f4d0cea63e68"
+    },
+    {
+      "path": "bitcoin/src/license.txt",
+      "size": 1079,
+      "sha256": "bf78d9cb6275b70fc0dd8af1248e9fd8cb4327d854a0e39ceb1b2d9993a96220"
+    },
+    {
+      "path": "bitcoin/src/main.cpp",
+      "size": 82983,
+      "sha256": "c89f44185df7ff5d68342e5f533ae1282d5cf1259306d14c1c79315e973e0e1c"
+    },
+    {
+      "path": "bitcoin/src/main.h",
+      "size": 33212,
+      "sha256": "f134c66c90c9ee054573a4f3199a0231b95c9e7a26e1ee45a73748ff4ac3511e"
+    },
+    {
+      "path": "bitcoin/src/makefile",
+      "size": 2693,
+      "sha256": "fa2f6c3031eb8625e24aa012fa7c0d6e17c7f61e7b9604d45cde5b7bfdade161"
+    },
+    {
+      "path": "bitcoin/src/makefile.vc",
+      "size": 2647,
+      "sha256": "c00a4413d656f958120265590701e0fe2159020e474470726f826f1178d790ed"
+    },
+    {
+      "path": "bitcoin/src/market.cpp",
+      "size": 6938,
+      "sha256": "81c15691f9ca4c0a0d66b4a4a95e631caf3f31af26575e5ab49f8db838fa6e39"
+    },
+    {
+      "path": "bitcoin/src/market.h",
+      "size": 3745,
+      "sha256": "85aa4b054d749e094e641d41233384c1e7b58c84696b7be145ab53e6c0fbdbc4"
+    },
+    {
+      "path": "bitcoin/src/net.cpp",
+      "size": 31293,
+      "sha256": "fbaf9b912f7fedd87c8a1f1e232cb04dd567e41007abe900772579cf1e29dcbe"
+    },
+    {
+      "path": "bitcoin/src/net.h",
+      "size": 21344,
+      "sha256": "500a513e1bf5503241a800fbd501646886d68334ab5cc29669b3496ea7b49442"
+    },
+    {
+      "path": "bitcoin/src/rc/addressbook16.bmp",
+      "size": 1334,
+      "sha256": "a8687dc93616ba8d56a44c4edd52e1b6dc93b87b97b8177a65b369b3e9c4f853"
+    },
+    {
+      "path": "bitcoin/src/rc/addressbook16mask.bmp",
+      "size": 126,
+      "sha256": "a22071608f7e38b4b18f69d87123f6d7429710e8ea7b5370f1c86b14193fbf50"
+    },
+    {
+      "path": "bitcoin/src/rc/addressbook20.bmp",
+      "size": 1478,
+      "sha256": "76fe6679da5c4d9fd763084a19d1d0cf0eb3fb78f8799ba064e912d1ab4b0b10"
+    },
+    {
+      "path": "bitcoin/src/rc/addressbook20mask.bmp",
+      "size": 142,
+      "sha256": "392154912bd31605dee19df89e999db180bfa5a595a668ef097d5d3338fbedc8"
+    },
+    {
+      "path": "bitcoin/src/rc/bitcoin.ico",
+      "size": 22486,
+      "sha256": "8571889ac8a29b5c2e537f3fb11973295fcffc8f9b348623aa87b3598e869033"
+    },
+    {
+      "path": "bitcoin/src/rc/check.ico",
+      "size": 766,
+      "sha256": "8a1978ca70d9aa80942dac340a212d1e42650c21182e785cca99e586c9ccb620"
+    },
+    {
+      "path": "bitcoin/src/rc/send16.bmp",
+      "size": 1334,
+      "sha256": "553d3ee80472f791d1da36600f534b702af159f98c54191031847f283f70715e"
+    },
+    {
+      "path": "bitcoin/src/rc/send16mask.bmp",
+      "size": 126,
+      "sha256": "7297c773da79fc0ef61799b3b698274fd4f6d74d3c3a727ad6dff41358968191"
+    },
+    {
+      "path": "bitcoin/src/rc/send16masknoshadow.bmp",
+      "size": 126,
+      "sha256": "08c7efff95fc90a198dd190e50761281cbfab42e17f064b7146d952d94601749"
+    },
+    {
+      "path": "bitcoin/src/rc/send20.bmp",
+      "size": 1478,
+      "sha256": "b4959ca84a316e494e2d5b61f406e54344249ace24b854e90f34d5deaccf61c3"
+    },
+    {
+      "path": "bitcoin/src/rc/send20mask.bmp",
+      "size": 142,
+      "sha256": "efb5d66bb902a281406d3b5cc4092008dbdcb5c77b298c06b3ef79e8bfa16160"
+    },
+    {
+      "path": "bitcoin/src/readme.txt",
+      "size": 2663,
+      "sha256": "9a735646db7a90f423f5f96c03af43afe2b1a836eb143f620dc7b21d09dc654d"
+    },
+    {
+      "path": "bitcoin/src/script.cpp",
+      "size": 35279,
+      "sha256": "347c7526932d42a4d10ae487150b709e2ead737aa4b05f50aa9e2eefeb05a5b5"
+    },
+    {
+      "path": "bitcoin/src/script.h",
+      "size": 17707,
+      "sha256": "f905858b5d6d4593a3051b593c45fb5a8dd4cd38b5636c5e4456060b034fa218"
+    },
+    {
+      "path": "bitcoin/src/serialize.h",
+      "size": 39878,
+      "sha256": "797ab9b03e7abaf78a614ec2dde76365f1ef29cdc493fa86addc51cf936c678a"
+    },
+    {
+      "path": "bitcoin/src/sha.cpp",
+      "size": 19000,
+      "sha256": "e99fec6d660bf7b06f7455f41567c5454b04c63e0ad0ee16b51ef421110cd0b5"
+    },
+    {
+      "path": "bitcoin/src/sha.h",
+      "size": 5023,
+      "sha256": "8b4c2faf5156b67491aa78ead117870999c807f7627afc6d223194416df02ede"
+    },
+    {
+      "path": "bitcoin/src/ui.cpp",
+      "size": 97185,
+      "sha256": "bec80418526c9fe45f3b83c99c0a708363942df271d3f048c18fec6ebff8fa63"
+    },
+    {
+      "path": "bitcoin/src/ui.h",
+      "size": 11887,
+      "sha256": "33db8e6b87a6a5427661acf894f006dd112f2c339daaedc454c9aaf4de67cf8a"
+    },
+    {
+      "path": "bitcoin/src/ui.rc",
+      "size": 602,
+      "sha256": "a9cd94ed8280943bc35724ca7a53c46f2b167dce27adeca248920c5c16ff46b7"
+    },
+    {
+      "path": "bitcoin/src/uibase.cpp",
+      "size": 108295,
+      "sha256": "a6270e7d73012541cd086a5ca1d9b06ad8ec3422e2e3ce1c9ce0a064f0c350da"
+    },
+    {
+      "path": "bitcoin/src/uibase.h",
+      "size": 27772,
+      "sha256": "945c2abf4280518a6d1ede7319e835fb3df82674e8a907ec4a2d1e8c74674eab"
+    },
+    {
+      "path": "bitcoin/src/uint256.h",
+      "size": 25269,
+      "sha256": "54818c679957094352ca5a6d7b7d131cfa7052ee54d8481053f87f57217b0c59"
+    },
+    {
+      "path": "bitcoin/src/uiproject.fbp",
+      "size": 841798,
+      "sha256": "60a494786f42edd610c7cf23c6a6427f2897cf78fc99604a5d0a471859ae2305"
+    },
+    {
+      "path": "bitcoin/src/util.cpp",
+      "size": 9386,
+      "sha256": "08c445327efc7b127a70897da559114b5eb0ae1576018d5a3ba7b3b998a84365"
+    },
+    {
+      "path": "bitcoin/src/util.h",
+      "size": 11482,
+      "sha256": "1411b8f3ff7c712ea80f98587e3b8a9cf05b81a1dc8c45021bbf491de6292534"
+    }
+  ]
+}
