@@ -15,6 +15,11 @@
 /manifests/LOCAL_SHA256SUMS
 /reports/
 /build/
+
+# C++ port build artifacts (derivatives/port)
+/derivatives/port/*.exe
+/derivatives/port/*.o
+/derivatives/port/*_out.txt
 *.log
 __pycache__/
 .pytest_cache/

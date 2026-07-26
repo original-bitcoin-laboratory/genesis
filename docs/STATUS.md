@@ -62,6 +62,11 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
 - [x] Executable opcode-semantics **MODEL** harness → `derivatives/model/`
   (24 vectors pass): runnable cross-check of the disabled-in-BTC vocabulary
   (`OP_CAT`/`OP_MUL`/`OP_DIV`/`OP_LSHIFT`/`OP_INVERT`/…) + the sign-magnitude
-  number codec. Evidence level **MODEL**, *not* JAN09-EXECUTED.
-- [ ] True JAN09-EXECUTED witnesses — build/port the v0.1 C++ interpreter
-  (blocked here: no C++ toolchain) — and block-acceptance witnesses (→ R3–R4).
+  number codec. Evidence level **MODEL**.
+- [x] C++/OpenSSL **PORT** harness → `derivatives/port/` (evidence level **PORT**):
+  runs the opcode bodies against the *real* OpenSSL `BN_*` engine (with the
+  `bignum.h` codec; `CBigNum` ported to OpenSSL 3.x opaque `BIGNUM`). `run.sh`
+  differential-tests it vs the MODEL over 39 vectors → **IDENTICAL** (incl. all
+  signed `DIV`/`MOD`/`RSHIFT`/`2DIV`). Built with MSYS2 g++ 16.1.0 + OpenSSL 3.6.3.
+- [ ] True JAN09-EXECUTED (unmodified `bitcoin.exe` in an isolated VM, R3),
+  ECDSA (`OP_CHECKSIG`/`OP_CHECKMULTISIG`), and block-acceptance witnesses.
