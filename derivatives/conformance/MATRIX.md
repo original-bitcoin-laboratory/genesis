@@ -20,8 +20,8 @@ is the reference and none is privileged.**
 | arith | `OP_MOD` | execute | disabled | restored | restored | restored |
 | arith | `OP_LSHIFT` | execute | disabled | disabled | restored | disabled |
 | arith | `OP_RSHIFT` | execute | disabled | disabled | restored | disabled |
-| arith | `OP_2MUL` | execute | disabled | disabled | restored | disabled |
-| arith | `OP_2DIV` | execute | disabled | disabled | restored | disabled |
+| arith | `OP_2MUL` | execute | disabled | disabled | disabled | disabled |
+| arith | `OP_2DIV` | execute | disabled | disabled | disabled | disabled |
 | kept | `OP_ADD` | execute | preserved | preserved | preserved | preserved |
 | kept | `OP_EQUAL` | execute | preserved | preserved | preserved | preserved |
 | kept | `OP_SHA256` | execute | preserved | preserved | preserved | preserved |
@@ -31,22 +31,25 @@ Legend: **execute** = runs in v0.1 (baseline); **preserved** = descendant kept i
 ## Neutrality & method
 
 - The only executed, authoritative column is **v0.1** (our MODEL, cross-validated by `../port` / `../node`). Everything else is measured *against* it.
-- Every descendant uses the **same** method: a documented rule-profile from that chain's own consensus spec. This project takes no position on which chain is "Bitcoin".
+- Every descendant uses the **same** method: a documented rule-profile from that chain's own consensus spec, and is **cross-checked by execution wherever an independent implementation of that chain is installable**. This project takes no position on which chain is "Bitcoin".
 - Column order is fork-chronological, not a ranking.
 
-## Independent cross-check (tooling, not ranking)
+## Independent cross-checks (tooling, not ranking)
 
-An independent implementation was available for exactly one chain — **BTC** (`python-bitcoinlib`) — so its documented profile was **executed** and **matches**: every broad-vocabulary opcode is rejected, every control opcode runs. This is a rigor bonus that reflects which library happened to be installable; the identical cross-check would be applied to BCH / BSV / XEC (or any candidate) given their implementations. It does **not** elevate BTC.
+Two chains have an independent implementation installed, so their profiles were **executed** (not just documented) — applied identically, a rigor bonus that reflects which libraries happened to be installable, **not** a preference:
+
+- **BTC** — `python-bitcoinlib`: **consistent** with the documented profile (every broad-vocabulary opcode rejected via `DISABLED_OPCODES`; control opcodes run).
+- **BSV** — `bitcoinx` (a BSV implementation): **consistent** with the documented profile. This execution **corrected** the profile: BSV's Genesis "restore original Script" re-enables the arithmetic/bitwise set **except `OP_2MUL` / `OP_2DIV`**, which `bitcoinx` still rejects as `DisabledOpcode`; and `OP_SUBSTR/LEFT/RIGHT` do not exist (byte `0x7f` is `OP_SPLIT`).
+
+**BCH** and **XEC** stay documented-only here — no BCH/eCash-specific interpreter was installable. The same standard is applied to every chain (availability-driven). As corroboration, BCH's restored subset (`OP_CAT`, `OP_AND/OR/XOR`, `OP_DIV`, `OP_MOD`, `OP_SPLIT`) is a **subset of BSV's executed-restored set** above, and its still-disabled set is covered by **BTC's executed-disabled set** — but neither is a BCH-specific run.
 
 ## Reading
 
-The broad vocabulary (`OP_CAT`, `OP_SUBSTR/LEFT/RIGHT`, `OP_INVERT`, `OP_AND/OR/XOR`, `OP_MUL/DIV/MOD`, `OP_LSHIFT/RSHIFT`, `OP_2MUL/2DIV`) **is native to v0.1**. From the origin, the descendants simply made different selections: some disabled it, some restored parts, some restored (nearly) all — a factual map of divergence, not a verdict.
+The broad vocabulary (`OP_CAT`, `OP_SUBSTR/LEFT/RIGHT`, `OP_INVERT`, `OP_AND/OR/XOR`, `OP_MUL/DIV/MOD`, `OP_LSHIFT/RSHIFT`, `OP_2MUL/2DIV`) **is native to v0.1**. From the origin, the descendants simply made different selections: some disabled it, some restored parts, some restored nearly all — a factual map of divergence, not a verdict.
 
-## Sources (documented columns; verify against each chain's node to execute)
-- **BTC**: `bitcoin.core.script.DISABLED_OPCODES` (independent lib; matches Bitcoin Core).
-- **BCH**: Bitcoin Cash *May 2018* upgrade (`OP_CAT`, `OP_AND/OR/XOR`, `OP_DIV`, `OP_MOD`; `OP_SPLIT`).
-- **BSV**: Bitcoin SV *Genesis* (2020-02), "restore original Script".
-- **XEC** (eCash): fork of BCH (2021-11); inherits BCH's script rules for these opcodes.
-
-> BCH / BSV / XEC rows are **documented, not executed here** — running vectors against their consensus needs their node software (a later step, applied equally to all).
+## Sources
+- **BTC**: `bitcoin.core.script.DISABLED_OPCODES` (independent lib; matches Bitcoin Core). **Executed.**
+- **BCH**: Bitcoin Cash *May 2018* upgrade (`OP_CAT`, `OP_AND/OR/XOR`, `OP_DIV`, `OP_MOD`; `OP_SPLIT`). Documented.
+- **BSV**: Bitcoin SV *Genesis* (2020-02), "restore original Script" (minus `OP_2MUL/2DIV`), cross-checked with `bitcoinx`. **Executed.**
+- **XEC** (eCash): fork of BCH (2021-11); inherits BCH's script rules for these opcodes. Documented.
 

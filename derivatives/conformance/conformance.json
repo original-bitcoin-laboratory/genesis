@@ -1,5 +1,5 @@
 {
-  "schema": 2,
+  "schema": 3,
   "baseline": "v0.1 (executed)",
   "descendants": [
     "BTC",
@@ -7,7 +7,18 @@
     "BSV",
     "XEC"
   ],
-  "btc_profile_cross_checked_by_execution": true,
+  "cross_checked_by_execution": {
+    "BTC": {
+      "impl": "python-bitcoinlib",
+      "available": true,
+      "consistent": true
+    },
+    "BSV": {
+      "impl": "bitcoinx",
+      "available": true,
+      "consistent": true
+    }
+  },
   "rows": [
     {
       "family": "splice",
@@ -17,7 +28,8 @@
       "BCH": "restored",
       "BSV": "restored",
       "XEC": "restored",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "execute"
     },
     {
       "family": "splice",
@@ -27,7 +39,8 @@
       "BCH": "\u2192OP_SPLIT",
       "BSV": "\u2192OP_SPLIT",
       "XEC": "\u2192OP_SPLIT",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "\u2192OP_SPLIT"
     },
     {
       "family": "splice",
@@ -37,7 +50,8 @@
       "BCH": "\u2192OP_SPLIT",
       "BSV": "\u2192OP_SPLIT",
       "XEC": "\u2192OP_SPLIT",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "\u2192OP_SPLIT"
     },
     {
       "family": "splice",
@@ -47,7 +61,8 @@
       "BCH": "\u2192OP_SPLIT",
       "BSV": "\u2192OP_SPLIT",
       "XEC": "\u2192OP_SPLIT",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "\u2192OP_SPLIT"
     },
     {
       "family": "bitwise",
@@ -57,7 +72,8 @@
       "BCH": "disabled",
       "BSV": "restored",
       "XEC": "disabled",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "execute"
     },
     {
       "family": "bitwise",
@@ -67,7 +83,8 @@
       "BCH": "restored",
       "BSV": "restored",
       "XEC": "restored",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "execute"
     },
     {
       "family": "bitwise",
@@ -77,7 +94,8 @@
       "BCH": "restored",
       "BSV": "restored",
       "XEC": "restored",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "execute"
     },
     {
       "family": "bitwise",
@@ -87,7 +105,8 @@
       "BCH": "restored",
       "BSV": "restored",
       "XEC": "restored",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "execute"
     },
     {
       "family": "arith",
@@ -97,7 +116,8 @@
       "BCH": "disabled",
       "BSV": "restored",
       "XEC": "disabled",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "execute"
     },
     {
       "family": "arith",
@@ -107,7 +127,8 @@
       "BCH": "restored",
       "BSV": "restored",
       "XEC": "restored",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "execute"
     },
     {
       "family": "arith",
@@ -117,7 +138,8 @@
       "BCH": "restored",
       "BSV": "restored",
       "XEC": "restored",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "execute"
     },
     {
       "family": "arith",
@@ -127,7 +149,8 @@
       "BCH": "disabled",
       "BSV": "restored",
       "XEC": "disabled",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "execute"
     },
     {
       "family": "arith",
@@ -137,7 +160,8 @@
       "BCH": "disabled",
       "BSV": "restored",
       "XEC": "disabled",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "execute"
     },
     {
       "family": "arith",
@@ -145,9 +169,10 @@
       "v0_1": "execute",
       "BTC": "disabled",
       "BCH": "disabled",
-      "BSV": "restored",
+      "BSV": "disabled",
       "XEC": "disabled",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "disabled"
     },
     {
       "family": "arith",
@@ -155,9 +180,10 @@
       "v0_1": "execute",
       "BTC": "disabled",
       "BCH": "disabled",
-      "BSV": "restored",
+      "BSV": "disabled",
       "XEC": "disabled",
-      "btc_executed": "disabled"
+      "btc_executed": "disabled",
+      "bsv_executed": "disabled"
     },
     {
       "family": "kept",
@@ -167,7 +193,8 @@
       "BCH": "preserved",
       "BSV": "preserved",
       "XEC": "preserved",
-      "btc_executed": "execute"
+      "btc_executed": "execute",
+      "bsv_executed": "execute"
     },
     {
       "family": "kept",
@@ -177,7 +204,8 @@
       "BCH": "preserved",
       "BSV": "preserved",
       "XEC": "preserved",
-      "btc_executed": "execute"
+      "btc_executed": "execute",
+      "bsv_executed": "execute"
     },
     {
       "family": "kept",
@@ -187,7 +215,8 @@
       "BCH": "preserved",
       "BSV": "preserved",
       "XEC": "preserved",
-      "btc_executed": "execute"
+      "btc_executed": "execute",
+      "bsv_executed": "execute"
     }
   ]
 }

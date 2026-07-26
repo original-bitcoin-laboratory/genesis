@@ -7,10 +7,12 @@ documented rule-profile (which v0.1 behaviours it preserves / disables / restore
 replaces). No descendant is the reference and none is privileged.
 
 Where an independent implementation happens to be installable we *cross-check* a
-chain's documented profile by executing our vectors against it. Today that's BTC
-(python-bitcoinlib) — a rigor bonus that reflects tooling availability, not
-importance; the same cross-check would be applied to any chain whose implementation
-were available. The BTC cross-check does not rank BTC above BCH / BSV / XEC.
+chain's documented profile by executing our vectors against it — a rigor bonus that
+reflects tooling availability, not importance, applied identically. Two chains
+qualify today: **BTC** (python-bitcoinlib) and **BSV** (bitcoinx). The BSV run
+actually *corrected* the documented profile (Genesis restores the set EXCEPT
+OP_2MUL/OP_2DIV, which bitcoinx still rejects). BCH / XEC stay documented-only (no
+installable interpreter). These cross-checks do not rank any chain above another.
 
 Generates MATRIX.md + conformance.json. Run: python conformance.py
 """
@@ -63,6 +65,9 @@ FORKED = {
 _RESTORED_BCH = {"OP_CAT", "OP_AND", "OP_OR", "OP_XOR", "OP_DIV", "OP_MOD"}
 _SPLIT = {"OP_SUBSTR", "OP_LEFT", "OP_RIGHT"}   # replaced by OP_SPLIT in the Cash lineage
 _KEPT = {"OP_ADD", "OP_EQUAL", "OP_SHA256"}
+# Even after Genesis "restore original Script", BSV keeps OP_2MUL / OP_2DIV disabled
+# — independently confirmed by executing them in bitcoinx (see bsv_execute).
+_BSV_STILL_DISABLED = {"OP_2MUL", "OP_2DIV"}
 
 def profile(chain: str, opcode: str) -> str:
     if opcode in _KEPT:
@@ -73,8 +78,8 @@ def profile(chain: str, opcode: str) -> str:
         return "→OP_SPLIT"
     if chain in ("BCH", "XEC"):        # XEC inherits BCH's script rules for these
         return "restored" if opcode in _RESTORED_BCH else "disabled"
-    if chain == "BSV":                 # Genesis restored the original arithmetic/bitwise set
-        return "restored"
+    if chain == "BSV":                 # Genesis restored the set EXCEPT OP_2MUL/OP_2DIV
+        return "disabled" if opcode in _BSV_STILL_DISABLED else "restored"
     return "?"
 
 # ---- optional independent cross-check of a chain's profile (BTC has a lib) ----
@@ -123,29 +128,93 @@ def btc_execute(opcode: str) -> str | None:
         return "disabled" if getattr(BTC_LIB, opcode) in BTC_LIB.DISABLED_OPCODES else "n/a"
 
 
+# ---- independent cross-check of the BSV profile (bitcoinx, a BSV impl) ---------
+BSV_LIB = None
+try:
+    import bitcoinx as _bx
+    from bitcoinx import (InterpreterLimits as _BXLimits, InterpreterState as _BXState,
+                          MinerPolicy as _BXPolicy, Ops as _BXOps, Script as _BXScript)
+    from bitcoinx.errors import DisabledOpcode as _BXDisabled
+    BSV_LIB = _bx
+except Exception:
+    BSV_LIB = None
+
+_BSV_OPS = {  # operands for bitcoinx evaluate_script (post-Genesis / consensus rules)
+    "OP_CAT": [b"\x11", b"\x22"], "OP_INVERT": [b"\x0f"], "OP_AND": [b"\xf0", b"\x3c"],
+    "OP_OR": [b"\xf0", b"\x3c"], "OP_XOR": [b"\xf0", b"\x3c"], "OP_MUL": [b"\x06", b"\x07"],
+    "OP_DIV": [b"\x14", b"\x06"], "OP_MOD": [b"\x14", b"\x06"], "OP_LSHIFT": [b"\x01", b"\x08"],
+    "OP_RSHIFT": [b"\x00\x01", b"\x04"], "OP_2MUL": [b"\x05"], "OP_2DIV": [b"\x06"],
+    "OP_ADD": [b"\x02", b"\x02"], "OP_EQUAL": [b"\xaa", b"\xaa"], "OP_SHA256": [b"\xaa"],
+}
+if BSV_LIB is not None:
+    _BSV_POLICY = _BXPolicy(10_000_000, 750_000, 100_000_000, 0xFFFFFFFF, 2048)
+    _BSV_LIMITS = _BXLimits(_BSV_POLICY, is_genesis_enabled=True, is_consensus=True)
+
+
+def bsv_execute(opcode: str) -> str | None:
+    """Run the vector through bitcoinx (independent BSV impl). None if unavailable.
+    The byte-index splice ops (SUBSTR/LEFT/RIGHT) don't exist in the Cash lineage —
+    byte 0x7f is OP_SPLIT — so those map to '→OP_SPLIT' (OP_SPLIT itself executes)."""
+    if BSV_LIB is None:
+        return None
+    if opcode in _SPLIT:               # replaced by OP_SPLIT; the opcode name is gone
+        return "→OP_SPLIT" if (hasattr(_BXOps, "OP_SPLIT") and not hasattr(_BXOps, opcode)) else "?"
+    if not hasattr(_BXOps, opcode):
+        return "n/a"
+    st = _BXState(_BSV_LIMITS)
+    s = _BXScript()
+    for p in _BSV_OPS[opcode]:
+        s = s << p
+    s = s << getattr(_BXOps, opcode)
+    try:
+        st.evaluate_script(s)
+        return "execute"
+    except _BXDisabled:
+        return "disabled"
+    except Exception:
+        return "reject"               # some other verdict — surfaced, not hidden
+
+
+# profile status -> the verdict an independent execution should produce
+_EXPECT = {"preserved": "execute", "restored": "execute",
+           "disabled": "disabled", "→OP_SPLIT": "→OP_SPLIT"}
+
+
+def _consistent(status: str, executed) -> bool:
+    return executed is None or executed == _EXPECT.get(status, "?")
+
+
 def build():
     rows = []
-    xcheck_ok = True
+    btc_ok = bsv_ok = True
     for fam, op, tokens in VECTORS:
         row = {"family": fam, "opcode": op, "v0_1": v01_baseline(tokens)}
         for c in DESCENDANTS:
             row[c] = profile(c, op)
-        ex = btc_execute(op)
-        row["btc_executed"] = ex
-        if ex is not None:                      # profile "disabled" <-> executed "disabled"; "preserved" <-> "execute"
-            want = "disabled" if row["BTC"] == "disabled" else "execute"
-            if ex != want:
-                xcheck_ok = False
+        row["btc_executed"] = be = btc_execute(op)   # python-bitcoinlib (BTC)
+        row["bsv_executed"] = se = bsv_execute(op)   # bitcoinx (BSV)
+        if not _consistent(row["BTC"], be):
+            btc_ok = False
+        if not _consistent(row["BSV"], se):
+            bsv_ok = False
         rows.append(row)
-    return rows, xcheck_ok
+    return rows, btc_ok, bsv_ok
 
 
 def main():
-    rows, xcheck_ok = build()
+    try:                                # the '→' glyph needs UTF-8 on the Windows console
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+    rows, btc_ok, bsv_ok = build()
+    btc_xc = (BTC_LIB is not None and btc_ok)
+    bsv_xc = (BSV_LIB is not None and bsv_ok)
     out = pathlib.Path(__file__).resolve().parent
     (out / "conformance.json").write_text(json.dumps(
-        {"schema": 2, "baseline": "v0.1 (executed)", "descendants": DESCENDANTS,
-         "btc_profile_cross_checked_by_execution": (BTC_LIB is not None and xcheck_ok),
+        {"schema": 3, "baseline": "v0.1 (executed)", "descendants": DESCENDANTS,
+         "cross_checked_by_execution": {
+             "BTC": {"impl": "python-bitcoinlib", "available": BTC_LIB is not None, "consistent": btc_xc},
+             "BSV": {"impl": "bitcoinx", "available": BSV_LIB is not None, "consistent": bsv_xc}},
          "rows": rows}, indent=2) + "\n", encoding="utf-8")
 
     L = ["# Descendant-conformance matrix (neutral, from the v0.1 origin)", "",
@@ -168,41 +237,53 @@ def main():
           "- The only executed, authoritative column is **v0.1** (our MODEL, cross-validated by "
           "`../port` / `../node`). Everything else is measured *against* it.",
           "- Every descendant uses the **same** method: a documented rule-profile from that chain's "
-          "own consensus spec. This project takes no position on which chain is \"Bitcoin\".",
+          "own consensus spec, and is **cross-checked by execution wherever an independent "
+          "implementation of that chain is installable**. This project takes no position on which "
+          "chain is \"Bitcoin\".",
           "- Column order is fork-chronological, not a ranking.",
           "",
-          f"## Independent cross-check (tooling, not ranking)",
+          "## Independent cross-checks (tooling, not ranking)",
           "",
-          f"An independent implementation was available for exactly one chain — **BTC** "
-          f"(`python-bitcoinlib`) — so its documented profile was **executed** and "
-          f"{'**matches**' if (BTC_LIB is not None and xcheck_ok) else 'compared'}: every "
-          "broad-vocabulary opcode is rejected, every control opcode runs. This is a rigor bonus "
-          "that reflects which library happened to be installable; the identical cross-check "
-          "would be applied to BCH / BSV / XEC (or any candidate) given their implementations. "
-          "It does **not** elevate BTC.",
+          "Two chains have an independent implementation installed, so their profiles were "
+          "**executed** (not just documented) — applied identically, a rigor bonus that reflects "
+          "which libraries happened to be installable, **not** a preference:",
+          "",
+          f"- **BTC** — `python-bitcoinlib`: {'**consistent**' if btc_xc else 'compared'} with the "
+          "documented profile (every broad-vocabulary opcode rejected via `DISABLED_OPCODES`; "
+          "control opcodes run).",
+          f"- **BSV** — `bitcoinx` (a BSV implementation): {'**consistent**' if bsv_xc else 'compared'} "
+          "with the documented profile. This execution **corrected** the profile: BSV's Genesis "
+          "\"restore original Script\" re-enables the arithmetic/bitwise set **except `OP_2MUL` / "
+          "`OP_2DIV`**, which `bitcoinx` still rejects as `DisabledOpcode`; and `OP_SUBSTR/LEFT/"
+          "RIGHT` do not exist (byte `0x7f` is `OP_SPLIT`).",
+          "",
+          "**BCH** and **XEC** stay documented-only here — no BCH/eCash-specific interpreter was "
+          "installable. The same standard is applied to every chain (availability-driven). As "
+          "corroboration, BCH's restored subset (`OP_CAT`, `OP_AND/OR/XOR`, `OP_DIV`, `OP_MOD`, "
+          "`OP_SPLIT`) is a **subset of BSV's executed-restored set** above, and its still-disabled "
+          "set is covered by **BTC's executed-disabled set** — but neither is a BCH-specific run.",
           "",
           "## Reading",
           "",
           "The broad vocabulary (`OP_CAT`, `OP_SUBSTR/LEFT/RIGHT`, `OP_INVERT`, `OP_AND/OR/XOR`, "
           "`OP_MUL/DIV/MOD`, `OP_LSHIFT/RSHIFT`, `OP_2MUL/2DIV`) **is native to v0.1**. From the "
           "origin, the descendants simply made different selections: some disabled it, some "
-          "restored parts, some restored (nearly) all — a factual map of divergence, not a verdict.",
+          "restored parts, some restored nearly all — a factual map of divergence, not a verdict.",
           "",
-          "## Sources (documented columns; verify against each chain's node to execute)",
-          "- **BTC**: `bitcoin.core.script.DISABLED_OPCODES` (independent lib; matches Bitcoin Core).",
+          "## Sources",
+          "- **BTC**: `bitcoin.core.script.DISABLED_OPCODES` (independent lib; matches Bitcoin Core). **Executed.**",
           "- **BCH**: Bitcoin Cash *May 2018* upgrade (`OP_CAT`, `OP_AND/OR/XOR`, `OP_DIV`, `OP_MOD`; "
-          "`OP_SPLIT`).",
-          "- **BSV**: Bitcoin SV *Genesis* (2020-02), \"restore original Script\".",
-          "- **XEC** (eCash): fork of BCH (2021-11); inherits BCH's script rules for these opcodes.",
-          "",
-          "> BCH / BSV / XEC rows are **documented, not executed here** — running vectors against "
-          "their consensus needs their node software (a later step, applied equally to all).", ""]
+          "`OP_SPLIT`). Documented.",
+          "- **BSV**: Bitcoin SV *Genesis* (2020-02), \"restore original Script\" (minus `OP_2MUL/2DIV`), "
+          "cross-checked with `bitcoinx`. **Executed.**",
+          "- **XEC** (eCash): fork of BCH (2021-11); inherits BCH's script rules for these opcodes. Documented.",
+          ""]
     (out / "MATRIX.md").write_text("\n".join(L) + "\n", encoding="utf-8")
-    print(f"wrote MATRIX.md + conformance.json | BTC profile executed & consistent: "
-          f"{BTC_LIB is not None and xcheck_ok}")
+    print(f"wrote MATRIX.md + conformance.json | BTC xcheck={btc_xc} (python-bitcoinlib) | "
+          f"BSV xcheck={bsv_xc} (bitcoinx)")
     for r in rows:
         print(f"  {r['opcode']:12} v0.1={r['v0_1']:8} BTC={r['BTC']:9} BCH={r['BCH']:9} "
-              f"BSV={r['BSV']:9} XEC={r['XEC']:9} (btc-exec={r['btc_executed']})")
+              f"BSV={r['BSV']:9} XEC={r['XEC']:9} (btc={r['btc_executed']}, bsv={r['bsv_executed']})")
 
 
 if __name__ == "__main__":

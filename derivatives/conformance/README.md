@@ -17,15 +17,23 @@ position on which chain is "Bitcoin"; it maps divergence from the source, factua
   spec, applied to the same v0.1 vectors. Same treatment for all; columns are in
   fork-chronological order, which is **not** a ranking.
 
-### Independent cross-check ≠ ranking
+### Independent cross-checks ≠ ranking
 
 Where a chain's implementation is installable, its profile is additionally
-*executed* as a cross-check. Today that is true for exactly one chain — **BTC**
-(`python-bitcoinlib`) — so its documented profile was executed and confirmed
-(every broad-vocabulary opcode rejected, every control opcode runs). This is a
-rigor bonus reflecting **which library happened to be installable**, and the
-identical cross-check would be applied to BCH / BSV / XEC given their software. It
-does **not** elevate BTC above the others.
+*executed* as a cross-check — applied identically, a rigor bonus reflecting **which
+libraries happened to be installable**, not a preference. Two chains qualify today:
+
+- **BTC** — `python-bitcoinlib`: every broad-vocabulary opcode rejected via
+  `DISABLED_OPCODES`; control opcodes run. Profile **consistent** with execution.
+- **BSV** — `bitcoinx` (a BSV implementation): the profile was **executed and it
+  corrected our documentation** — BSV's Genesis "restore original Script" re-enables
+  the arithmetic/bitwise set **except `OP_2MUL` / `OP_2DIV`** (still `DisabledOpcode`
+  in `bitcoinx`), and `OP_SUBSTR/LEFT/RIGHT` don't exist (byte `0x7f` is `OP_SPLIT`).
+
+**BCH** and **XEC** remain documented-only — no BCH/eCash-specific interpreter was
+installable; the *same* standard applies to all. (As corroboration only: BCH's
+restored subset is a subset of BSV's executed-restored set, and its disabled set is
+covered by BTC's executed-disabled set — but that is not a BCH-specific run.)
 
 ## What it shows
 
@@ -38,21 +46,24 @@ parts, some restored (nearly) all. See `MATRIX.md` / `conformance.json`.
 
 ```bash
 python conformance.py     # -> MATRIX.md + conformance.json
-python -m pytest          # baseline executes; BTC profile cross-checked (skips if lib absent)
+python -m pytest          # baseline executes; BTC + BSV profiles cross-checked (skip if lib absent)
 ```
 
-`python-bitcoinlib` (optional) provides the independent BTC cross-check; the code
-points its OpenSSL at a local install best-effort and degrades gracefully if absent.
+Optional independent implementations: **`python-bitcoinlib`** (BTC cross-check; the
+code points its OpenSSL at a local install best-effort) and **`bitcoinx`** (BSV
+cross-check). Both degrade gracefully if absent — those tests simply skip.
 
 ## Honest boundary
 
-BCH / BSV / XEC rows are **documented, not executed here** — running vectors against
-their consensus needs their node software, a later step applied **equally** to every
-candidate. Placed at Tier 4 (interpretation) per `../../../common/AUTHORITY.md`.
+**BCH / XEC** rows are **documented, not executed here** — no BCH/eCash-specific
+interpreter was installable; running vectors against their consensus needs their node
+software, a later step applied **equally** to every candidate. Placed at Tier 4
+(interpretation) per `../../../common/AUTHORITY.md`. **BTC and BSV** are additionally
+executed (above).
 
 ## Sources
 
-- **BTC**: `bitcoin.core.script.DISABLED_OPCODES` (independent lib; matches Bitcoin Core).
-- **BCH**: Bitcoin Cash *May 2018* upgrade (`OP_CAT`, `OP_AND/OR/XOR`, `OP_DIV`, `OP_MOD`; `OP_SPLIT`).
-- **BSV**: Bitcoin SV *Genesis* (2020-02), "restore original Script".
-- **XEC** (eCash): fork of BCH (2021-11); inherits BCH's script rules for these opcodes.
+- **BTC**: `bitcoin.core.script.DISABLED_OPCODES` (independent lib; matches Bitcoin Core). **Executed.**
+- **BCH**: Bitcoin Cash *May 2018* upgrade (`OP_CAT`, `OP_AND/OR/XOR`, `OP_DIV`, `OP_MOD`; `OP_SPLIT`). Documented.
+- **BSV**: Bitcoin SV *Genesis* (2020-02), "restore original Script" **minus `OP_2MUL`/`OP_2DIV`**, cross-checked with `bitcoinx`. **Executed.**
+- **XEC** (eCash): fork of BCH (2021-11); inherits BCH's script rules for these opcodes. Documented.

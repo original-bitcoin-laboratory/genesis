@@ -118,9 +118,12 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
 - [x] **Descendant-conformance matrix** → `derivatives/conformance/` — **neutral,
   from the v0.1 origin**: v0.1 is the sole executed baseline / ground truth and every
   descendant (BTC, BCH, BSV, XEC) is treated identically via a documented rule-profile
-  (`preserved`/`disabled`/`restored`/`→OP_SPLIT`), **none privileged**. BTC's profile
-  is additionally cross-checked by an independent impl (`python-bitcoinlib`) — a
-  tooling bonus, not a ranking. MATRIX.md + JSON, 20 tests pass.
+  (`preserved`/`disabled`/`restored`/`→OP_SPLIT`), **none privileged**. **Two chains
+  cross-checked by independent execution** (applied equally, tooling not ranking):
+  BTC via `python-bitcoinlib`, BSV via `bitcoinx` — the BSV run **corrected** the
+  profile (Genesis restores the set **except `OP_2MUL`/`OP_2DIV`**, still disabled;
+  `0x7f`=`OP_SPLIT`). BCH/XEC documented-only (no installable interpreter). MATRIX.md
+  + JSON, 37 tests pass.
 - [ ] True JAN09-EXECUTED — **plan + binary staging ready**
   (`docs/R3_HISTORICAL_NODE.md`, `scripts/stage-jan09-binary.sh`; staged
   `bitcoin.exe` sha256 `fbcac071…` matches the manifest). Awaits an isolated-VM
