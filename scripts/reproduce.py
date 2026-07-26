@@ -31,7 +31,9 @@ SUITES = [
     ("conformance(descendant matrix, BTC+BSV executed)",           DERIV / "conformance"),
     ("nov08x     (NOV08 counterfactual + live network)",           DERIV / "nov08x"),
     ("jan09x     (released chain, full vocab + live network)",     DERIV / "jan09x"),
-    ("ledger     (UTXO ConnectInputs; transacting on the X-chains)", DERIV / "ledger"),
+    ("ledger     (UTXO ConnectInputs/ConnectBlock; transacting)",   DERIV / "ledger"),
+    ("market     (R6 commerce model: signatures + atoms reputation)", DERIV / "market"),
+    ("studio     (R7 script debugger / stack tracer)",              DERIV / "studio"),
 ]
 
 # (label, script, dir) — regenerate a committed artifact and confirm it still runs

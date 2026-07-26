@@ -98,7 +98,7 @@ def _hash(name: str, data: bytes) -> bytes:
     raise ScriptError(name)
 
 
-def run(script: list, checker=None) -> tuple[bool, list]:
+def run(script: list, checker=None, trace=None) -> tuple[bool, list]:
     """Execute a token list. Tokens: bytes (push) or an OP_ name string.
 
     Mirrors EvalScript: `ok` is False only on the structural `return false` paths
@@ -114,6 +114,8 @@ def run(script: list, checker=None) -> tuple[bool, list]:
     codesep = 0          # token index just after the most recent OP_CODESEPARATOR
     try:
         for pc, op in enumerate(script):
+            if trace is not None:                    # studio hook: stack state before this op
+                trace(pc, op, list(stack), list(altstack))
             fexec = all(vfexec)
             is_push = isinstance(op, (bytes, bytearray)) or op in _PUSH_NUM
             is_ifelse = op in ("OP_IF", "OP_NOTIF", "OP_ELSE", "OP_ENDIF")

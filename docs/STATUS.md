@@ -158,7 +158,20 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   `≤`); inputs validated by the v0.1 VerifySignature path (`model` EvalScript, full
   vocabulary) with real secp256k1 via `wallet`. A wallet payment settles on JAN09-X; a
   coin locked by an **`OP_CAT` hash-lock** (unspendable on BTC) is **spent + validated on
-  both X-chains**. **8 tests.** reproduce.py now 10 suites.
+  both X-chains**. Adds **`connect_block` (ConnectBlock)** — coinbase collects the block's
+  fees per the chain rule, atomic rollback on failure — and a **two-independent-ledgers**
+  test agreeing on a tx-carrying chain. **11 tests.**
+- [x] **Commerce subsystem executable model (R6)** → `derivatives/market/` (MODEL) — the
+  marketplace **runs**: `CProduct`/`CReview` **signed** over `GetSigHash` (`SER_SKIPSIG`)
+  and verified on real secp256k1 (tamper/wrong-key rejected); the **"atoms" web-of-trust**
+  reproduced exactly (`AddAtom` flow-through rate 2 / random atom / zero-never-propagates /
+  origin-propagates, `AddAtomsAndPropagate` two-frontier flood over `vLinksOut`). Off-chain
+  by design. **9 tests.**
+- [x] **Transaction Studio (R7) — script debugger** → `derivatives/studio/` (MODEL) — a
+  headless **stack tracer**: step any script through EvalScript, stack after every op +
+  verdict (structural-fail / ran-not-true / VALID), full vocabulary (watch `OP_CAT`/`OP_MUL`
+  run). Via a back-compat `trace` hook in `model/evalscript_model.run`. **5 tests.**
+  reproduce.py now **10 suites / 171 tests** (12/12 steps incl. artifact regeneration).
 - [~] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
   unmodified v0.1.0 `bitcoin.exe` (sha256 `fbcac071…`, verified pre-run) was run and
   **reconstructed the exact genesis block** — hash `000000000019d668…`, merkle

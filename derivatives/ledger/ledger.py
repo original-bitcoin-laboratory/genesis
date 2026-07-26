@@ -83,31 +83,62 @@ class Ledger:
         return sum(c.value for c in self.utxos.values())
 
     # -- ConnectInputs (spend validation) --------------------------------------
-    def connect_tx(self, tx: Tx, spent: list[Coin]):
-        """Validate + apply a transaction spending `spent` (one Coin per vin, in
-        order). tx.vin[i].script holds the signed/satisfying scriptSig bytes."""
-        if len(spent) != len(tx.vin):
-            raise LedgerError("input count mismatch")
+    def connect_tx(self, tx: Tx):
+        """Validate + apply a transaction. Inputs are resolved from `tx.vin`
+        (prevhash, n) against the UTXO set; `tx.vin[i].script` holds the satisfying
+        scriptSig bytes. Returns (txid, fee)."""
         value_in = 0
-        for i, coin in enumerate(spent):
-            key = (coin.txid, coin.n)
-            if key not in self.utxos:
+        spent_keys = []
+        for i, vin in enumerate(tx.vin):
+            key = (vin.prevhash, vin.n)
+            coin = self.utxos.get(key)
+            if coin is None:
                 raise LedgerError(f"input {i} missing or already spent (double-spend)")
             if coin.coinbase and (self.height - coin.height) < self.maturity:
                 raise LedgerError(f"input {i} spends immature coinbase "
                                   f"({self.height - coin.height} < {self.maturity})")
-            ss_tokens = parse(tx.vin[i].script)                # the satisfying scriptSig
-            if not verify_spend(ss_tokens, coin.spk, tx, i):   # VerifySignature (full vocabulary)
+            if not verify_spend(parse(vin.script), coin.spk, tx, i):   # VerifySignature (full vocab)
                 raise LedgerError(f"input {i} script/signature does not satisfy scriptPubKey")
             value_in += coin.value
+            spent_keys.append(key)
         value_out = sum(o.value for o in tx.vout)
         if value_in < value_out:
             raise LedgerError(f"inflation: inputs {value_in} < outputs {value_out}")
 
-        # apply: remove spent, add new outputs
-        for coin in spent:
-            del self.utxos[(coin.txid, coin.n)]
+        for key in spent_keys:
+            del self.utxos[key]
         tid = txid(tx)
         for n, o in enumerate(tx.vout):
             self.utxos[(tid, n)] = Coin(tid, n, o.value, parse(o.script), self.height)
         return tid, value_in - value_out                       # (txid, fee)
+
+    # -- ConnectBlock (coinbase + all txs, atomic) -----------------------------
+    def connect_block(self, coinbase_spk: list, txs: list | None = None, cb_claim: int | None = None):
+        """Connect a whole block: the non-coinbase `txs` (each already carrying its
+        signed scriptSigs), summing fees, then the coinbase whose value must satisfy
+        the chain's rule against subsidy+fees. Atomic: on any failure the UTXO set
+        and height are rolled back. Returns the coinbase tx."""
+        txs = txs or []
+        snapshot = dict(self.utxos)
+        saved_height = self.height
+        try:
+            subsidy = self.rules.get_block_value(self.height)      # at the pre-block best height
+            self.height += 1                                       # this block's height
+            fees = 0
+            for tx in txs:
+                _, fee = self.connect_tx(tx)                       # later txs may spend earlier ones
+                fees += fee
+            block_value = subsidy + fees
+            claim = block_value if cb_claim is None else cb_claim
+            if not self.rules.coinbase_ok(claim, block_value):
+                raise LedgerError(f"coinbase rule ({self.rules.coinbase_rule}): "
+                                  f"claim {claim} vs subsidy+fees {block_value}")
+            cb = Tx(1, [TxIn(ZERO, 0xFFFFFFFF, bytes([2, self.height & 0xFF]), 0xFFFFFFFF)],
+                    [TxOut(claim, assemble(coinbase_spk))], 0)
+            self.utxos[(txid(cb), 0)] = Coin(txid(cb), 0, claim, coinbase_spk,
+                                             self.height, coinbase=True)
+            return cb
+        except Exception:
+            self.utxos = snapshot
+            self.height = saved_height
+            raise
