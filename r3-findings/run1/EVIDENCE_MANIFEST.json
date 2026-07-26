@@ -4,7 +4,7 @@
   "run": "run1",
   "generated": "2026-07-26",
   "evidence_dir": "r3-evidence/run1 (gitignored)",
-  "file_count": 5,
+  "file_count": 11,
   "files": [
     {
       "path": "host/blk0001.dat",
@@ -25,6 +25,36 @@
       "path": "host/debug.log",
       "size": 5928,
       "sha256": "6810d665888610894cc067beb1f9f5dfc7a290ba9e2ada279c6a945a2cc2b8a2"
+    },
+    {
+      "path": "host/screenshots/Screenshot 2026-07-26 193214.png",
+      "size": 163262,
+      "sha256": "3bb525f143e485f5a750c5a3f2329ebe0941e33f0a7c365223a935fb0335a000"
+    },
+    {
+      "path": "host/screenshots/Screenshot 2026-07-26 193220.png",
+      "size": 262508,
+      "sha256": "382688c615c236453bff118415ed169b4ab1b1ef25cb433da3384d90fd1da551"
+    },
+    {
+      "path": "host/screenshots/Screenshot 2026-07-26 193228.png",
+      "size": 202749,
+      "sha256": "cf2a932e31a2a71e059efabf2be56f4367f9c2d820bef59512e42043e49a217a"
+    },
+    {
+      "path": "host/screenshots/Screenshot 2026-07-26 193242.png",
+      "size": 206367,
+      "sha256": "dabb9b9fad1ea6bf1287d19fd8fe6b1b645168dbaade2ecfb474010c6a71c7d4"
+    },
+    {
+      "path": "host/screenshots/Screenshot 2026-07-26 193254.png",
+      "size": 305584,
+      "sha256": "7f071d27e3413a606b8362c45e51b0d6c32d80157952ee24634e0f59a3242495"
+    },
+    {
+      "path": "host/screenshots/Screenshot 2026-07-26 193302.png",
+      "size": 160616,
+      "sha256": "312e53bc107a0d9b8f34fec01e78ec985e370a87816574f187e010a4856ea7c9"
     },
     {
       "path": "host/wallet.dat",

@@ -29,7 +29,7 @@ network were **not** completed on the host (see Divergences) and remain for a VM
 | 2 | Genesis **on disk** independently re-parses to the canonical hash | **PASS** | `host/blk0001.dat` → `29961184…` (293 B) | re-hashed by the lab, matches |
 | 3 | Wallet **generates a key/address** | **PASS** | `host/wallet.dat` → `3893f8ec…` | `mapKeys.size()=1`; addr `18YDsakgPomUc9ZZHyivxWmdTyke2L26j8` |
 | 4 | Block index persists best chain | **PASS** | `host/blkindex.dat` → `295cee74…` | `LoadBlockIndex(): hashBestChain=…19d6 height=0` |
-| 5 | Full original **GUI documented** | **PASS** | screenshots (operator) | 7 dialogs, incl. pay-to-IP + About |
+| 5 | Full original **GUI documented** | **PASS** | `host/screenshots/*.png` (6, hashed) | main + 5 dialogs; see below |
 | 6 | `/gen` mining produces block 1+ (coinbase matures at 100) | **deferred** | — | miner started; no `proof-of-work found` at capture (difficulty-1 grind) |
 | 7 | Two-node connect / relay / tx / reorg | **deferred** | — | needs 2 VMs; not attempted on host |
 
@@ -50,6 +50,20 @@ AddToBlockIndex: new best=000000000019d6  height=0
 and (b) our Python model, and I re-parsed `blk0001.dat` independently → block hash
 `000000000019d668…a8ce26f`, merkle `4a5e1e…deda33b`, coinbase = the Times headline.
 Live binary = PORT = MODEL.
+
+## GUI screenshots (full-screen, `host/screenshots/`, hashed in the manifest)
+
+Bytes stay under the gitignored `r3-evidence/run1/host/screenshots/`; SHA-256 short
+hashes below (full in `SHA256SUMS`). All six show `0 connections` and `1 blocks`.
+
+| File | Shows | sha256 |
+|---|---|---|
+| `…193214.png` | main window — address `18YDsakg…`, Balance 0.00, `1 blocks` | `3bb525f143e485f5…` |
+| `…193220.png` | **Send Coins** — pay-to-IP ("recipient's IP address … for online transfer") | `382688c615c23645…` |
+| `…193228.png` | Address Book (empty) | `cf2a932e31a2a71e…` |
+| `…193242.png` | Options — Transaction fee `0.00` | `dabb9b9fad1ea6bf…` |
+| `…193254.png` | **About** — "Bitcoin version 0.1.1 Alpha, © 2009 Satoshi Nakamoto", MIT/X11 + OpenSSL | `7f071d27e3413a60…` |
+| `…193302.png` | Options menu — **Generate Coins ✓** (miner enabled) | `312e53bc107a0d9b…` |
 
 ## Divergences / surprises (all source-consistent)
 
