@@ -54,5 +54,9 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
 - [x] File/class map for all 26 `src/` units → `inventory/SOURCE_INVENTORY.md`
   (noted `market.*` commerce + a dormant poker UI in `uibase`).
 - [x] NOV08 → JAN09 structural diff → `../../common/conformance/NOV08_JAN09_DIFF.md`.
-- [ ] Line-numbered function catalog for the consensus path
-  (`ConnectInputs → VerifyScript → EvalScript`) + per-opcode reachability (→ R4).
+- [x] Line-numbered consensus validation-path catalog →
+  `inventory/VALIDATION_PATH.md`: `ProcessBlock → CheckBlock → AcceptBlock →
+  AddToBlockIndex → ConnectBlock → ConnectInputs → VerifySignature → EvalScript`
+  with `src:line` anchors + consensus-constants table; flags height-based chain
+  selection (`main.cpp:1097`) and global-`nBestHeight` subsidy (`main.cpp:680`).
+- [ ] Executable per-opcode reachability / block-acceptance witnesses (→ R3–R4).
