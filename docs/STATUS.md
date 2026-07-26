@@ -7,11 +7,7 @@
 - [x] Whitepaper captured under `provenance/`.
 - [x] Canonical v0.1.0 archives fetched (Nakamoto Institute CDN) and verified.
 - [x] `.tgz` source tree extracted read-only + per-file manifest generated.
-- [ ] `.rar` tree diffed against the `.tgz` tree — **deferred**: `bitcoin-0.1.0.rar`
-      is a *solid* RAR, which needs `unrar`/`7z` (the Windows built-in
-      `bsdtar`/libarchive cannot read solid RAR). Byte-level provenance is already
-      complete — the rar's md5/sha1/sha256 match the canonical values — and the
-      sibling NOV08 edition's rar↔tgz trees were confirmed byte-identical.
+- [x] `.rar` tree extracted (7-Zip 26.02) and diffed against the `.tgz` tree.
 
 ### Verified archives (2026-07-26)
 
@@ -25,6 +21,11 @@ SHA-256 values match the 2012 Hal Finney recovery thread. Whitepaper matches
 (gitignored, never edited). Per-file hashes of the extracted tree — including the
 binary — are recorded in `manifests/SOURCE_MANIFEST.json` (bytes stay local under
 `extracted/`).
+
+The `.rar` and `.tgz` source trees are **byte-identical**: all 48 files match by
+SHA-256 — including `bitcoin.exe`, `script.cpp`, `script.h`, `market.cpp`, and
+`key.h` — independent confirmation that both canonical archives carry the same
+tree. (`bitcoin-0.1.0.rar` is a *solid* RAR, extracted with 7-Zip 26.02.)
 
 ## First finding — source inventory
 
