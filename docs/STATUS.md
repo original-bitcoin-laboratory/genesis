@@ -132,13 +132,17 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   seeded by signed reviews via `CReviewDB`). Every path classified operational/reachable/
   partial/dormant with `src:line` anchors; dormant bits = origin-atom seeding + product
   notifications (both commented) + `mapMyProducts` persistence (TODO).
-- [x] **NOV08-X — NOV08-Minimal (R8)** → `derivatives/nov08x/` (MODEL) — the counterfactual
-  **runs**: November's constitution on the lab's engines, headless. N-ORIG rules (source-
-  anchored): **100-coin subsidy** halving every 100k, **leading-zero-bits PoW**
-  (`MINPROOFOFWORK=20`), primitive **±1-bit retarget**, **exact-equality coinbase**,
-  `COIN=1e6`. `Nov08xNode` mines/validates a real chain; underpaid coinbase rejected;
-  **full opcode vocabulary live (nothing disabled)**. `PROVENANCE.json` (14 N-ORIG) +
-  `DIFFERENTIAL.md` vs JAN09. 14 tests. Design: `common/nov08x/DESIGN_LEDGER.md`.
+- [x] **NOV08-X (R8) — a live counterfactual network** → `derivatives/nov08x/` (MODEL).
+  November's constitution runs headlessly. N-ORIG rules (source-anchored): **100-coin
+  subsidy** halving every 100k, **leading-zero-bits PoW** (`MINPROOFOFWORK=20`, "ridiculously
+  easy for testing"), primitive **±1-bit retarget**, **exact-equality coinbase**, `COIN=1e6`.
+  `Nov08xNode` mines/validates a real chain; underpaid coinbase rejected; **full opcode
+  vocabulary live (nothing disabled)**. `net.py` mints the **NOV08-X genesis** (`00000f08…`,
+  20 leading-zero-bit PoW, experimental coinbase, 100-coin reward) + **network identity**
+  (magic `f00ba708`, port `18008`, addr `0x35`) and **two isolated nodes synchronise the
+  chain** over that magic (mainnet-framed messages refused). `PROVENANCE.json` (14 N-ORIG) +
+  `DIFFERENTIAL.md`. **20 tests.** Design: `common/nov08x/DESIGN_LEDGER.md`. Open: NOV08-Full
+  (walled-off interpretation).
 - [~] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
   unmodified v0.1.0 `bitcoin.exe` (sha256 `fbcac071…`, verified pre-run) was run and
   **reconstructed the exact genesis block** — hash `000000000019d668…`, merkle

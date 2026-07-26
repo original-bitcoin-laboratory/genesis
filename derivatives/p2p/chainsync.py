@@ -92,12 +92,15 @@ class Chain:
     """In-memory block index with a single best (main) chain, orphan holding area,
     a CBlockLocator generator, and height-based reorganisation."""
 
-    def __init__(self):
+    def __init__(self, pow_check=None):
         self.by_hash: dict[bytes, BlockIndex] = {}
         self.orphans: dict[bytes, tuple[bytes, int]] = {}     # hash -> (raw, nBits)
         self.orphans_by_prev: dict[bytes, list[bytes]] = {}
         self.genesis: bytes | None = None
         self.tip: bytes | None = None
+        # pluggable proof-of-work check (raw, nBits) -> bool; default JAN09 compact.
+        # NOV08-X passes its leading-zero-bits check here.
+        self._pow_check = pow_check or (lambda raw, nBits: pow_ok(raw, nBits))
 
     # -- construction ----------------------------------------------------------
     def add_genesis(self, raw: bytes, nBits: int) -> bytes:
@@ -116,9 +119,8 @@ class Chain:
         return typ == MSG_BLOCK and (h in self.by_hash or h in self.orphans)
 
     # -- CheckBlock (preliminary) ---------------------------------------------
-    @staticmethod
-    def check_block(raw: bytes) -> bool:
-        return pow_ok(raw, nbits_of(raw))          # PoW is the check we can enforce headlessly
+    def check_block(self, raw: bytes) -> bool:
+        return self._pow_check(raw, nbits_of(raw))  # PoW is the check we can enforce headlessly
 
     # -- ProcessBlock ----------------------------------------------------------
     def process_block(self, raw: bytes):
@@ -227,15 +229,16 @@ class Chain:
 # ---- a headless syncing node --------------------------------------------------
 
 class SyncNode:
-    def __init__(self, name: str, chain: Chain):
+    def __init__(self, name: str, chain: Chain, magic: bytes = MAGIC):
         self.name = name
         self.chain = chain
+        self.magic = magic                             # network identity (NOV08-X uses its own)
         self.log: list[str] = []
         self._peers: list[asyncio.StreamWriter] = []
         self.handshaked = asyncio.Event()
 
     async def _send(self, w, command, payload):
-        w.write(build_message(command, payload)); await w.drain()
+        w.write(build_message(command, payload, self.magic)); await w.drain()
 
     async def announce(self, items):
         for w in self._peers:
@@ -243,7 +246,7 @@ class SyncNode:
 
     async def handle(self, reader, writer, initiate: bool = False):
         self._peers.append(writer)
-        mr = MsgReader(reader)
+        mr = MsgReader(reader, self.magic)
         await self._send(writer, "version", version_payload())
         try:
             while True:

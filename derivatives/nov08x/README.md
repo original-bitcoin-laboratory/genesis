@@ -35,10 +35,31 @@ using the lab's own MODEL/PORT — carrying the **complete original opcode vocab
 - `consensus.py` — one parameterised engine (subsidy / PoW / retarget / coinbase).
 - `node.py` — `Nov08xNode`: mines + validates a chain under NOV08 rules (reuses
   `../p2p/chainsync` plumbing). `python node.py` mines three 100‑coin blocks.
+- `net.py` — **the live network**: mints the NOV08‑X genesis + identity and runs two
+  isolated nodes that synchronise the chain. `python net.py` mints the genesis and
+  syncs two nodes end‑to‑end.
 - `differential.py` — writes `DIFFERENTIAL.md` (NOV08‑X vs JAN09) + `PROVENANCE.json`.
-- `test_nov08x.py` — 14 tests: subsidy, PoW encoding, retarget, coinbase rule,
-  denomination, the node mining a real chain, an underpaid‑coinbase rejection, and
-  the full vocabulary executing.
+- `test_nov08x.py` / `test_net.py` — 20 tests: subsidy, PoW encoding, retarget,
+  coinbase rule, denomination, the node mining a real chain, an underpaid‑coinbase
+  rejection, the full vocabulary executing, and the two‑node network (below).
+
+## The live network (`net.py`)
+
+NOV08‑X now runs as an actual network, reusing the `../p2p/chainsync` sync path
+(version → getblocks → inv → getdata → block, orphan + height‑based reorg) with its
+**own identity** (all NEW‑EXP — never a NOV08 semantics change) and NOV08's
+leading‑zero‑bits PoW:
+
+| Item | NOV08‑X | vs |
+|---|---|---|
+| network magic | `f0 0b a7 08` | mainnet `f9 be b4 d9` |
+| default port | `18008` | `8333` |
+| address version | `0x35` | `0x00` |
+| genesis | freshly mined, 20 leading‑zero‑bit PoW, coinbase *"NOV08‑X lab chain: 15 Nov 2008 pre‑release, not money"*, 100‑coin reward | JAN09 `000000000019d668…` |
+
+A mainnet‑framed message is refused by a NOV08‑X reader, and two nodes with only the
+genesis + the seeded chain synchronise to the same tip — a *live* counterfactual net,
+provably isolated from any historical or live chain.
 
 ## Run
 
@@ -50,9 +71,9 @@ python -m pytest           # 14 passed
 
 ## Boundary
 
-This is **NOV08‑Minimal** — the monetary + PoW + coinbase constitution, executed and
-differentially tested. Still open (per the ledger): mint the NOV08‑X **genesis +
-network identity** (new magic/ports/address version) and bring up two isolated
-nodes; and the interpretive **NOV08‑Full**, which stays walled off as speculation.
-It is **not** recovered history and **not** "true Bitcoin" — a new experimental
-descendant, treated as neutrally as any other.
+**NOV08‑Minimal + the live network are done**: the monetary + PoW + coinbase
+constitution executes, differentially tested against JAN09, and two isolated nodes
+synchronise a NOV08‑X chain under a distinct network identity. Still open (per the
+ledger): the interpretive **NOV08‑Full** completion, which stays walled off as
+speculation. NOV08‑X is **not** recovered history and **not** "true Bitcoin" — a new
+experimental descendant, treated as neutrally as any other.

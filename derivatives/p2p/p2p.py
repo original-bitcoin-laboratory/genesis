@@ -32,18 +32,19 @@ def dsha256(b: bytes) -> bytes:
 
 # ---- message framing (CMessageHeader: magic|command|size, no checksum) --------
 
-def build_message(command: str, payload: bytes) -> bytes:
+def build_message(command: str, payload: bytes, magic: bytes = MAGIC) -> bytes:
     cmd = command.encode().ljust(12, b"\x00")
-    return MAGIC + cmd + _le(len(payload), 4) + payload
+    return magic + cmd + _le(len(payload), 4) + payload
 
 
 class MsgReader:
-    def __init__(self, reader: asyncio.StreamReader):
+    def __init__(self, reader: asyncio.StreamReader, magic: bytes = MAGIC):
         self.r = reader
+        self.magic = magic
 
     async def read(self):
         hdr = await self.r.readexactly(20)                 # 4 + 12 + 4
-        if hdr[:4] != MAGIC:
+        if hdr[:4] != self.magic:
             raise ValueError("bad magic")
         command = hdr[4:16].rstrip(b"\x00").decode("latin-1")
         size = int.from_bytes(hdr[16:20], "little")
