@@ -53,7 +53,8 @@ class Rules:
                 subsidy //= 2
                 i += self.halving
         else:                                      # JAN09 main.cpp:680 — bit shift
-            subsidy >>= (best_height // self.halving)
+            # C++ integer division truncates toward zero; nBestHeight=-1 (genesis) -> 0
+            subsidy >>= (max(0, best_height) // self.halving)
         return subsidy + fees
 
     # ---- proof-of-work encoding ----------------------------------------------

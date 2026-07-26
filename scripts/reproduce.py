@@ -29,7 +29,8 @@ SUITES = [
     ("wallet     (SelectCoins / CreateTransaction)",               DERIV / "wallet"),
     ("persist    (CDiskBlockIndex save/reload)",                    DERIV / "persist"),
     ("conformance(descendant matrix, BTC+BSV executed)",           DERIV / "conformance"),
-    ("nov08x     (NOV08-Minimal counterfactual)",                  DERIV / "nov08x"),
+    ("nov08x     (NOV08 counterfactual + live network)",           DERIV / "nov08x"),
+    ("jan09x     (released chain, full vocab + live network)",     DERIV / "jan09x"),
 ]
 
 # (label, script, dir) — regenerate a committed artifact and confirm it still runs

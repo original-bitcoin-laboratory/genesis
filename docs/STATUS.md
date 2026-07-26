@@ -143,6 +143,14 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   chain** over that magic (mainnet-framed messages refused). `PROVENANCE.json` (14 N-ORIG) +
   `DIFFERENTIAL.md`. **20 tests.** Design: `common/nov08x/DESIGN_LEDGER.md`. Open: NOV08-Full
   (walled-off interpretation).
+- [x] **JAN09-X (R8) — released chain, full vocabulary, isolated** → `derivatives/jan09x/`
+  (MODEL) — the symmetric twin. Runs the **released v0.1.0 constitution** (COIN=1e8, 50-coin
+  subsidy, 210k halving, 10-min, compact PoW, `≤` coinbase) with the **full vocabulary
+  re-opened**: `script_full.py` **re-enables `OP_NOTEQUAL`** (the one functional opcode v0.1
+  disabled, script.cpp:486) as byte-level `!=`, disclosed NEW-EXP **with Satoshi's
+  malleability caveat** — tests reproduce the `0x01 != 0x0001` footgun. Own identity (magic
+  `f00ba709`, port 18009, addr 0x36, genesis message), two isolated nodes sync (compact PoW).
+  **13 tests.** Together nov08x+jan09x answer the counterfactual both ways.
 - [~] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
   unmodified v0.1.0 `bitcoin.exe` (sha256 `fbcac071…`, verified pre-run) was run and
   **reconstructed the exact genesis block** — hash `000000000019d668…`, merkle
