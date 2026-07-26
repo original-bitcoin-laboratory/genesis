@@ -77,9 +77,15 @@ verified by `derivatives/r3/test_mini_ircd.py`.)
 | 6 | Balances / UTXO change as expected | wallet balances, `debug.log` |
 | 7 | (opt.) Reorg: mine competing blocks on each side, reconnect | `debug.log` reorg lines |
 
-For each, record: SHA-256 of `blkindex.dat`/`blk0001.dat`, the `debug.log`
-excerpt, and a screenshot. Store under `derivatives/r3-evidence/<date>/` (gitignored
-bytes; commit only a manifest + written findings).
+Workflow: drop the captured artifacts (`debug.log`, `blk*.dat`, `blkindex.dat`,
+screenshots) under `r3-evidence/<run>/` (gitignored — bytes never committed), then
+
+    python scripts/capture-evidence.py --run <run>
+
+hashes them into the **committed** `r3-findings/<run>/`: an `EVIDENCE_MANIFEST.json`
+(each file's SHA-256, evidence level `JAN09-EXECUTED`) plus a `FINDINGS.md` skeleton
+from `docs/R3_EVIDENCE_TEMPLATE.md`. Fill in the findings and commit them — the
+results re-enter the repo as hashes + written conclusions, not bytes.
 
 ## Important framing
 
