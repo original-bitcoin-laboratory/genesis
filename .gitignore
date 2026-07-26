@@ -20,6 +20,7 @@
 /derivatives/port/*.exe
 /derivatives/port/*.o
 /derivatives/port/*_out.txt
+/derivatives/port/scenario.txt
 *.log
 __pycache__/
 .pytest_cache/

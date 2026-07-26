@@ -44,3 +44,18 @@ export PATH="/c/msys64/mingw64/bin:$PATH"   # for libcrypto DLL at runtime
 ```
 
 Build artifacts (`port.exe`, `cxx_out.txt`, `py_out.txt`) are gitignored.
+
+## Other harnesses in this directory
+
+- **`run.sh`** — opcode differential (numeric/splice/bitwise + control flow +
+  stack/alt-stack), 63 vectors, C++ port vs Python MODEL → IDENTICAL.
+- **`run_sighash.sh`** (`sighash.cpp` ↔ `../model/tx_sighash.py`) — `CTransaction`
+  serialization + `SignatureHash` over a fixed tx; 12 (nIn × SIGHASH) 32-byte
+  digests → IDENTICAL.
+- **`run_checksig.sh`** (`checksig_e2e.cpp` ↔ `verify_scenario.py`) — real
+  secp256k1 (OpenSSL `EC_KEY`, same API as v0.1 `key.h`): C++ generates keys,
+  signs the tx, and self-checks `OP_CHECKSIG` + a 2-of-3 escrow
+  `OP_CHECKMULTISIG` (incl. the v0.1 off-by-one dummy); it writes `scenario.txt`,
+  which the **Python MODEL interpreter independently verifies**. Cross-language
+  proof that both compute the same sighash and compatible ECDSA.
+

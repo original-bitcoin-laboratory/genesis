@@ -59,14 +59,20 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   AddToBlockIndex → ConnectBlock → ConnectInputs → VerifySignature → EvalScript`
   with `src:line` anchors + consensus-constants table; flags height-based chain
   selection (`main.cpp:1097`) and global-`nBestHeight` subsidy (`main.cpp:680`).
-- [x] Executable opcode-semantics **MODEL** harness → `derivatives/model/`
-  (24 vectors pass): runnable cross-check of the disabled-in-BTC vocabulary
-  (`OP_CAT`/`OP_MUL`/`OP_DIV`/`OP_LSHIFT`/`OP_INVERT`/…) + the sign-magnitude
-  number codec. Evidence level **MODEL**.
-- [x] C++/OpenSSL **PORT** harness → `derivatives/port/` (evidence level **PORT**):
-  runs the opcode bodies against the *real* OpenSSL `BN_*` engine (with the
-  `bignum.h` codec; `CBigNum` ported to OpenSSL 3.x opaque `BIGNUM`). `run.sh`
-  differential-tests it vs the MODEL over 39 vectors → **IDENTICAL** (incl. all
-  signed `DIV`/`MOD`/`RSHIFT`/`2DIV`). Built with MSYS2 g++ 16.1.0 + OpenSSL 3.6.3.
-- [ ] True JAN09-EXECUTED (unmodified `bitcoin.exe` in an isolated VM, R3),
-  ECDSA (`OP_CHECKSIG`/`OP_CHECKMULTISIG`), and block-acceptance witnesses.
+- [x] Executable **MODEL** (`derivatives/model/`, Python) and **PORT**
+  (`derivatives/port/`, C++/OpenSSL) interpreters — differential-tested against
+  each other. Built with MSYS2 g++ 16.1.0 + OpenSSL 3.6.3. Coverage:
+  - Numeric/splice/bitwise vocabulary (incl. the disabled-in-BTC `OP_CAT`/`OP_MUL`/
+    `OP_DIV`/`OP_LSHIFT`/`OP_INVERT`/…) — PORT uses the **real OpenSSL `BN_*`**
+    engine + `bignum.h` codec (`CBigNum` ported to OpenSSL 3.x opaque `BIGNUM`).
+  - Control flow (`OP_IF/NOTIF/ELSE/ENDIF/VERIFY/RETURN`), alt-stack, full stack
+    ops. `run.sh` differential over **63 vectors → IDENTICAL**.
+  - `CTransaction` + **`SignatureHash`** (pre-BIP143) — `run_sighash.sh`
+    differential over **12 (nIn × SIGHASH) digests → IDENTICAL** (pinned).
+  - **`OP_CHECKSIG` / `OP_CHECKMULTISIG` on real secp256k1** — `run_checksig.sh`:
+    C++ signs + self-checks (8/8: P2PK + 2-of-3 escrow/arbitration; tamper /
+    wrong-key / wrong-order rejected) and the **Python interpreter independently
+    verifies the C++-signed scenarios** (4/4). Model pytest: 44.
+  - Evidence level **MODEL** (Python) / **PORT** (C++ + real OpenSSL EC/BN).
+- [ ] True JAN09-EXECUTED (unmodified `bitcoin.exe` in an isolated VM, R3);
+  byte-level `CScript` parser; block-acceptance witnesses.

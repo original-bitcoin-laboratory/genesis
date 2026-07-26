@@ -122,6 +122,55 @@ def demo_tx():
     return Tx(1, [in0, in1], [out0, out1], 0), spk0
 
 
+class SigChecker:
+    """Signature checker for evalscript_model's OP_CHECKSIG/OP_CHECKMULTISIG.
+
+    Holds the transaction context and the scriptCode (the scriptPubKey being
+    spent). check_sig recomputes SignatureHash and verifies the DER signature on
+    secp256k1 via `cryptography`. Simplification: it uses the configured
+    scriptCode rather than a byte-derived subscript (a standard single-scriptCode
+    spend), consistent with the C++ port's CheckSig.
+    """
+
+    def __init__(self, tx: Tx, n_in: int, script_code: bytes):
+        self.tx, self.n_in, self.script_code = tx, n_in, script_code
+
+    def check_sig(self, sig, pubkey, subscript=None) -> bool:
+        from cryptography.exceptions import InvalidSignature
+        from cryptography.hazmat.primitives import hashes
+        from cryptography.hazmat.primitives.asymmetric import ec, utils
+        sig = bytes(sig)
+        if not sig:
+            return False
+        hash_type, der = sig[-1], sig[:-1]
+        h = signature_hash(self.script_code, self.tx, self.n_in, hash_type)
+        try:
+            pub = ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256K1(), bytes(pubkey))
+            pub.verify(der, h, ec.ECDSA(utils.Prehashed(hashes.SHA256())))
+            return True
+        except (InvalidSignature, ValueError):
+            return False
+
+
+def new_key():
+    """Return (private_key, SEC-uncompressed pubkey bytes) on secp256k1."""
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ec
+    priv = ec.generate_private_key(ec.SECP256K1())
+    sec = priv.public_key().public_bytes(
+        serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)
+    return priv, sec
+
+
+def sign_input(priv, tx: Tx, n_in: int, script_code: bytes, hash_type: int = SIGHASH_ALL) -> bytes:
+    """Sign the sighash and append the 1-byte hash type (as CKey::Sign does)."""
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import ec, utils
+    h = signature_hash(script_code, tx, n_in, hash_type)
+    der = priv.sign(h, ec.ECDSA(utils.Prehashed(hashes.SHA256())))
+    return der + bytes([hash_type])
+
+
 def report() -> None:
     tx, script_code = demo_tx()
     types = [("0x01", 0x01), ("0x02", 0x02), ("0x03", 0x03),
