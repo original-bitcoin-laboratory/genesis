@@ -390,3 +390,14 @@ def test_orphan_path_difficulty_is_validated_on_connect(tmp_path):
     assert block_hash(b2) in n.state.invalid                          # forged-difficulty orphan rejected
     assert n.state.tip == block_hash(b1) and n.state.height == 1
     n.store.close()
+
+
+# ---- performance harness (measures where validation time goes) --------------
+
+def test_bench_runs_and_reports_throughput():
+    import bench
+    m = bench.run(n_blocks=12, spends_per_block=2, reps=50)
+    assert m["blocks"] == 12                                          # the whole chain validated
+    assert m["txs"] >= 12 and m["sigs"] > 0                           # it carried real signed spends
+    assert m["blocks_per_s"] > 0 and m["sigs_per_s"] > 0
+    assert m["sig_us"] > 0                                            # a per-signature cost was measured

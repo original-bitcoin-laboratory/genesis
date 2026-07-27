@@ -32,10 +32,9 @@ sys.path.insert(0, str(_HERE))
 
 import cscript                                              # noqa: E402
 from spend import verify_spend                             # noqa: E402
-from tx_sighash import dsha256, serialize as ser_tx        # noqa: E402
 
 from difficulty import expected_bits                       # noqa: E402
-from fullnode import is_coinbase, parse_block              # noqa: E402
+from fullnode import is_coinbase, parse_block_with_txids   # noqa: E402
 
 COINBASE_MATURITY = 100
 
@@ -49,10 +48,6 @@ class Coin:
 
     def __init__(self, value, spk, height, coinbase):
         self.value, self.spk, self.height, self.coinbase = value, spk, height, coinbase
-
-
-def _txid(tx) -> bytes:
-    return dsha256(ser_tx(tx))
 
 
 class ChainState:
@@ -106,7 +101,7 @@ class ChainState:
     def _connect(self, h: bytes):
         idx = self.chain.by_hash[h]
         height = idx.height
-        txs = parse_block(idx.raw)
+        txs = parse_block_with_txids(idx.raw)                # [(tx, txid)] — txid from parsed bytes
         is_genesis = h == self.chain.genesis
         if not is_genesis and idx.nBits != expected_bits(self.chain, idx.prev, self.rules, self.min_bits):
             raise InvalidBlock("wrong difficulty")           # authoritative — also covers orphan reconnection
@@ -114,9 +109,9 @@ class ChainState:
         spent_prior: list = []                               # (outpoint, coin) pre-block coins consumed
         fees = 0
         try:
-            for tx in txs:
-                tid = _txid(tx)
-                if not is_coinbase(tx):
+            for tx, tid in txs:
+                coinbase = is_coinbase(tx)
+                if not coinbase:
                     value_in = 0
                     for i, vin in enumerate(tx.vin):
                         key = (vin.prevhash, vin.n)
@@ -139,12 +134,12 @@ class ChainState:
                     fees += value_in - value_out
                 for n, o in enumerate(tx.vout):
                     k = (tid, n)
-                    c = Coin(o.value, cscript.parse(o.script), height, is_coinbase(tx))
+                    c = Coin(o.value, cscript.parse(o.script), height, coinbase)
                     self.utxo[k] = c
                     created[k] = c
             if not is_genesis:
                 subsidy = self.rules.get_block_value(height - 1)
-                claimed = sum(o.value for o in txs[0].vout)
+                claimed = sum(o.value for o in txs[0][0].vout)
                 if not self.rules.coinbase_ok(claimed, subsidy + fees):
                     raise InvalidBlock("coinbase value violates the chain rule")
         except InvalidBlock:                                 # atomic: revert partial mutations

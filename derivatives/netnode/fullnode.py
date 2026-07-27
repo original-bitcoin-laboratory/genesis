@@ -21,7 +21,7 @@ Evidence: MODEL / NEW‑EXP.
 from __future__ import annotations
 
 from chainsync import ZERO, merkle_root, nbits_of, prev_hash, read_compact  # noqa: F401
-from tx_sighash import Tx, TxIn, TxOut
+from tx_sighash import Tx, TxIn, TxOut, dsha256
 
 from difficulty import expected_bits
 
@@ -59,6 +59,21 @@ def parse_block(raw: bytes):
         tx, i = parse_tx(body, i)
         txs.append(tx)
     return txs
+
+
+def parse_block_with_txids(raw: bytes):
+    """Like `parse_block`, but also returns each tx's **txid computed from the exact parsed bytes**
+    — `[(tx, txid), ...]`. This avoids re-serializing every transaction just to hash it (the txid
+    is `dsha256` of the canonical serialization, and any block that passes the merkle check has
+    `serialize(parsed_tx) == the parsed bytes`), a real saving on the block-connect hot path."""
+    body = raw[80:]
+    ntx, i = read_compact(body, 0)
+    out = []
+    for _ in range(ntx):
+        start = i
+        tx, i = parse_tx(body, i)
+        out.append((tx, dsha256(body[start:i])))
+    return out
 
 
 def is_coinbase(tx: Tx) -> bool:

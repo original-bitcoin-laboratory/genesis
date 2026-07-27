@@ -74,7 +74,24 @@ python -m netnode ctl --rpc 18332 send <ADDRESS> <AMOUNT> [FEE]
 The wallet earns each block's coinbase; a coinbase is spendable after maturity. **Not money** — the
 wallet stores experimental testnet keys for a valueless chain.
 
-## Tests (`test_netnode.py` + `test_chainstate.py` + `test_mempool.py` + `test_wallet.py`, 52)
+## Performance — where validation time goes ([`bench.py`](bench.py))
+
+Before rewriting anything in C++/Rust you measure where the time goes. `python bench.py` builds a
+chain of real **signed** transactions and times validating it from scratch:
+
+```bash
+python bench.py            # ~300 blocks; prints blocks/sec, tx/sec, sigs/sec + the dominant cost
+```
+
+The finding is consistent in **shape** (the ratio is machine‑independent even though the absolute
+rate isn't): **~95% of validation time is ECDSA signature verification.** On a typical dev machine
+that is on the order of ~1,000+ blocks/sec and a few thousand signature‑verifications/sec, at
+~0.3–0.4 ms per `verify_spend`. So a faster node's real lever is a **native verifier (libsecp256k1)
+/ batch verification**, *not* rewriting the Python bookkeeping — the pure‑Python node keeps up until
+a chain is large or high‑throughput. (This session also made block‑connect avoid re‑serializing
+every transaction to hash it — txids now come straight from the parsed bytes.)
+
+## Tests (`test_netnode.py` + `test_chainstate.py` + `test_mempool.py` + `test_wallet.py`, 53)
 
 The wire rejects a tampered checksum / bad magic / oversize; the store ignores a crash‑truncated
 tail; **two nodes sync over real TCP**; a node **reloads its chain from disk**; the retarget
@@ -98,7 +115,7 @@ payment owned by the recipient**, and refuses an overspend; and the RPC control 
 `getinfo` / `getbalance` / `getnewaddress` and **builds + submits** a payment via `send`.
 
 ```bash
-python -m pytest        # 52 passed
+python -m pytest        # 53 passed
 python -m netnode --chain jan09x --datadir ./d --no-listen --mine   # watch it mine
 ```
 
@@ -112,8 +129,9 @@ reorgs safely, a validating **mempool** relays real transactions into assembled 
 money or "eternal." The difficulty *floor* exists (`--min-difficulty`) but **defaults to easy** (a
 real one is an operator job); the RPC is **loopback‑only and unauthenticated**; the wallet holds
 **experimental keys for a valueless chain.** Still ahead (see the scope doc): running at a **real
-difficulty**, GPG‑**signed** builds, a **security review**, a **faster node** (C++/Rust) if Python
-can't keep up, and — the part no code delivers — **other operators.** A chain is only "eternal" once
+difficulty**, GPG‑**signed** builds, a **security review**, a **faster node** if Python can't keep
+up (and [`bench.py`](bench.py) says the lever is a native signature verifier, not a rewrite of the
+bookkeeping), and — the part no code delivers — **other operators.** A chain is only "eternal" once
 independent people choose to keep running it. **Not money.**
 
 Provenance: consensus is `chainsync.Chain` (faithful to v0.1); the transport, persistence, and CLI
