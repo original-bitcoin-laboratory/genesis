@@ -57,6 +57,8 @@ or live Bitcoin chain.
 | `--advertise HOST` | your **reachable** IP, gossiped so peers can dial you back |
 | `--mine` | produce blocks |
 | `--min-difficulty NBITS` | network difficulty floor as compact‑nBits hex (e.g. `0x1f00ffff`), harder than the easy genesis so a live network requires real work. **All nodes on a network must use the same value.** |
+| `--wallet` | enable an experimental wallet in the datadir; a mining node earns its coinbase to it |
+| `--rpc [HOST:]PORT` | start a **localhost** control interface on this port (see below). Loopback only, no auth — never expose it |
 | `--version` | print version and exit |
 
 ## Running a public seed
@@ -77,10 +79,31 @@ The node carries **real transactions**, not just coinbases. A received `tx` is v
 the node's UTXO (no double‑spend, script satisfied, no inflation, coinbase maturity), pooled, and
 relayed onward (`inv`→`getdata`→`tx`); a mining node **assembles pooled transactions** into its
 next block after the coinbase, which then claims the block subsidy **plus** the transactions' fees.
-Building and signing a spend is a **programmatic** step today — construct a signed transaction with
-the lab's `tx_sighash` / `spend` helpers and hand its raw bytes to `Node.submit_tx(raw)`, which
-validates it into the mempool and broadcasts it. (A wallet CLI is deliberately out of scope while
-this is valueless; see [`../wallet/`](../wallet/) for the SelectCoins / CreateTransaction model.)
+
+## Wallet & control (RPC)
+
+Run a mining node with a wallet and a **localhost** control interface:
+
+```bash
+python -m netnode --chain jan09x --datadir ./data --no-listen --mine --wallet --rpc 127.0.0.1:18332
+```
+
+The node earns each block's coinbase to a wallet in `./data/wallet.json` (it prints a receive
+address on startup). A coinbase becomes spendable after **maturity**. Drive the node from another
+shell with the `ctl` client:
+
+```bash
+python -m netnode ctl --rpc 18332 getinfo                # chain / height / peers / mempool / money:false
+python -m netnode ctl --rpc 18332 getnewaddress          # a fresh receive address (a pubkey, hex)
+python -m netnode ctl --rpc 18332 getbalance             # spendable (mature) balance
+python -m netnode ctl --rpc 18332 send <ADDRESS> <AMOUNT> [FEE]   # build + sign + broadcast; prints the txid
+```
+
+An **address is a public key** (bare P2PK, as v0.1 pays its coinbase). The RPC is **loopback‑only
+and unauthenticated** — it is for a trusted local machine; do not bind it to a public interface or
+forward its port. The wallet holds **experimental keys for a valueless chain** — not a secure store
+for anything of value. **Not money.** (The faithful wallet model this builds on:
+[`../wallet/`](../wallet/).)
 
 ## Troubleshooting
 

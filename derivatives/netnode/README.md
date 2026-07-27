@@ -1,12 +1,13 @@
 # netnode — a hardened, joinable, validating, transacting node for the X‑chains (Path B)
 
 **Evidence: MODEL / NEW‑EXP. Not money. Not production‑secure.** This is **Stages 1–4 + a full‑node
-core** from the plan in
+core + a wallet** from the plan in
 [`../../docs/PUBLIC_TESTNET_SCOPE.md`](../../docs/PUBLIC_TESTNET_SCOPE.md): turning the MODEL's
 localhost demo into something **two people on different machines can run, sync, pace, discover
-peers on, validate, and transact on.** The **validated UTXO chainstate is the sole authority** for
-what the node serves and mines, and a validating **mempool** carries real transactions between
-peers — not just coinbases.
+peers on, validate, transact on, and *use*.** The **validated UTXO chainstate is the sole
+authority** for what the node serves and mines, a validating **mempool** carries real transactions
+between peers, and a **wallet + a localhost control interface** let a person mine to a self‑custodied
+key, check a balance, and send a payment — without writing a line of Python.
 
 It keeps the lab's **faithful consensus** ([`../p2p/chainsync.py`](../p2p/chainsync.py) `Chain`:
 validation, height‑based reorg, orphans, block‑locator) and wraps it in the **adversarial‑conditions
@@ -25,6 +26,7 @@ transport** a public node needs — the "rewrite for adversarial conditions," no
 | Difficulty | fixed genesis (easy) | **retarget** — mine at the target, **reject** wrong‑nBits blocks on the direct path *and* authoritatively **on connect** (covers the orphan path); optional **`--min-difficulty` floor** for real work above the easy genesis ([`difficulty.py`](difficulty.py)) |
 | Validation | PoW only | **beyond PoW** — structure/merkle/difficulty ([`fullnode.py`](fullnode.py)) + a **validated UTXO chainstate** that is the **sole authority** for serving/mining — no double‑spends / bad scripts / inflation / immature‑coinbase / over‑claimed coinbase / wrong‑difficulty, reorg‑safe with abort‑on‑invalid ([`chainstate.py`](chainstate.py)) |
 | Transactions | — | a validating **mempool** ([`mempool.py`](mempool.py)) — `tx` messages validated, pooled, and **relayed** (`inv`→`getdata`→`tx`), with an **orphan buffer** (retried when the parent arrives) and **fee‑rate eviction** when full; the miner assembles pooled txs after the coinbase (claiming subsidy + fees) and drops them once mined |
+| Wallet | — | a persistent **wallet** ([`nodewallet.py`](nodewallet.py), on the faithful v0.1 wallet MODEL) — a mining node **earns its coinbase** to it, and it **builds + signs payments** (SelectCoins / CreateTransaction), plus a localhost **control interface** ([`rpc.py`](rpc.py)) — `getinfo` / `getnewaddress` / `getbalance` / `send` via `python -m netnode ctl` |
 | Discovery | manual only | **`addr` gossip + auto‑connect** — one seed address meshes you in |
 | Run it | a pytest scenario | a **CLI** anyone can run (`python -m netnode`) |
 
@@ -52,7 +54,27 @@ live chain.
 **Operator guide → [`RUN.md`](RUN.md)** (seeds, ports, NAT, troubleshooting).
 **Security posture + known gaps → [`SECURITY.md`](SECURITY.md)** — read it before exposing a node.
 
-## Tests (`test_netnode.py` + `test_chainstate.py` + `test_mempool.py`, 45)
+## Use it (wallet + control)
+
+Mine to your own wallet and open a **localhost** control interface:
+
+```bash
+python -m netnode --chain jan09x --datadir ./data --no-listen --mine --wallet --rpc 127.0.0.1:18332
+```
+
+Then drive it from another shell (loopback only — do **not** expose the RPC port):
+
+```bash
+python -m netnode ctl --rpc 18332 getinfo
+python -m netnode ctl --rpc 18332 getnewaddress          # a fresh receive address (a pubkey)
+python -m netnode ctl --rpc 18332 getbalance             # spendable (mature) balance
+python -m netnode ctl --rpc 18332 send <ADDRESS> <AMOUNT> [FEE]
+```
+
+The wallet earns each block's coinbase; a coinbase is spendable after maturity. **Not money** — the
+wallet stores experimental testnet keys for a valueless chain.
+
+## Tests (`test_netnode.py` + `test_chainstate.py` + `test_mempool.py` + `test_wallet.py`, 52)
 
 The wire rejects a tampered checksum / bad magic / oversize; the store ignores a crash‑truncated
 tail; **two nodes sync over real TCP**; a node **reloads its chain from disk**; the retarget
@@ -70,25 +92,29 @@ accepts a valid spend (recording its **fee**), rejects a **double‑spend / infl
 / immature‑coinbase spend**, allows and **orders a chained unconfirmed spend** (parent before
 child), **holds an orphan tx and promotes it when the parent arrives**, **evicts by fee rate** when
 full, **drops a mined tx** on reconcile, the miner **assembles a pooled tx into a block** after
-which it leaves the pool, and a **tx relays over real TCP** into a second node's mempool.
+which it leaves the pool, and a **tx relays over real TCP** into a second node's mempool. The wallet
+**persists its keys** across restart, **earns its coinbase** (respecting maturity), **builds a
+payment owned by the recipient**, and refuses an overspend; and the RPC control socket answers
+`getinfo` / `getbalance` / `getnewaddress` and **builds + submits** a payment via `send`.
 
 ```bash
-python -m pytest        # 45 passed
+python -m pytest        # 52 passed
 python -m netnode --chain jan09x --datadir ./d --no-listen --mine   # watch it mine
 ```
 
 ## Honest boundary — what this is *not*
 
 The X‑chains are now **joinable, self‑pacing, self‑discovering, resource‑bounded, fully‑validating,
-and transacting**: a validated UTXO chainstate (the **sole authority** for what the node serves and
-mines) rejects double‑spends / bad scripts / inflation / over‑claimed coinbases and reorgs safely,
-and a validating **mempool** relays real transactions and feeds them into assembled blocks — but
-this is *not* safe as money or "eternal." The difficulty *floor* now exists (`--min-difficulty`),
-but it **defaults to easy** and choosing/coordinating a real one is an operator job. Still ahead
-(see the scope doc): running at a **real difficulty**, GPG‑**signed** builds, a **security review**,
-a **faster node** (C++/Rust) if Python can't keep up, and — the part no code delivers — **other
-operators.** A chain is only "eternal" once independent people choose to keep running it. **Not
-money.**
+transacting, and usable**: a validated UTXO chainstate (the **sole authority** for what the node
+serves and mines) rejects double‑spends / bad scripts / inflation / over‑claimed coinbases and
+reorgs safely, a validating **mempool** relays real transactions into assembled blocks, and a
+**wallet + localhost RPC** let a person mine, check a balance, and send — but this is *not* safe as
+money or "eternal." The difficulty *floor* exists (`--min-difficulty`) but **defaults to easy** (a
+real one is an operator job); the RPC is **loopback‑only and unauthenticated**; the wallet holds
+**experimental keys for a valueless chain.** Still ahead (see the scope doc): running at a **real
+difficulty**, GPG‑**signed** builds, a **security review**, a **faster node** (C++/Rust) if Python
+can't keep up, and — the part no code delivers — **other operators.** A chain is only "eternal" once
+independent people choose to keep running it. **Not money.**
 
 Provenance: consensus is `chainsync.Chain` (faithful to v0.1); the transport, persistence, and CLI
 are **NEW‑EXP**. A tool, never authority (`../../../common/AUTHORITY.md`).

@@ -16,6 +16,9 @@ conditions transport around it:
   transactions**: `tx` messages are validated, pooled, and relayed (`inv`→`getdata`→`tx`) — with an
   orphan buffer and fee-rate eviction — and the miner assembles pooled transactions after the
   coinbase (claiming subsidy + fees), removing them once mined.
+- Wallet — with `--wallet` the miner earns its coinbase to a persistent wallet (`nodewallet.py`);
+  `wallet_balance` / `wallet_new_address` / `wallet_send` build payments on the faithful v0.1
+  SelectCoins path, driven over a loopback control interface (`rpc.py`, `python -m netnode ctl`).
 
 Evidence: MODEL / NEW-EXP. **Not money.** Not production-secure — see
 `../../docs/PUBLIC_TESTNET_SCOPE.md` for what still lies ahead (a security review, signed
@@ -43,6 +46,7 @@ from chainstate import COINBASE_MATURITY, ChainState  # noqa: E402
 from difficulty import expected_bits                  # noqa: E402
 from fullnode import validate_block                   # noqa: E402
 from mempool import Mempool, MempoolReject            # noqa: E402
+from nodewallet import NodeWallet                      # noqa: E402
 from store import BlockStore                           # noqa: E402
 from wire import WireError, frame, read_message        # noqa: E402
 
@@ -83,8 +87,10 @@ class Node:
     def __init__(self, cfg: ChainConfig, datadir, *, listen=None, advertise_host=None,
                  mine=False, mine_interval: float = 2.0, max_peers: int = MAX_PEERS,
                  max_inbound: int = MAX_INBOUND, max_known_addrs: int = MAX_KNOWN_ADDRS,
-                 maturity: int = COINBASE_MATURITY, min_bits: int | None = None, log=None):
+                 maturity: int = COINBASE_MATURITY, min_bits: int | None = None,
+                 wallet: bool = False, log=None):
         self.cfg = cfg
+        self.datadir = pathlib.Path(datadir)
         self.store = BlockStore(datadir)
         self.chain = cfg.new_chain()
         self.listen = listen                         # (host, port) or None
@@ -109,6 +115,7 @@ class Node:
         self.state = ChainState(self.chain, cfg.rules, maturity=maturity, min_bits=min_bits)  # validated UTXO chainstate
         self.state.activate_best()                       # validate + build the UTXO from the loaded chain
         self.mempool = Mempool(maturity=maturity)        # not-yet-mined transactions (policy)
+        self.wallet = NodeWallet(self.datadir / "wallet.json") if wallet else None
 
     def _learn_addr(self, addr) -> bool:
         """Record a gossiped peer, bounded (DoS). Returns True if it was new."""
@@ -145,6 +152,22 @@ class Node:
         """Validate a raw transaction into the local mempool (against the validated UTXO).
         Returns the accepted `mempool.Entry`; raises `MempoolReject` if it fails validation."""
         return self.mempool.accept(raw, self.state.utxo, self.state.height)
+
+    # -- wallet (present only when the node is started with a wallet) -----------
+    def wallet_new_address(self) -> bytes:
+        return self.wallet.new_address()
+
+    def wallet_balance(self) -> int:
+        return self.wallet.balance(self.state.utxo, self.state.height, self.state.maturity)
+
+    async def wallet_send(self, to_pubkey: bytes, amount: int, fee: int = 0):
+        """Build + sign a payment from the wallet against the validated UTXO, submit it to the
+        mempool, and broadcast it. Returns the accepted `mempool.Entry`."""
+        raw = self.wallet.create_payment(self.state.utxo, self.state.height, self.state.maturity,
+                                         to_pubkey, amount, fee)
+        entry = self.submit_tx(raw)
+        await self._announce([(MSG_TX, entry.txid)])
+        return entry
 
     # -- lifecycle -------------------------------------------------------------
     async def start(self, connect=()):
@@ -350,9 +373,10 @@ class Node:
             selected = self.mempool.select(self.state.utxo)             # pool txs, parents before children
             fees = sum(e.fee for e in selected)
             extra = [e.tx for e in selected]
+            payout = self.wallet.receive_script() if self.wallet else b"\x51"   # earn to the wallet, if any
             raw = await loop.run_in_executor(None, mine_block, prev, height, nbits,
                                              self.chain.check_block, subsidy + fees, extra,
-                                             self.cfg.genesis_msg[:0])
+                                             self.cfg.genesis_msg[:0], payout)
             status, h = self.chain.process_block(raw)
             if status == "accepted":
                 self.store.append(raw)

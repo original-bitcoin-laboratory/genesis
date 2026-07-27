@@ -68,17 +68,19 @@ _tag = [0]
 
 
 def mine_block(prev: bytes, height: int, nbits: int, check_fn,
-               coinbase_value: int = 50 * 100_000_000, extra_txs=(), msg: bytes = b"") -> bytes:
+               coinbase_value: int = 50 * 100_000_000, extra_txs=(), msg: bytes = b"",
+               payout: bytes = b"\x51") -> bytes:
     """Pure miner (safe to run in an executor): build a unique block on `prev` at `nbits`
-    difficulty whose coinbase claims `coinbase_value` (subsidy + fees), followed by `extra_txs`
-    (already validated, topologically ordered), and brute-force a nonce until `check_fn(raw)`
-    (the chain's PoW). The block's value/coinbase rules are re-checked on connect by ChainState."""
+    difficulty whose coinbase claims `coinbase_value` (subsidy + fees) and pays `payout`
+    (a scriptPubKey — `OP_1` anyone-can-spend by default, or a wallet's receive script),
+    followed by `extra_txs` (already validated, topologically ordered), and brute-force a nonce
+    until `check_fn(raw)` (the chain's PoW). Value/coinbase rules are re-checked on connect."""
     _tag[0] = (_tag[0] + 1) & 0xFFFFFF
     cb = Tx(1, [], [], 0)
     script = (bytes([len(msg)]) + msg if msg else b"") + bytes(
         [height & 0xFF, (height >> 8) & 0xFF, _tag[0] & 0xFF, (_tag[0] >> 8) & 0xFF])
     cb.vin.append(TxIn(ZERO, 0xFFFFFFFF, script, 0xFFFFFFFF))
-    cb.vout.append(TxOut(coinbase_value, b"\x51"))           # OP_1 placeholder; claims subsidy + fees
+    cb.vout.append(TxOut(coinbase_value, payout))            # claims subsidy + fees; pays `payout`
     vtx = [cb, *extra_txs]
     mr = merkle_root(vtx)
     t = int(time.time())

@@ -40,6 +40,10 @@ value would force adding the 2010 guardrails — at which point it stops being t
 - **Resource bounds**: inbound connections are capped, the gossiped peer table is bounded, the
   mempool is size‑capped, and a per‑peer message **rate limit** drops flooding peers — basic
   connection‑/addr‑/message‑/mempool‑flood resistance (`livenode.py`, `mempool.py`).
+- **Wallet + control interface** (`nodewallet.py`, `rpc.py`): the wallet builds payments with the
+  faithful v0.1 `SelectCoins` / `CreateTransaction` / `SignSignature` path (real secp256k1
+  signatures, every input re‑verified). The RPC control socket is **bound to loopback (127.0.0.1)
+  only** and is off unless `--rpc` is passed.
 
 ## What is *not* defended (known gaps)
 
@@ -62,6 +66,12 @@ value would force adding the 2010 guardrails — at which point it stops being t
   memory/CPU accounting; an adversary spending real resources could still degrade a node.
 - **Local trust of the datadir.** The block store isn't integrity‑signed; a tampered datadir is
   not defended against.
+- **The RPC has no authentication, and the wallet is not a secure key store.** The control
+  interface trusts anything that can reach its loopback port — **never expose it** (no bind to a
+  public interface, no port‑forward, no reverse proxy). Wallet keys are private scalars stored in
+  plaintext (`<datadir>/wallet.json`), unencrypted — appropriate for an experimental, valueless
+  chain, **not** for protecting anything of value. There is no key encryption, no HD derivation, no
+  watch‑only mode, and no backup discipline beyond copying the file.
 
 ## What a real security review must cover before *any* value is ever attached
 

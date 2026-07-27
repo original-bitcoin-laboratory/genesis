@@ -71,10 +71,13 @@ reconstruction.**
 > the parent arrives) and **fee‑rate eviction** when full, and the miner **assembles pooled
 > transactions** after the coinbase (subsidy + fees), dropping them once mined — and an optional
 > **`--min-difficulty` floor** so a live network can require real work above the deliberately‑easy
-> (faithful) genesis. The network now carries **real transactions**, not just coinbases. Remaining
-> toward a hardened public launch is no longer node‑core code: **choosing/running a real difficulty
-> floor** on a live launch, GPG‑signed builds, a security review, an optional faster node — and
-> operators.
+> (faithful) genesis; and a **wallet + localhost control interface** (`nodewallet.py`, `rpc.py`) — a
+> mining node **earns its coinbase** to a persistent wallet and a person can `getbalance` /
+> `getnewaddress` / `send` over a loopback RPC (`python -m netnode ctl`), all on the faithful v0.1
+> SelectCoins / CreateTransaction path. The network now carries **real transactions**, and a person
+> can **use** it without writing Python. Remaining toward a hardened public launch is no longer
+> node‑core code: **choosing/running a real difficulty floor** on a live launch, GPG‑signed builds,
+> a security review, an optional faster node — and operators.
 
 1. **Harden the wire.** ✅ Checksums, real TCP, timeouts, reconnection, DoS size caps, misbehavior
    scoring — two nodes on *different machines* sync reliably (`netnode/wire.py`, `livenode.py`).
