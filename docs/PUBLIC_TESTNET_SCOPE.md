@@ -86,10 +86,11 @@ reconstruction.**
 > consensus‑complete (context‑free checks, stateful UTXO/value validation, the full v0.1 `EvalScript`
 > interpreter with unbounded bignum + all opcodes + `OP_CHECKSIG`/`OP_CHECKMULTISIG` via real `k256`
 > ECDSA byte‑faithful to pre‑BIP66 OpenSSL, and reorg + difficulty) **plus a runnable transport**
-> (hardened wire, crash‑safe store, a real TCP block‑sync, **and transacting** — tx signing via
-> `k256`, a validating mempool, and block assembly/mining, so a Rust node mines coins, pools a spend,
-> and mines it into a block). Compiled + tested (21 tests) byte‑for‑byte against the Python node; the
-> remaining transport features (gossip/tx‑relay/DoS/RPC) exist + are tested in the Python `netnode`. Remaining toward a hardened public launch
+> (hardened wire, crash‑safe store, a real TCP **block‑sync + transaction relay** [`inv`→`getdata`→
+> `tx`], **and transacting** — tx signing via `k256`, a validating mempool, and block assembly/mining,
+> so a Rust node mines coins, pools a spend, mines it into a block, and relays it to a peer). Compiled
+> + tested (22 tests) byte‑for‑byte against the Python node; the remaining transport (addr
+> gossip/DoS/RPC) exists + is tested in the Python `netnode`. Remaining toward a hardened public launch
 > is no longer node‑core code: **choosing/running a real difficulty floor** on a live launch,
 > GPG‑signed builds, a security review, the rest of a native node **only for extreme scale** — and,
 > above all, **other people choosing to run it.**

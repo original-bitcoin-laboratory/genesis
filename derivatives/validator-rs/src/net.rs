@@ -11,13 +11,42 @@ use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::path::Path;
 
+use crate::mempool::Mempool;
 use crate::reorg::NodeState;
 use crate::rules::Rules;
 use crate::store::BlockStore;
 use crate::wire::{frame, read_message};
 
+fn inv_payload(hashes: &[[u8; 32]]) -> Vec<u8> {
+    let mut o = (hashes.len() as u32).to_le_bytes().to_vec();
+    for h in hashes {
+        o.extend_from_slice(h);
+    }
+    o
+}
+
+fn parse_inv(p: &[u8]) -> Vec<[u8; 32]> {
+    let mut out = Vec::new();
+    if p.len() < 4 {
+        return out;
+    }
+    let n = u32::from_le_bytes(p[0..4].try_into().unwrap()) as usize;
+    let mut i = 4;
+    for _ in 0..n {
+        if i + 32 > p.len() {
+            break;
+        }
+        let mut h = [0u8; 32];
+        h.copy_from_slice(&p[i..i + 32]);
+        out.push(h);
+        i += 32;
+    }
+    out
+}
+
 pub struct Node {
     pub state: NodeState,
+    pub mempool: Mempool,
     store: BlockStore,
     magic: [u8; 4],
 }
@@ -45,7 +74,7 @@ impl Node {
             }
         }
         state.activate_best();
-        Ok(Node { state, store, magic })
+        Ok(Node { state, mempool: Mempool::new(maturity), store, magic })
     }
 
     pub fn height(&self) -> i64 {
@@ -60,7 +89,22 @@ impl Node {
         self.state.balance()
     }
 
-    /// Serve a peer: read its height, send every main-chain block above it.
+    /// Add a block we produced/received: validate into the chain and persist it.
+    pub fn submit_block(&mut self, raw: &[u8]) -> io::Result<()> {
+        self.state.add_block(raw);
+        self.state.activate_best();
+        self.mempool.reconcile(self.state.utxo(), self.state.height());
+        self.store.append(raw)
+    }
+
+    /// Validate a transaction into our mempool. Returns the fee, or the reason it was rejected.
+    pub fn submit_tx(&mut self, raw: &[u8]) -> Result<i64, &'static str> {
+        let h = self.state.height();
+        self.mempool.accept(raw, self.state.utxo(), h)
+    }
+
+    /// Serve a peer: read its height, send every main-chain block above it, announce our mempool
+    /// (`inv`), then answer its `getdata` with the requested transactions.
     pub fn serve(&self, stream: &mut TcpStream) -> io::Result<()> {
         let mut h = [0u8; 4];
         stream.read_exact(&mut h)?;
@@ -71,19 +115,44 @@ impl Node {
                 stream.write_all(&frame("block", &e.raw, &self.magic))?;
             }
         }
+        stream.write_all(&frame("inv", &inv_payload(&self.mempool.txids()), &self.magic))?;
+        stream.flush()?;
+        if let Some((command, payload)) = read_message(stream, &self.magic)? {
+            if command == "getdata" {
+                for want in parse_inv(&payload) {
+                    if let Some(raw) = self.mempool.get(&want) {
+                        stream.write_all(&frame("tx", raw, &self.magic))?;
+                    }
+                }
+            }
+        }
         stream.flush()
     }
 
-    /// Sync from a peer at `addr`: send our height, then validate + persist the blocks it sends.
+    /// Sync from a peer at `addr`: send our height, validate + persist the blocks it sends, then
+    /// request the mempool transactions we're missing (`getdata`) and pool the ones it returns.
     pub fn sync_from<A: ToSocketAddrs>(&mut self, addr: A) -> io::Result<()> {
         let mut s = TcpStream::connect(addr)?;
         s.write_all(&(self.height() as i32).to_le_bytes())?;
         s.flush()?;
         while let Some((command, payload)) = read_message(&mut s, &self.magic)? {
-            if command == "block" {
-                self.state.add_block(&payload);
-                self.state.activate_best();
-                self.store.append(&payload)?;
+            match command.as_str() {
+                "block" => {
+                    self.state.add_block(&payload);
+                    self.state.activate_best();
+                    self.store.append(&payload)?;
+                }
+                "inv" => {
+                    let want: Vec<[u8; 32]> =
+                        parse_inv(&payload).into_iter().filter(|h| !self.mempool.has(h)).collect();
+                    s.write_all(&frame("getdata", &inv_payload(&want), &self.magic))?;
+                    s.flush()?;
+                }
+                "tx" => {
+                    let h = self.state.height();
+                    let _ = self.mempool.accept(&payload, self.state.utxo(), h);
+                }
+                _ => {}
             }
         }
         Ok(())

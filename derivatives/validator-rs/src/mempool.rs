@@ -38,6 +38,18 @@ impl Mempool {
         self.txs.is_empty()
     }
 
+    pub fn has(&self, txid: &[u8; 32]) -> bool {
+        self.txs.iter().any(|e| &e.txid == txid)
+    }
+
+    pub fn get(&self, txid: &[u8; 32]) -> Option<&[u8]> {
+        self.txs.iter().find(|e| &e.txid == txid).map(|e| e.raw.as_slice())
+    }
+
+    pub fn txids(&self) -> Vec<[u8; 32]> {
+        self.txs.iter().map(|e| e.txid).collect()
+    }
+
     fn pooled_output(&self, key: &Outpoint) -> Option<Coin> {
         let (ptxid, n) = *key;
         for e in &self.txs {
