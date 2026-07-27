@@ -22,6 +22,9 @@ value would force adding the 2010 guardrails — at which point it stops being t
   for its parent (`difficulty.py`), so difficulty can't be silently dropped on the direct path.
 - **Block validation** (`fullnode.py`): beyond PoW — block structure (one coinbase first), the
   **merkle commitment**, difficulty, and the chain's **coinbase‑value rule** are enforced.
+- **Validated UTXO chainstate** (`chainstate.py`): a UTXO set with reorg‑safe connect/disconnect
+  (undo) enforcing **no double‑spends, script satisfaction (VerifySignature), no inflation, and
+  coinbase maturity** — and a reorg to an invalid branch is **aborted and the prior chain restored**.
 - **Persistence**: the block store is fsync'd and tolerates a crash‑truncated tail.
 - **Resource bounds**: inbound connections are capped, the gossiped peer table is bounded, and a
   per‑peer message **rate limit** drops flooding peers — basic connection‑/addr‑/message‑flood
@@ -29,11 +32,13 @@ value would force adding the 2010 guardrails — at which point it stops being t
 
 ## What is *not* defended (known gaps)
 
-- **Transaction/UTXO validation is not yet complete.** The node now validates block structure,
-  the merkle commitment, difficulty, and the **coinbase‑value rule** (`fullnode.py`) — but not yet
-  full transaction validity (double‑spends, script satisfaction, no‑inflation), which needs a UTXO
-  set with reorg‑safe connect/disconnect. The network is **coinbase‑only** today, so this fully
-  validates it; spend validation is the next increment.
+- **The validated chainstate is not yet fully *authoritative*.** Full transaction/UTXO validation
+  now exists (`chainstate.py`: double‑spends, scripts, no‑inflation, maturity, reorg‑safe with
+  abort‑on‑invalid) and runs alongside the index, flagging invalid blocks — but the node still
+  *serves and mines on* the chainsync **PoW‑selected** tip, not strictly the validated tip. For the
+  **coinbase‑only** network today they coincide; making the validated chain the sole authority for
+  serving/mining (so a PoW‑valid but tx‑invalid block can never be built on or relayed) is the next
+  wiring, together with a **mempool + transaction relay** (so spend transactions exist to validate).
 - **Difficulty floor is easy, and the orphan path is unvalidated.** Difficulty starts at a
   regtest‑easy floor — the chain is **trivially rewritable** by anyone with modest hashpower — and
   `check_difficulty` defers blocks whose parent is unknown (orphans reconnect without a re‑check).

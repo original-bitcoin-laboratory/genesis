@@ -58,14 +58,15 @@ reconstruction.**
 
 ## A staged plan (each stage independently useful)
 
-> **Status (27 Jul 2026): Stages 1–4 built + tested, and full‑node validation started** in
-> [`../derivatives/netnode/`](../derivatives/netnode/) (20 tests): hardened wire, crash‑safe
-> store, real‑TCP sync, difficulty retarget, `addr`‑gossip discovery, DoS resource bounds, a
-> tagged pre‑release, and **block validation beyond PoW** (structure / merkle / difficulty /
-> coinbase‑value, via `fullnode.py`). The **production‑node program** now proceeds toward full
-> transaction/UTXO validation (double‑spends, scripts, no‑inflation, reorg‑safe connect/disconnect)
-> + mempool + tx relay; then GPG‑signed builds, a security review, an optional faster node — and
-> operators.
+> **Status (27 Jul 2026): Stages 1–4 built + tested, and the production‑node program is underway**
+> in [`../derivatives/netnode/`](../derivatives/netnode/) (**30 tests**): hardened wire, crash‑safe
+> store, real‑TCP sync, difficulty retarget, `addr`‑gossip discovery, DoS resource bounds, a tagged
+> pre‑release, **block validation beyond PoW** (`fullnode.py`), and a **validated UTXO chainstate**
+> (`chainstate.py`) — double‑spends / bad scripts / inflation / immature coinbase rejected, with
+> reorg‑safe connect/disconnect that **aborts a reorg to an invalid branch**. Remaining toward a
+> full node: make the validated chain the sole authority for serving/mining + a **mempool + tx
+> relay**; then real (non‑easy) difficulty, GPG‑signed builds, a security review, an optional faster
+> node — and operators.
 
 1. **Harden the wire.** ✅ Checksums, real TCP, timeouts, reconnection, DoS size caps, misbehavior
    scoring — two nodes on *different machines* sync reliably (`netnode/wire.py`, `livenode.py`).

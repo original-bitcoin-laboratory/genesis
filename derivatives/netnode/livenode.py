@@ -32,6 +32,7 @@ from chainsync import block_hash, locator_payload, nbits_of, parse_getblocks  # 
 from p2p import MSG_BLOCK, inv_payload, parse_inv, version_payload            # noqa: E402
 
 from chains import ChainConfig, mine_next             # noqa: E402
+from chainstate import ChainState                     # noqa: E402
 from difficulty import expected_bits                  # noqa: E402
 from fullnode import validate_block                   # noqa: E402
 from store import BlockStore                           # noqa: E402
@@ -95,6 +96,8 @@ class Node:
         self.known_addrs: set[tuple[str, int]] = set()
         self._dialing: set[tuple[str, int]] = set()  # outbound addrs in flight (dedup + self)
         self._load_or_init()
+        self.state = ChainState(self.chain, cfg.rules)   # validated UTXO chainstate
+        self.state.activate_best()                       # validate + build the UTXO from the loaded chain
 
     def _learn_addr(self, addr) -> bool:
         """Record a gossiped peer, bounded (DoS). Returns True if it was new."""
@@ -279,6 +282,10 @@ class Node:
         if status in ("accepted", "orphan"):
             self.store.append(raw)
         if status == "accepted":
+            self.state.activate_best()               # full UTXO/tx validation of the active chain
+            if h in self.state.invalid:              # indexed by PoW but fails full validity
+                self._log(f"block {h[::-1].hex()[:12]} failed full validation")
+                return 5
             await self._announce([(MSG_BLOCK, h)], exclude=origin)
             return 0
         if status == "orphan":
@@ -300,6 +307,7 @@ class Node:
             status, h = self.chain.process_block(raw)
             if status == "accepted":
                 self.store.append(raw)
+                self.state.activate_best()                             # keep the UTXO current
                 self._log(f"mined {h[::-1].hex()[:12]} height={self.chain.best_height} nBits={nbits}")
                 await self._announce([(MSG_BLOCK, h)])
             await asyncio.sleep(self.mine_interval)

@@ -324,3 +324,14 @@ def test_validate_rejects_merkle_tampering(tmp_path):
     ok, why = validate_block(bytes(bad), n.chain, cfg.rules)
     assert not ok and "merkle" in why
     n.store.close()
+
+
+def test_node_maintains_a_validated_utxo_chainstate(tmp_path):
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "U"))
+    _seed(n, 3)
+    n.state.activate_best()                                             # validate the seeded chain
+    assert n.state.height == n.height == 3
+    assert n.state.tip == n.tip
+    assert n.state.balance() > 0                                        # genesis + 3 subsidies in the UTXO
+    n.store.close()
