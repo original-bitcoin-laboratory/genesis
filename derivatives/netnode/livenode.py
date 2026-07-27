@@ -10,6 +10,10 @@ conditions transport around it:
   blocks are rejected if their nBits doesn't match the expected retarget for their parent.
 - Stage 3 — peer discovery: nodes gossip known addresses (`addr`) and auto-connect, so a
   stranger with one seed address meshes into the network without a manual `--connect` chain.
+- Full node — a validated UTXO chainstate (`chainstate.py`) is the **sole authority** for what
+  the node serves and mines, and a validating `mempool` carries **real transactions**: `tx`
+  messages are validated, pooled, and relayed (`inv`→`getdata`→`tx`), and the miner assembles
+  pooled transactions after the coinbase (claiming subsidy + fees), removing them once mined.
 
 Evidence: MODEL / NEW-EXP. **Not money.** Not production-secure — see
 `../../docs/PUBLIC_TESTNET_SCOPE.md` for what still lies ahead (a security review, signed
@@ -29,12 +33,14 @@ for _p in ("model", "p2p", "nov08x"):
 sys.path.insert(0, str(_HERE))
 
 from chainsync import block_hash, locator_payload, nbits_of, parse_getblocks  # noqa: E402
-from p2p import MSG_BLOCK, inv_payload, parse_inv, version_payload            # noqa: E402
+from p2p import MSG_BLOCK, MSG_TX, inv_payload, parse_inv, version_payload    # noqa: E402
+from tx_sighash import dsha256                         # noqa: E402
 
-from chains import ChainConfig, mine_next             # noqa: E402
-from chainstate import ChainState                     # noqa: E402
+from chains import ChainConfig, mine_block             # noqa: E402
+from chainstate import COINBASE_MATURITY, ChainState  # noqa: E402
 from difficulty import expected_bits                  # noqa: E402
 from fullnode import validate_block                   # noqa: E402
+from mempool import Mempool, MempoolReject            # noqa: E402
 from store import BlockStore                           # noqa: E402
 from wire import WireError, frame, read_message        # noqa: E402
 
@@ -74,7 +80,8 @@ def decode_addrs(payload: bytes):
 class Node:
     def __init__(self, cfg: ChainConfig, datadir, *, listen=None, advertise_host=None,
                  mine=False, mine_interval: float = 2.0, max_peers: int = MAX_PEERS,
-                 max_inbound: int = MAX_INBOUND, max_known_addrs: int = MAX_KNOWN_ADDRS, log=None):
+                 max_inbound: int = MAX_INBOUND, max_known_addrs: int = MAX_KNOWN_ADDRS,
+                 maturity: int = COINBASE_MATURITY, log=None):
         self.cfg = cfg
         self.store = BlockStore(datadir)
         self.chain = cfg.new_chain()
@@ -96,8 +103,9 @@ class Node:
         self.known_addrs: set[tuple[str, int]] = set()
         self._dialing: set[tuple[str, int]] = set()  # outbound addrs in flight (dedup + self)
         self._load_or_init()
-        self.state = ChainState(self.chain, cfg.rules)   # validated UTXO chainstate
+        self.state = ChainState(self.chain, cfg.rules, maturity=maturity)   # validated UTXO chainstate
         self.state.activate_best()                       # validate + build the UTXO from the loaded chain
+        self.mempool = Mempool(maturity=maturity)        # not-yet-mined transactions (policy)
 
     def _learn_addr(self, addr) -> bool:
         """Record a gossiped peer, bounded (DoS). Returns True if it was new."""
@@ -124,11 +132,16 @@ class Node:
 
     @property
     def height(self) -> int:
-        return self.chain.best_height
+        return self.state.height                         # the VALIDATED tip, not chainsync's PoW tip
 
     @property
     def tip(self) -> bytes:
-        return self.chain.tip
+        return self.state.tip
+
+    def submit_tx(self, raw: bytes):
+        """Validate a raw transaction into the local mempool (against the validated UTXO).
+        Returns the accepted `mempool.Entry`; raises `MempoolReject` if it fails validation."""
+        return self.mempool.accept(raw, self.state.utxo, self.state.height)
 
     # -- lifecycle -------------------------------------------------------------
     async def start(self, connect=()):
@@ -226,7 +239,7 @@ class Node:
                 if command == "version":
                     if initiate:
                         await self._send(writer, "getblocks",
-                                         locator_payload(self.chain.get_locator()))
+                                         locator_payload(self.state.get_locator()))
                     sample = self._addr_sample()
                     if sample:
                         await self._send(writer, "addr", encode_addrs(sample))
@@ -246,18 +259,31 @@ class Node:
                                 pass
                 elif command == "getblocks":
                     have, hash_stop = parse_getblocks(payload)
-                    invs = self.chain.blocks_after_locator(have, hash_stop)
+                    invs = self.state.blocks_after(have, hash_stop)
                     if invs:
                         await self._send(writer, "inv",
                                          inv_payload([(MSG_BLOCK, h) for h in invs]))
                 elif command == "inv":
-                    want = [it for it in parse_inv(payload) if not self.chain.have(*it)]
+                    want = []
+                    for typ, h in parse_inv(payload):
+                        if typ == MSG_BLOCK and not self.chain.have(MSG_BLOCK, h):
+                            want.append((typ, h))
+                        elif typ == MSG_TX and not self.mempool.has(h):
+                            want.append((typ, h))
                     if want:
                         await self._send(writer, "getdata", inv_payload(want))
                 elif command == "getdata":
                     for typ, h in parse_inv(payload):
                         if typ == MSG_BLOCK and h in self.chain.by_hash:
                             await self._send(writer, "block", self.chain.by_hash[h].raw)
+                        elif typ == MSG_TX:
+                            raw = self.mempool.get(h)
+                            if raw is not None:
+                                await self._send(writer, "tx", raw)
+                elif command == "tx":
+                    misbehavior += await self._on_tx(payload, writer)
+                    if misbehavior >= BAN_THRESHOLD:
+                        raise WireError("peer banned (misbehavior)")
                 elif command == "block":
                     misbehavior += await self._on_block(payload, writer)
                     if misbehavior >= BAN_THRESHOLD:
@@ -273,8 +299,20 @@ class Node:
             except OSError:
                 pass
 
+    async def _on_tx(self, raw: bytes, origin) -> int:
+        txid = dsha256(raw)
+        if self.mempool.has(txid):
+            return 0                                  # already pooled — don't re-relay (loop guard)
+        try:
+            self.mempool.accept(raw, self.state.utxo, self.state.height)
+        except MempoolReject as e:
+            self._log(f"reject tx: {e}")
+            return 1
+        await self._announce([(MSG_TX, txid)], exclude=origin)   # relay onward
+        return 0
+
     async def _on_block(self, raw: bytes, origin) -> int:
-        ok, reason = validate_block(raw, self.chain, self.cfg.rules)  # full validation (struct/merkle/difficulty/coinbase)
+        ok, reason = validate_block(raw, self.chain, self.cfg.rules)  # context-free checks (struct/merkle/difficulty)
         if not ok:
             self._log(f"reject block: {reason}")
             return 5
@@ -286,12 +324,13 @@ class Node:
             if h in self.state.invalid:              # indexed by PoW but fails full validity
                 self._log(f"block {h[::-1].hex()[:12]} failed full validation")
                 return 5
+            self.mempool.reconcile(self.state.utxo, self.state.height)   # drop mined/conflicting txs
             await self._announce([(MSG_BLOCK, h)], exclude=origin)
             return 0
         if status == "orphan":
             root = self.chain.get_orphan_root(h)
             await self._send(origin, "getblocks",
-                             locator_payload(self.chain.get_locator(), root))
+                             locator_payload(self.state.get_locator(), root))
             return 0
         return 5 if status == "invalid" else 0
 
@@ -301,13 +340,19 @@ class Node:
         while not self._closing:
             prev, height = self.tip, self.height + 1
             nbits = expected_bits(self.chain, prev, self.cfg.rules)     # Stage 2: retarget
-            subsidy = self.cfg.rules.get_block_value(self.height)       # coinbase claims the subsidy
-            raw = await loop.run_in_executor(None, mine_next, prev, height, nbits,
-                                             self.chain.check_block, subsidy, self.cfg.genesis_msg[:0])
+            subsidy = self.cfg.rules.get_block_value(self.height)       # coinbase claims subsidy + fees
+            selected = self.mempool.select(self.state.utxo)             # pool txs, parents before children
+            fees = sum(e.fee for e in selected)
+            extra = [e.tx for e in selected]
+            raw = await loop.run_in_executor(None, mine_block, prev, height, nbits,
+                                             self.chain.check_block, subsidy + fees, extra,
+                                             self.cfg.genesis_msg[:0])
             status, h = self.chain.process_block(raw)
             if status == "accepted":
                 self.store.append(raw)
                 self.state.activate_best()                             # keep the UTXO current
-                self._log(f"mined {h[::-1].hex()[:12]} height={self.chain.best_height} nBits={nbits}")
+                self.mempool.reconcile(self.state.utxo, self.state.height)   # remove the txs we just mined
+                self._log(f"mined {h[::-1].hex()[:12]} height={self.state.height} "
+                          f"nBits={nbits} txs={len(extra)}")
                 await self._announce([(MSG_BLOCK, h)])
             await asyncio.sleep(self.mine_interval)

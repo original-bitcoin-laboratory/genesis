@@ -14,31 +14,35 @@ research curiosities. **"Nothing disabled" is safe only because it is "not money
 value would force adding the 2010 guardrails — at which point it stops being the undrifted origin.
 **So: never attach value, never present it as money.** That is the security boundary.
 
-## What *is* defended (Stages 1–3)
+## What *is* defended (Stages 1–4 + full‑node core)
 
 - **Wire**: message checksums, a 4 MiB size cap, read timeouts, and per‑peer misbehavior scoring
   → a peer that sends garbage, oversize, or bad‑magic frames is dropped (`wire.py`, `livenode.py`).
 - **Difficulty**: a received block is rejected if its `nBits` doesn't match the expected retarget
   for its parent (`difficulty.py`), so difficulty can't be silently dropped on the direct path.
-- **Block validation** (`fullnode.py`): beyond PoW — block structure (one coinbase first), the
-  **merkle commitment**, difficulty, and the chain's **coinbase‑value rule** are enforced.
-- **Validated UTXO chainstate** (`chainstate.py`): a UTXO set with reorg‑safe connect/disconnect
-  (undo) enforcing **no double‑spends, script satisfaction (VerifySignature), no inflation, and
-  coinbase maturity** — and a reorg to an invalid branch is **aborted and the prior chain restored**.
+- **Block validation** (`fullnode.py`): beyond PoW — block structure (one coinbase first) and the
+  **merkle commitment** are enforced context‑free; difficulty when the parent is known.
+- **Validated UTXO chainstate** (`chainstate.py`), the **sole authority** for what the node serves
+  and mines: a UTXO set with reorg‑safe connect/disconnect (undo) enforcing **no double‑spends,
+  script satisfaction (VerifySignature), no inflation, coinbase maturity, and the coinbase‑value
+  rule with fees** — a PoW‑valid but tx‑invalid block is flagged and **never served, mined on, or
+  followed**, and a reorg to an invalid branch is **aborted and the prior chain restored**.
+- **Mempool** (`mempool.py`): relayed `tx` messages are fully validated against the UTXO and pooled
+  parents before being accepted or re‑broadcast — an invalid or conflicting transaction is dropped,
+  not relayed; the pool is **bounded** (memory‑flood cap). Consensus is still re‑checked when the
+  block connects, so the mempool can only *avoid* relaying/mining bad txs, never *admit* one.
 - **Persistence**: the block store is fsync'd and tolerates a crash‑truncated tail.
-- **Resource bounds**: inbound connections are capped, the gossiped peer table is bounded, and a
-  per‑peer message **rate limit** drops flooding peers — basic connection‑/addr‑/message‑flood
-  resistance (`livenode.py`).
+- **Resource bounds**: inbound connections are capped, the gossiped peer table is bounded, the
+  mempool is size‑capped, and a per‑peer message **rate limit** drops flooding peers — basic
+  connection‑/addr‑/message‑/mempool‑flood resistance (`livenode.py`, `mempool.py`).
 
 ## What is *not* defended (known gaps)
 
-- **The validated chainstate is not yet fully *authoritative*.** Full transaction/UTXO validation
-  now exists (`chainstate.py`: double‑spends, scripts, no‑inflation, maturity, reorg‑safe with
-  abort‑on‑invalid) and runs alongside the index, flagging invalid blocks — but the node still
-  *serves and mines on* the chainsync **PoW‑selected** tip, not strictly the validated tip. For the
-  **coinbase‑only** network today they coincide; making the validated chain the sole authority for
-  serving/mining (so a PoW‑valid but tx‑invalid block can never be built on or relayed) is the next
-  wiring, together with a **mempool + transaction relay** (so spend transactions exist to validate).
+- **Mempool policy is minimal.** The pool is count‑bounded and every entry is fully validated, but
+  there is **no fee‑rate eviction / replacement policy** (a full pool simply refuses new txs rather
+  than evicting the cheapest), and an **orphan transaction** (one that arrives before the parent it
+  spends) is dropped rather than held and retried. These are *policy* gaps — they cannot admit an
+  invalid tx to the validated chain (consensus is re‑checked on connect), only degrade relay quality.
 - **Difficulty floor is easy, and the orphan path is unvalidated.** Difficulty starts at a
   regtest‑easy floor — the chain is **trivially rewritable** by anyone with modest hashpower — and
   `check_difficulty` defers blocks whose parent is unknown (orphans reconnect without a re‑check).

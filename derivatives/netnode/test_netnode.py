@@ -106,6 +106,7 @@ def _seed(node, n):
         raw = mine_next(node.tip, node.height + 1, gen_nbits, node.chain.check_block, subsidy)
         assert node.chain.process_block(raw)[0] == "accepted"
         node.store.append(raw)
+        node.state.activate_best()               # advance the validated chainstate (now authoritative)
 
 
 async def _sync_scenario(dir_a, dir_b):
@@ -304,14 +305,18 @@ def test_validate_accepts_a_good_block(tmp_path):
     n.store.close()
 
 
-def test_validate_rejects_overclaimed_coinbase(tmp_path):
+def test_chainstate_rejects_overclaimed_coinbase(tmp_path):
+    from chainsync import block_hash
     cfg = CHAINS["jan09x"]
     n = Node(cfg, str(tmp_path / "C"))
     subsidy = cfg.rules.get_block_value(n.height)
     nbits = expected_bits(n.chain, n.tip, cfg.rules)
-    bad = mine_next(n.tip, 1, nbits, n.chain.check_block, subsidy * 2)   # claims twice the subsidy
-    ok, why = validate_block(bad, n.chain, cfg.rules)
-    assert not ok and "coinbase" in why
+    bad = mine_next(n.tip, n.height + 1, nbits, n.chain.check_block, subsidy * 2)  # 2x the subsidy
+    assert validate_block(bad, n.chain, cfg.rules)[0]        # PoW/structure/merkle are all fine…
+    assert n.chain.process_block(bad)[0] == "accepted"       # …the index accepts it (value is UTXO-level)
+    n.state.activate_best()
+    assert block_hash(bad) in n.state.invalid                # …but the validated chainstate rejects it
+    assert n.state.tip == n.chain.genesis                    # and the authoritative chain didn't advance
     n.store.close()
 
 

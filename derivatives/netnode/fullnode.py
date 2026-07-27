@@ -1,18 +1,21 @@
 """Full block validation for the X-chain nodes — Path B toward a production node (part 1).
 
 Beyond proof‑of‑work, a real node validates what a block *claims*. The lab had `serialize` but no
-deserialize, so this adds a **block/tx parser** and enforces, on top of PoW:
+deserialize, so this adds a **block/tx parser** and enforces, on top of PoW, the checks that are
+**context‑free** (need only the block and its parent):
 
 - **structure** — ≥1 transaction; `tx[0]` is the coinbase; no other tx is a coinbase;
 - **merkle commitment** — the header's merkle root equals the recomputed root of the txs;
-- **difficulty** — `nBits` equals the expected retarget for the parent;
-- **coinbase value** — the chain's own rule (`Rules.coinbase_ok`: NOV08 `==` subsidy+fees,
-  JAN09 `<=`).
+- **difficulty** — `nBits` equals the expected retarget for the parent.
 
-Parent‑dependent checks (difficulty, coinbase value) are deferred for a block whose parent isn't
-yet known (an orphan), like the difficulty check. **Full transaction/UTXO validation** (double
-spends, script satisfaction, no inflation) is the next increment; today's network is coinbase‑only,
-so this fully validates it. Evidence: MODEL / NEW‑EXP.
+The **value** rules — no double‑spend, script satisfaction, no inflation, and the coinbase‑value
+rule *with fees* (`Rules.coinbase_ok`) — need the UTXO set, so they live in `ChainState._connect`,
+which runs when a block is connected to the validated chain. (Fees can only be known from the
+inputs' prior values, which is a UTXO fact, not a block‑local one.) Splitting it this way keeps
+this parser‑level check total on any single block while the stateful checks gate activation.
+
+The difficulty check is deferred for a block whose parent isn't yet known (an orphan).
+Evidence: MODEL / NEW‑EXP.
 """
 
 from __future__ import annotations
@@ -63,8 +66,9 @@ def is_coinbase(tx: Tx) -> bool:
 
 
 def validate_block(raw: bytes, chain, rules):
-    """(ok, reason). Structural checks always; difficulty + coinbase value when the parent is
-    known (deferred for orphans, like the difficulty check)."""
+    """(ok, reason). Context‑free checks (structure, merkle) always; difficulty when the parent is
+    known (deferred for orphans). The value/coinbase rules are UTXO‑stateful — see
+    `chainstate.ChainState._connect`."""
     try:
         txs = parse_block(raw)
     except Exception:
@@ -78,13 +82,7 @@ def validate_block(raw: bytes, chain, rules):
     if merkle_root(txs) != raw[36:68]:
         return False, "merkle root mismatch"
     prev = prev_hash(raw)
-    if prev in chain.by_hash:                          # parent known -> full checks
+    if prev in chain.by_hash:                          # parent known -> difficulty checkable
         if nbits_of(raw) != expected_bits(chain, prev, rules):
             return False, "wrong difficulty"
-        parent_height = chain.by_hash[prev].height     # subsidy uses the tip-at-mining height
-        subsidy = rules.get_block_value(parent_height)
-        fees = 0                                        # coinbase-only network (tx fees = next step)
-        claimed = sum(o.value for o in txs[0].vout)
-        if not rules.coinbase_ok(claimed, subsidy + fees):
-            return False, "coinbase value violates the chain rule"
     return True, "ok"

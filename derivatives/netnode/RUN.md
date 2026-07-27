@@ -70,6 +70,17 @@ can bootstrap; from there `addr` gossip meshes newcomers automatically.
 Blocks are written to `<datadir>/blocks.dat` (fsync'd). On restart the node **reloads its chain
 from disk** and resumes — no re‑sync from genesis. Deleting the datadir resets the node.
 
+## Transactions
+
+The node carries **real transactions**, not just coinbases. A received `tx` is validated against
+the node's UTXO (no double‑spend, script satisfied, no inflation, coinbase maturity), pooled, and
+relayed onward (`inv`→`getdata`→`tx`); a mining node **assembles pooled transactions** into its
+next block after the coinbase, which then claims the block subsidy **plus** the transactions' fees.
+Building and signing a spend is a **programmatic** step today — construct a signed transaction with
+the lab's `tx_sighash` / `spend` helpers and hand its raw bytes to `Node.submit_tx(raw)`, which
+validates it into the mempool and broadcasts it. (A wallet CLI is deliberately out of scope while
+this is valueless; see [`../wallet/`](../wallet/) for the SelectCoins / CreateTransaction model.)
+
 ## Troubleshooting
 
 - **Peers can't reach you** → you're likely behind NAT/firewall. Forward the port and set

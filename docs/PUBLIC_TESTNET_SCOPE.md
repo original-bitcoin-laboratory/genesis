@@ -58,15 +58,18 @@ reconstruction.**
 
 ## A staged plan (each stage independently useful)
 
-> **Status (27 Jul 2026): Stages 1–4 built + tested, and the production‑node program is underway**
-> in [`../derivatives/netnode/`](../derivatives/netnode/) (**30 tests**): hardened wire, crash‑safe
+> **Status (27 Jul 2026): Stages 1–4 built + tested, and the production‑node core is done**
+> in [`../derivatives/netnode/`](../derivatives/netnode/) (**39 tests**): hardened wire, crash‑safe
 > store, real‑TCP sync, difficulty retarget, `addr`‑gossip discovery, DoS resource bounds, a tagged
-> pre‑release, **block validation beyond PoW** (`fullnode.py`), and a **validated UTXO chainstate**
-> (`chainstate.py`) — double‑spends / bad scripts / inflation / immature coinbase rejected, with
-> reorg‑safe connect/disconnect that **aborts a reorg to an invalid branch**. Remaining toward a
-> full node: make the validated chain the sole authority for serving/mining + a **mempool + tx
-> relay**; then real (non‑easy) difficulty, GPG‑signed builds, a security review, an optional faster
-> node — and operators.
+> pre‑release, **block validation beyond PoW** (`fullnode.py`), a **validated UTXO chainstate**
+> (`chainstate.py`) that is now the **sole authority** for what the node serves and mines —
+> double‑spends / bad scripts / inflation / immature‑coinbase / over‑claimed‑coinbase rejected, with
+> reorg‑safe connect/disconnect that **aborts a reorg to an invalid branch** — and a validating
+> **mempool** (`mempool.py`): `tx` messages are validated (fees recorded), pooled, and **relayed**
+> (`inv`→`getdata`→`tx`), and the miner **assembles pooled transactions** after the coinbase
+> (claiming subsidy + fees), dropping them once mined. The network now carries **real transactions**,
+> not just coinbases. Remaining toward a hardened public launch: **real (non‑easy) difficulty** from
+> a sane start, GPG‑signed builds, a security review, an optional faster node — and operators.
 
 1. **Harden the wire.** ✅ Checksums, real TCP, timeouts, reconnection, DoS size caps, misbehavior
    scoring — two nodes on *different machines* sync reliably (`netnode/wire.py`, `livenode.py`).

@@ -75,6 +75,28 @@ class ChainState:
     def balance(self) -> int:
         return sum(c.value for c in self.utxo.values())
 
+    # -- locator / serving over the VALIDATED chain (authoritative) -------------
+    def get_locator(self) -> list[bytes]:
+        have, i, step = [], len(self.active) - 1, 1
+        while i >= 0:
+            have.append(self.active[i])
+            i -= step
+            if len(have) > 10:
+                step *= 2
+        if self.active and have[-1] != self.active[0]:
+            have.append(self.active[0])
+        return have
+
+    def blocks_after(self, have, hash_stop) -> list[bytes]:
+        pos = {h: k for k, h in enumerate(self.active)}
+        start = max((pos[h] for h in have if h in pos), default=0)
+        out = []
+        for h in self.active[start + 1:]:
+            if h == hash_stop:
+                break
+            out.append(h)
+        return out
+
     # -- connect / disconnect --------------------------------------------------
     def _connect(self, h: bytes):
         idx = self.chain.by_hash[h]

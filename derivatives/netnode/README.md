@@ -1,10 +1,12 @@
-# netnode — a hardened, joinable, validating node for the X‑chains (Path B)
+# netnode — a hardened, joinable, validating, transacting node for the X‑chains (Path B)
 
-**Evidence: MODEL / NEW‑EXP. Not money. Not production‑secure.** This is **Stages 1–4 + the start
-of full‑node validation** from the plan in
+**Evidence: MODEL / NEW‑EXP. Not money. Not production‑secure.** This is **Stages 1–4 + a full‑node
+core** from the plan in
 [`../../docs/PUBLIC_TESTNET_SCOPE.md`](../../docs/PUBLIC_TESTNET_SCOPE.md): turning the MODEL's
 localhost demo into something **two people on different machines can run, sync, pace, discover
-peers on, and validate.**
+peers on, validate, and transact on.** The **validated UTXO chainstate is the sole authority** for
+what the node serves and mines, and a validating **mempool** carries real transactions between
+peers — not just coinbases.
 
 It keeps the lab's **faithful consensus** ([`../p2p/chainsync.py`](../p2p/chainsync.py) `Chain`:
 validation, height‑based reorg, orphans, block‑locator) and wraps it in the **adversarial‑conditions
@@ -21,7 +23,8 @@ transport** a public node needs — the "rewrite for adversarial conditions," no
 | Connections | one shot | **outbound reconnection** with backoff |
 | Blocks | — | **relay** (`inv`) to other peers + optional **miner** |
 | Difficulty | fixed genesis (easy) | **retarget** — mine at the target, **reject** peers' wrong‑nBits blocks ([`difficulty.py`](difficulty.py)) |
-| Validation | PoW only | **beyond PoW** — structure, merkle, difficulty, coinbase value ([`fullnode.py`](fullnode.py)) + a **validated UTXO chainstate** — no double‑spends / bad scripts / inflation, reorg‑safe with abort‑on‑invalid ([`chainstate.py`](chainstate.py)) |
+| Validation | PoW only | **beyond PoW** — structure/merkle/difficulty ([`fullnode.py`](fullnode.py)) + a **validated UTXO chainstate** that is the **sole authority** for serving/mining — no double‑spends / bad scripts / inflation / immature‑coinbase / over‑claimed coinbase, reorg‑safe with abort‑on‑invalid ([`chainstate.py`](chainstate.py)) |
+| Transactions | — | a validating **mempool** ([`mempool.py`](mempool.py)) — `tx` messages validated, pooled, and **relayed** (`inv`→`getdata`→`tx`); the miner assembles pooled txs after the coinbase (claiming subsidy + fees) and drops them once mined |
 | Discovery | manual only | **`addr` gossip + auto‑connect** — one seed address meshes you in |
 | Run it | a pytest scenario | a **CLI** anyone can run (`python -m netnode`) |
 
@@ -49,35 +52,39 @@ live chain.
 **Operator guide → [`RUN.md`](RUN.md)** (seeds, ports, NAT, troubleshooting).
 **Security posture + known gaps → [`SECURITY.md`](SECURITY.md)** — read it before exposing a node.
 
-## Tests (`test_netnode.py` + `test_chainstate.py`, 30)
+## Tests (`test_netnode.py` + `test_chainstate.py` + `test_mempool.py`, 39)
 
 The wire rejects a tampered checksum / bad magic / oversize; the store ignores a crash‑truncated
 tail; **two nodes sync over real TCP**; a node **reloads its chain from disk**; the retarget
 math nudges/floors correctly and the compact target round‑trips; a node **rejects a block with a
 forged nBits**; **three nodes mesh** (C discovers A purely through B's `addr` gossip and syncs A's
 chain); the resource bounds hold — a **bounded peer table**, an **inbound‑connection cap**, and a
-**rate limit that drops a flooding peer**; full block validation works — the parser round‑trips
-and an **over‑claimed coinbase** / **tampered merkle root** is rejected; and the UTXO chainstate
-accepts a valid spend while rejecting a **double‑spend / inflation / immature‑coinbase spend / bad
-signature**, and **aborts a reorg to an invalid branch, restoring the prior chain.**
+**rate limit that drops a flooding peer**; block validation works — the parser round‑trips, a
+**tampered merkle root** is rejected, and an **over‑claimed coinbase** is accepted by the index but
+**rejected by the validated chainstate**; the UTXO chainstate accepts a valid spend while rejecting
+a **double‑spend / inflation / immature‑coinbase spend / bad signature**, and **aborts a reorg to
+an invalid branch, restoring the prior chain**; and the mempool accepts a valid spend (recording
+its **fee**), rejects a **double‑spend / inflation / bad signature / immature‑coinbase spend**,
+allows and **orders a chained unconfirmed spend** (parent before child), **drops a mined tx** on
+reconcile, the miner **assembles a pooled tx into a block** after which it leaves the pool, and a
+**tx relays over real TCP** into a second node's mempool.
 
 ```bash
-python -m pytest        # 30 passed
+python -m pytest        # 39 passed
 python -m netnode --chain jan09x --datadir ./d --no-listen --mine   # watch it mine
 ```
 
 ## Honest boundary — what this is *not*
 
-The X‑chains are now **joinable, self‑pacing, self‑discovering, resource‑bounded, and
-fully‑validating** (a UTXO chainstate rejects double‑spends / bad scripts / inflation and reorgs
-safely) — but *not* safe as money or "eternal." The validated chainstate runs alongside the index
-but the node still **serves/mines on the PoW‑selected tip** (they coincide on today's
-coinbase‑only network); making the validated chain the sole authority + adding a **mempool + tx
-relay** is the next increment, and the retarget still starts at an easy floor (fine *only* because
-it is not money). Still ahead (see the scope doc): that authoritative wiring, GPG‑**signed**
-builds, a **security review**, a **faster node** (C++/Rust) if Python can't keep up, and — the part
-no code delivers — **other operators.** A chain is only "eternal" once independent people choose to
-keep running it. **Not money.**
+The X‑chains are now **joinable, self‑pacing, self‑discovering, resource‑bounded, fully‑validating,
+and transacting**: a validated UTXO chainstate (the **sole authority** for what the node serves and
+mines) rejects double‑spends / bad scripts / inflation / over‑claimed coinbases and reorgs safely,
+and a validating **mempool** relays real transactions and feeds them into assembled blocks — but
+this is *not* safe as money or "eternal." The retarget still starts at an easy floor (fine *only*
+because it is not money). Still ahead (see the scope doc): **real (non‑easy) difficulty** from a
+sane start, GPG‑**signed** builds, a **security review**, a **faster node** (C++/Rust) if Python
+can't keep up, and — the part no code delivers — **other operators.** A chain is only "eternal"
+once independent people choose to keep running it. **Not money.**
 
 Provenance: consensus is `chainsync.Chain` (faithful to v0.1); the transport, persistence, and CLI
 are **NEW‑EXP**. A tool, never authority (`../../../common/AUTHORITY.md`).
