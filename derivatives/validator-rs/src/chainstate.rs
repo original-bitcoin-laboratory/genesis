@@ -1,15 +1,20 @@
-//! The stateful validator: a UTXO set and `connect_block`, enforcing the *value* consensus rules
-//! the Python `ChainState._connect` does — every input exists and is unspent, coinbase maturity,
-//! the input script is satisfied (via `script::verify_spend`), no inflation, and the coinbase-value
-//! rule with fees. Reorg/disconnect and the difficulty retarget are out of scope for this slice.
-//! NOT money.
+//! The stateful validator's UTXO + value rules — mirrors the Python `ChainState._connect`. NOT money.
+//!
+//! `apply_txs` is the shared value/script logic (used by the simple `ChainState` here and by the
+//! reorg‑capable `NodeState` in `reorg`): every input exists and is unspent, coinbase maturity, the
+//! input script is satisfied (the full v0.1 interpreter, `script::verify_spend`), no inflation, and
+//! the coinbase‑value rule with fees — applied with rollback so a rejected block leaves the UTXO
+//! unchanged.
 
 use std::collections::HashMap;
 
 use crate::script::verify_spend;
 use crate::{check_coinbase_value, is_coinbase, parse_block_txs};
 
+pub type Outpoint = ([u8; 32], u32);
+
 /// An unspent output.
+#[derive(Clone)]
 pub struct Coin {
     pub value: i64,
     pub spk: Vec<u8>,
@@ -17,13 +22,89 @@ pub struct Coin {
     pub coinbase: bool,
 }
 
-/// A UTXO set plus the value-rule connect logic. Connecting is **atomic**: on any failure the set
-/// is left unchanged (like the Python's rollback), so an invalid block can be tried and rejected
-/// without corrupting state.
-pub struct ChainState {
-    utxo: HashMap<([u8; 32], u32), Coin>,
+/// Undo data for one connected block: (pre‑block coins consumed, outputs created).
+pub type Undo = (Vec<(Outpoint, Coin)>, Vec<Outpoint>);
+
+/// Apply a block's transactions to `utxo`, enforcing the value rules. On success returns the undo
+/// data (UTXO mutated); on the first failing rule it **rolls back** and returns the reason.
+pub(crate) fn apply_txs(
+    utxo: &mut HashMap<Outpoint, Coin>,
+    raw: &[u8],
+    height: i64,
+    subsidy: i64,
+    strict: bool,
     maturity: i64,
-    strict: bool, // coinbase-value rule: NOV08 `==` (strict) vs JAN09 `<=`
+    is_genesis: bool,
+) -> Result<Undo, &'static str> {
+    let txs = parse_block_txs(raw);
+    let mut created: Vec<Outpoint> = Vec::new();
+    let mut spent_prior: Vec<(Outpoint, Coin)> = Vec::new();
+    let mut fees: i64 = 0;
+
+    macro_rules! bail {
+        ($e:expr) => {{
+            for k in &created {
+                utxo.remove(k);
+            }
+            for (k, c) in spent_prior.into_iter().rev() {
+                utxo.insert(k, c);
+            }
+            return Err($e);
+        }};
+    }
+
+    for (tx, tid) in &txs {
+        let coinbase = is_coinbase(tx);
+        if !coinbase {
+            let mut value_in: i64 = 0;
+            for (i_in, vin) in tx.vin.iter().enumerate() {
+                let key = (vin.prevhash, vin.n);
+                let coin = match utxo.get(&key) {
+                    Some(c) => c.clone(),
+                    None => bail!("input missing or already spent"),
+                };
+                if coin.coinbase && height - coin.height < maturity {
+                    bail!("immature coinbase spend");
+                }
+                if !verify_spend(&vin.script, &coin.spk, tx, i_in) {
+                    bail!("input script does not satisfy output");
+                }
+                value_in += coin.value;
+                utxo.remove(&key);
+                if let Some(pos) = created.iter().position(|k| *k == key) {
+                    created.remove(pos); // same-block output consumed -> nets out
+                } else {
+                    spent_prior.push((key, coin));
+                }
+            }
+            let value_out: i64 = tx.vout.iter().map(|o| o.value).sum();
+            if value_in < value_out {
+                bail!("inflation (inputs < outputs)");
+            }
+            fees += value_in - value_out;
+        }
+        for (n, o) in tx.vout.iter().enumerate() {
+            let k = (*tid, n as u32);
+            utxo.insert(k, Coin { value: o.value, spk: o.script.clone(), height, coinbase });
+            created.push(k);
+        }
+    }
+
+    if !is_genesis {
+        let claimed: i64 = txs[0].0.vout.iter().map(|o| o.value).sum();
+        if !check_coinbase_value(claimed, subsidy, fees, strict) {
+            bail!("coinbase value violates the chain rule");
+        }
+    }
+    Ok((spent_prior, created))
+}
+
+/// A single-chain UTXO validator (no reorg) — connect a block directly. For reorg + difficulty use
+/// [`crate::reorg::NodeState`].
+pub struct ChainState {
+    utxo: HashMap<Outpoint, Coin>,
+    maturity: i64,
+    strict: bool,
     pub height: i64,
 }
 
@@ -40,8 +121,8 @@ impl ChainState {
         self.utxo.values().map(|c| c.value).sum()
     }
 
-    /// Connect `raw` at `height` (with the block's `subsidy`); `is_genesis` skips the coinbase-value
-    /// rule. Returns `Ok(())` on success (UTXO updated) or the first failing reason (UTXO unchanged).
+    /// Connect `raw` at `height` (atomically). `Ok(())` on success, or the first failing reason
+    /// (UTXO unchanged).
     pub fn connect_block(
         &mut self,
         raw: &[u8],
@@ -49,54 +130,7 @@ impl ChainState {
         subsidy: i64,
         is_genesis: bool,
     ) -> Result<(), &'static str> {
-        let txs = parse_block_txs(raw);
-        let mut work: HashMap<([u8; 32], u32), Coin> = HashMap::new();
-        for (k, v) in &self.utxo {
-            work.insert(*k, Coin { value: v.value, spk: v.spk.clone(), height: v.height, coinbase: v.coinbase });
-        }
-        let mut fees: i64 = 0;
-
-        for (tx, tid) in &txs {
-            let coinbase = is_coinbase(tx);
-            if !coinbase {
-                let mut value_in: i64 = 0;
-                for (i_in, vin) in tx.vin.iter().enumerate() {
-                    let key = (vin.prevhash, vin.n);
-                    let (cval, ccoinbase, cheight, cspk) = match work.get(&key) {
-                        Some(c) => (c.value, c.coinbase, c.height, c.spk.clone()),
-                        None => return Err("input missing or already spent"),
-                    };
-                    if ccoinbase && height - cheight < self.maturity {
-                        return Err("immature coinbase spend");
-                    }
-                    if !verify_spend(&vin.script, &cspk, tx, i_in) {
-                        return Err("input script does not satisfy output");
-                    }
-                    value_in += cval;
-                    work.remove(&key);
-                }
-                let value_out: i64 = tx.vout.iter().map(|o| o.value).sum();
-                if value_in < value_out {
-                    return Err("inflation (inputs < outputs)");
-                }
-                fees += value_in - value_out;
-            }
-            for (n, o) in tx.vout.iter().enumerate() {
-                work.insert(
-                    (*tid, n as u32),
-                    Coin { value: o.value, spk: o.script.clone(), height, coinbase },
-                );
-            }
-        }
-
-        if !is_genesis {
-            let claimed: i64 = txs[0].0.vout.iter().map(|o| o.value).sum();
-            if !check_coinbase_value(claimed, subsidy, fees, self.strict) {
-                return Err("coinbase value violates the chain rule");
-            }
-        }
-
-        self.utxo = work;
+        apply_txs(&mut self.utxo, raw, height, subsidy, self.strict, self.maturity, is_genesis)?;
         self.height = height;
         Ok(())
     }

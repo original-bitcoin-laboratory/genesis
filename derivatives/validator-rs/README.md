@@ -1,10 +1,12 @@
 # validator-rs — a Rust port of the X-chain block validator (NOT money)
 
-**Evidence: NEW-EXP. Not money.** A native Rust port of the X-chain validator: the context-free
-checks *and* the stateful UTXO/value/signature validation, cross-checked byte-for-byte against the
-verified Python node. (`bench.py` showed the dominant cost is signature verification — already
-handled on the live node by the [libsecp256k1 fast path](../netnode/fastverify.py) — so a full
-native node matters only at extreme scale; this is that native validator, built and tested.)
+**Evidence: NEW-EXP. Not money.** A **consensus-complete** native Rust port of the X-chain validator:
+context-free checks, structured parsing, the full stateful UTXO/value validation, the complete v0.1
+script interpreter, and reorg + difficulty — cross-checked byte-for-byte against the verified Python
+node. Only the transport (P2P + persistence) is out of scope; that stays in the Python `netnode`.
+(`bench.py` showed the dominant cost is signature verification — already handled on the live node by
+the [libsecp256k1 fast path](../netnode/fastverify.py) — so a native node matters only at extreme
+scale; this is that native validator, built and tested.)
 
 ## What it does
 
@@ -31,11 +33,16 @@ native node matters only at extreme scale; this is that native validator, built 
   not templates;
 - **real ECDSA** (`script`) via the pure-Rust `k256` crate, **byte-faithful to v0.1's lenient
   (pre-BIP66) OpenSSL semantics** — the signature is normalized to low-S before verifying, so
-  high-S (malleated) signatures verify the same, exactly as OpenSSL accepts them.
+  high-S (malleated) signatures verify the same, exactly as OpenSSL accepts them;
+- **reorg + difficulty** (`reorg::NodeState` over a `BlockIndex`, `difficulty`, `rules`) — an active
+  validated chain with per-block undo and `activate_best`, which moves toward the index's best
+  (height-selected) chain, **gating every step on full validity** (value/script rules *and* the
+  difficulty retarget) and **rolling back to the prior chain** if a branch fails to validate.
 
-What is **not** here (the last native-node slice): **reorg / disconnect** and the **difficulty
-retarget**, which need the chain index. Those stay in the Python node. Hashes use pure-Rust
-RustCrypto crates (`ripemd`, `sha1`) and `num-bigint` for the unbounded arithmetic — no C / OpenSSL.
+This is the whole **consensus validation** of a node. What is **not** here is the **transport** —
+P2P networking and on-disk persistence — which lives (deliberately) in the Python `netnode`. Hashes
+use pure-Rust RustCrypto crates (`ripemd`, `sha1`); arithmetic uses `num-bigint`; ECDSA uses `k256` —
+no C / OpenSSL anywhere.
 
 ```bash
 cargo run --bin obl-validate -- <HEX_BLOCK>     # context-free verdict for one block (or stdin)
@@ -44,8 +51,8 @@ cargo test                                       # cross-checks everything again
 
 ## How it's verified
 
-`cargo test` cross-checks the Rust against the **verified Python node** — **10 tests** (covering
-70+ opcode scripts):
+`cargo test` cross-checks the Rust against the **verified Python node** — **15 tests** (covering
+70+ opcode scripts + reorg + difficulty):
 
 - `tests/golden.rs` (3): the standard SHA-256 `"abc"`/empty vectors; golden blocks' hash / merkle /
   PoW / tx-count; and a tamper-rejection case.
@@ -61,13 +68,17 @@ cargo test                                       # cross-checks everything again
   control, VERIFY/RETURN, and structural errors.
 - `tests/multisig.rs` (1): a real **2-of-2 CHECKMULTISIG** spend validates, and one with a wrong
   signature is rejected.
+- `tests/reorg.rs` (5): the reorg-safe chainstate **reorgs to a taller valid branch**, **aborts and
+  restores** the prior chain when a taller branch is invalid, and **rejects a forged-difficulty
+  block** — all matching the Python `ChainState`; plus the **retarget math** and **compact-target
+  round-trip**.
 
 The golden vectors come from the verified Python — the block vectors from `netnode/bench.py`'s chain
 builder, and the rest from the regenerable generators in [`tools/`](tools/) (`gen_state_vectors.py`,
-`gen_eval_vectors.py`, `gen_multisig_vectors.py`). **Verified:** compiled + tested with **rustc
-1.97.1** (`x86_64-pc-windows-gnu`), all **10 pass**; `obl-validate` on a golden block reproduces the
-Python's block hash. The novel 256-bit compact-target/PoW math was additionally cross-checked against
-the Python reference across easy / hard / edge `nBits`.
+`gen_eval_vectors.py`, `gen_multisig_vectors.py`, `gen_reorg_vectors.py`). **Verified:** compiled +
+tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **15 pass**; `obl-validate` on a golden
+block reproduces the Python's block hash. The novel 256-bit compact-target/PoW math was additionally
+cross-checked against the Python reference across easy / hard / edge `nBits`.
 
 ## Provenance
 

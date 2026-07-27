@@ -12,7 +12,11 @@
 //! produced by the verified Python node. Provenance: NEW-EXP; the byte formats are the lab's.
 
 pub mod chainstate;
+pub mod difficulty;
 pub mod eval;
+pub mod index;
+pub mod reorg;
+pub mod rules;
 pub mod script;
 pub mod sighash;
 
