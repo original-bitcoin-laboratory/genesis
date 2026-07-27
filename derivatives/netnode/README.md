@@ -47,16 +47,17 @@ live chain.
 **Operator guide → [`RUN.md`](RUN.md)** (seeds, ports, NAT, troubleshooting).
 **Security posture + known gaps → [`SECURITY.md`](SECURITY.md)** — read it before exposing a node.
 
-## Tests (`test_netnode.py`, 13)
+## Tests (`test_netnode.py`, 16)
 
 The wire rejects a tampered checksum / bad magic / oversize; the store ignores a crash‑truncated
 tail; **two nodes sync over real TCP**; a node **reloads its chain from disk**; the retarget
 math nudges/floors correctly and the compact target round‑trips; a node **rejects a block with a
-forged nBits**; and **three nodes mesh** — C discovers A purely through B's `addr` gossip and
-syncs A's chain.
+forged nBits**; **three nodes mesh** (C discovers A purely through B's `addr` gossip and syncs A's
+chain); and the resource bounds hold — a **bounded peer table**, an **inbound‑connection cap**,
+and a **rate limit that drops a flooding peer**.
 
 ```bash
-python -m pytest        # 13 passed
+python -m pytest        # 16 passed
 python -m netnode --chain jan09x --datadir ./d --no-listen --mine   # watch it mine
 ```
 

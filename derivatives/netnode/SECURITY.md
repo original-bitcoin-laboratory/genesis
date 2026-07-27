@@ -21,6 +21,9 @@ value would force adding the 2010 guardrails — at which point it stops being t
 - **Difficulty**: a received block is rejected if its `nBits` doesn't match the expected retarget
   for its parent (`difficulty.py`), so difficulty can't be silently dropped on the direct path.
 - **Persistence**: the block store is fsync'd and tolerates a crash‑truncated tail.
+- **Resource bounds**: inbound connections are capped, the gossiped peer table is bounded, and a
+  per‑peer message **rate limit** drops flooding peers — basic connection‑/addr‑/message‑flood
+  resistance (`livenode.py`).
 
 ## What is *not* defended (known gaps)
 
@@ -32,10 +35,11 @@ value would force adding the 2010 guardrails — at which point it stops being t
   `check_difficulty` defers blocks whose parent is unknown (orphans reconnect without a re‑check).
 - **No peer authentication or encryption.** Connections are plaintext; there is no defense against
   a man‑in‑the‑middle, and no identity for peers.
-- **No eclipse / Sybil resistance.** `addr` gossip and auto‑connect are bounded (peer cap, dedup,
-  size caps) but not hardened — a determined adversary can flood peer tables or partition a node.
-- **Python resource limits.** Beyond the size cap and misbehavior ban, there is no rigorous
-  memory/CPU bounding; a well‑crafted flood could degrade a node.
+- **No *strong* eclipse / Sybil resistance.** `addr` gossip and auto‑connect are now bounded
+  (peer cap, bounded table, dedup, size caps, rate limit), but not *hardened* — a determined,
+  resourceful adversary can still attempt to partition or eclipse a node.
+- **Python resource limits.** There are now connection / table / rate caps, but no rigorous
+  memory/CPU accounting; an adversary spending real resources could still degrade a node.
 - **Local trust of the datadir.** The block store isn't integrity‑signed; a tampered datadir is
   not defended against.
 

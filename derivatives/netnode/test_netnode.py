@@ -210,3 +210,66 @@ def test_discovery_meshes_three_nodes(tmp_path):
         str(tmp_path / "A"), str(tmp_path / "B"), str(tmp_path / "C")))
     assert learned                                          # C discovered A's address via B
     assert synced and hc == ha == 3                         # and synced A's chain through the mesh
+
+
+# ---- Stage 4 hardening: resource bounds (DoS) -------------------------------
+
+def test_known_addrs_are_bounded(tmp_path):
+    n = Node(CHAINS["jan09x"], str(tmp_path / "K"), max_known_addrs=5)
+    for i in range(50):
+        n._learn_addr((f"10.0.0.{i % 256}", 1000 + i))
+    assert len(n.known_addrs) <= 5                          # peer table can't be flooded unbounded
+    n.store.close()
+
+
+async def _inbound_cap_scenario(d):
+    from p2p import version_payload
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, d, listen=("127.0.0.1", 0), max_inbound=1)
+    await n.start()
+    r1, w1 = await asyncio.open_connection("127.0.0.1", n.port)
+    w1.write(frame("version", version_payload(), cfg.magic)); await w1.drain()
+    try:
+        first_ok = len(await asyncio.wait_for(r1.readexactly(24), 0.5)) == 24   # served a header
+    except (asyncio.TimeoutError, asyncio.IncompleteReadError):
+        first_ok = False
+    r2, w2 = await asyncio.open_connection("127.0.0.1", n.port)   # over the cap
+    try:
+        second_eof = (await asyncio.wait_for(r2.read(1), 0.5)) == b""           # closed at once
+    except asyncio.TimeoutError:
+        second_eof = False
+    w1.close(); w2.close()
+    await n.stop()
+    return first_ok, second_eof
+
+
+def test_inbound_connection_cap(tmp_path):
+    first_ok, second_eof = _run(_inbound_cap_scenario(str(tmp_path / "I")))
+    assert first_ok and second_eof
+
+
+async def _rate_limit_scenario(d):
+    from p2p import inv_payload, version_payload
+    from livenode import MSG_RATE_MAX
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, d, listen=("127.0.0.1", 0))
+    await n.start()
+    r, w = await asyncio.open_connection("127.0.0.1", n.port)
+    w.write(frame("version", version_payload(), cfg.magic))
+    w.write(frame("inv", inv_payload([]), cfg.magic) * (MSG_RATE_MAX + 30))   # flood, no misbehavior
+    await w.drain()
+    dropped = False
+    for _ in range(20):
+        try:
+            if (await asyncio.wait_for(r.read(65536), 0.5)) == b"":
+                dropped = True
+                break
+        except asyncio.TimeoutError:
+            break
+    w.close()
+    await n.stop()
+    return dropped
+
+
+def test_rate_limit_drops_a_flooding_peer(tmp_path):
+    assert _run(_rate_limit_scenario(str(tmp_path / "R"))) is True

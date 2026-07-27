@@ -40,6 +40,10 @@ BAN_THRESHOLD = 20
 RECONNECT_BACKOFF = 5.0
 MAX_PEERS = 8
 MAX_ADDRS_PER_MSG = 20
+MAX_INBOUND = 64                 # cap inbound connections (connection-flood DoS)
+MAX_KNOWN_ADDRS = 1024           # cap the gossiped peer table (addr-flood / poisoning)
+MSG_RATE_MAX = 600               # per-peer messages allowed per window (flood)
+MSG_RATE_WINDOW = 10.0           # seconds
 
 
 # ---- addr codec (NEW-EXP: [count:2][ len:1 host port:2 ]*) --------------------
@@ -67,7 +71,8 @@ def decode_addrs(payload: bytes):
 
 class Node:
     def __init__(self, cfg: ChainConfig, datadir, *, listen=None, advertise_host=None,
-                 mine=False, mine_interval: float = 2.0, max_peers: int = MAX_PEERS, log=None):
+                 mine=False, mine_interval: float = 2.0, max_peers: int = MAX_PEERS,
+                 max_inbound: int = MAX_INBOUND, max_known_addrs: int = MAX_KNOWN_ADDRS, log=None):
         self.cfg = cfg
         self.store = BlockStore(datadir)
         self.chain = cfg.new_chain()
@@ -76,16 +81,28 @@ class Node:
         self.mine = mine
         self.mine_interval = mine_interval
         self.max_peers = max_peers
+        self.max_inbound = max_inbound
+        self.max_known_addrs = max_known_addrs
         self._log = log or (lambda m: None)
         self._writers: set[asyncio.StreamWriter] = set()
         self._tasks: list[asyncio.Task] = []
         self._server = None
         self._closing = False
+        self._inbound_count = 0
         self.port = None
         self.advertise = None                        # our own dialable (host, port), if listening
         self.known_addrs: set[tuple[str, int]] = set()
         self._dialing: set[tuple[str, int]] = set()  # outbound addrs in flight (dedup + self)
         self._load_or_init()
+
+    def _learn_addr(self, addr) -> bool:
+        """Record a gossiped peer, bounded (DoS). Returns True if it was new."""
+        if addr == self.advertise or addr in self.known_addrs:
+            return False
+        if len(self.known_addrs) >= self.max_known_addrs:
+            return False                             # table full — ignore (bounded)
+        self.known_addrs.add(addr)
+        return True
 
     # -- persistence / genesis -------------------------------------------------
     def _load_or_init(self):
@@ -143,7 +160,14 @@ class Node:
         self._tasks.append(asyncio.create_task(self._outbound(host, int(port))))
 
     async def _inbound(self, reader, writer):
-        await self._session(reader, writer, initiate=False)
+        if self._inbound_count >= self.max_inbound:      # connection-flood cap
+            writer.close()
+            return
+        self._inbound_count += 1
+        try:
+            await self._session(reader, writer, initiate=False)
+        finally:
+            self._inbound_count -= 1
 
     async def _outbound(self, host, port):
         try:
@@ -183,10 +207,18 @@ class Node:
     async def _session(self, reader, writer, initiate):
         self._writers.add(writer)
         misbehavior = 0
+        loop = asyncio.get_event_loop()
+        window_start, msgs = loop.time(), 0
         try:
             await self._send(writer, "version", version_payload())
             while not self._closing:
                 command, payload = await read_message(reader, self.cfg.magic)
+                now = loop.time()                        # per-peer message rate limit (flood)
+                if now - window_start >= MSG_RATE_WINDOW:
+                    window_start, msgs = now, 0
+                msgs += 1
+                if msgs > MSG_RATE_MAX:
+                    raise WireError("rate limit exceeded")
                 if command == "version":
                     if initiate:
                         await self._send(writer, "getblocks",
@@ -197,10 +229,8 @@ class Node:
                 elif command == "addr":
                     fresh = []
                     for host, port in decode_addrs(payload):
-                        a = (host, port)
-                        if a != self.advertise and a not in self.known_addrs:
-                            fresh.append(a)
-                        self.known_addrs.add(a)
+                        if self._learn_addr((host, port)):   # bounded peer table
+                            fresh.append((host, port))
                         self._dial(host, port)       # auto-connect (capped, dedup, non-self)
                     if fresh:                        # gossip newly-learned peers onward
                         for w in list(self._writers):
