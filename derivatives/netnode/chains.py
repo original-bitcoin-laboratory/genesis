@@ -67,15 +67,17 @@ CHAINS: dict[str, ChainConfig] = {
 _tag = [0]
 
 
-def mine_next(prev: bytes, height: int, nbits: int, check_fn, msg: bytes = b"") -> bytes:
+def mine_next(prev: bytes, height: int, nbits: int, check_fn,
+              subsidy: int = 50 * 100_000_000, msg: bytes = b"") -> bytes:
     """Pure miner (safe to run in an executor): build a unique coinbase block on `prev` at
-    `nbits` difficulty and brute-force a nonce until `check_fn(raw)` (the chain's PoW)."""
+    `nbits` difficulty, claiming exactly `subsidy` in the coinbase (so it passes the chain's
+    coinbase-value rule), and brute-force a nonce until `check_fn(raw)` (the chain's PoW)."""
     _tag[0] = (_tag[0] + 1) & 0xFFFFFF
     cb = Tx(1, [], [], 0)
     script = (bytes([len(msg)]) + msg if msg else b"") + bytes(
         [height & 0xFF, (height >> 8) & 0xFF, _tag[0] & 0xFF, (_tag[0] >> 8) & 0xFF])
     cb.vin.append(TxIn(ZERO, 0xFFFFFFFF, script, 0xFFFFFFFF))
-    cb.vout.append(TxOut(50 * 100_000_000, b"\x51"))          # OP_1 placeholder; value not consensus-checked
+    cb.vout.append(TxOut(subsidy, b"\x51"))                   # OP_1 placeholder; claims the subsidy
     mr = merkle_root([cb])
     t = int(time.time())
     for nonce in range(1 << 28):

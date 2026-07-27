@@ -20,6 +20,8 @@ value would force adding the 2010 guardrails — at which point it stops being t
   → a peer that sends garbage, oversize, or bad‑magic frames is dropped (`wire.py`, `livenode.py`).
 - **Difficulty**: a received block is rejected if its `nBits` doesn't match the expected retarget
   for its parent (`difficulty.py`), so difficulty can't be silently dropped on the direct path.
+- **Block validation** (`fullnode.py`): beyond PoW — block structure (one coinbase first), the
+  **merkle commitment**, difficulty, and the chain's **coinbase‑value rule** are enforced.
 - **Persistence**: the block store is fsync'd and tolerates a crash‑truncated tail.
 - **Resource bounds**: inbound connections are capped, the gossiped peer table is bounded, and a
   per‑peer message **rate limit** drops flooding peers — basic connection‑/addr‑/message‑flood
@@ -27,9 +29,11 @@ value would force adding the 2010 guardrails — at which point it stops being t
 
 ## What is *not* defended (known gaps)
 
-- **Validation is proof‑of‑work only.** The node's `chainsync.Chain` checks PoW, not full
-  transaction/script/coinbase‑value validity. A block with valid PoW but an invalid transaction
-  would be accepted. (Harmless without value; unacceptable with it.)
+- **Transaction/UTXO validation is not yet complete.** The node now validates block structure,
+  the merkle commitment, difficulty, and the **coinbase‑value rule** (`fullnode.py`) — but not yet
+  full transaction validity (double‑spends, script satisfaction, no‑inflation), which needs a UTXO
+  set with reorg‑safe connect/disconnect. The network is **coinbase‑only** today, so this fully
+  validates it; spend validation is the next increment.
 - **Difficulty floor is easy, and the orphan path is unvalidated.** Difficulty starts at a
   regtest‑easy floor — the chain is **trivially rewritable** by anyone with modest hashpower — and
   `check_difficulty` defers blocks whose parent is unknown (orphans reconnect without a re‑check).

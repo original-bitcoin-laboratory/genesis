@@ -58,10 +58,14 @@ reconstruction.**
 
 ## A staged plan (each stage independently useful)
 
-> **Status (27 Jul 2026): Stages 1–3 are built + tested** in
-> [`../derivatives/netnode/`](../derivatives/netnode/) (13 tests): hardened wire, crash‑safe
-> store, real‑TCP sync, difficulty retarget, and `addr`‑gossip discovery. What remains is Stage 4
-> (a packaged/signed release), a security review, an optional faster node — and operators.
+> **Status (27 Jul 2026): Stages 1–4 built + tested, and full‑node validation started** in
+> [`../derivatives/netnode/`](../derivatives/netnode/) (20 tests): hardened wire, crash‑safe
+> store, real‑TCP sync, difficulty retarget, `addr`‑gossip discovery, DoS resource bounds, a
+> tagged pre‑release, and **block validation beyond PoW** (structure / merkle / difficulty /
+> coinbase‑value, via `fullnode.py`). The **production‑node program** now proceeds toward full
+> transaction/UTXO validation (double‑spends, scripts, no‑inflation, reorg‑safe connect/disconnect)
+> + mempool + tx relay; then GPG‑signed builds, a security review, an optional faster node — and
+> operators.
 
 1. **Harden the wire.** ✅ Checksums, real TCP, timeouts, reconnection, DoS size caps, misbehavior
    scoring — two nodes on *different machines* sync reliably (`netnode/wire.py`, `livenode.py`).

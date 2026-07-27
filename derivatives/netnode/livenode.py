@@ -32,7 +32,8 @@ from chainsync import block_hash, locator_payload, nbits_of, parse_getblocks  # 
 from p2p import MSG_BLOCK, inv_payload, parse_inv, version_payload            # noqa: E402
 
 from chains import ChainConfig, mine_next             # noqa: E402
-from difficulty import check_difficulty, expected_bits  # noqa: E402
+from difficulty import expected_bits                  # noqa: E402
+from fullnode import validate_block                   # noqa: E402
 from store import BlockStore                           # noqa: E402
 from wire import WireError, frame, read_message        # noqa: E402
 
@@ -270,7 +271,9 @@ class Node:
                 pass
 
     async def _on_block(self, raw: bytes, origin) -> int:
-        if not check_difficulty(self.chain, raw, self.cfg.rules):   # Stage 2: reject wrong nBits
+        ok, reason = validate_block(raw, self.chain, self.cfg.rules)  # full validation (struct/merkle/difficulty/coinbase)
+        if not ok:
+            self._log(f"reject block: {reason}")
             return 5
         status, h = self.chain.process_block(raw)
         if status in ("accepted", "orphan"):
@@ -291,8 +294,9 @@ class Node:
         while not self._closing:
             prev, height = self.tip, self.height + 1
             nbits = expected_bits(self.chain, prev, self.cfg.rules)     # Stage 2: retarget
+            subsidy = self.cfg.rules.get_block_value(self.height)       # coinbase claims the subsidy
             raw = await loop.run_in_executor(None, mine_next, prev, height, nbits,
-                                             self.chain.check_block, self.cfg.genesis_msg[:0])
+                                             self.chain.check_block, subsidy, self.cfg.genesis_msg[:0])
             status, h = self.chain.process_block(raw)
             if status == "accepted":
                 self.store.append(raw)

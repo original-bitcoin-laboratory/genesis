@@ -20,6 +20,8 @@ from livenode import Node                                           # noqa: E402
 from chains import CHAINS, mine_next                                # noqa: E402
 from difficulty import (NET_RETARGET_INTERVAL, NET_TARGET_SPACING,  # noqa: E402
                         _retarget, check_difficulty, expected_bits, target_to_compact)
+from fullnode import is_coinbase, parse_block, parse_tx, validate_block  # noqa: E402
+from tx_sighash import Tx, TxIn, TxOut, serialize                   # noqa: E402
 
 TESTMAGIC = b"TEST"
 _EXPECTED_WINDOW = NET_RETARGET_INTERVAL * NET_TARGET_SPACING
@@ -100,7 +102,8 @@ def test_store_ignores_crash_truncated_tail(tmp_path):
 def _seed(node, n):
     gen_nbits = node.chain.by_hash[node.chain.genesis].nBits
     for _ in range(n):
-        raw = mine_next(node.tip, node.height + 1, gen_nbits, node.chain.check_block)
+        subsidy = node.cfg.rules.get_block_value(node.height)
+        raw = mine_next(node.tip, node.height + 1, gen_nbits, node.chain.check_block, subsidy)
         assert node.chain.process_block(raw)[0] == "accepted"
         node.store.append(raw)
 
@@ -273,3 +276,51 @@ async def _rate_limit_scenario(d):
 
 def test_rate_limit_drops_a_flooding_peer(tmp_path):
     assert _run(_rate_limit_scenario(str(tmp_path / "R"))) is True
+
+
+# ---- production node (part 1): full block validation ------------------------
+
+def test_block_tx_parser_roundtrips_serialization():
+    tx = Tx(1, [TxIn(b"\x11" * 32, 3, b"\xab\xcd\xef", 0xFFFFFFFF)],
+            [TxOut(5_000_000_000, b"\x51"), TxOut(1, b"")], 7)
+    raw = serialize(tx)
+    parsed, off = parse_tx(raw, 0)
+    assert off == len(raw)
+    assert parsed.version == 1 and parsed.locktime == 7
+    assert parsed.vin[0].prevhash == b"\x11" * 32 and parsed.vin[0].n == 3
+    assert parsed.vin[0].script == b"\xab\xcd\xef"
+    assert [(o.value, o.script) for o in parsed.vout] == [(5_000_000_000, b"\x51"), (1, b"")]
+
+
+def test_validate_accepts_a_good_block(tmp_path):
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "V"))
+    subsidy = cfg.rules.get_block_value(n.height)
+    nbits = expected_bits(n.chain, n.tip, cfg.rules)
+    good = mine_next(n.tip, 1, nbits, n.chain.check_block, subsidy)
+    ok, why = validate_block(good, n.chain, cfg.rules)
+    assert ok, why
+    assert is_coinbase(parse_block(good)[0])
+    n.store.close()
+
+
+def test_validate_rejects_overclaimed_coinbase(tmp_path):
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "C"))
+    subsidy = cfg.rules.get_block_value(n.height)
+    nbits = expected_bits(n.chain, n.tip, cfg.rules)
+    bad = mine_next(n.tip, 1, nbits, n.chain.check_block, subsidy * 2)   # claims twice the subsidy
+    ok, why = validate_block(bad, n.chain, cfg.rules)
+    assert not ok and "coinbase" in why
+    n.store.close()
+
+
+def test_validate_rejects_merkle_tampering(tmp_path):
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "M"))
+    subsidy = cfg.rules.get_block_value(n.height)
+    good = mine_next(n.tip, 1, expected_bits(n.chain, n.tip, cfg.rules), n.chain.check_block, subsidy)
+    bad = bytearray(good); bad[36] ^= 1                                 # corrupt the header merkle root
+    ok, why = validate_block(bytes(bad), n.chain, cfg.rules)
+    assert not ok and "merkle" in why
+    n.store.close()
