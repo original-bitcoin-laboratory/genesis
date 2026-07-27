@@ -54,7 +54,7 @@ reconstruction.**
 | Discovery | none | seed nodes / a DNS‑seed equivalent so a fresh node finds peers |
 | Wallet | minimal SelectCoins model | key backup, address book, resync, fee handling — safe enough for others to use |
 | Build/dist | Python, run from repo | a packaged node + reproducible builds + signed releases |
-| Perf | Python, seconds‑scale | fast enough to validate a growing chain. **Measured** (`netnode/bench.py`): ~95% of validation time is ECDSA signature verification, so the lever is a **native verifier (libsecp256k1) / batch verification**, not a rewrite of the bookkeeping — needed only once a chain is large or high‑throughput |
+| Perf | Python, seconds‑scale | fast enough to validate a growing chain. **Measured** (`netnode/bench.py`): ~95% of validation time was ECDSA signature verification → **delivered** an optional **libsecp256k1 verifier** (`netnode/fastverify.py`, ~7× per signature, ~4–5× end‑to‑end), wired **byte‑faithfully** to the origin's pre‑BIP66 OpenSSL semantics (differential‑tested; normalize + fall back, so no BIP66 drift). A full native node remains only for extreme scale |
 
 ## A staged plan (each stage independently useful)
 
@@ -75,12 +75,14 @@ reconstruction.**
 > mining node **earns its coinbase** to a persistent wallet and a person can `getbalance` /
 > `getnewaddress` / `send` over a loopback RPC (`python -m netnode ctl`), all on the faithful v0.1
 > SelectCoins / CreateTransaction path. The network now carries **real transactions**, and a person
-> can **use** it without writing Python. A **performance harness** (`netnode/bench.py`) measures where
-> validation time goes — **~95% is ECDSA signature verification**, so a faster node's lever is a
-> native verifier (libsecp256k1) / batch verification, not a rewrite. Remaining toward a hardened
+> can **use** it without writing Python. A **performance harness** (`netnode/bench.py`) found **~95% of
+> validation time is ECDSA signature verification**, so this session **delivered** that lever — an
+> optional **libsecp256k1 verifier** (`netnode/fastverify.py`, ~7× per signature / ~4–5× end‑to‑end)
+> wired **byte‑faithfully** to the origin's pre‑BIP66 OpenSSL semantics (it normalizes + falls back
+> so it does **not** drift to the BIP66 strict rule; differential‑tested). Remaining toward a hardened
 > public launch is no longer node‑core code: **choosing/running a real difficulty floor** on a live
-> launch, GPG‑signed builds, a security review, an optional faster node (only once the chain is
-> large/high‑throughput) — and operators.
+> launch, GPG‑signed builds, a security review, a full native node **only for extreme scale** — and
+> operators.
 
 1. **Harden the wire.** ✅ Checksums, real TCP, timeouts, reconnection, DoS size caps, misbehavior
    scoring — two nodes on *different machines* sync reliably (`netnode/wire.py`, `livenode.py`).

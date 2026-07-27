@@ -7,8 +7,11 @@
 
 ## Requirements
 
-- **Python 3.10+.** No external packages — the node uses only the standard library plus this
-  repository's own modules. Just clone the repo and run from `genesis/derivatives/`.
+- **Python 3.10+.** The node runs on the standard library plus the lab's own modules (its faithful
+  crypto uses `cryptography`, as the rest of the lab does). **Optional:** install `bitcoinx` (which
+  brings a real `libsecp256k1` binding) to accelerate signature verification ~7× on the validation
+  hot path — the node **falls back automatically** to the faithful path if it isn't present, with
+  identical results. Just clone the repo and run from `genesis/derivatives/`.
 
 ```bash
 git clone https://github.com/original-bitcoin-laboratory/genesis

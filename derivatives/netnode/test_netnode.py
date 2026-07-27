@@ -400,4 +400,5 @@ def test_bench_runs_and_reports_throughput():
     assert m["blocks"] == 12                                          # the whole chain validated
     assert m["txs"] >= 12 and m["sigs"] > 0                           # it carried real signed spends
     assert m["blocks_per_s"] > 0 and m["sigs_per_s"] > 0
-    assert m["sig_us"] > 0                                            # a per-signature cost was measured
+    assert m["interp_us"] > 0 and m["fast_us"] > 0                    # both verify paths were measured
+    assert m["speedup"] > 0                                           # accelerated vs faithful interpreter

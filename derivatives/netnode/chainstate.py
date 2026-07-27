@@ -31,9 +31,9 @@ for _p in ("model", "p2p", "nov08x"):
 sys.path.insert(0, str(_HERE))
 
 import cscript                                              # noqa: E402
-from spend import verify_spend                             # noqa: E402
 
 from difficulty import expected_bits                       # noqa: E402
+from fastverify import verify_spend_fast                    # noqa: E402  (== faithful verify_spend, accelerated)
 from fullnode import is_coinbase, parse_block_with_txids   # noqa: E402
 
 COINBASE_MATURITY = 100
@@ -120,7 +120,7 @@ class ChainState:
                             raise InvalidBlock("input missing or already spent")
                         if coin.coinbase and height - coin.height < self.maturity:
                             raise InvalidBlock("immature coinbase spend")
-                        if not verify_spend(cscript.parse(vin.script), coin.spk, tx, i):
+                        if not verify_spend_fast(cscript.parse(vin.script), coin.spk, tx, i):
                             raise InvalidBlock("input script does not satisfy output")
                         value_in += coin.value
                         del self.utxo[key]

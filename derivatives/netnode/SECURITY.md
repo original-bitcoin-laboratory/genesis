@@ -44,6 +44,11 @@ value would force adding the 2010 guardrails — at which point it stops being t
   faithful v0.1 `SelectCoins` / `CreateTransaction` / `SignSignature` path (real secp256k1
   signatures, every input re‑verified). The RPC control socket is **bound to loopback (127.0.0.1)
   only** and is off unless `--rpc` is passed.
+- **Accelerated verification stays faithful** (`fastverify.py`): the optional libsecp256k1 verifier
+  is wired so it returns **exactly what the origin's OpenSSL verify would** — it normalizes to low‑S
+  and falls back to OpenSSL, so it does **not** silently adopt the BIP66 strict‑DER / low‑S rule
+  (which would be a consensus change). This equivalence is differential‑tested (`test_fastverify.py`);
+  if the native library is absent it uses the faithful path directly.
 
 ## What is *not* defended (known gaps)
 

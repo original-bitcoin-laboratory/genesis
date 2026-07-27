@@ -38,10 +38,10 @@ for _p in ("model", "p2p", "nov08x"):
 sys.path.insert(0, str(_HERE))
 
 import cscript                                              # noqa: E402
-from spend import verify_spend                             # noqa: E402
 from tx_sighash import dsha256                             # noqa: E402
 
 from chainstate import Coin, COINBASE_MATURITY             # noqa: E402
+from fastverify import verify_spend_fast                    # noqa: E402  (== faithful verify_spend, accelerated)
 from fullnode import is_coinbase, parse_tx                 # noqa: E402
 
 MAX_POOL_TXS = 50_000            # bound the pool (memory DoS) — policy, not consensus
@@ -137,7 +137,7 @@ class Mempool:
         for i, vin, coin in coins:
             if coin.coinbase and coin.height >= 0 and height - coin.height < self.maturity:
                 raise MempoolReject("immature coinbase spend")
-            if not verify_spend(cscript.parse(vin.script), coin.spk, tx, i):
+            if not verify_spend_fast(cscript.parse(vin.script), coin.spk, tx, i):
                 raise MempoolReject("input script does not satisfy the output")
             value_in += coin.value
         if any(o.value < 0 for o in tx.vout):

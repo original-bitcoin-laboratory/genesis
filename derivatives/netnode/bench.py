@@ -33,9 +33,13 @@ from p2p import block_bytes, merkle_root, pow_ok                    # noqa: E402
 from spend import sign, verify_spend                               # noqa: E402
 from tx_sighash import Tx, TxIn, TxOut, dsha256, new_key, serialize as ser_tx  # noqa: E402
 
+from spend import verify_spend                                     # noqa: E402  (faithful interpreter)
+
 from chains import CHAINS                                           # noqa: E402
 from chainstate import ChainState                                  # noqa: E402
 from difficulty import NET_TARGET_SPACING, expected_bits           # noqa: E402
+import fastverify                                                   # noqa: E402
+from fastverify import verify_spend_fast                           # noqa: E402  (accelerated, == faithful)
 from fullnode import parse_block_with_txids                        # noqa: E402
 
 ZERO = b"\x00" * 32
@@ -113,11 +117,15 @@ def run(n_blocks: int = 300, spends_per_block: int = 2, reps: int = 2000) -> dic
     validate_dt = time.perf_counter() - t0
     blocks = st.height
 
-    ss, spk, tx, n = sample                                        # one ECDSA verify_spend
+    ss, spk, tx, n = sample                                        # a bare-P2PK spend to verify
     t = time.perf_counter()
     for _ in range(reps):
-        verify_spend(ss, spk, tx, n)
-    sig_us = (time.perf_counter() - t) / reps * 1e6
+        verify_spend(ss, spk, tx, n)                               # faithful pure-Python interpreter
+    interp_us = (time.perf_counter() - t) / reps * 1e6
+    t = time.perf_counter()
+    for _ in range(reps):
+        verify_spend_fast(ss, spk, tx, n)                          # accelerated (native ECDSA, no interpreter)
+    fast_us = (time.perf_counter() - t) / reps * 1e6
 
     tip_raw = chain.by_hash[chain.tip].raw                         # block parse + txids
     t = time.perf_counter()
@@ -131,9 +139,11 @@ def run(n_blocks: int = 300, spends_per_block: int = 2, reps: int = 2000) -> dic
         "blocks_per_s": blocks / validate_dt,
         "txs_per_s": n_tx / validate_dt,
         "sigs_per_s": (n_sig / validate_dt) if n_sig else 0.0,
-        "sig_us": sig_us,
+        "interp_us": interp_us, "fast_us": fast_us,
+        "speedup": interp_us / fast_us if fast_us else 1.0,
+        "backend": fastverify.BACKEND,
         "parse_us": parse_us,
-        "sig_fraction": (n_sig * sig_us / 1e6) / validate_dt if validate_dt else 0.0,
+        "sig_fraction": (n_sig * fast_us / 1e6) / validate_dt if validate_dt else 0.0,
     }
 
 
@@ -150,14 +160,19 @@ def main(argv=None):
     print(f"  blocks / second : {m['blocks_per_s']:,.0f}")
     print(f"  txs    / second : {m['txs_per_s']:,.0f}")
     print(f"  sigs   / second : {m['sigs_per_s']:,.0f}")
-    print("\n== component cost ==")
-    print(f"  1 ECDSA verify_spend : {m['sig_us']:.1f} µs")
-    print(f"  parse block + txids  : {m['parse_us']:.1f} µs")
-    print(f"  signature share of validation time : {m['sig_fraction'] * 100:.0f}%")
+    print("\n== per-input verification (bare P2PK) ==")
+    print(f"  backend               : {m['backend']}")
+    print(f"  faithful interpreter  : {m['interp_us']:.1f} µs   (spend.verify_spend)")
+    print(f"  accelerated fast path : {m['fast_us']:.1f} µs   (fastverify.verify_spend_fast)")
+    print(f"  speedup               : {m['speedup']:.1f}x   (identical accept/reject — differential-tested)")
+    print(f"  parse block + txids   : {m['parse_us']:.1f} µs")
+    print(f"  verify share of validation time : {m['sig_fraction'] * 100:.0f}%")
     print("\n== reading ==")
-    print("  ECDSA signature verification dominates. A faster node's biggest win is a native")
-    print("  verifier (libsecp256k1) / batch verification — not rewriting the bookkeeping. Until a")
-    print("  chain is large or high-throughput, the pure-Python node keeps up. NOT money.")
+    print("  Signature verification dominates, so the lever is a native verifier — realized here via")
+    print("  libsecp256k1, but ONLY through a byte-faithful path: raw libsecp256k1 rejects high-S")
+    print("  (BIP66), which the OpenSSL-lenient v0.1 origin accepts, so a naive swap would DRIFT")
+    print("  consensus. verify_spend_fast normalizes + falls back to stay identical to the origin.")
+    print("  NOT money.")
     return m
 
 

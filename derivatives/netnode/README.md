@@ -27,6 +27,7 @@ transport** a public node needs — the "rewrite for adversarial conditions," no
 | Validation | PoW only | **beyond PoW** — structure/merkle/difficulty ([`fullnode.py`](fullnode.py)) + a **validated UTXO chainstate** that is the **sole authority** for serving/mining — no double‑spends / bad scripts / inflation / immature‑coinbase / over‑claimed coinbase / wrong‑difficulty, reorg‑safe with abort‑on‑invalid ([`chainstate.py`](chainstate.py)) |
 | Transactions | — | a validating **mempool** ([`mempool.py`](mempool.py)) — `tx` messages validated, pooled, and **relayed** (`inv`→`getdata`→`tx`), with an **orphan buffer** (retried when the parent arrives) and **fee‑rate eviction** when full; the miner assembles pooled txs after the coinbase (claiming subsidy + fees) and drops them once mined |
 | Wallet | — | a persistent **wallet** ([`nodewallet.py`](nodewallet.py), on the faithful v0.1 wallet MODEL) — a mining node **earns its coinbase** to it, and it **builds + signs payments** (SelectCoins / CreateTransaction), plus a localhost **control interface** ([`rpc.py`](rpc.py)) — `getinfo` / `getnewaddress` / `getbalance` / `send` via `python -m netnode ctl` |
+| Speed | pure‑Python verify | an **optional libsecp256k1 verifier** ([`fastverify.py`](fastverify.py)) on the hot path — ~7× per signature, **byte‑faithful** to the origin's pre‑BIP66 OpenSSL semantics (differential‑tested), with automatic fallback |
 | Discovery | manual only | **`addr` gossip + auto‑connect** — one seed address meshes you in |
 | Run it | a pytest scenario | a **CLI** anyone can run (`python -m netnode`) |
 
@@ -83,15 +84,25 @@ chain of real **signed** transactions and times validating it from scratch:
 python bench.py            # ~300 blocks; prints blocks/sec, tx/sec, sigs/sec + the dominant cost
 ```
 
-The finding is consistent in **shape** (the ratio is machine‑independent even though the absolute
-rate isn't): **~95% of validation time is ECDSA signature verification.** On a typical dev machine
-that is on the order of ~1,000+ blocks/sec and a few thousand signature‑verifications/sec, at
-~0.3–0.4 ms per `verify_spend`. So a faster node's real lever is a **native verifier (libsecp256k1)
-/ batch verification**, *not* rewriting the Python bookkeeping — the pure‑Python node keeps up until
-a chain is large or high‑throughput. (This session also made block‑connect avoid re‑serializing
-every transaction to hash it — txids now come straight from the parsed bytes.)
+The finding was clear and pointed at the lever: **~95% of validation time is ECDSA signature
+verification.** So this session built that lever — an **optional libsecp256k1 verifier**
+([`fastverify.py`](fastverify.py), via `bitcoinx` / `electrumsv‑secp256k1`) wired into the
+validation hot path. On a typical dev machine it verifies a bare‑P2PK input in **~53 µs vs ~376 µs**
+for the faithful pure‑Python interpreter (**~7×**), lifting end‑to‑end validation from ~1,300 to
+**~6,000 blocks/sec (~4–5×)**. If the native library isn't installed, it falls back to the faithful
+path automatically. (This session also made block‑connect avoid re‑serializing every transaction to
+hash it — txids come straight from the parsed bytes.)
 
-## Tests (`test_netnode.py` + `test_chainstate.py` + `test_mempool.py` + `test_wallet.py`, 53)
+**The fidelity catch (why it's not a naive swap).** libsecp256k1 rejects **high‑S** (malleated)
+signatures and enforces strict DER; the v0.1 origin verifies with **OpenSSL**, which *accepts* them.
+The X‑chains are faithful **pre‑BIP66** reconstructions, so a raw libsecp256k1 swap would reject
+signatures the origin accepts — a **consensus drift** (the July‑2015 BIP66 fix, exactly what
+[`crypto_conformance/`](../crypto_conformance/) documents). `verify_spend_fast` avoids this: it
+verifies the low‑S‑normalized signature natively and **falls back to OpenSSL**, so it is *provably
+identical* to the origin's lenient semantics on every input — **differential‑tested**
+([`test_fastverify.py`](test_fastverify.py)). Speed *and* fidelity, not one at the other's expense.
+
+## Tests (`test_netnode.py` + `test_chainstate.py` + `test_mempool.py` + `test_wallet.py` + `test_fastverify.py`, 57)
 
 The wire rejects a tampered checksum / bad magic / oversize; the store ignores a crash‑truncated
 tail; **two nodes sync over real TCP**; a node **reloads its chain from disk**; the retarget
@@ -115,7 +126,7 @@ payment owned by the recipient**, and refuses an overspend; and the RPC control 
 `getinfo` / `getbalance` / `getnewaddress` and **builds + submits** a payment via `send`.
 
 ```bash
-python -m pytest        # 53 passed
+python -m pytest        # 57 passed
 python -m netnode --chain jan09x --datadir ./d --no-listen --mine   # watch it mine
 ```
 
@@ -129,10 +140,10 @@ reorgs safely, a validating **mempool** relays real transactions into assembled 
 money or "eternal." The difficulty *floor* exists (`--min-difficulty`) but **defaults to easy** (a
 real one is an operator job); the RPC is **loopback‑only and unauthenticated**; the wallet holds
 **experimental keys for a valueless chain.** Still ahead (see the scope doc): running at a **real
-difficulty**, GPG‑**signed** builds, a **security review**, a **faster node** if Python can't keep
-up (and [`bench.py`](bench.py) says the lever is a native signature verifier, not a rewrite of the
-bookkeeping), and — the part no code delivers — **other operators.** A chain is only "eternal" once
-independent people choose to keep running it. **Not money.**
+difficulty**, GPG‑**signed** builds, a **security review**, and — for extreme scale only — a
+full **native node** (the dominant per‑signature cost is already handled by the optional
+libsecp256k1 verifier), and — the part no code delivers — **other operators.** A chain is only
+"eternal" once independent people choose to keep running it. **Not money.**
 
 Provenance: consensus is `chainsync.Chain` (faithful to v0.1); the transport, persistence, and CLI
 are **NEW‑EXP**. A tool, never authority (`../../../common/AUTHORITY.md`).
