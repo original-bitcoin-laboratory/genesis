@@ -1,0 +1,385 @@
+<title>Is it a Bitcoin? — the origin compass</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A reasoning compass, grounded in the whitepaper and v0.1.0, for whether an object qualifies as 'a Bitcoin' or 'a satoshi' — and where the answer is convention, not fact.">
+<style>
+  :root{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
+    --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44;
+    --brass:#c9a75f; --brass-ink:#0e1316;
+    --fill:#4c7186; --fill-soft:#2a3a43; --focus:#7fb2c8;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:light){
+    :root{
+      --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6;
+      --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+      --line:#e0e5e0; --line-strong:#cfd6d0;
+      --brass:#9a7726; --brass-ink:#fffdf7; --fill:#5a8298; --fill-soft:#dbe4e6; --focus:#2f6b85;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
+    --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44;
+    --brass:#c9a75f; --brass-ink:#0e1316; --fill:#4c7186; --fill-soft:#2a3a43; --focus:#7fb2c8;
+  }
+  :root[data-theme="light"]{
+    --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6;
+    --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+    --line:#e0e5e0; --line-strong:#cfd6d0;
+    --brass:#9a7726; --brass-ink:#fffdf7; --fill:#5a8298; --fill-soft:#dbe4e6; --focus:#2f6b85;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:clamp(20px,4vw,44px) clamp(16px,4vw,28px) 72px}
+  a{color:var(--focus);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--brass);margin:0 0 14px}
+  h1{font-family:var(--mono);font-weight:700;font-size:clamp(26px,5.2vw,40px);line-height:1.08;
+    letter-spacing:-.01em;margin:0 0 12px;text-wrap:balance}
+  .lede{font-size:clamp(15px,2.4vw,17px);color:var(--ink-dim);max-width:66ch;margin:0}
+  .lede b{color:var(--ink);font-weight:600}
+  .nav{margin:18px 0 0;display:flex;flex-wrap:wrap;gap:8px;font-family:var(--mono);font-size:12px}
+  .nav a{border:1px solid var(--line-strong);border-radius:7px;padding:6px 11px;color:var(--ink-dim)}
+  .nav a:hover{color:var(--ink);text-decoration:none;border-color:var(--brass)}
+
+  .grid{margin-top:26px;display:grid;grid-template-columns:1fr;gap:20px}
+  @media(min-width:820px){.grid{grid-template-columns:minmax(0,340px) minmax(0,1fr)}}
+
+  .console{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    align-self:start}
+  .console h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-faint);margin:0;padding:16px clamp(14px,3vw,20px) 0}
+  .subject{padding:12px clamp(14px,3vw,20px) 0}
+  .subject input{width:100%;font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel-2);border:1px solid var(--line-strong);border-radius:8px;padding:9px 11px}
+  .subject input::placeholder{color:var(--ink-faint)}
+  .subject input:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+  .presets{padding:12px clamp(14px,3vw,20px) 4px;display:flex;flex-wrap:wrap;gap:6px}
+  .presets .lab{flex-basis:100%;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-faint);margin-bottom:2px}
+  .chip{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);background:var(--panel-2);
+    border:1px solid var(--line);border-radius:6px;padding:4px 9px;cursor:pointer;transition:.15s}
+  .chip:hover{color:var(--ink);border-color:var(--brass)}
+  .chip:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+  .props{padding:8px clamp(14px,3vw,20px) 18px;display:flex;flex-direction:column}
+  .prop{padding:14px 0;border-bottom:1px solid var(--line)}
+  .prop:last-child{border-bottom:0}
+  .prop .q{font-size:13.5px;color:var(--ink);margin:0 0 3px;font-weight:500}
+  .prop .cite{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin:0 0 9px}
+  .seg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line-strong);
+    border-radius:8px;padding:3px;gap:2px}
+  .seg button{font-family:var(--mono);font-size:12px;color:var(--ink-dim);background:transparent;
+    border:0;border-radius:5px;padding:6px 12px;cursor:pointer;transition:background .15s,color .15s}
+  .seg button:hover{color:var(--ink)}
+  .seg button[aria-pressed="true"]{background:var(--fill);color:#fff;font-weight:600}
+  .seg button.yes[aria-pressed="true"]{background:var(--brass);color:var(--brass-ink)}
+  .seg button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+  .reset{margin:2px clamp(14px,3vw,20px) 18px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+    background:transparent;border:0;cursor:pointer;padding:4px 0;text-decoration:underline}
+  .reset:hover{color:var(--ink-dim)}
+
+  .verdicts{display:flex;flex-direction:column;gap:14px}
+  .bottomline{background:linear-gradient(90deg,color-mix(in srgb,var(--brass) 12%,transparent),transparent);
+    border:1px solid var(--line);border-left:3px solid var(--brass);border-radius:10px;
+    padding:14px 16px;font-size:14.5px;color:var(--ink)}
+  .bottomline b{color:var(--brass)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+  .card .top{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:baseline;justify-content:space-between}
+  .card .qn{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink);letter-spacing:.01em}
+  .card .qn small{display:block;font-weight:400;font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--ink-faint);margin-top:3px}
+  .badge{font-family:var(--mono);font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:7px;
+    white-space:nowrap;letter-spacing:.01em}
+  .badge.fact{background:var(--brass);color:var(--brass-ink)}
+  .badge.cand{background:var(--fill);color:#fff}
+  .badge.cand-soft{background:var(--fill-soft);color:var(--ink)}
+  .badge.conv{background:transparent;color:var(--brass);border:1px dashed var(--brass);font-style:italic}
+  .badge.no{background:var(--panel-2);color:var(--ink-faint);border:1px solid var(--line)}
+  .badge.na,.badge.ind{background:transparent;color:var(--ink-faint);border:1px dashed var(--line-strong)}
+  .card .why{margin:11px 0 0;font-size:13px;color:var(--ink-dim);line-height:1.6}
+  .card .why b{color:var(--ink);font-weight:600}
+  .card .why em{color:var(--brass);font-style:normal}
+  .card .why code{font-family:var(--mono);font-size:11.5px;color:var(--ink);background:var(--panel-2);
+    border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+
+  .legend{margin-top:26px;display:flex;flex-wrap:wrap;gap:8px 14px;font-family:var(--mono);font-size:11px;
+    color:var(--ink-faint)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .note{margin-top:22px;display:grid;gap:12px;max-width:74ch}
+  .note p{margin:0;font-size:13px;color:var(--ink-dim)}
+  .note p b{color:var(--ink);font-weight:600}
+  .note code{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--panel);
+    border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:4px}
+  .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Original Bitcoin Laboratory · a compass, not a verdict</p>
+  <h1>Is it a Bitcoin?</h1>
+  <p class="lede">No single definition of “Bitcoin” is universal — the word points at <b>seven different
+    kinds of thing</b> (a design, a client, a network, a ledger, a unit, a lineage…). So this doesn't
+    hand back a yes/no. You state a few <b>artifact‑grounded facts</b> about your object; it maps them
+    onto each sense and reasons out where your object <b>qualifies, and where the answer is convention,
+    not fact</b>. Grounded only in the whitepaper and the v0.1.0 source.</p>
+
+  <nav class="nav">
+    <a href="./tracker.html">← origin‑distance tracker</a>
+    <a href="https://github.com/original-bitcoin-laboratory/common/blob/main/WHAT_IS_BITCOIN.md">WHAT_IS_BITCOIN.md (the § references)</a>
+    <a href="https://github.com/original-bitcoin-laboratory/genesis">repo</a>
+  </nav>
+
+  <div class="grid">
+    <section class="console" aria-label="describe your object">
+      <h2>Your object</h2>
+      <div class="subject">
+        <input id="subject" type="text" autocomplete="off" spellcheck="false"
+          placeholder="name it (optional) — e.g. “BTC today”, “a wrapped token”…" aria-label="object name">
+      </div>
+      <div class="presets" id="presets"><span class="lab">or load an example</span></div>
+      <div class="props" id="props"></div>
+      <button class="reset" id="reset" type="button">reset all to unknown</button>
+    </section>
+
+    <section class="verdicts" aria-live="polite" aria-label="reasoning across the senses">
+      <div class="bottomline" id="bottomline"></div>
+      <div id="cards" style="display:flex;flex-direction:column;gap:14px"></div>
+    </section>
+  </div>
+
+  <div class="legend" aria-hidden="true">
+    <span><i style="background:var(--brass)"></i> fact — beyond doubt</span>
+    <span><i style="background:var(--fill)"></i> a candidate — neutral, unranked</span>
+    <span><i style="background:transparent;border:1px dashed var(--brass)"></i> convention — no factual answer</span>
+    <span><i style="background:var(--panel-2);border:1px solid var(--line)"></i> no / not applicable</span>
+  </div>
+
+  <div class="note">
+    <p><b>Why five questions, not one.</b> “BTC vs BSV” is a disagreement about the <em>network/ledger</em>
+      sense; a regulation's “Bitcoin” is usually the <em>asset</em> on an unspecified network. Splitting the
+      senses turns “you're wrong about what Bitcoin is” into the tractable “we mean the same root, a
+      different branch.”</p>
+    <p><b>What's fact, what's convention.</b> Fact (needs no convention): the <b>design</b> (the whitepaper
+      predicate) and the <b>origin artifacts</b> — the hash‑verified v0.1.0 source and genesis
+      <code>000000000019d668…</code>. Convention: which live network deserves the bare word, which codebase
+      defines “the” unit, and therefore the bitcoin↔satoshi ratio itself. This tool never smuggles the
+      second in as the first.</p>
+    <div class="tags"><span>grounded: whitepaper + v0.1.0 [S]</span><span>you supply the facts; it maps the senses</span><span>not money · no chain privileged</span></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* --- the artifact-grounded properties the reasoning runs on (tri-state: y / u / n) --- */
+const PROPS = [
+  {k:"pow",      q:"Uses proof‑of‑work consensus, with no trusted third party.",
+                 cite:"the whitepaper predicate — mining decides the ledger (§4)"},
+  {k:"ledger",   q:"Is a running or runnable system — a chain/node you can operate.",
+                 cite:"distinguishes an instance from a document, an idea, or a number"},
+  {k:"genesis",  q:"Traces to Bitcoin's genesis block 000000000019d668… (a branch of the launched chain).",
+                 cite:"continuity with the instance the world calls Bitcoin (§3)"},
+  {k:"faithful", q:"Is, or faithfully reconstructs, a frozen origin artifact (the whitepaper, or the hash‑verified v0.1.0 source / its genesis).",
+                 cite:"identity with the unique origin (§4, §8)"},
+  {k:"priced",   q:"Is bought, sold, or held as a priced asset.",
+                 cite:"the ‘asset’ sense — sense 6"},
+  {k:"unit",     q:"Is a unit or amount of value (a quantity, like 0.5 BTC or 10,000 sats).",
+                 cite:"the ‘satoshi’ / unit question (§5)"}
+];
+
+/* --- examples: [pow, ledger, genesis, faithful, priced, unit] --- */
+const PRESETS = {
+  "The whitepaper":            ["y","n","n","y","n","n"],
+  "v0.1.0 (the origin)":       ["y","y","y","y","n","n"],
+  "BTC today":                 ["y","y","y","n","y","n"],
+  "BSV":                       ["y","y","y","n","y","n"],
+  "Litecoin":                  ["y","y","n","n","y","n"],
+  "JAN09‑X (this lab)":        ["y","y","n","y","n","n"],
+  "A PoW altcoin":             ["y","y","n","n","y","n"],
+  "0.5 BTC (an amount)":       ["n","n","n","n","y","y"],
+  "Exchange‑IOU ‘BTC’":        ["n","n","n","n","y","y"],
+  "A wrapped token":           ["n","n","n","n","y","y"]
+};
+
+const S = Object.fromEntries(PROPS.map(p=>[p.k,"u"]));
+const is=k=>S[k]==="y", no=k=>S[k]==="n", unk=k=>S[k]==="u";
+
+/* ---------------- the reasoning: five senses ---------------- */
+function vType(){                                   // Bitcoin, the design / type / genus
+  if(no("pow")){
+    if(!is("ledger") && (is("unit")||is("priced")))
+      return {b:"Doesn't apply", c:"na", why:
+        "This is a quantity or a claim on value, not a running consensus system, so the design predicate "+
+        "(proof‑of‑work ledger consensus, <b>no trusted third party</b>) has nothing to attach to. If it's "+
+        "held through a custodian or issued on another chain, that custodian/issuer <em>is</em> a trusted "+
+        "third party — exactly what the design removes."};
+    return {b:"No — outside the type", c:"no", why:
+      "Bitcoin‑the‑design <em>is</em> proof‑of‑work longest‑chain consensus with no trusted third party. "+
+      "Abandon proof‑of‑work (or reintroduce a trusted third party) and it stops satisfying the whitepaper "+
+      "predicate — it <b>exits the genus</b>, whatever it is called. (§9)"};
+  }
+  if(is("pow")){
+    const defines = !is("ledger");
+    return {b:"Yes — within the type", c:"fact", why:
+      "It "+(defines?"<em>defines</em>":"satisfies")+" the whitepaper predicate — proof‑of‑work "+
+      "longest‑chain consensus with no trusted third party. This is <b>beyond doubt</b>, but "+
+      "<b>non‑unique</b>: every proof‑of‑work ledger (Litecoin, Dogecoin, …) satisfies it too, so belonging "+
+      "to the type singles nothing out. (§4, §8)"};
+  }
+  return {b:"Indeterminate", c:"ind", why:
+    "Set whether it uses proof‑of‑work with no trusted third party — that one predicate decides membership "+
+    "in Bitcoin‑the‑design."};
+}
+
+function vOrigin(){                                 // the origin — unique, beyond doubt
+  if(is("faithful")) return {b:"Yes — the origin", c:"fact", why:
+    "It is, or faithfully re‑derives, a frozen origin artifact — the whitepaper, or the hash‑verified v0.1.0 "+
+    "source whose genesis is <code>000000000019d668…</code>. This is the one referent you can point to "+
+    "<b>uniquely and beyond doubt</b>; every claimant traces back to it. (§4, §8)"};
+  if(unk("faithful")) return {b:"Indeterminate", c:"ind", why:
+    "Set whether your object <em>is</em>, or exactly reconstructs, the whitepaper or the hash‑verified v0.1.0 source."};
+  return {b:"No — not the origin itself", c:"no", why:
+    "The origin is the frozen, hash‑verified pair — whitepaper + v0.1.0, genesis <code>000000000019d668…</code>. "+
+    "Your object isn't that artifact. It may still be a <em>candidate instance</em> — see the next card."};
+}
+
+function vCandidate(){                              // a Bitcoin — the "a, not the"
+  if(!is("ledger")) return {b:"Not an instance", c:"no", why:
+    "It isn't a running or runnable chain, so it isn't an <em>instance</em> of Bitcoin — it's "+
+    (is("unit")?"a unit of value":"a design, document, or idea")+". Instances are the operable systems "+
+    "(BTC, BSV, this lab's chains); this question is about them."};
+  if(no("pow")) return {b:"No", c:"no", why:
+    "A running system that isn't proof‑of‑work secured (or that leans on a trusted third party) is outside "+
+    "the type — so it isn't a Bitcoin instance."};
+  if(unk("pow")) return {b:"Indeterminate", c:"ind", why:"Set the proof‑of‑work property first."};
+  if(is("genesis")) return {b:"Yes — a continuity candidate", c:"cand", why:
+    "It traces to genesis <code>000000000019d668…</code> — a branch of the launched chain. Its claim is "+
+    "<em>“I am what that chain became.”</em> A real candidacy — but <b>a</b> Bitcoin, never <b>the</b> "+
+    "Bitcoin: which branch you privilege is convention. (RELEASE_AS_CANDIDATES)"};
+  if(is("faithful")) return {b:"Yes — a fidelity candidate", c:"cand", why:
+    "A new instance (its own genesis) that re‑realizes the origin design <em>undrifted</em>. Its claim is "+
+    "<em>“I am what the design specifies.”</em> Measured by fidelity it sits at distance 0–1 from the origin — "+
+    "an <b>equal contender</b> to the continuity chains, by a different lens. (RELEASE_AS_CANDIDATES)"};
+  return {b:"An instance of the genus", c:"cand-soft", why:
+    "It's a proof‑of‑work ledger — a Bitcoin <em>by type</em>, like Litecoin or Dogecoin — but it neither "+
+    "traces to the genesis nor reconstructs the origin, so it makes no claim on the genesis <em>instance</em>. "+
+    "Of the design, not of the launched chain."};
+}
+
+function vThe(){                                    // *the* Bitcoin — always convention
+  let extra="";
+  if(is("priced") && is("genesis")) extra=
+    " In practice, what a market or a regulation calls “Bitcoin” is the sense‑6 <em>asset</em> on the "+
+    "highest‑market‑cap continuation — a social default, not a derived fact. (§6)";
+  return {b:"No factual answer — convention", c:"conv", why:
+    "Which instance <em>is</em> “the” Bitcoin has <b>no answer recoverable from the artifacts</b>. When one "+
+    "chain branches into two, neither branch is uniquely the original — the original is their common ancestor. "+
+    "The whitepaper selects the ledger <em>tip</em> (longest chain, under one rule set) but defines "+
+    "<b>no selector for identity across forks</b>. So this is fixed only by social/market convention."+extra+" (§3, §8)"};
+}
+
+function vUnit(){                                   // a bitcoin / a satoshi — structure fact, ratio convention
+  if(is("unit")) return {b:"Structure is fact · ratio is convention", c:"cand-soft", why:
+    "It's an amount in the ledger's <b>atomic, indivisible</b> value field (an integer <code>nValue</code>). "+
+    "That there's an atomic unit — and an aggregate <code>COIN</code> above it — is <b>artifact‑fixed</b>. But "+
+    "the <b>name</b> “satoshi” and the <b>ratio</b> “1 bitcoin = 10⁸ satoshi” are <b>convention</b>: anchor the "+
+    "unit to the Nov‑2008 pre‑release and 1 bitcoin = 10⁶ satoshi is equally, internally correct. The satoshi is "+
+    "pinned only once you <em>choose</em> an anchor. (§5)"};
+  if(unk("unit")) return {b:"—", c:"na", why:
+    "If your object is a quantity of value (a balance or amount), mark the unit property to see how “bitcoin” "+
+    "and “satoshi” resolve."};
+  return {b:"n/a — not a unit", c:"na", why:
+    "Your object isn't a unit of value, so the bitcoin↔satoshi question doesn't apply to it."};
+}
+
+const QUESTIONS = [
+  {t:"Bitcoin, the design?", s:"the type / genus — senses 1,3,7", f:vType},
+  {t:"The origin?",          s:"the unique v0.1.0 + genesis artifact — sense 2", f:vOrigin},
+  {t:"A Bitcoin?",           s:"a candidate instance — senses 4,5", f:vCandidate},
+  {t:"The Bitcoin?",         s:"the one true one", f:vThe},
+  {t:"A bitcoin / a satoshi?", s:"the unit — sense 6", f:vUnit}
+];
+
+function bottomLine(){
+  if(PROPS.every(p=>unk(p.k)))
+    return "Pick an example, or set the properties, to place your object across the senses of “Bitcoin.”";
+  if(is("unit") && !is("ledger") && !is("pow"))
+    return "In short: a <b>unit of value</b>, not a system — its atomic structure is fact; its name and ratio are convention.";
+  if(no("pow") && !is("ledger"))
+    return "In short: <b>outside Bitcoin‑the‑design</b> — no proof‑of‑work ledger to attach the predicate to.";
+  if(is("ledger") && is("pow") && is("genesis"))
+    return "In short: a <b>continuity candidate</b> for <em>a</em> Bitcoin — a branch of the launched chain; never <em>the</em> Bitcoin, which is convention.";
+  if(is("ledger") && is("pow") && is("faithful"))
+    return "In short: a <b>fidelity candidate</b> for <em>a</em> Bitcoin — the origin design re‑realized; never <em>the</em> Bitcoin, which is convention.";
+  if(is("ledger") && is("pow"))
+    return "In short: an <b>instance of the design</b> (the genus) — a Bitcoin by type, like an altcoin; not the genesis instance.";
+  if(is("faithful") && !is("ledger"))
+    return "In short: the <b>origin</b> (or its faithful reconstruction) — the one thing pointable uniquely and beyond doubt.";
+  return "Set the remaining properties to sharpen the placement.";
+}
+
+/* ---------------- rendering ---------------- */
+const propsEl=document.getElementById("props"), cardsEl=document.getElementById("cards"),
+  presetsEl=document.getElementById("presets"), blEl=document.getElementById("bottomline"),
+  subjectEl=document.getElementById("subject");
+
+PROPS.forEach(p=>{
+  const wrap=document.createElement("div"); wrap.className="prop";
+  wrap.innerHTML=`<p class="q">${p.q}</p><p class="cite">${p.cite}</p>`;
+  const seg=document.createElement("div"); seg.className="seg"; seg.setAttribute("role","group");
+  seg.setAttribute("aria-label",p.q);
+  [["y","yes"],["u","?"],["n","no"]].forEach(([v,lab])=>{
+    const b=document.createElement("button"); b.type="button"; b.textContent=lab;
+    if(v==="y") b.classList.add("yes");
+    b.setAttribute("aria-pressed",String(S[p.k]===v));
+    b.onclick=()=>{ S[p.k]=v; [...seg.children].forEach(c=>c.setAttribute("aria-pressed",String(c===b))); render(); };
+    seg.appendChild(b);
+  });
+  wrap.appendChild(seg); propsEl.appendChild(wrap);
+});
+
+Object.keys(PRESETS).forEach(name=>{
+  const c=document.createElement("button"); c.className="chip"; c.type="button"; c.textContent=name;
+  c.onclick=()=>{
+    const st=PRESETS[name]; PROPS.forEach((p,i)=>S[p.k]=st[i]);
+    subjectEl.value=name; syncSegs(); render();
+  };
+  presetsEl.appendChild(c);
+});
+
+document.getElementById("reset").onclick=()=>{
+  PROPS.forEach(p=>S[p.k]="u"); subjectEl.value=""; syncSegs(); render();
+};
+
+function syncSegs(){
+  [...propsEl.querySelectorAll(".prop")].forEach((wrap,i)=>{
+    const k=PROPS[i].k, order=["y","u","n"];
+    [...wrap.querySelectorAll(".seg button")].forEach((b,j)=>b.setAttribute("aria-pressed",String(order[j]===S[k])));
+  });
+}
+
+function render(){
+  blEl.innerHTML=bottomLine();
+  cardsEl.innerHTML="";
+  for(const q of QUESTIONS){
+    const v=q.f();
+    const card=document.createElement("div"); card.className="card";
+    card.innerHTML=
+      `<div class="top"><div class="qn">${q.t}<small>${q.s}</small></div>`+
+      `<div class="badge ${v.c}">${v.b}</div></div>`+
+      `<p class="why">${v.why}</p>`;
+    cardsEl.appendChild(card);
+  }
+}
+render();
+</script>
