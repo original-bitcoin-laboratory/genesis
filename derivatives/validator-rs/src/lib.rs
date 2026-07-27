@@ -242,3 +242,107 @@ pub fn validate_context_free(raw: &[u8]) -> Result<Summary, &'static str> {
         pow_ok: pow_ok(raw, nbits),
     })
 }
+
+// ---- structured transactions + value-rule primitives -----------------------------
+//
+// The next slice toward a native node: parse transactions into structured form (inputs, outputs,
+// scripts) and provide the *value* rules that the stateful validator applies. Script / ECDSA
+// verification and the UTXO set are deliberately NOT here — those need a real secp256k1 backend and
+// a script interpreter (a separate effort); this ports the parts that are pure byte/integer logic
+// and are fully checkable against the Python node's golden vectors.
+
+/// A transaction input (outpoint + scriptSig + sequence).
+pub struct TxIn {
+    pub prevhash: [u8; 32],
+    pub n: u32,
+    pub script: Vec<u8>,
+    pub seq: u32,
+}
+
+/// A transaction output (value is a **signed** int64, as in v0.1) + scriptPubKey.
+pub struct TxOut {
+    pub value: i64,
+    pub script: Vec<u8>,
+}
+
+/// A deserialized transaction.
+pub struct Tx {
+    pub version: u32,
+    pub vin: Vec<TxIn>,
+    pub vout: Vec<TxOut>,
+    pub locktime: u32,
+}
+
+/// Deserialize one transaction at `off`; returns it and the offset just past it.
+pub fn parse_tx(data: &[u8], off: usize) -> (Tx, usize) {
+    let mut i = off;
+    let version = u32::from_le_bytes(data[i..i + 4].try_into().unwrap());
+    i += 4;
+    let (nin, ni) = read_compact(data, i);
+    i = ni;
+    let mut vin = Vec::with_capacity(nin as usize);
+    for _ in 0..nin {
+        let mut prevhash = [0u8; 32];
+        prevhash.copy_from_slice(&data[i..i + 32]);
+        i += 32;
+        let n = u32::from_le_bytes(data[i..i + 4].try_into().unwrap());
+        i += 4;
+        let (slen, si) = read_compact(data, i);
+        i = si;
+        let script = data[i..i + slen as usize].to_vec();
+        i += slen as usize;
+        let seq = u32::from_le_bytes(data[i..i + 4].try_into().unwrap());
+        i += 4;
+        vin.push(TxIn { prevhash, n, script, seq });
+    }
+    let (nout, no) = read_compact(data, i);
+    i = no;
+    let mut vout = Vec::with_capacity(nout as usize);
+    for _ in 0..nout {
+        let value = i64::from_le_bytes(data[i..i + 8].try_into().unwrap()); // signed int64
+        i += 8;
+        let (slen, si) = read_compact(data, i);
+        i = si;
+        let script = data[i..i + slen as usize].to_vec();
+        i += slen as usize;
+        vout.push(TxOut { value, script });
+    }
+    let locktime = u32::from_le_bytes(data[i..i + 4].try_into().unwrap());
+    i += 4;
+    (Tx { version, vin, vout, locktime }, i)
+}
+
+/// Every transaction in the block, each paired with its txid (double-SHA-256 of its bytes).
+pub fn parse_block_txs(raw: &[u8]) -> Vec<(Tx, [u8; 32])> {
+    let body = &raw[80..];
+    let (ntx, mut i) = read_compact(body, 0);
+    let mut out = Vec::with_capacity(ntx as usize);
+    for _ in 0..ntx {
+        let start = i;
+        let (tx, ni) = parse_tx(body, i);
+        out.push((tx, dsha256(&body[start..ni])));
+        i = ni;
+    }
+    out
+}
+
+/// A coinbase: exactly one input, spending the null outpoint.
+pub fn is_coinbase(tx: &Tx) -> bool {
+    tx.vin.len() == 1 && tx.vin[0].prevhash == [0u8; 32] && tx.vin[0].n == 0xffff_ffff
+}
+
+/// Sum of a transaction's output values.
+pub fn sum_outputs(tx: &Tx) -> i64 {
+    tx.vout.iter().map(|o| o.value).sum()
+}
+
+/// The chain's coinbase‑value rule: NOV08 requires `claimed == subsidy + fees`; JAN09 allows
+/// `claimed <= subsidy + fees`. (Mirrors `consensus.Rules.coinbase_ok`.)
+pub fn check_coinbase_value(claimed: i64, subsidy: i64, fees: i64, strict: bool) -> bool {
+    let allowed = subsidy + fees;
+    if strict {
+        claimed == allowed
+    } else {
+        claimed <= allowed
+    }
+}
