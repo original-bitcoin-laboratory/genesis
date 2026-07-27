@@ -40,6 +40,35 @@ level `JAN09-EXECUTED`). Findings, the honest claim, and scope live in the umbre
 [`common/README.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/README.md) · [`common/CLAIMS.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/CLAIMS.md).
 These chains are **not money** (stamped in the coinbase): a research microscope, not a coin.
 
+## Run a node — and join the live experimental network
+
+The consensus and node exist **twice**, cross‑checked byte‑for‑byte: a Python node
+([`derivatives/netnode/`](derivatives/netnode/) — validation, mempool, wallet, RPC, a ~7×
+libsecp256k1 verifier, a DNS seed) and a standalone Rust node
+([`derivatives/validator-rs/`](derivatives/validator-rs/), 25 tests).
+
+A live, always‑on **JAN09‑X** node runs as a public bootstrap anchor. Join it and watch your
+node sync + independently re‑validate every block:
+
+```bash
+git clone https://github.com/original-bitcoin-laboratory/genesis
+cd genesis/derivatives
+python -m netnode --chain jan09x --datadir ./data --connect 143.110.255.205:18009
+```
+
+Full invitation + how to run your own node or seed: [`docs/ANNOUNCE.md`](docs/ANNOUNCE.md). For an
+independent reviewer: [`docs/AUDIT_SCOPE.md`](docs/AUDIT_SCOPE.md). **Not money.**
+
+## Verify the signed release
+
+Releases are **GPG‑signed** (key `B0145F74B78CF1DA`, fingerprint
+`B128 526A F85A E4A8 F22B 949F B014 5F74 B78C F1DA`; public key at
+[`docs/parthod0x-signing-key.asc`](docs/parthod0x-signing-key.asc)). See the latest under
+[**Releases**](https://github.com/original-bitcoin-laboratory/genesis/releases) and the checklist in
+[`docs/RELEASE_SIGNING.md`](docs/RELEASE_SIGNING.md). A signature authenticates *a distribution*;
+the reproducible recipe (`scripts/verify_genesis.py`) authenticates *the artifact* — that is the
+guarantee that lasts, with no key and no node to trust.
+
 ## Layout
 
 ```text
