@@ -41,6 +41,7 @@ SUITES = [
     ("studio     (R7 script debugger / stack tracer)",              DERIV / "studio"),
     ("console    (R7 capstone: full-stack driver on both X-chains)", DERIV / "console"),
     ("netnode    (Path B: hardened joinable node — TCP sync, checksums, persistence)", DERIV / "netnode"),
+    ("dnsseed    (bootstrap DNS seed: crawl reachable nodes, answer A queries)",       DERIV / "dnsseed"),
 ]
 
 # (label, script, dir) — regenerate a committed artifact and confirm it still runs

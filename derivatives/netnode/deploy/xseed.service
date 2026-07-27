@@ -1,0 +1,28 @@
+# systemd unit for a bootstrap DNS seed (see derivatives/dnsseed/).  NOT money.
+#
+# Delegate your seed hostname to this host with an NS record, then:
+#   sudoedit /etc/systemd/system/xseed.service   # set ZONE + a known seed node
+#   sudo systemctl enable --now xseed
+# Binding UDP :53 needs privileges/capabilities; a high port behind the NS delegation also works.
+
+[Unit]
+Description=Experimental X-chain DNS seed (NOT money)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/obl/derivatives
+Environment=ZONE=seed.example.test
+Environment=KNOWN_NODE=203.0.113.10:18009
+ExecStart=/usr/bin/python3 -m dnsseed --chain jan09x --zone ${ZONE} \
+          --seed ${KNOWN_NODE} --listen 0.0.0.0:5354
+Restart=on-failure
+RestartSec=5
+DynamicUser=yes
+NoNewPrivileges=yes
+# to bind the privileged DNS port directly instead of :5354, grant the capability and use --listen 0.0.0.0:53
+# AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

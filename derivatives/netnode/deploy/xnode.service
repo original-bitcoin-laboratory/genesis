@@ -1,0 +1,32 @@
+# systemd unit for an experimental X-chain node.  NOT money.
+#
+#   sudo cp derivatives/ -r /opt/obl            # the derivatives tree lives at /opt/obl/derivatives
+#   sudoedit /etc/systemd/system/xnode.service  # paste this; set ADVERTISE_IP + chain/port
+#   sudo systemctl enable --now xnode
+#
+# Keep it running so peers can rely on it — a chain lasts only as long as nodes stay up.
+
+[Unit]
+Description=Experimental X-chain node (NOT money)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/obl/derivatives
+# Set your reachable public IP so peers can dial you back. Add --mine --wallet to earn/keep coins,
+# and --rpc 127.0.0.1:18332 for local control (loopback only — never expose it).
+Environment=ADVERTISE_IP=203.0.113.10
+ExecStart=/usr/bin/python3 -m netnode --chain jan09x --datadir /var/lib/xnode \
+          --listen 0.0.0.0:18009 --advertise ${ADVERTISE_IP}
+Restart=on-failure
+RestartSec=5
+DynamicUser=yes
+StateDirectory=xnode
+# harden: the node needs only its state dir + network
+ProtectSystem=strict
+ProtectHome=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

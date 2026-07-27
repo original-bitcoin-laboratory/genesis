@@ -51,9 +51,9 @@ reconstruction.**
 | Persistence | in‑memory + a KV‑file model | crash‑safe on‑disk block/UTXO store, reorg‑safe writes, restart recovery |
 | Difficulty | regtest‑easy (instant) | a real retarget so blocks pace ~evenly and the chain can't be trivially rewritten |
 | Mining | brute‑force in a test | a miner others can run; enough distributed hashpower that no single party dominates |
-| Discovery | none | seed nodes / a DNS‑seed equivalent so a fresh node finds peers |
-| Wallet | minimal SelectCoins model | key backup, address book, resync, fee handling — safe enough for others to use |
-| Build/dist | Python, run from repo | a packaged node + reproducible builds + signed releases |
+| Discovery | none | seed nodes / a DNS‑seed equivalent so a fresh node finds peers. **Delivered** a bootstrap **DNS seed** (`derivatives/dnsseed/`): crawls the network over the real wire, verifies reachable nodes on the right magic, and answers `A` queries with their IPs — one resolvable name meshes a stranger in |
+| Wallet | minimal SelectCoins model | key backup, address book, resync, fee handling — safe enough for others to use. **Delivered** a persistent node wallet + loopback RPC (`netnode/nodewallet.py`, `rpc.py`); key encryption / backup discipline still absent (fine while valueless) |
+| Build/dist | Python, run from repo | a packaged node + reproducible builds + signed releases. **Delivered** Docker + systemd **deploy templates** (`netnode/deploy/`); GPG‑signed releases still need the operator's key |
 | Perf | Python, seconds‑scale | fast enough to validate a growing chain. **Measured** (`netnode/bench.py`): ~95% of validation time was ECDSA signature verification → **delivered** an optional **libsecp256k1 verifier** (`netnode/fastverify.py`, ~7× per signature, ~4–5× end‑to‑end), wired **byte‑faithfully** to the origin's pre‑BIP66 OpenSSL semantics (differential‑tested; normalize + fall back, so no BIP66 drift). A full native node remains only for extreme scale |
 
 ## A staged plan (each stage independently useful)
@@ -79,24 +79,34 @@ reconstruction.**
 > validation time is ECDSA signature verification**, so this session **delivered** that lever — an
 > optional **libsecp256k1 verifier** (`netnode/fastverify.py`, ~7× per signature / ~4–5× end‑to‑end)
 > wired **byte‑faithfully** to the origin's pre‑BIP66 OpenSSL semantics (it normalizes + falls back
-> so it does **not** drift to the BIP66 strict rule; differential‑tested). Remaining toward a hardened
-> public launch is no longer node‑core code: **choosing/running a real difficulty floor** on a live
-> launch, GPG‑signed builds, a security review, a full native node **only for extreme scale** — and
-> operators.
+> so it does **not** drift to the BIP66 strict rule; differential‑tested). Finally, the **operator
+> rung** now has real infrastructure: a bootstrap **DNS seed** (`derivatives/dnsseed/`) that crawls
+> the network and hands fresh nodes a resolvable set of live peers, **Docker + systemd deploy
+> templates** (`netnode/deploy/`), and — as the first slice of an eventual native node — a
+> dependency‑free **Rust port of the context‑free validator** (`derivatives/validator-rs/`,
+> self‑verifying against golden vectors from the Python). Remaining toward a hardened public launch
+> is no longer node‑core code: **choosing/running a real difficulty floor** on a live launch,
+> GPG‑signed builds, a security review, the rest of a native node **only for extreme scale** — and,
+> above all, **other people choosing to run it.**
 
 1. **Harden the wire.** ✅ Checksums, real TCP, timeouts, reconnection, DoS size caps, misbehavior
    scoring — two nodes on *different machines* sync reliably (`netnode/wire.py`, `livenode.py`).
 2. **Real difficulty + persistence.** ✅ A retarget following each chain's algorithm shape at the
    network's own spacing, floored at genesis, validated on receipt; a crash‑safe on‑disk store
    with restart recovery (`netnode/difficulty.py`, `store.py`).
-3. **Discovery + a public seed.** ✅ `addr` gossip + auto‑connect: one seed address meshes a
-   stranger in. *(Standing up a public seed with a fixed address is the operator's part.)*
-4. **A runnable release.** ⏳ *in progress* — operator guide (`netnode/RUN.md`), threat model
-   (`netnode/SECURITY.md`), versioning + a tagged GitHub release are done; **GPG‑signed builds
-   remain an operator step** (needs a signing key).
-5. **Invite operators.** The chain is only "eternal" once **other people** run
-   nodes 3 and 4 without you. This is community work, not code.
-6. *(Only if ever justified)* a faster node (C++/Rust) if the Python one can't keep up.
+3. **Discovery + a public seed.** ✅ `addr` gossip + auto‑connect *plus* a bootstrap **DNS seed**
+   (`derivatives/dnsseed/`) that crawls + verifies reachable nodes and answers `A` queries with a
+   live peer set. *(Standing up a seed with a fixed address + hostname is still the operator's part.)*
+4. **A runnable release.** ✅ operator guide (`netnode/RUN.md`), threat model (`netnode/SECURITY.md`),
+   versioning + a tagged GitHub release, and **Docker + systemd deploy templates** (`netnode/deploy/`);
+   **GPG‑signed builds remain an operator step** (needs a signing key).
+5. **Invite operators.** The chain is only "eternal" once **other people** run nodes 3 and 4 without
+   you. The code lowers the bar (DNS seed + deploy templates); the *choosing to run it* can't be
+   engineered, only earned.
+6. *(Only if ever justified)* a faster node. ✅ *started* — the dominant cost (signature
+   verification) is handled by the optional libsecp256k1 verifier, and a dependency‑free **Rust port
+   of the context‑free validator** (`derivatives/validator-rs/`) is the first slice; the rest is
+   warranted only at extreme scale.
 
 ## Non‑negotiable framing
 
