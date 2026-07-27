@@ -14,7 +14,13 @@ path = "src/lib.rs"
 name = "obl-validate"
 path = "src/main.rs"
 
-# The context-free validator is dependency-free (SHA-256 is in-crate). The *stateful* layer needs
-# ECDSA, so it uses k256 — the pure-Rust RustCrypto secp256k1 (no C compiler / OpenSSL needed).
+# The context-free validator is dependency-free (SHA-256 is in-crate). The *stateful* layer + the
+# script interpreter use pure-Rust RustCrypto crates (no C compiler / OpenSSL needed):
+#   k256 — secp256k1 ECDSA; num-bigint — v0.1's unbounded sign-magnitude script arithmetic;
+#   ripemd / sha1 — the RIPEMD-160 / SHA-1 hash opcodes.
 [dependencies]
 k256 = "0.13"
+num-bigint = "0.4"
+num-traits = "0.2"
+ripemd = "0.1"
+sha1 = "0.10"

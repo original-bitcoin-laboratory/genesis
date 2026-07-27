@@ -22,15 +22,20 @@ native node matters only at extreme scale; this is that native validator, built 
   maturity**, **no inflation**, and the **coinbase-value rule** with fees (NOV08 `==` / JAN09 `<=`),
   applied atomically (a rejected block leaves the UTXO unchanged);
 - **the v0.1 signature hash** (`sighash`) — ported to match `tx_sighash.signature_hash` exactly;
+- **the full v0.1 script interpreter** (`eval`) — a faithful `EvalScript` port over raw CScript
+  bytes: the `bignum.h` **unbounded** sign-magnitude number codec, push / control-flow (`vfExec`) /
+  stack / alt-stack / splice / bitwise / numeric / hash opcodes, `OP_CODESEPARATOR`, and
+  `OP_CHECKSIG(VERIFY)` / `OP_CHECKMULTISIG(VERIFY)` (with v0.1's off-by-one). Spends are verified by
+  **running `scriptSig · OP_CODESEPARATOR · scriptPubKey`** through it (`script::verify_spend`),
+  exactly as `VerifySignature` does — so **P2PK, P2PKH, multisig, and arbitrary scripts** all work,
+  not templates;
 - **real ECDSA** (`script`) via the pure-Rust `k256` crate, **byte-faithful to v0.1's lenient
   (pre-BIP66) OpenSSL semantics** — the signature is normalized to low-S before verifying, so
   high-S (malleated) signatures verify the same, exactly as OpenSSL accepts them.
 
-What is **not** here (the remaining native-node slice): a full **`EvalScript`** interpreter for
-arbitrary scripts (this verifies the templates the chains actually use — bare **P2PK** and the
-anyone-can-spend `OP_1` coinbase output; a non-template script returns `Err("unsupported script")`),
-**P2PKH** (needs RIPEMD-160), and **reorg/disconnect + the difficulty retarget** (need the chain
-index). Those stay in the Python node.
+What is **not** here (the last native-node slice): **reorg / disconnect** and the **difficulty
+retarget**, which need the chain index. Those stay in the Python node. Hashes use pure-Rust
+RustCrypto crates (`ripemd`, `sha1`) and `num-bigint` for the unbounded arithmetic — no C / OpenSSL.
 
 ```bash
 cargo run --bin obl-validate -- <HEX_BLOCK>     # context-free verdict for one block (or stdin)
@@ -39,24 +44,30 @@ cargo test                                       # cross-checks everything again
 
 ## How it's verified
 
-`cargo test` cross-checks the Rust against the **verified Python node** — **8 tests**:
+`cargo test` cross-checks the Rust against the **verified Python node** — **10 tests** (covering
+70+ opcode scripts):
 
 - `tests/golden.rs` (3): the standard SHA-256 `"abc"`/empty vectors; golden blocks' hash / merkle /
   PoW / tx-count; and a tamper-rejection case.
 - `tests/txparse.rs` (3): the structured parser (txids, inputs, output sums) and the coinbase-value
   rule for both chains.
-- `tests/state.rs` (2): a **real signed chain connects** while tracking the exact UTXO count +
-  balance — which only passes if the Rust sighash + ECDSA match the Python (a wrong sighash makes the
-  real signature fail) — and **rule-violating blocks are rejected with the Python's exact reasons**
+- `tests/state.rs` (2): a **real signed chain connects** (now through the full interpreter) while
+  tracking the exact UTXO count + balance — which only passes if the Rust sighash + interpreter +
+  ECDSA match the Python — and **rule-violating blocks are rejected with the Python's exact reasons**
   (double-spend → *input missing or already spent*; inflation; immature-coinbase spend; bad signature
   → *input script does not satisfy output*).
+- `tests/eval.rs` (1, **73 scripts**): the interpreter reproduces the Python model's `(ok, valid)` on
+  arithmetic (incl. big numbers), stack/alt-stack, splice, bitwise, comparisons, hashes, flow
+  control, VERIFY/RETURN, and structural errors.
+- `tests/multisig.rs` (1): a real **2-of-2 CHECKMULTISIG** spend validates, and one with a wrong
+  signature is rejected.
 
-The golden vectors come from the verified Python node — `tests/golden.rs` from `netnode/bench.py`'s
-chain builder, and `tests/data/state_data.rs` from [`tools/gen_state_vectors.py`](tools/gen_state_vectors.py)
-(rerun it to regenerate). **Verified:** compiled + tested with **rustc 1.97.1**
-(`x86_64-pc-windows-gnu`), all **8 pass**; `obl-validate` on a golden block reproduces the Python's
-block hash. The novel 256-bit compact-target/PoW math was additionally cross-checked against the
-Python reference across easy / hard / edge `nBits`.
+The golden vectors come from the verified Python — the block vectors from `netnode/bench.py`'s chain
+builder, and the rest from the regenerable generators in [`tools/`](tools/) (`gen_state_vectors.py`,
+`gen_eval_vectors.py`, `gen_multisig_vectors.py`). **Verified:** compiled + tested with **rustc
+1.97.1** (`x86_64-pc-windows-gnu`), all **10 pass**; `obl-validate` on a golden block reproduces the
+Python's block hash. The novel 256-bit compact-target/PoW math was additionally cross-checked against
+the Python reference across easy / hard / edge `nBits`.
 
 ## Provenance
 

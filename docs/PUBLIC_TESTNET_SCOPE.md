@@ -83,9 +83,10 @@ reconstruction.**
 > rung** now has real infrastructure: a bootstrap **DNS seed** (`derivatives/dnsseed/`) that crawls
 > the network and hands fresh nodes a resolvable set of live peers, **Docker + systemd deploy
 > templates** (`netnode/deploy/`), and a **Rust native validator** (`derivatives/validator-rs/`) —
-> the context‑free checks **and** the stateful UTXO/value/signature validation (v0.1 sighash + real
-> ECDSA via `k256`, byte‑faithful to the pre‑BIP66 OpenSSL semantics), compiled + tested (8 tests)
-> byte‑for‑byte against the Python node. Remaining toward a hardened public launch
+> the context‑free checks, the stateful UTXO/value validation, **and the full v0.1 `EvalScript`
+> interpreter** (unbounded bignum arithmetic, all opcodes, `OP_CHECKSIG`/`OP_CHECKMULTISIG` with real
+> ECDSA via `k256`, byte‑faithful to the pre‑BIP66 OpenSSL semantics), compiled + tested (10 tests,
+> 70+ opcode scripts) byte‑for‑byte against the Python node. Remaining toward a hardened public launch
 > is no longer node‑core code: **choosing/running a real difficulty floor** on a live launch,
 > GPG‑signed builds, a security review, the rest of a native node **only for extreme scale** — and,
 > above all, **other people choosing to run it.**
@@ -106,9 +107,10 @@ reconstruction.**
    engineered, only earned.
 6. *(Only if ever justified)* a faster node. ✅ *started* — the dominant cost (signature
    verification) is handled by the optional libsecp256k1 verifier, and a **Rust native validator**
-   (`derivatives/validator-rs/`) ports both the context‑free checks and the stateful
-   UTXO/value/signature validation (compiled + tested byte‑for‑byte vs the Python); a full
-   `EvalScript` interpreter + reorg/difficulty are the remainder, warranted only at extreme scale.
+   (`derivatives/validator-rs/`) ports the context‑free checks, the stateful UTXO/value validation,
+   **and the full v0.1 `EvalScript` interpreter** (all opcodes + `OP_CHECKSIG`/`OP_CHECKMULTISIG`),
+   compiled + tested byte‑for‑byte vs the Python; only reorg/disconnect + the difficulty retarget
+   remain, warranted only at extreme scale.
 
 ## Non‑negotiable framing
 

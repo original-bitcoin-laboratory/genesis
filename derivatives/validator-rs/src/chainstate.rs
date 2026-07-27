@@ -69,10 +69,8 @@ impl ChainState {
                     if ccoinbase && height - cheight < self.maturity {
                         return Err("immature coinbase spend");
                     }
-                    match verify_spend(&vin.script, &cspk, tx, i_in) {
-                        Ok(true) => {}
-                        Ok(false) => return Err("input script does not satisfy output"),
-                        Err(e) => return Err(e),
+                    if !verify_spend(&vin.script, &cspk, tx, i_in) {
+                        return Err("input script does not satisfy output");
                     }
                     value_in += cval;
                     work.remove(&key);
