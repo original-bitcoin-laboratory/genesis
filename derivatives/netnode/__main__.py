@@ -30,12 +30,12 @@ def _hostport(s: str, default_host: str) -> tuple[str, int]:
     return (default_host, int(s))
 
 
-async def _serve(cfg, datadir, listen, connect, advertise, mine, mine_interval):
+async def _serve(cfg, datadir, listen, connect, advertise, mine, mine_interval, min_bits):
     def log(m):
         print(f"[{cfg.key}] {m}", flush=True)
 
     node = Node(cfg, datadir, listen=listen, advertise_host=advertise,
-                mine=mine, mine_interval=mine_interval, log=log)
+                mine=mine, mine_interval=mine_interval, min_bits=min_bits, log=log)
     print(f"[{cfg.key}] netnode {__version__} up — NOT money — magic={cfg.magic.hex()} "
           f"height={node.height} datadir={datadir}", flush=True)
     await node.start(connect=connect)
@@ -63,17 +63,22 @@ def main(argv=None):
                     help="this node's reachable host, gossiped to peers (default: the listen host)")
     ap.add_argument("--mine", action="store_true", help="mine blocks")
     ap.add_argument("--mine-interval", type=float, default=2.0)
+    ap.add_argument("--min-difficulty", default=None, metavar="NBITS",
+                    help="network difficulty floor as a compact nBits hex (e.g. 0x1f00ffff); "
+                         "harder than the easy genesis, so a live network requires real work. "
+                         "All nodes on a network MUST agree on this value.")
     args = ap.parse_args(argv)
 
     cfg = CHAINS[args.chain]
     listen = None if args.no_listen else _hostport(args.listen or str(cfg.port), "0.0.0.0")
     connect = [_hostport(c, "127.0.0.1") for c in args.connect]
+    min_bits = int(args.min_difficulty, 0) if args.min_difficulty else None
 
     if sys.platform.startswith("win"):
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     try:
         asyncio.run(_serve(cfg, args.datadir, listen, connect, args.advertise,
-                           args.mine, args.mine_interval))
+                           args.mine, args.mine_interval, min_bits))
     except KeyboardInterrupt:
         pass
 

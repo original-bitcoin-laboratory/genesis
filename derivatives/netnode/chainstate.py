@@ -6,6 +6,9 @@ chain** and its **UTXO set**, with reorg‑safe **connect / disconnect** (undo d
 step on full validity** and rolling back (restoring the prior chain) if a branch fails to validate.
 
 Per block it enforces, on top of the structural/PoW checks (`fullnode.validate_block`):
+- **difficulty** — `nBits` equals the expected retarget for the parent (floored at `min_bits`).
+  Because this authoritative gate runs on *connect*, it also covers the **orphan reconnection
+  path**, where the direct‑receipt difficulty check is deferred (parent not yet known),
 - every input exists in the UTXO (no missing / double‑spent coins),
 - coinbase maturity (`COINBASE_MATURITY`),
 - the input script satisfies the referenced output's script (the v0.1 `VerifySignature` path,
@@ -31,6 +34,7 @@ import cscript                                              # noqa: E402
 from spend import verify_spend                             # noqa: E402
 from tx_sighash import dsha256, serialize as ser_tx        # noqa: E402
 
+from difficulty import expected_bits                       # noqa: E402
 from fullnode import is_coinbase, parse_block              # noqa: E402
 
 COINBASE_MATURITY = 100
@@ -52,10 +56,11 @@ def _txid(tx) -> bytes:
 
 
 class ChainState:
-    def __init__(self, chain, rules, maturity: int = COINBASE_MATURITY):
+    def __init__(self, chain, rules, maturity: int = COINBASE_MATURITY, min_bits: int | None = None):
         self.chain = chain
         self.rules = rules
         self.maturity = maturity
+        self.min_bits = min_bits                            # difficulty floor (None -> genesis nBits)
         self.utxo: dict[tuple[bytes, int], Coin] = {}
         self.active: list[bytes] = []                       # genesis .. validated tip
         self.undo: dict[bytes, tuple[list, list]] = {}      # block -> (spent_prior, created_keys)
@@ -103,6 +108,8 @@ class ChainState:
         height = idx.height
         txs = parse_block(idx.raw)
         is_genesis = h == self.chain.genesis
+        if not is_genesis and idx.nBits != expected_bits(self.chain, idx.prev, self.rules, self.min_bits):
+            raise InvalidBlock("wrong difficulty")           # authoritative — also covers orphan reconnection
         created: dict[tuple[bytes, int], Coin] = {}          # block-created outputs still live
         spent_prior: list = []                               # (outpoint, coin) pre-block coins consumed
         fees = 0

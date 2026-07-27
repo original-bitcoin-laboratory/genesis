@@ -1,4 +1,4 @@
-"""A hardened, joinable node for the experimental X-chains — NEW-EXP (Path B, Stages 1-3).
+"""A hardened, joinable node for the experimental X-chains — NEW-EXP (Path B, Stages 1-4 + full node).
 
 Turns the MODEL's localhost demo into something two people on *different machines* can run and
 sync. Consensus is the lab's faithful `chainsync.Chain`; the netnode adds the adversarial-
@@ -11,9 +11,11 @@ conditions transport around it:
 - Stage 3 — peer discovery: nodes gossip known addresses (`addr`) and auto-connect, so a
   stranger with one seed address meshes into the network without a manual `--connect` chain.
 - Full node — a validated UTXO chainstate (`chainstate.py`) is the **sole authority** for what
-  the node serves and mines, and a validating `mempool` carries **real transactions**: `tx`
-  messages are validated, pooled, and relayed (`inv`→`getdata`→`tx`), and the miner assembles
-  pooled transactions after the coinbase (claiming subsidy + fees), removing them once mined.
+  the node serves and mines (difficulty re-checked authoritatively on connect, covering the orphan
+  path; an optional `--min-difficulty` floor), and a validating `mempool` carries **real
+  transactions**: `tx` messages are validated, pooled, and relayed (`inv`→`getdata`→`tx`) — with an
+  orphan buffer and fee-rate eviction — and the miner assembles pooled transactions after the
+  coinbase (claiming subsidy + fees), removing them once mined.
 
 Evidence: MODEL / NEW-EXP. **Not money.** Not production-secure — see
 `../../docs/PUBLIC_TESTNET_SCOPE.md` for what still lies ahead (a security review, signed
@@ -81,7 +83,7 @@ class Node:
     def __init__(self, cfg: ChainConfig, datadir, *, listen=None, advertise_host=None,
                  mine=False, mine_interval: float = 2.0, max_peers: int = MAX_PEERS,
                  max_inbound: int = MAX_INBOUND, max_known_addrs: int = MAX_KNOWN_ADDRS,
-                 maturity: int = COINBASE_MATURITY, log=None):
+                 maturity: int = COINBASE_MATURITY, min_bits: int | None = None, log=None):
         self.cfg = cfg
         self.store = BlockStore(datadir)
         self.chain = cfg.new_chain()
@@ -92,6 +94,7 @@ class Node:
         self.max_peers = max_peers
         self.max_inbound = max_inbound
         self.max_known_addrs = max_known_addrs
+        self.min_bits = min_bits                         # difficulty floor (None -> easy genesis)
         self._log = log or (lambda m: None)
         self._writers: set[asyncio.StreamWriter] = set()
         self._tasks: list[asyncio.Task] = []
@@ -103,7 +106,7 @@ class Node:
         self.known_addrs: set[tuple[str, int]] = set()
         self._dialing: set[tuple[str, int]] = set()  # outbound addrs in flight (dedup + self)
         self._load_or_init()
-        self.state = ChainState(self.chain, cfg.rules, maturity=maturity)   # validated UTXO chainstate
+        self.state = ChainState(self.chain, cfg.rules, maturity=maturity, min_bits=min_bits)  # validated UTXO chainstate
         self.state.activate_best()                       # validate + build the UTXO from the loaded chain
         self.mempool = Mempool(maturity=maturity)        # not-yet-mined transactions (policy)
 
@@ -304,15 +307,18 @@ class Node:
         if self.mempool.has(txid):
             return 0                                  # already pooled — don't re-relay (loop guard)
         try:
-            self.mempool.accept(raw, self.state.utxo, self.state.height)
-        except MempoolReject as e:
+            entry, promoted = self.mempool.accept_or_orphan(raw, self.state.utxo, self.state.height)
+        except MempoolReject as e:                    # provably invalid (not merely missing a parent)
             self._log(f"reject tx: {e}")
             return 1
-        await self._announce([(MSG_TX, txid)], exclude=origin)   # relay onward
+        if entry is None:
+            return 0                                  # buffered as an orphan (parent not yet seen)
+        items = [(MSG_TX, entry.txid)] + [(MSG_TX, e.txid) for e in promoted]  # relay it + any it unblocked
+        await self._announce(items, exclude=origin)
         return 0
 
     async def _on_block(self, raw: bytes, origin) -> int:
-        ok, reason = validate_block(raw, self.chain, self.cfg.rules)  # context-free checks (struct/merkle/difficulty)
+        ok, reason = validate_block(raw, self.chain, self.cfg.rules, self.min_bits)  # context-free (struct/merkle/difficulty)
         if not ok:
             self._log(f"reject block: {reason}")
             return 5
@@ -339,7 +345,7 @@ class Node:
         loop = asyncio.get_event_loop()
         while not self._closing:
             prev, height = self.tip, self.height + 1
-            nbits = expected_bits(self.chain, prev, self.cfg.rules)     # Stage 2: retarget
+            nbits = expected_bits(self.chain, prev, self.cfg.rules, self.min_bits)   # retarget, floored
             subsidy = self.cfg.rules.get_block_value(self.height)       # coinbase claims subsidy + fees
             selected = self.mempool.select(self.state.utxo)             # pool txs, parents before children
             fees = sum(e.fee for e in selected)

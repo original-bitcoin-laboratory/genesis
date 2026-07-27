@@ -65,10 +65,10 @@ def is_coinbase(tx: Tx) -> bool:
     return len(tx.vin) == 1 and tx.vin[0].prevhash == ZERO and tx.vin[0].n == NULL_N
 
 
-def validate_block(raw: bytes, chain, rules):
+def validate_block(raw: bytes, chain, rules, min_bits=None):
     """(ok, reason). Context‑free checks (structure, merkle) always; difficulty when the parent is
-    known (deferred for orphans). The value/coinbase rules are UTXO‑stateful — see
-    `chainstate.ChainState._connect`."""
+    known (deferred for orphans, but re‑checked authoritatively in `ChainState._connect`). The
+    value/coinbase rules are UTXO‑stateful — see `chainstate.ChainState._connect`."""
     try:
         txs = parse_block(raw)
     except Exception:
@@ -83,6 +83,6 @@ def validate_block(raw: bytes, chain, rules):
         return False, "merkle root mismatch"
     prev = prev_hash(raw)
     if prev in chain.by_hash:                          # parent known -> difficulty checkable
-        if nbits_of(raw) != expected_bits(chain, prev, rules):
+        if nbits_of(raw) != expected_bits(chain, prev, rules, min_bits):
             return False, "wrong difficulty"
     return True, "ok"

@@ -18,8 +18,11 @@ value would force adding the 2010 guardrails — at which point it stops being t
 
 - **Wire**: message checksums, a 4 MiB size cap, read timeouts, and per‑peer misbehavior scoring
   → a peer that sends garbage, oversize, or bad‑magic frames is dropped (`wire.py`, `livenode.py`).
-- **Difficulty**: a received block is rejected if its `nBits` doesn't match the expected retarget
-  for its parent (`difficulty.py`), so difficulty can't be silently dropped on the direct path.
+- **Difficulty**: a block's `nBits` must equal the expected retarget for its parent — checked on
+  the direct path (`difficulty.py`) **and authoritatively on connect** (`ChainState._connect`), so
+  a wrong‑difficulty block can't slip in via the **orphan reconnection** path either. An optional
+  **network difficulty floor** (`--min-difficulty`) lets a live network require real work above the
+  deliberately‑easy genesis without altering the faithful genesis artifact.
 - **Block validation** (`fullnode.py`): beyond PoW — block structure (one coinbase first) and the
   **merkle commitment** are enforced context‑free; difficulty when the parent is known.
 - **Validated UTXO chainstate** (`chainstate.py`), the **sole authority** for what the node serves
@@ -29,8 +32,10 @@ value would force adding the 2010 guardrails — at which point it stops being t
   followed**, and a reorg to an invalid branch is **aborted and the prior chain restored**.
 - **Mempool** (`mempool.py`): relayed `tx` messages are fully validated against the UTXO and pooled
   parents before being accepted or re‑broadcast — an invalid or conflicting transaction is dropped,
-  not relayed; the pool is **bounded** (memory‑flood cap). Consensus is still re‑checked when the
-  block connects, so the mempool can only *avoid* relaying/mining bad txs, never *admit* one.
+  not relayed. The pool and the **orphan buffer** (txs that arrive before their parent) are both
+  **bounded**, and a full pool uses **fee‑rate eviction** (a cheaper newcomer is refused; a dearer
+  one evicts the cheapest childless entry). Consensus is still re‑checked when the block connects,
+  so the mempool can only *avoid* relaying/mining bad txs, never *admit* one.
 - **Persistence**: the block store is fsync'd and tolerates a crash‑truncated tail.
 - **Resource bounds**: inbound connections are capped, the gossiped peer table is bounded, the
   mempool is size‑capped, and a per‑peer message **rate limit** drops flooding peers — basic
@@ -38,14 +43,16 @@ value would force adding the 2010 guardrails — at which point it stops being t
 
 ## What is *not* defended (known gaps)
 
-- **Mempool policy is minimal.** The pool is count‑bounded and every entry is fully validated, but
-  there is **no fee‑rate eviction / replacement policy** (a full pool simply refuses new txs rather
-  than evicting the cheapest), and an **orphan transaction** (one that arrives before the parent it
-  spends) is dropped rather than held and retried. These are *policy* gaps — they cannot admit an
-  invalid tx to the validated chain (consensus is re‑checked on connect), only degrade relay quality.
-- **Difficulty floor is easy, and the orphan path is unvalidated.** Difficulty starts at a
-  regtest‑easy floor — the chain is **trivially rewritable** by anyone with modest hashpower — and
-  `check_difficulty` defers blocks whose parent is unknown (orphans reconnect without a re‑check).
+- **Mempool policy is still basic.** The pool now bounds its orphan buffer, retries orphans when a
+  parent arrives, and evicts by fee rate when full — but there is **no fee bumping / replace‑by‑fee,
+  no package relay, and only leaf‑level eviction** (a low‑fee tx with a high‑fee child isn't rescued
+  by the child's fee). These are *policy* gaps — they cannot admit an invalid tx to the validated
+  chain (consensus is re‑checked on connect), only degrade relay quality.
+- **The difficulty floor defaults to easy.** The retarget and the optional `--min-difficulty` floor
+  work, but **unless an operator sets a real floor** the network starts at regtest‑easy difficulty
+  and is **trivially rewritable** by anyone with modest hashpower. Choosing and coordinating a real
+  floor across all nodes is an operator responsibility, not a default. (The orphan‑reconnection
+  difficulty gap is now closed — see "what is defended.")
 - **No peer authentication or encryption.** Connections are plaintext; there is no defense against
   a man‑in‑the‑middle, and no identity for peers.
 - **No *strong* eclipse / Sybil resistance.** `addr` gossip and auto‑connect are now bounded

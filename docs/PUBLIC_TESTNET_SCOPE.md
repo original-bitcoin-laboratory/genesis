@@ -59,17 +59,22 @@ reconstruction.**
 ## A staged plan (each stage independently useful)
 
 > **Status (27 Jul 2026): Stages 1–4 built + tested, and the production‑node core is done**
-> in [`../derivatives/netnode/`](../derivatives/netnode/) (**39 tests**): hardened wire, crash‑safe
+> in [`../derivatives/netnode/`](../derivatives/netnode/) (**45 tests**): hardened wire, crash‑safe
 > store, real‑TCP sync, difficulty retarget, `addr`‑gossip discovery, DoS resource bounds, a tagged
 > pre‑release, **block validation beyond PoW** (`fullnode.py`), a **validated UTXO chainstate**
-> (`chainstate.py`) that is now the **sole authority** for what the node serves and mines —
-> double‑spends / bad scripts / inflation / immature‑coinbase / over‑claimed‑coinbase rejected, with
-> reorg‑safe connect/disconnect that **aborts a reorg to an invalid branch** — and a validating
-> **mempool** (`mempool.py`): `tx` messages are validated (fees recorded), pooled, and **relayed**
-> (`inv`→`getdata`→`tx`), and the miner **assembles pooled transactions** after the coinbase
-> (claiming subsidy + fees), dropping them once mined. The network now carries **real transactions**,
-> not just coinbases. Remaining toward a hardened public launch: **real (non‑easy) difficulty** from
-> a sane start, GPG‑signed builds, a security review, an optional faster node — and operators.
+> (`chainstate.py`) that is the **sole authority** for what the node serves and mines —
+> double‑spends / bad scripts / inflation / immature‑coinbase / over‑claimed‑coinbase / **wrong‑
+> difficulty** rejected (the difficulty check is authoritative **on connect**, so it also covers the
+> **orphan reconnection** path), with reorg‑safe connect/disconnect that **aborts a reorg to an
+> invalid branch** — a validating **mempool** (`mempool.py`): `tx` messages validated (fees
+> recorded), pooled, and **relayed** (`inv`→`getdata`→`tx`), with an **orphan buffer** (retried when
+> the parent arrives) and **fee‑rate eviction** when full, and the miner **assembles pooled
+> transactions** after the coinbase (subsidy + fees), dropping them once mined — and an optional
+> **`--min-difficulty` floor** so a live network can require real work above the deliberately‑easy
+> (faithful) genesis. The network now carries **real transactions**, not just coinbases. Remaining
+> toward a hardened public launch is no longer node‑core code: **choosing/running a real difficulty
+> floor** on a live launch, GPG‑signed builds, a security review, an optional faster node — and
+> operators.
 
 1. **Harden the wire.** ✅ Checksums, real TCP, timeouts, reconnection, DoS size caps, misbehavior
    scoring — two nodes on *different machines* sync reliably (`netnode/wire.py`, `livenode.py`).

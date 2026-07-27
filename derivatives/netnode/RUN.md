@@ -56,6 +56,7 @@ or live Bitcoin chain.
 | `--connect HOST:PORT` | a peer/seed to dial (repeatable; discovery finds the rest) |
 | `--advertise HOST` | your **reachable** IP, gossiped so peers can dial you back |
 | `--mine` | produce blocks |
+| `--min-difficulty NBITS` | network difficulty floor as compact‑nBits hex (e.g. `0x1f00ffff`), harder than the easy genesis so a live network requires real work. **All nodes on a network must use the same value.** |
 | `--version` | print version and exit |
 
 ## Running a public seed

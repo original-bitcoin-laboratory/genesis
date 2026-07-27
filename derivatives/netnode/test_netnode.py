@@ -340,3 +340,53 @@ def test_node_maintains_a_validated_utxo_chainstate(tmp_path):
     assert n.state.tip == n.tip
     assert n.state.balance() > 0                                        # genesis + 3 subsidies in the UTXO
     n.store.close()
+
+
+# ---- production node (part 4): difficulty floor + orphan-path validation ----
+
+def test_min_difficulty_floor_raises_the_required_work_above_the_easy_genesis(tmp_path):
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "MB"))
+    gen_nbits = n.chain.by_hash[n.chain.genesis].nBits                  # 0x207FFFFF (easy)
+    floor = 0x207FFFFE                                                  # a hair harder (smaller target)
+    assert expected_bits(n.chain, n.tip, cfg.rules, None) == gen_nbits          # default: easy genesis
+    assert expected_bits(n.chain, n.tip, cfg.rules, floor) == floor            # floored: requires real work
+    easy = mine_next(n.tip, 1, gen_nbits, n.chain.check_block, cfg.rules.get_block_value(0))
+    assert check_difficulty(n.chain, easy, cfg.rules, None) is True             # fine with no floor
+    assert check_difficulty(n.chain, easy, cfg.rules, floor) is False           # too easy under the floor
+    n.store.close()
+
+
+def test_min_difficulty_floor_is_enforced_on_connect(tmp_path):
+    from chainsync import block_hash
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "MBC"), min_bits=0x207FFFFE)           # floor harder than the easy genesis
+    gen_nbits = n.chain.by_hash[n.chain.genesis].nBits
+    easy = mine_next(n.tip, 1, gen_nbits, n.chain.check_block, cfg.rules.get_block_value(0))
+    assert n.chain.process_block(easy)[0] == "accepted"                # the PoW-only index accepts it
+    n.state.activate_best()
+    assert block_hash(easy) in n.state.invalid                         # the floor rejects it on connect
+    assert n.state.height == 0                                         # validated chain stays at genesis
+    n.store.close()
+
+
+def test_orphan_path_difficulty_is_validated_on_connect(tmp_path):
+    from chainsync import block_hash
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "OD"))
+    gen_nbits = n.chain.by_hash[n.chain.genesis].nBits
+    b1 = mine_next(n.tip, 1, gen_nbits, n.chain.check_block, cfg.rules.get_block_value(0))
+    forged = 0x207FFFFE                                                 # != expected genesis nBits, still mineable
+    b2 = mine_next(block_hash(b1), 2, forged, n.chain.check_block, cfg.rules.get_block_value(1))
+    # deliver b2 FIRST: its parent b1 is unknown, so the direct difficulty check is deferred…
+    assert validate_block(b2, n.chain, cfg.rules, n.min_bits)[0]
+    assert n.chain.process_block(b2)[0] == "orphan"
+    # …b1 arrives and chainsync reconnects the orphan b2 into the PoW index *unchecked*…
+    assert n.chain.process_block(b1)[0] == "accepted"
+    assert block_hash(b2) in n.chain.by_hash
+    # …but the authoritative connect gate catches b2's forged difficulty.
+    n.state.activate_best()
+    assert block_hash(b1) in n.state.active                            # correct-difficulty block connected
+    assert block_hash(b2) in n.state.invalid                          # forged-difficulty orphan rejected
+    assert n.state.tip == block_hash(b1) and n.state.height == 1
+    n.store.close()

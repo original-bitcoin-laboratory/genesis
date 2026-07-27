@@ -160,6 +160,49 @@ def test_miner_assembles_a_pool_tx_and_it_leaves_the_pool(tmp_path):
     n.store.close()
 
 
+# ---- part 4: orphan-tx buffering + fee-rate eviction ------------------------
+
+def test_orphan_tx_is_held_then_promoted_when_its_parent_arrives():
+    utxo, op, priv, spk = _p2pk_coin(10_000)
+    mp = Mempool()
+    parent = _signed_spend(op, priv, spk, 9_000)                  # pays OP_1
+    ptxid = dsha256(ser_tx(parent))
+    child = Tx(1, [TxIn(ptxid, 0, b"", 0xFFFFFFFF)], [TxOut(8_000, b"\x51")], 0)
+    ctxid = dsha256(ser_tx(child))
+    # child arrives first — its parent is unseen → buffered as an orphan, neither accepted nor rejected
+    entry, promoted = mp.accept_or_orphan(ser_tx(child), utxo, 1)
+    assert entry is None and promoted == []
+    assert len(mp) == 0 and ctxid in mp.orphans
+    # parent arrives → accepted, and it unblocks (promotes) the waiting child
+    entry, promoted = mp.accept_or_orphan(ser_tx(parent), utxo, 1)
+    assert entry is not None and [e.txid for e in promoted] == [ctxid]
+    assert len(mp) == 2 and mp.has(ctxid) and not mp.orphans      # orphan buffer drained
+
+
+def test_a_provably_invalid_tx_is_rejected_not_buffered():
+    utxo, op, priv, spk = _p2pk_coin(10_000)
+    mp = Mempool()
+    bad = _signed_spend(op, priv, spk, 20_000)                    # inflation (input present, out > in)
+    with pytest.raises(MempoolReject):
+        mp.accept_or_orphan(ser_tx(bad), utxo, 1)
+    assert not mp.orphans                                         # inputs exist → not an orphan
+
+
+def test_fee_rate_eviction_prefers_higher_paying_transactions():
+    priv, pub = new_key()
+    spk = [pub, "OP_CHECKSIG"]
+    ca, cb, cc = (b"\xaa" * 32, 0), (b"\xbb" * 32, 0), (b"\xcc" * 32, 0)
+    utxo = {c: Coin(10_000, spk, 0, False) for c in (ca, cb, cc)}
+    mp = Mempool(max_txs=1)
+    lo = mp.accept(ser_tx(_signed_spend(ca, priv, spk, 9_900)), utxo, 1)   # fee 100
+    assert len(mp) == 1
+    hi = mp.accept(ser_tx(_signed_spend(cb, priv, spk, 5_000)), utxo, 1)   # fee 5_000 → higher rate
+    assert len(mp) == 1 and mp.has(hi.txid) and not mp.has(lo.txid)        # evicted the cheap one
+    with pytest.raises(MempoolReject):                                     # a cheaper newcomer can't evict it
+        mp.accept(ser_tx(_signed_spend(cc, priv, spk, 9_950)), utxo, 1)    # fee 50 → lower rate
+    assert mp.has(hi.txid)
+
+
 # ---- tx relay over REAL TCP -------------------------------------------------
 
 async def _tx_relay_scenario(da, db):
