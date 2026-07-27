@@ -89,10 +89,11 @@ reconstruction.**
 > (hardened wire, crash‑safe store, a real TCP **block‑sync + transaction relay** [`inv`→`getdata`→
 > `tx`], **and transacting** — tx signing via `k256`, a validating mempool, and block assembly/mining,
 > so a Rust node mines coins, pools a spend, mines it into a block, relays it to a peer, and
-> **discovers peers via `addr` gossip**, and is **DoS‑hardened** — a bounds‑safe gate rejects
-> malformed blocks with no panic, and misbehavior scoring drops flooding peers). Compiled + tested
-> (24 tests) byte‑for‑byte against the Python node; the only remaining transport (a wallet/RPC control
-> interface) exists + is tested in the Python `netnode`. Remaining toward a hardened public launch
+> **discovers peers via `addr` gossip**, is **DoS‑hardened** — a bounds‑safe gate rejects malformed
+> blocks with no panic + misbehavior scoring drops flooding peers — and has a **wallet + localhost
+> RPC** (`getinfo`/`getnewaddress`/`getbalance`/`send`)). Compiled + tested (25 tests) byte‑for‑byte
+> against the Python node — a **complete second‑language node**, with no consensus or transport feature
+> left to port. Remaining toward a hardened public launch
 > is no longer node‑core code: **choosing/running a real difficulty floor** on a live launch,
 > GPG‑signed builds, a security review, the rest of a native node **only for extreme scale** — and,
 > above all, **other people choosing to run it.**
@@ -112,12 +113,11 @@ reconstruction.**
    you. The code lowers the bar (DNS seed + deploy templates); the *choosing to run it* can't be
    engineered, only earned.
 6. *(Only if ever justified)* a faster node. ✅ *started* — the dominant cost (signature
-   verification) is handled by the optional libsecp256k1 verifier, and a **standalone Rust node**
-   (`derivatives/validator-rs/`) ports every consensus check — context‑free, stateful UTXO/value, the
-   full v0.1 `EvalScript` interpreter, and reorg + difficulty — **plus a runnable transport** (hardened
-   wire, crash‑safe store, real TCP block‑sync), compiled + tested byte‑for‑byte vs the Python. Only
-   the richer transport features (gossip/mempool‑relay/DoS/RPC), already in the Python node, are not
-   re‑ported — a second copy adds no capability.
+   verification) is handled by the optional libsecp256k1 verifier, and a **complete Rust node**
+   (`derivatives/validator-rs/`, 25 tests) — a byte‑for‑byte twin of the Python `netnode`: every
+   consensus check (context‑free, stateful UTXO/value, the full v0.1 `EvalScript` interpreter, reorg +
+   difficulty) **and the full transport** (hardened wire, crash‑safe store, TCP block‑sync + tx relay +
+   mempool + mining, `addr` discovery, DoS hardening, wallet + localhost RPC). Nothing remains to port.
 
 ## Non‑negotiable framing
 

@@ -19,10 +19,12 @@ pub mod mempool;
 pub mod miner;
 pub mod net;
 pub mod reorg;
+pub mod rpc;
 pub mod rules;
 pub mod script;
 pub mod sighash;
 pub mod store;
+pub mod wallet;
 pub mod wire;
 
 // ---- SHA-256 (FIPS 180-4) + double SHA-256 ---------------------------------------

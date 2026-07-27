@@ -16,8 +16,9 @@ use crate::mempool::Mempool;
 use crate::reorg::NodeState;
 use crate::rules::Rules;
 use crate::store::BlockStore;
+use crate::wallet::Wallet;
 use crate::wire::{frame, read_message};
-use crate::{block_hash, validate_context_free};
+use crate::{block_hash, dsha256, validate_context_free};
 
 type Peer = (String, u16);
 
@@ -168,8 +169,10 @@ pub struct Node {
     pub mempool: Mempool,
     store: BlockStore,
     magic: [u8; 4],
+    maturity: i64,
     advertise: Option<Peer>,
     known: HashSet<Peer>,
+    wallet: Option<Wallet>,
 }
 
 impl Node {
@@ -200,9 +203,41 @@ impl Node {
             mempool: Mempool::new(maturity),
             store,
             magic,
+            maturity,
             advertise: None,
             known: HashSet::new(),
+            wallet: None,
         })
+    }
+
+    // -- wallet (present only when enabled) ------------------------------------
+    pub fn enable_wallet(&mut self, seed: [u8; 32]) {
+        self.wallet = Some(Wallet::new(seed));
+    }
+
+    /// The receive scriptPubKey (bare P2PK) — e.g. for a miner to pay the coinbase to.
+    pub fn wallet_receive_spk(&self) -> Option<Vec<u8>> {
+        Some(self.wallet.as_ref()?.receive_spk())
+    }
+
+    pub fn wallet_new_address(&mut self) -> Option<Vec<u8>> {
+        Some(self.wallet.as_mut()?.new_address())
+    }
+
+    pub fn wallet_balance(&self) -> Option<i64> {
+        let w = self.wallet.as_ref()?;
+        Some(w.balance(self.state.utxo(), self.state.height(), self.maturity))
+    }
+
+    /// Build + sign a payment from the wallet, submit it to the mempool, and return the txid.
+    pub fn wallet_send(&mut self, to: &[u8], amount: i64, fee: i64) -> Result<[u8; 32], &'static str> {
+        let raw = {
+            let w = self.wallet.as_ref().ok_or("no wallet")?;
+            w.create_payment(self.state.utxo(), self.state.height(), self.maturity, to, amount, fee)?
+        };
+        let txid = dsha256(&raw);
+        self.submit_tx(&raw)?;
+        Ok(txid)
     }
 
     /// Set this node's own reachable address, gossiped so peers can dial it back.

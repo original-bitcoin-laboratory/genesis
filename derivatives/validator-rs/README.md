@@ -1,10 +1,11 @@
-# validator-rs — a standalone native Rust node for the X-chains (NOT money)
+# validator-rs — a complete native Rust node for the X-chains (NOT money)
 
-**Evidence: NEW-EXP. Not money.** A **consensus-complete, standalone** native Rust node: it validates
-every consensus rule *and* runs — a hardened wire, a crash-safe block store, and a real TCP
-block-sync. Two Rust nodes sync a signed chain over TCP (each block re-validated by the native
-consensus) and reload from disk on restart. Everything is cross-checked byte-for-byte against the
-verified Python node. (`bench.py` showed the dominant cost is signature verification — already
+**Evidence: NEW-EXP. Not money.** A **complete** native Rust node — a byte-for-byte twin of the Python
+`netnode` in a second language. It validates every consensus rule and runs: a hardened wire, crash-safe
+persistence, TCP block-sync, transaction relay + mempool + mining, `addr` peer discovery, DoS
+hardening, and a wallet + localhost RPC. Two Rust nodes sync a signed chain over TCP, relay a
+transaction, and discover each other — every block re-validated by the native consensus. Everything is
+cross-checked byte-for-byte against the verified Python node. (`bench.py` showed the dominant cost is signature verification — already
 handled on the live Python node by the [libsecp256k1 fast path](../netnode/fastverify.py) — so a
 native node matters only at extreme scale; this is that node, built and tested.)
 
@@ -52,14 +53,16 @@ native node matters only at extreme scale; this is that node, built and tested.)
   sync, share a transaction, and discover each other. The session is **DoS-hardened**: a bounds-safe
   gate rejects malformed blocks (no panic on hostile bytes), and **misbehavior scoring** drops a peer
   that floods junk or invalid blocks/txs;
+- **a wallet + control interface** (`wallet`, `rpc`) — key management, coin discovery, balance, and
+  signed payments, driven over a **localhost line-protocol RPC** (`getinfo` / `getnewaddress` /
+  `getbalance` / `send`);
 - **transacting** — key generation + transaction **signing** (`script::sign_input`, via `k256`), a
   validating **mempool** (`mempool`) that accepts/rejects spends against the UTXO + pooled parents
   (fees, no double-spend, maturity, script via the full interpreter), and **block assembly + mining**
   (`miner`) — so a Rust node mines coins, pools a spend, and mines it into a block.
 
-This is a whole, transacting, relaying, discovering, DoS-hardened node. The **only remaining
-transport** the Python `netnode` also has — a wallet/RPC control interface — is not re-ported here
-(it exists and is tested in Python; a second copy adds no capability). Hashes use pure-Rust RustCrypto crates (`ripemd`,
+This is a **complete node** — consensus + transport + wallet/RPC — a byte-for-byte twin of the Python
+`netnode`, in a second language. There is no remaining consensus or transport feature left to port. Hashes use pure-Rust RustCrypto crates (`ripemd`,
 `sha1`); arithmetic uses `num-bigint`; ECDSA uses `k256`; networking + persistence use only `std` — no
 C / OpenSSL / async runtime anywhere.
 
@@ -70,9 +73,9 @@ cargo test                                       # cross-checks everything again
 
 ## How it's verified
 
-`cargo test` cross-checks the Rust against the **verified Python node** — **24 tests** (covering
+`cargo test` cross-checks the Rust against the **verified Python node** — **25 tests** (covering
 70+ opcode scripts + reorg + difficulty + a live two-node TCP sync/relay/discovery + mine-and-spend
-+ DoS hardening):
++ DoS hardening + wallet/RPC):
 
 - `tests/golden.rs` (3): the standard SHA-256 `"abc"`/empty vectors; golden blocks' hash / merkle /
   PoW / tx-count; and a tamper-rejection case.
@@ -105,11 +108,14 @@ cargo test                                       # cross-checks everything again
   peers A already knows.
 - `tests/dos.rs` (1): a peer **flooding malformed blocks** (which a naive parser would panic on) is
   **dropped for misbehavior** — no panic, nothing accepted.
+- `tests/rpc.rs` (1): a node **mines coins to its wallet**, then a client drives it over the
+  **localhost RPC** — `getbalance` (the matured coinbase), `getnewaddress`, `send` (returns a txid),
+  `getinfo`.
 
 The golden vectors come from the verified Python — the block vectors from `netnode/bench.py`'s chain
 builder, and the rest from the regenerable generators in [`tools/`](tools/) (`gen_state_vectors.py`,
 `gen_eval_vectors.py`, `gen_multisig_vectors.py`, `gen_reorg_vectors.py`). **Verified:** compiled +
-tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **24 pass**; `obl-validate` on a golden
+tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **25 pass**; `obl-validate` on a golden
 block reproduces the Python's block hash. The novel 256-bit compact-target/PoW math was additionally
 cross-checked against the Python reference across easy / hard / edge `nBits`.
 
