@@ -19,28 +19,32 @@ a value, so both add distance; nothing is ranked better or worse.
 ## Choosing the origin changes everything — that's the point
 
 ```
-reference = whitepaper :  BTC 0   nov08 0   v0.1.0 0   ...   (all zero)
-reference = nov08      :  v0.1.0 2   BTC 2   BCH 2   BSV 2   ...
-reference = v0.1.0      :  nov08 2   BSV 6   BCH 7   BTC 7   XEC 7   (2026)
+reference = whitepaper :  everyone 0                              (all zero)
+reference = nov08      :  NOV08-X 0   v0.1.0 2   BTC 2   BCH 2   BSV 2   JAN09-X 2 ...
+reference = v0.1.0      :  JAN09-X 1   nov08 2   NOV08-X 3   BSV 6   BCH 8   BTC 9   XEC 9   (2026)
 ```
 
-- **Origin = whitepaper → everyone is distance 0.** The design constrains **none** of the nine
-  implementation axes, so it does not discriminate — the executable form of "the design is too
-  thin to pick a winner."
+- **Origin = whitepaper → everyone is distance 0.** The design constrains **none** of the
+  eleven implementation axes, so it does not discriminate — the executable form of "the design
+  is too thin to pick a winner."
 - **Origin = nov08 → v0.1.0 is itself distance 2** (it differs on `monetary` and `pow_algo`,
-  the only axes the pre‑release fixes). So the whole BTC family starts *nonzero* under this
-  anchor — v0.1.0 is **not** the zero point here.
-- **Origin = v0.1.0 → the familiar drift:** BTC moves to 7 of 9 axes by 2016; BSV's 2020
-  Genesis moves it *back* on `script_limits` (to 6) while `script_vocabulary` stays different
-  ("near‑full" ≠ "full"); nov08 sits at 2.
+  the only axes the pre‑release fixes), and the lab's `NOV08-X` reads **0**. So v0.1.0 is
+  **not** the zero point here.
+- **Origin = v0.1.0 → the drift, over 11 axes:** BTC moves to **9 of 11** by 2026 (adding
+  SegWit 2017 + Taproot/Schnorr 2021 on top of the 2010–2016 changes); **BSV is the *closest*
+  big chain at 6** — it rejected SegWit/Schnorr and restored the script vocabulary/limits;
+  BCH sits at 8, XEC at 9 (eCash redenomination). None of this is a quality ranking — just
+  displacement.
 
 The same chain has three different distances under three origins. **v0.1.0 is the zero point
 only if you choose it as the origin** — the tool makes that choice explicit and swappable.
 
 ## Model
 
-- **Axes** — 9 properties a codebase takes a *value* on (opcode vocabulary, value bounds, block
-  size, script limits, sig encoding, crypto lib, PoW, monetary, consensus DB).
+- **Axes** — 11 properties a codebase takes a *value* on (opcode vocabulary, value bounds, block
+  size, script limits, sig encoding, crypto lib, PoW, monetary, consensus DB, **witness/SegWit**,
+  **signature scheme/Schnorr**). The set is itself a choice and is extensible — difficulty
+  algorithm, address formats, and finer chain‑splits are natural additions.
 - **Frozen references** — `whitepaper` (all axes unspecified — the design fixes none),
   `nov08` (only `monetary` + `pow_algo` fixed — a partial 5‑file snapshot), `v0.1.0` (all nine).
   `[S]` for nov08/v0.1.0 values.

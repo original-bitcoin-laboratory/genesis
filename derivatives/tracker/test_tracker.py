@@ -75,7 +75,24 @@ def test_bsv_moves_back_toward_v010_on_script_limits():
 
 def test_references_are_the_named_origins():
     assert references() == ["whitepaper", "nov08", "v0.1.0"]
-    assert len(AXES) == 9 and len(CHAINS) == 4
+    assert len(AXES) == 11 and len(CHAINS) == 4
+
+
+# ---- the newer axes (SegWit, Schnorr/Taproot) widen the picture --------------
+
+def test_segwit_and_taproot_widen_btc_distance_from_v010():
+    # BTC adopted SegWit (2017) + Taproot/Schnorr (2021) -> two more axes off v0.1.0
+    d = track("v0.1.0", date(2022, 6, 1))["BTC"]
+    assert "witness" in d["differs_on"] and "sig_scheme" in d["differs_on"]
+    assert distance("v0.1.0", "BTC", date(2026, 8, 1)) == 9      # 7 (by 2016) + segwit + schnorr
+
+
+def test_bsv_is_the_closest_big_chain_to_v010():
+    at = date(2026, 8, 1)
+    dbsv = distance("v0.1.0", "BSV", at)                         # rejected SegWit/Schnorr, restored script
+    dbtc = distance("v0.1.0", "BTC", at)
+    dbch = distance("v0.1.0", "BCH", at)
+    assert dbsv < dbch < dbtc                                    # 6 < 8 < 9 — neutral, not "better"
 
 
 # ---- the lab's reconstructions, added to the candidate set -------------------

@@ -35,6 +35,8 @@ AXES: dict[str, str] = {
     "pow_algo":          "proof-of-work function + target format",
     "monetary":          "unit / subsidy / halving / spacing",
     "consensus_db":      "chainstate storage engine",
+    "witness":           "transaction / witness format (SegWit separates the signature)",
+    "sig_scheme":        "signature scheme(s) accepted (ECDSA / Schnorr)",
 }
 _ = None  # UNSPECIFIED: the codebase does not constrain this axis
 
@@ -47,12 +49,13 @@ FROZEN: dict[str, dict[str, str | None]] = {
     "nov08": {
         "monetary": "nov 1e6/100/100k/15m", "pow_algo": "leading-zero-bits",
         "script_vocabulary": _, "value_bounds": _, "block_size": _, "script_limits": _,
-        "sig_encoding": _, "crypto_lib": _, "consensus_db": _,
+        "sig_encoding": _, "crypto_lib": _, "consensus_db": _, "witness": _, "sig_scheme": _,
     },
     "v0.1.0": {
         "script_vocabulary": "full", "value_bounds": "none", "block_size": "no-cap",
         "script_limits": "none", "sig_encoding": "lenient", "crypto_lib": "openssl",
         "pow_algo": "sha256d-compact", "monetary": "jan 1e8/50/210k/10m", "consensus_db": "bdb",
+        "witness": "inline", "sig_scheme": "ecdsa",
     },
 }
 
@@ -64,10 +67,12 @@ FROZEN: dict[str, dict[str, str | None]] = {
 RECON: dict[str, dict[str, str | None]] = {
     "NOV08-X": {"monetary": "nov 1e6/100/100k/15m", "pow_algo": "leading-zero-bits",
         "script_vocabulary": "full+ne", "value_bounds": "none", "block_size": "no-cap",
-        "script_limits": "none", "sig_encoding": "lenient", "crypto_lib": _, "consensus_db": _},
+        "script_limits": "none", "sig_encoding": "lenient", "crypto_lib": _, "consensus_db": _,
+        "witness": "inline", "sig_scheme": "ecdsa"},
     "JAN09-X": {"monetary": "jan 1e8/50/210k/10m", "pow_algo": "sha256d-compact",
         "script_vocabulary": "full+ne", "value_bounds": "none", "block_size": "no-cap",
-        "script_limits": "none", "sig_encoding": "lenient", "crypto_lib": _, "consensus_db": _},
+        "script_limits": "none", "sig_encoding": "lenient", "crypto_lib": _, "consensus_db": _,
+        "witness": "inline", "sig_scheme": "ecdsa"},
 }
 
 
@@ -79,6 +84,9 @@ class Chain:
 
 
 # evolving genesis-SHARING continuations of the v0.1.0 chain.
+# lineage note: "BCH" here is the majority continuation (Bitcoin ABC pre-2020, then Bitcoin Cash
+# Node after the Nov-2020 split); "XEC" is eCash — the Bitcoin-ABC branch of that 2020 split,
+# rebranded + redenominated in 2021. "BSV" split from BCH in the Nov-2018 hash war.
 CHAINS: dict[str, Chain] = {
     "BTC": Chain("BTC", date(2009, 1, 3),  None),
     "BCH": Chain("BCH", date(2017, 8, 1),  "BTC"),
@@ -110,11 +118,15 @@ EVENTS: list[Event] = [
     Event(date(2013, 3, 1),  "BTC", "consensus_db",      "leveldb",         "chainstate moved to LevelDB (0.8)"),
     Event(date(2015, 7, 4),  "BTC", "sig_encoding",      "strict-der",      "BIP66 strict-DER (block 363725)"),
     Event(date(2016, 2, 1),  "BTC", "crypto_lib",        "libsecp256k1",    "libsecp256k1 for consensus (0.12)"),
+    Event(date(2017, 8, 24), "BTC", "witness",           "segwit",          "SegWit activated (BIP141)"),
+    Event(date(2021, 11, 14),"BTC", "sig_scheme",        "ecdsa+schnorr",   "Taproot: Schnorr signatures (BIP340)"),
     Event(date(2018, 5, 15), "BCH", "script_vocabulary", "restored-subset", "re-enabled a subset of opcodes"),
     Event(date(2018, 5, 15), "BCH", "block_size",        "32mb",            "raised block-size limit"),
+    Event(date(2019, 5, 15), "BCH", "sig_scheme",        "ecdsa+schnorr",   "Schnorr signatures for CHECKSIG"),
     Event(date(2020, 2, 4),  "BSV", "script_vocabulary", "near-full",       "Genesis: restored near-original vocab (minus 2MUL/2DIV)"),
     Event(date(2020, 2, 4),  "BSV", "script_limits",     "none",            "Genesis: removed script number/size limits"),
     Event(date(2020, 2, 4),  "BSV", "block_size",        "unbounded",       "Genesis: removed the block-size cap"),
+    Event(date(2021, 7, 1),  "XEC", "monetary",          "ecash 2-decimal", "eCash redenomination (1e6 XEC per BCH)"),
 ]
 
 
