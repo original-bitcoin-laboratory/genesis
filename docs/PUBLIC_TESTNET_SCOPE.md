@@ -111,7 +111,9 @@ reconstruction.**
    **GPG‑signed builds remain an operator step** (needs a signing key).
 5. **Invite operators.** The chain is only "eternal" once **other people** run nodes 3 and 4 without
    you. The code lowers the bar (DNS seed + deploy templates); the *choosing to run it* can't be
-   engineered, only earned.
+   engineered, only earned. The shipping docs for this rung: [`ANNOUNCE.md`](ANNOUNCE.md) (the
+   operator/seed invitation), [`AUDIT_SCOPE.md`](AUDIT_SCOPE.md) (what an independent reviewer should
+   examine), and [`RELEASE_SIGNING.md`](RELEASE_SIGNING.md) (reproducible, GPG‑signed releases).
 6. *(Only if ever justified)* a faster node. ✅ *started* — the dominant cost (signature
    verification) is handled by the optional libsecp256k1 verifier, and a **complete Rust node**
    (`derivatives/validator-rs/`, 25 tests) — a byte‑for‑byte twin of the Python `netnode`: every
