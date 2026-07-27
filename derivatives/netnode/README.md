@@ -44,6 +44,9 @@ chain). Set `--advertise YOUR_PUBLIC_IP` so peers can dial you back. Swap `jan09
 has its **own identity** (magic / port / genesis) and **cannot** connect to any historical or
 live chain.
 
+**Operator guide → [`RUN.md`](RUN.md)** (seeds, ports, NAT, troubleshooting).
+**Security posture + known gaps → [`SECURITY.md`](SECURITY.md)** — read it before exposing a node.
+
 ## Tests (`test_netnode.py`, 13)
 
 The wire rejects a tampered checksum / bad magic / oversize; the store ignores a crash‑truncated

@@ -70,8 +70,9 @@ reconstruction.**
    with restart recovery (`netnode/difficulty.py`, `store.py`).
 3. **Discovery + a public seed.** ✅ `addr` gossip + auto‑connect: one seed address meshes a
    stranger in. *(Standing up a public seed with a fixed address is the operator's part.)*
-4. **A runnable release.** Package the node, write install/run docs, publish signed
-   builds. This is the "docs so others can join" step.
+4. **A runnable release.** ⏳ *in progress* — operator guide (`netnode/RUN.md`), threat model
+   (`netnode/SECURITY.md`), versioning + a tagged GitHub release are done; **GPG‑signed builds
+   remain an operator step** (needs a signing key).
 5. **Invite operators.** The chain is only "eternal" once **other people** run
    nodes 3 and 4 without you. This is community work, not code.
 6. *(Only if ever justified)* a faster node (C++/Rust) if the Python one can't keep up.

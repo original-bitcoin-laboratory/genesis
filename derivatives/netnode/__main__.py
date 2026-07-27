@@ -20,6 +20,7 @@ sys.path.insert(0, str(_HERE))
 
 from chains import CHAINS          # noqa: E402
 from livenode import Node          # noqa: E402
+from version import __version__    # noqa: E402
 
 
 def _hostport(s: str, default_host: str) -> tuple[str, int]:
@@ -35,7 +36,7 @@ async def _serve(cfg, datadir, listen, connect, advertise, mine, mine_interval):
 
     node = Node(cfg, datadir, listen=listen, advertise_host=advertise,
                 mine=mine, mine_interval=mine_interval, log=log)
-    print(f"[{cfg.key}] node up — NOT money — magic={cfg.magic.hex()} "
+    print(f"[{cfg.key}] netnode {__version__} up — NOT money — magic={cfg.magic.hex()} "
           f"height={node.height} datadir={datadir}", flush=True)
     await node.start(connect=connect)
     try:
@@ -49,6 +50,8 @@ async def _serve(cfg, datadir, listen, connect, advertise, mine, mine_interval):
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="netnode",
                                  description="Experimental X-chain node (NOT money).")
+    ap.add_argument("--version", action="version",
+                    version=f"netnode {__version__} — experimental research node, NOT money")
     ap.add_argument("--chain", required=True, choices=list(CHAINS))
     ap.add_argument("--datadir", required=True)
     ap.add_argument("--listen", default=None,
