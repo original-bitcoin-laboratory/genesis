@@ -128,6 +128,15 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   (restored ops confirmed executable by bitcoinx, disabled ops disabled by python-bitcoinlib —
   no standalone BCH interpreter exists, stated plainly). MATRIX.md has a per-chain method
   table; conformance.json schema 4. **73 tests pass.**
+- [x] **Crypto conformance (v0.1 ECDSA vs real libsecp256k1)** → `derivatives/crypto_conformance/`
+  (MODEL) — the crypto analog of the Script matrix, executing **Thread A** of
+  `inventory/THE_OPENSSL_THREAD.md`: a genuine v0.1 `SignatureHash` + signature (OpenSSL EC,
+  our MODEL) cross-checked against **libsecp256k1** (via `bitcoinx`→`electrumsv-secp256k1`,
+  the real C lib). Result: **the curve math is identical** (canonical low-S sig verifies both
+  ways, same secp256k1 key), and **the only divergence is malleability** — a **high-S**
+  signature is accepted by OpenSSL (v0.1) but **rejected by libsecp256k1**, reproducing the
+  exact fault BIP66/libsecp256k1 fixed. Neutral (libsecp256k1 = the crypto all descendants
+  inherited). **21 tests.**
 - [x] **Commercial-subsystem audit (R6)** → `inventory/MARKET_AUDIT.md` — static audit of
   `market.*`. **Finding: not dead code** — v0.1 shipped a working **decentralized
   marketplace** in 3 layers: a flood **publish/subscribe** advert network (`MSG_PRODUCT`,
