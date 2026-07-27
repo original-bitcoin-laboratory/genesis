@@ -98,6 +98,28 @@ pulling that behavior *in‑house* — strict‑DER parsing, `libsecp256k1`, bou
 reliance on OpenSSL was the expedient choice that got Bitcoin *working*, and a latent
 consensus risk that took ~10 years (2009 → 2019) to fully unwind.
 
+## Neutrality note — why this reads Core‑centric, and the neutral reframing
+
+This essay names **Bitcoin Core** a lot (BIP66, v0.10/v0.12, `libsecp256k1`). That is a
+*sourcing* fact, not a privileging one: `libsecp256k1` **is** a Bitcoin Core project
+(`bitcoin-core/secp256k1`), and the migration happened there **first and best‑documented**,
+because Bitcoin Core is the continuous code lineage of v0.1. But telling only that story
+would quietly privilege BTC, against this lab's rule (measure everyone *from the origin*,
+none privileged). The neutral — and more interesting — framing:
+
+- **Thread A (crypto) CONVERGED across the whole lineage.** `libsecp256k1` was integrated
+  into the shared codebase (verification, v0.12 / 2016) **before** the Cash split
+  (BCH 2017 → BSV 2018), so BCH and BSV **inherited** it; LTC/DOGE (Bitcoin Core forks)
+  synced it from upstream. **BTC, BCH, BSV, LTC, DOGE all run `libsecp256k1`.** Getting
+  OpenSSL out of *signature* consensus is common ground — nobody kept OpenSSL there.
+- **Thread B (Script) DIVERGED — and *that* is what our matrix maps.** The Bitcoin Core
+  lineage kept the broad vocabulary disabled; the Cash lineage / BSV re‑enabled a hardened
+  subset. This is the real fork in philosophy, and it's neutral to state because it's the
+  executed evidence.
+
+So: OpenSSL was **the origin's** dependency; every descendant unwound Thread A the same way
+and split on Thread B. The Core‑centric dates are just where the primary sources live.
+
 ## Sources (Tier‑4 context; dates verified 2026‑07‑27)
 
 - BIP66 text + activation — [bips/bip-0066](https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki), [Bitcoin Optech: soft-fork activation](https://bitcoinops.org/en/topics/soft-fork-activation/)
