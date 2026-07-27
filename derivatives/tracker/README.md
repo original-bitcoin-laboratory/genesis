@@ -7,8 +7,27 @@ and [`DEFINITIONAL_FIDELITY.md`](https://github.com/original-bitcoin-laboratory/
 
 It does **not** track "*the* real Bitcoin." Which live network *is* Bitcoin is **convention**
 — no fact of the matter (see the docs). What it tracks is the one thing that *is* a fact: how
-far each claimant has **drifted from the origin** at any date. The origin (v0.1.0) is a frozen
-reference; the tracker measures displacement from it over time.
+far each claimant has **drifted from a fixed reference** at any date. The reference (v0.1.0) is
+frozen; the tracker measures displacement from it over time.
+
+## What is the reference here? — a *chosen* anchor, not a certain "origin"
+
+The reference is **v0.1.0**, and that is a **choice, not a fact.** "The origin" is itself a
+definitional choice ([`WHAT_IS_BITCOIN.md` §8](https://github.com/original-bitcoin-laboratory/common/blob/main/WHAT_IS_BITCOIN.md)),
+so this tracker names its anchor rather than smuggling it in. v0.1.0 is the *principled* anchor
+**for this tracker** because the tracked chains (BTC/BCH/BSV/XEC) are its genesis‑*sharing*
+continuations — v0.1.0 is their **actual common root‑state**, and their history begins at the
+genesis block, not at anything earlier. But it is not "the origin" in any absolute sense:
+
+- Fix the reference at the **Nov‑2008 pre‑release** and **v0.1.0 is itself already diverged**
+  (`COIN` 10⁶→10⁸, subsidy 100→50, spacing 15→10 min, leading‑zero‑bit → compact PoW) — so the
+  whole BTC family would start at nonzero distance on the monetary and PoW axes.
+- Fix it at the **whitepaper** (the design) and v0.1.0's opcode set / `COIN` / hash / DB are
+  choices the paper never mandated.
+- Earlier still are the primitives it cites (Hashcash, Merkle, b‑money, Haber–Stornetta).
+
+So **v0.1.0 is the zero point only under this anchor.** A different anchor gives a different,
+equally valid tracker.
 
 **Distance is neutral.** Adding `MoneyRange` (a safety fix) and disabling opcodes (a feature
 removal) both *increase* distance equally. The tracker ranks nothing as better or worse — it
@@ -29,9 +48,9 @@ disowns.)
 
 Three findings fall out, all neutral and all from the model:
 
-- **At genesis the origin chain sits at 0** — it *is* the origin. Every claimant, **including
-  the name‑bearing chain (BTC)**, drifts away from v0.1.0 over time; by 2016 BTC has moved on
-  7 of 9 axes (only the monetary schedule and SHA‑256d PoW are unchanged).
+- **At genesis the origin chain sits at 0** — it *is* the reference (v0.1.0) at that instant.
+  Every claimant, **including the name‑bearing chain (BTC)**, drifts away from v0.1.0 over time;
+  by 2016 BTC has moved on 7 of 9 axes (only the monetary schedule and SHA‑256d PoW unchanged).
 - **Drift is not monotonic.** A chain can move *back* toward the origin: BCH re‑enabled opcodes
   (2018) and BSV's Genesis upgrade (2020) restored the script vocabulary and removed the script
   limits — so BSV's distance *fell* from 6.5 to 6.0 (`*` = restored toward origin, weight 0.5).

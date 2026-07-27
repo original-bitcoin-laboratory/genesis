@@ -1,11 +1,22 @@
-"""Origin-distance tracker — how far each Bitcoin claimant has drifted from the origin, over time.
+"""Reference-distance tracker — how far each Bitcoin claimant has drifted from a fixed
+reference, over time.
 
 This operationalises WHAT_IS_BITCOIN §9 and DEFINITIONAL_FIDELITY. It does **not** identify
 "the real Bitcoin" at a timestamp — that is convention, with no fact of the matter (see the
-docs). It fixes the **origin** (v0.1.0, the lab's executed profile) as a *timeless* reference
-and measures, at any date, how far each claimant has moved from it. **Distance is neutral**: a
-safety fix (adding MoneyRange) and a feature removal (disabling opcodes) both *increase* it;
-the tracker ranks nothing as better or worse — it only measures displacement from the origin.
+docs). It fixes a **chosen reference** and measures, at any date, how far each claimant has
+moved from it. **Distance is neutral**: a safety fix (adding MoneyRange) and a feature removal
+(disabling opcodes) both *increase* it; the tracker ranks nothing as better or worse — it only
+measures displacement from the reference.
+
+The reference here is **v0.1.0** — and this is a *choice, not a certain fact*: "the origin" is
+itself a definitional choice (WHAT_IS_BITCOIN §8). v0.1.0 is the principled choice **for this
+tracker** because the tracked chains (BTC/BCH/BSV/XEC) are its genesis-*sharing* continuations
+— v0.1.0 is their *actual common root-state*, and their history begins at the genesis block,
+not at anything earlier. Fix the reference earlier and you get a different, equally valid
+tracker: relative to the **Nov-2008 pre-release**, v0.1.0 is *itself* already diverged
+(COIN 1e6→1e8, subsidy 100→50, 15→10 min, leading-zero-bit → compact PoW); relative to the
+**whitepaper** (the design), v0.1.0's opcode set / COIN / hash / DB are choices it didn't
+mandate. So v0.1.0 is the zero point *only under this anchor*. See the README.
 
 Epistemics (same discipline as DEPENDENCY_MATRIX):
 - the origin **axes** are `[S]` — from the lab's executed v0.1.0 conformance work;
@@ -24,7 +35,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 
-# --- the origin reference: axes that define v0.1.0-conformance  ([S]) ----------
+# The reference this tracker measures FROM. A chosen anchor, not a certain fact (see docstring
+# + README): earlier candidates (the Nov-2008 pre-release, the whitepaper, the upstream
+# primitives it cites) would each yield a different, equally valid tracker — and under an
+# earlier anchor v0.1.0 itself is no longer the zero point.
+REFERENCE = "v0.1.0 (3 Jan 2009 genesis client)"
+
+# --- the reference axes: properties that define v0.1.0-conformance  ([S]) -------
 AXES: dict[str, str] = {
     "script_vocabulary": "full v0.1 opcode set enabled (only OP_NOTEQUAL disabled)",
     "value_bounds":      "no MoneyRange / output-sum overflow check",
@@ -117,7 +134,8 @@ def track(at: date) -> dict[str, dict]:
 
 
 def define() -> dict[str, str]:
-    """The fixed origin reference this tracker measures against."""
+    """The chosen reference (REFERENCE = v0.1.0) this tracker measures against — a definitional
+    choice, not a certain 'origin' (see the module docstring)."""
     return dict(AXES)
 
 
