@@ -33,6 +33,7 @@ SUITES = [
     ("overflow   (v0.1 CheckTransaction vs the Aug-2010 MoneyRange fix)", DERIV / "overflow"),
     ("script_lim (v0.1 EvalScript has no element/op/stack ceilings)", DERIV / "script_limits"),
     ("temporal   (median-time-past, block timestamps, tx finality)", DERIV / "temporal"),
+    ("tracker    (origin-distance of each claimant over time)",      DERIV / "tracker"),
     ("nov08x     (NOV08 counterfactual + live network)",           DERIV / "nov08x"),
     ("jan09x     (released chain, full vocab + live network)",     DERIV / "jan09x"),
     ("ledger     (UTXO ConnectInputs/ConnectBlock; transacting)",   DERIV / "ledger"),
