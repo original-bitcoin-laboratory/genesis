@@ -1,12 +1,12 @@
-# validator-rs — a Rust port of the X-chain block validator (NOT money)
+# validator-rs — a standalone native Rust node for the X-chains (NOT money)
 
-**Evidence: NEW-EXP. Not money.** A **consensus-complete** native Rust port of the X-chain validator:
-context-free checks, structured parsing, the full stateful UTXO/value validation, the complete v0.1
-script interpreter, and reorg + difficulty — cross-checked byte-for-byte against the verified Python
-node. Only the transport (P2P + persistence) is out of scope; that stays in the Python `netnode`.
-(`bench.py` showed the dominant cost is signature verification — already handled on the live node by
-the [libsecp256k1 fast path](../netnode/fastverify.py) — so a native node matters only at extreme
-scale; this is that native validator, built and tested.)
+**Evidence: NEW-EXP. Not money.** A **consensus-complete, standalone** native Rust node: it validates
+every consensus rule *and* runs — a hardened wire, a crash-safe block store, and a real TCP
+block-sync. Two Rust nodes sync a signed chain over TCP (each block re-validated by the native
+consensus) and reload from disk on restart. Everything is cross-checked byte-for-byte against the
+verified Python node. (`bench.py` showed the dominant cost is signature verification — already
+handled on the live Python node by the [libsecp256k1 fast path](../netnode/fastverify.py) — so a
+native node matters only at extreme scale; this is that node, built and tested.)
 
 ## What it does
 
@@ -39,10 +39,20 @@ scale; this is that native validator, built and tested.)
   (height-selected) chain, **gating every step on full validity** (value/script rules *and* the
   difficulty retarget) and **rolling back to the prior chain** if a branch fails to validate.
 
-This is the whole **consensus validation** of a node. What is **not** here is the **transport** —
-P2P networking and on-disk persistence — which lives (deliberately) in the Python `netnode`. Hashes
-use pure-Rust RustCrypto crates (`ripemd`, `sha1`); arithmetic uses `num-bigint`; ECDSA uses `k256` —
-no C / OpenSSL anywhere.
+**Transport** (mirrors the core of `netnode/`):
+
+- **hardened wire** (`wire`) — `[magic·command·length·checksum·payload]`, first-4-of-double-SHA-256
+  checksum, size cap; rejects tampering / bad magic;
+- **crash-safe store** (`store`) — length-prefixed, fsync'd append; `read_all` ignores a truncated tail;
+- **a runnable node** (`net::Node`) — persistence + a real **TCP block-sync**: a peer sends its height,
+  the server replies with the main-chain blocks above it, and the client **re-validates each into its
+  own `NodeState`** and persists it. Two nodes end in sync.
+
+This is a whole node. The **richer transport** the Python `netnode` also has — `addr` gossip, mempool
+relay, DoS scoring, the wallet/RPC — is not re-ported here (it exists and is tested in Python; a
+second copy adds no capability). Hashes use pure-Rust RustCrypto crates (`ripemd`, `sha1`); arithmetic
+uses `num-bigint`; ECDSA uses `k256`; networking + persistence use only `std` — no C / OpenSSL / async
+runtime anywhere.
 
 ```bash
 cargo run --bin obl-validate -- <HEX_BLOCK>     # context-free verdict for one block (or stdin)
@@ -51,8 +61,8 @@ cargo test                                       # cross-checks everything again
 
 ## How it's verified
 
-`cargo test` cross-checks the Rust against the **verified Python node** — **15 tests** (covering
-70+ opcode scripts + reorg + difficulty):
+`cargo test` cross-checks the Rust against the **verified Python node** — **20 tests** (covering
+70+ opcode scripts + reorg + difficulty + a live two-node TCP sync):
 
 - `tests/golden.rs` (3): the standard SHA-256 `"abc"`/empty vectors; golden blocks' hash / merkle /
   PoW / tx-count; and a tamper-rejection case.
@@ -72,11 +82,14 @@ cargo test                                       # cross-checks everything again
   restores** the prior chain when a taller branch is invalid, and **rejects a forged-difficulty
   block** — all matching the Python `ChainState`; plus the **retarget math** and **compact-target
   round-trip**.
+- `tests/net.rs` (5): the wire round-trips and **rejects a tampered checksum / bad magic**; the store
+  survives a **crash-truncated tail**; and **two nodes sync a signed chain over real TCP** (re-validated
+  by the native consensus) and **reload it from disk** on restart.
 
 The golden vectors come from the verified Python — the block vectors from `netnode/bench.py`'s chain
 builder, and the rest from the regenerable generators in [`tools/`](tools/) (`gen_state_vectors.py`,
 `gen_eval_vectors.py`, `gen_multisig_vectors.py`, `gen_reorg_vectors.py`). **Verified:** compiled +
-tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **15 pass**; `obl-validate` on a golden
+tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **20 pass**; `obl-validate` on a golden
 block reproduces the Python's block hash. The novel 256-bit compact-target/PoW math was additionally
 cross-checked against the Python reference across easy / hard / edge `nBits`.
 

@@ -82,12 +82,13 @@ reconstruction.**
 > so it does **not** drift to the BIP66 strict rule; differential‑tested). Finally, the **operator
 > rung** now has real infrastructure: a bootstrap **DNS seed** (`derivatives/dnsseed/`) that crawls
 > the network and hands fresh nodes a resolvable set of live peers, **Docker + systemd deploy
-> templates** (`netnode/deploy/`), and a **consensus‑complete Rust native validator**
-> (`derivatives/validator-rs/`) — context‑free checks, stateful UTXO/value validation, the full v0.1
-> `EvalScript` interpreter (unbounded bignum, all opcodes, `OP_CHECKSIG`/`OP_CHECKMULTISIG` with real
-> ECDSA via `k256`, byte‑faithful to the pre‑BIP66 OpenSSL semantics), **and reorg + difficulty**
-> (reorg‑safe `activate_best`, retarget), compiled + tested (15 tests, 70+ opcode scripts)
-> byte‑for‑byte against the Python node; only the transport (P2P + persistence) stays in Python. Remaining toward a hardened public launch
+> templates** (`netnode/deploy/`), and a **standalone Rust node** (`derivatives/validator-rs/`) —
+> consensus‑complete (context‑free checks, stateful UTXO/value validation, the full v0.1 `EvalScript`
+> interpreter with unbounded bignum + all opcodes + `OP_CHECKSIG`/`OP_CHECKMULTISIG` via real `k256`
+> ECDSA byte‑faithful to pre‑BIP66 OpenSSL, and reorg + difficulty) **plus a runnable transport**
+> (hardened wire, crash‑safe store, and a real TCP block‑sync — two Rust nodes sync a signed chain,
+> re‑validating each block). Compiled + tested (20 tests) byte‑for‑byte against the Python node; the
+> richer transport features (gossip/mempool‑relay/DoS/RPC) exist + are tested in the Python `netnode`. Remaining toward a hardened public launch
 > is no longer node‑core code: **choosing/running a real difficulty floor** on a live launch,
 > GPG‑signed builds, a security review, the rest of a native node **only for extreme scale** — and,
 > above all, **other people choosing to run it.**
@@ -107,11 +108,12 @@ reconstruction.**
    you. The code lowers the bar (DNS seed + deploy templates); the *choosing to run it* can't be
    engineered, only earned.
 6. *(Only if ever justified)* a faster node. ✅ *started* — the dominant cost (signature
-   verification) is handled by the optional libsecp256k1 verifier, and a **consensus‑complete Rust
-   native validator** (`derivatives/validator-rs/`) ports every consensus check — context‑free,
-   stateful UTXO/value, the full v0.1 `EvalScript` interpreter, and reorg + difficulty — compiled +
-   tested byte‑for‑byte vs the Python. Only the transport (P2P + persistence) would remain to make it
-   a standalone node, warranted only at extreme scale.
+   verification) is handled by the optional libsecp256k1 verifier, and a **standalone Rust node**
+   (`derivatives/validator-rs/`) ports every consensus check — context‑free, stateful UTXO/value, the
+   full v0.1 `EvalScript` interpreter, and reorg + difficulty — **plus a runnable transport** (hardened
+   wire, crash‑safe store, real TCP block‑sync), compiled + tested byte‑for‑byte vs the Python. Only
+   the richer transport features (gossip/mempool‑relay/DoS/RPC), already in the Python node, are not
+   re‑ported — a second copy adds no capability.
 
 ## Non‑negotiable framing
 

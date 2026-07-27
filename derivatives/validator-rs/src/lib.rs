@@ -15,10 +15,13 @@ pub mod chainstate;
 pub mod difficulty;
 pub mod eval;
 pub mod index;
+pub mod net;
 pub mod reorg;
 pub mod rules;
 pub mod script;
 pub mod sighash;
+pub mod store;
+pub mod wire;
 
 // ---- SHA-256 (FIPS 180-4) + double SHA-256 ---------------------------------------
 
