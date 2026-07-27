@@ -17,8 +17,85 @@ use crate::reorg::NodeState;
 use crate::rules::Rules;
 use crate::store::BlockStore;
 use crate::wire::{frame, read_message};
+use crate::{block_hash, validate_context_free};
 
 type Peer = (String, u16);
+
+const BAN_THRESHOLD: i32 = 20; // drop a peer once its misbehavior score reaches this
+const MAX_MESSAGES: u64 = 5_000_000; // bound messages per session (flood cap)
+
+// ---- bounds-safe structural check (never panics on adversarial bytes) ----------
+fn read_compact_safe(d: &[u8], i: usize) -> Option<(u64, usize)> {
+    let b = *d.get(i)?;
+    match b {
+        0xff if i + 9 <= d.len() => Some((u64::from_le_bytes(d[i + 1..i + 9].try_into().unwrap()), i + 9)),
+        0xfe if i + 5 <= d.len() => Some((u32::from_le_bytes(d[i + 1..i + 5].try_into().unwrap()) as u64, i + 5)),
+        0xfd if i + 3 <= d.len() => Some((u16::from_le_bytes(d[i + 1..i + 3].try_into().unwrap()) as u64, i + 3)),
+        b if b < 0xfd => Some((b as u64, i + 1)),
+        _ => None,
+    }
+}
+
+fn tx_len_safe(d: &[u8], off: usize) -> Option<usize> {
+    let mut i = off.checked_add(4)?;
+    if i > d.len() {
+        return None;
+    }
+    let (nin, ni) = read_compact_safe(d, i)?;
+    i = ni;
+    for _ in 0..nin {
+        i = i.checked_add(36)?;
+        if i > d.len() {
+            return None;
+        }
+        let (slen, si) = read_compact_safe(d, i)?;
+        i = si.checked_add(slen as usize)?.checked_add(4)?;
+        if i > d.len() {
+            return None;
+        }
+    }
+    let (nout, no) = read_compact_safe(d, i)?;
+    i = no;
+    for _ in 0..nout {
+        i = i.checked_add(8)?;
+        if i > d.len() {
+            return None;
+        }
+        let (slen, si) = read_compact_safe(d, i)?;
+        i = si.checked_add(slen as usize)?;
+        if i > d.len() {
+            return None;
+        }
+    }
+    i = i.checked_add(4)?;
+    if i > d.len() {
+        return None;
+    }
+    Some(i - off)
+}
+
+/// True iff `raw` is a structurally well-formed block (bounds-checked) — a **panic-safe** gate for
+/// untrusted network bytes before any further parsing.
+fn well_formed_block(raw: &[u8]) -> bool {
+    if raw.len() < 81 {
+        return false;
+    }
+    let body = &raw[80..];
+    let (ntx, mut i) = match read_compact_safe(body, 0) {
+        Some(x) => x,
+        None => return false,
+    };
+    if ntx == 0 {
+        return false;
+    }
+    for _ in 0..ntx {
+        match tx_len_safe(body, i) {
+            Some(l) => i += l,
+            None => return false,
+        }
+    }
+    i == body.len()
+}
 
 fn encode_addrs(addrs: &[Peer]) -> Vec<u8> {
     let mut o = (addrs.len() as u16).to_le_bytes().to_vec();
@@ -209,12 +286,29 @@ impl Node {
         let mut s = TcpStream::connect(addr)?;
         s.write_all(&(self.height() as i32).to_le_bytes())?;
         s.flush()?;
+        let mut misbehavior: i32 = 0;
+        let mut messages: u64 = 0;
         while let Some((command, payload)) = read_message(&mut s, &self.magic)? {
+            messages += 1;
+            if messages > MAX_MESSAGES {
+                return Err(io::Error::new(io::ErrorKind::InvalidData, "peer flooded (too many messages)"));
+            }
             match command.as_str() {
                 "block" => {
-                    self.state.add_block(&payload);
-                    self.state.activate_best();
-                    self.store.append(&payload)?;
+                    // panic-safe gate: reject a malformed block from a hostile peer, and score it
+                    if !well_formed_block(&payload) || validate_context_free(&payload).is_err() {
+                        misbehavior += 5;
+                    } else {
+                        let bh = block_hash(&payload);
+                        self.state.add_block(&payload);
+                        self.state.activate_best();
+                        if self.state.is_invalid(&bh) {
+                            misbehavior += 5; // structurally fine but consensus-invalid
+                        } else {
+                            self.mempool.reconcile(self.state.utxo(), self.state.height());
+                            self.store.append(&payload)?;
+                        }
+                    }
                 }
                 "inv" => {
                     let want: Vec<[u8; 32]> =
@@ -224,14 +318,19 @@ impl Node {
                 }
                 "tx" => {
                     let h = self.state.height();
-                    let _ = self.mempool.accept(&payload, self.state.utxo(), h);
+                    if self.mempool.accept(&payload, self.state.utxo(), h).is_err() {
+                        misbehavior += 1;
+                    }
                 }
                 "addr" => {
                     for peer in decode_addrs(&payload) {
                         self.known.insert(peer); // learn peers via gossip (discovery)
                     }
                 }
-                _ => {}
+                _ => misbehavior += 1, // unknown command
+            }
+            if misbehavior >= BAN_THRESHOLD {
+                return Err(io::Error::new(io::ErrorKind::InvalidData, "peer banned (misbehavior)"));
             }
         }
         Ok(())
