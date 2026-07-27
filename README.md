@@ -53,7 +53,7 @@ node sync + independently re‑validate every block:
 ```bash
 git clone https://github.com/original-bitcoin-laboratory/genesis
 cd genesis/derivatives
-python -m netnode --chain jan09x --datadir ./data --connect 143.110.255.205:18009
+python -m netnode --chain jan09x --datadir ./data --connect seed.bitcoin-lab.org:18009
 ```
 
 Full invitation + how to run your own node or seed: [`docs/ANNOUNCE.md`](docs/ANNOUNCE.md). For an

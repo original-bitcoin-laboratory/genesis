@@ -62,7 +62,7 @@ hashing, sighash, and value rules are pinned down.
 There is a live, always‑on **JAN09‑X** node running as a bootstrap anchor:
 
 ```
-143.110.255.205:18009      (JAN09‑X · magic f00ba709 · experimental · NOT money)
+seed.bitcoin-lab.org:18009    (JAN09‑X · magic f00ba709 · experimental · NOT money)
 ```
 
 Clone the repo and point a node at it:
@@ -70,7 +70,7 @@ Clone the repo and point a node at it:
 ```bash
 git clone https://github.com/original-bitcoin-laboratory/genesis
 cd genesis/derivatives
-python -m netnode --chain jan09x --datadir ./data --connect 143.110.255.205:18009
+python -m netnode --chain jan09x --datadir ./data --connect seed.bitcoin-lab.org:18009
 ```
 
 Your node mints the **same genesis** (`51eec236…`), dials the anchor, and downloads **and
@@ -80,8 +80,8 @@ steps: [`../derivatives/netnode/RUN.md`](../derivatives/netnode/RUN.md).)
 
 This anchor is a **convenience, not an authority**: it can disappear tomorrow and nothing is lost —
 the genesis is reproducible forever from `scripts/verify_genesis.py`, and any node you run is an equal
-peer. (When a stable `seed.` hostname is published, prefer it over the raw address; the address may
-change, the recipe never does.) **Not money.**
+peer. The name `seed.bitcoin-lab.org` resolves to the anchor (`143.110.255.205` today); if the anchor
+ever moves, the name follows it — so prefer the name, and the reproducible recipe over both. **Not money.**
 
 ## The one rule that makes all of this safe
 
