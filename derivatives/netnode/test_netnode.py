@@ -18,8 +18,11 @@ from wire import MAX_MESSAGE_SIZE, WireError, frame, read_message   # noqa: E402
 from store import BlockStore                                        # noqa: E402
 from livenode import Node                                           # noqa: E402
 from chains import CHAINS, mine_next                                # noqa: E402
+from difficulty import (NET_RETARGET_INTERVAL, NET_TARGET_SPACING,  # noqa: E402
+                        _retarget, check_difficulty, expected_bits, target_to_compact)
 
 TESTMAGIC = b"TEST"
+_EXPECTED_WINDOW = NET_RETARGET_INTERVAL * NET_TARGET_SPACING
 
 
 def _run(coro):
@@ -139,3 +142,71 @@ def test_node_reloads_chain_from_disk(tmp_path):
     assert n2.height == h1 == 4
     assert n2.tip == tip1
     n2.store.close()
+
+
+# ---- Stage 2: difficulty retarget (deterministic) ---------------------------
+
+def test_compact_target_roundtrips():
+    rules = CHAINS["jan09x"].rules                        # compact encoding
+    for nb in (0x207FFFFF, 0x1D00FFFF, 0x1C0FFFFF):
+        t = rules.pow_target(nb)
+        assert rules.pow_target(target_to_compact(t)) == t
+
+
+def test_leading_zero_bits_retarget_nudges_and_floors():
+    rn = CHAINS["nov08x"].rules                           # leading-zero-bits, floor = genesis
+    assert _retarget(20, 1, _EXPECTED_WINDOW, rn, 20) == 21        # too fast -> +1 bit (harder)
+    assert _retarget(21, 10 ** 9, _EXPECTED_WINDOW, rn, 20) == 20  # too slow -> -1 bit (easier)
+    assert _retarget(20, 10 ** 9, _EXPECTED_WINDOW, rn, 20) == 20  # slow but already at the floor
+
+
+def test_proportional_retarget_hardens_when_fast_and_floors_when_slow():
+    rj = CHAINS["jan09x"].rules
+    gen = 0x207FFFFF
+    fast = _retarget(gen, 1, _EXPECTED_WINDOW, rj, gen)           # very fast
+    assert rj.pow_target(fast) < rj.pow_target(gen)               # harder (smaller target)
+    slow = _retarget(gen, 10 ** 9, _EXPECTED_WINDOW, rj, gen)     # very slow
+    assert rj.pow_target(slow) == rj.pow_target(gen)              # floored at genesis (never easier)
+
+
+def test_node_rejects_a_block_with_wrong_nbits(tmp_path):
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "D"))
+    good = mine_next(n.tip, 1, expected_bits(n.chain, n.tip, cfg.rules), n.chain.check_block)
+    assert check_difficulty(n.chain, good, cfg.rules) is True
+    bad = bytearray(good)
+    bad[72:76] = (0x1D00FFFF).to_bytes(4, "little")              # forge an easier nBits
+    assert check_difficulty(n.chain, bytes(bad), cfg.rules) is False
+    n.store.close()
+
+
+# ---- Stage 3: peer discovery (addr gossip meshes the network) ---------------
+
+async def _discovery_scenario(da, db, dc):
+    cfg = CHAINS["jan09x"]
+    a = Node(cfg, da, listen=("127.0.0.1", 0), advertise_host="127.0.0.1")
+    _seed(a, 3)
+    await a.start()
+    b = Node(cfg, db, listen=("127.0.0.1", 0), advertise_host="127.0.0.1")
+    await b.start(connect=[("127.0.0.1", a.port)])
+    # C is told ONLY about B — it must *discover* A through B's gossip.
+    c = Node(cfg, dc, listen=("127.0.0.1", 0), advertise_host="127.0.0.1")
+    await c.start(connect=[("127.0.0.1", b.port)])
+    learned = synced = False
+    for _ in range(400):
+        learned = ("127.0.0.1", a.port) in c.known_addrs
+        synced = c.height == a.height
+        if learned and synced:
+            break
+        await asyncio.sleep(0.02)
+    result = (learned, synced, c.height, a.height)
+    for n in (a, b, c):
+        await n.stop()
+    return result
+
+
+def test_discovery_meshes_three_nodes(tmp_path):
+    learned, synced, hc, ha = _run(_discovery_scenario(
+        str(tmp_path / "A"), str(tmp_path / "B"), str(tmp_path / "C")))
+    assert learned                                          # C discovered A's address via B
+    assert synced and hc == ha == 3                         # and synced A's chain through the mesh

@@ -29,11 +29,12 @@ def _hostport(s: str, default_host: str) -> tuple[str, int]:
     return (default_host, int(s))
 
 
-async def _serve(cfg, datadir, listen, connect, mine, mine_interval):
+async def _serve(cfg, datadir, listen, connect, advertise, mine, mine_interval):
     def log(m):
         print(f"[{cfg.key}] {m}", flush=True)
 
-    node = Node(cfg, datadir, listen=listen, mine=mine, mine_interval=mine_interval, log=log)
+    node = Node(cfg, datadir, listen=listen, advertise_host=advertise,
+                mine=mine, mine_interval=mine_interval, log=log)
     print(f"[{cfg.key}] node up — NOT money — magic={cfg.magic.hex()} "
           f"height={node.height} datadir={datadir}", flush=True)
     await node.start(connect=connect)
@@ -55,7 +56,9 @@ def main(argv=None):
     ap.add_argument("--no-listen", action="store_true", help="outbound-only node")
     ap.add_argument("--connect", action="append", default=[],
                     help="host:port of a peer to connect to (repeatable)")
-    ap.add_argument("--mine", action="store_true", help="mine blocks (regtest-easy difficulty)")
+    ap.add_argument("--advertise", default=None,
+                    help="this node's reachable host, gossiped to peers (default: the listen host)")
+    ap.add_argument("--mine", action="store_true", help="mine blocks")
     ap.add_argument("--mine-interval", type=float, default=2.0)
     args = ap.parse_args(argv)
 
@@ -66,7 +69,8 @@ def main(argv=None):
     if sys.platform.startswith("win"):
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     try:
-        asyncio.run(_serve(cfg, args.datadir, listen, connect, args.mine, args.mine_interval))
+        asyncio.run(_serve(cfg, args.datadir, listen, connect, args.advertise,
+                           args.mine, args.mine_interval))
     except KeyboardInterrupt:
         pass
 

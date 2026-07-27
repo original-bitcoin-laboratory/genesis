@@ -23,6 +23,7 @@ for _p in ("model", "p2p", "nov08x"):
 from tx_sighash import Tx, TxIn, TxOut          # noqa: E402
 from p2p import block_bytes, merkle_root        # noqa: E402
 from chainsync import ZERO                      # noqa: E402
+from consensus import Rules                     # noqa: E402
 
 
 def _load(name: str, relpath: str):
@@ -38,13 +39,14 @@ _JX = _load("obl_jan09x_net", "jan09x/net.py")
 
 
 class ChainConfig:
-    def __init__(self, key, magic, port, new_chain, mint_genesis, genesis_msg):
+    def __init__(self, key, magic, port, new_chain, mint_genesis, genesis_msg, rules):
         self.key = key
         self.magic = magic
         self.port = port
         self._new_chain = new_chain
         self._mint = mint_genesis
         self.genesis_msg = genesis_msg
+        self.rules = rules                    # consensus.Rules — for the difficulty retarget math
 
     def new_chain(self):
         return self._new_chain()
@@ -55,17 +57,19 @@ class ChainConfig:
 
 CHAINS: dict[str, ChainConfig] = {
     "nov08x": ChainConfig("nov08x", _NX.NOV08X_MAGIC, _NX.NOV08X_PORT,
-                          _NX.new_chain, _NX.mint_genesis, _NX.NOV08X_GENESIS_MESSAGE),
+                          _NX.new_chain, _NX.mint_genesis, _NX.NOV08X_GENESIS_MESSAGE,
+                          Rules.load("nov08")),
     "jan09x": ChainConfig("jan09x", _JX.JAN09X_MAGIC, _JX.JAN09X_PORT,
-                          _JX.new_chain, _JX.mint_genesis, _JX.JAN09X_GENESIS_MESSAGE),
+                          _JX.new_chain, _JX.mint_genesis, _JX.JAN09X_GENESIS_MESSAGE,
+                          Rules.load("jan09")),
 }
 
 _tag = [0]
 
 
-def mine_next(prev: bytes, height: int, gen_nbits: int, check_fn, msg: bytes = b"") -> bytes:
-    """Pure miner (safe to run in an executor): build a unique coinbase block on `prev`
-    and brute-force a nonce until `check_fn(raw)` (the chain's PoW at genesis difficulty)."""
+def mine_next(prev: bytes, height: int, nbits: int, check_fn, msg: bytes = b"") -> bytes:
+    """Pure miner (safe to run in an executor): build a unique coinbase block on `prev` at
+    `nbits` difficulty and brute-force a nonce until `check_fn(raw)` (the chain's PoW)."""
     _tag[0] = (_tag[0] + 1) & 0xFFFFFF
     cb = Tx(1, [], [], 0)
     script = (bytes([len(msg)]) + msg if msg else b"") + bytes(
@@ -75,7 +79,7 @@ def mine_next(prev: bytes, height: int, gen_nbits: int, check_fn, msg: bytes = b
     mr = merkle_root([cb])
     t = int(time.time())
     for nonce in range(1 << 28):
-        raw = block_bytes(1, prev, mr, t, gen_nbits, nonce, [cb])
+        raw = block_bytes(1, prev, mr, t, nbits, nonce, [cb])
         if check_fn(raw):
             return raw
     raise RuntimeError("no nonce found in range")

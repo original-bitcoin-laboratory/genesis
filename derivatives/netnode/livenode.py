@@ -1,20 +1,26 @@
-"""A hardened, joinable node for the experimental X-chains — NEW-EXP (Path B, Stage 1).
+"""A hardened, joinable node for the experimental X-chains — NEW-EXP (Path B, Stages 1-3).
 
-Turns the MODEL's localhost demo into something two people on *different machines* can run
-and sync: real TCP, the hardened `wire` framing (checksum + size cap + timeouts), crash-safe
-persistence (`store`), outbound reconnection, per-peer misbehavior scoring, block relay, and
-an optional miner. Consensus (validation / reorg / orphans / locator) is the lab's faithful
-`chainsync.Chain`; the netnode only supplies the adversarial-conditions transport around it.
+Turns the MODEL's localhost demo into something two people on *different machines* can run and
+sync. Consensus is the lab's faithful `chainsync.Chain`; the netnode adds the adversarial-
+conditions transport around it:
 
-Evidence: MODEL / NEW-EXP. **Not money.** Not production-secure — this is Stage 1 of the plan
-in `../../docs/PUBLIC_TESTNET_SCOPE.md` (a real difficulty retarget, discovery/seeds, a security
-review, and — above all — other operators — are still ahead).
+- Stage 1 — hardened `wire` (checksum + size cap + timeouts), crash-safe `store`, real TCP,
+  outbound reconnection, per-peer misbehavior scoring, block relay, a miner.
+- Stage 2 — a real `difficulty` retarget: the miner mines at the retarget target, and received
+  blocks are rejected if their nBits doesn't match the expected retarget for their parent.
+- Stage 3 — peer discovery: nodes gossip known addresses (`addr`) and auto-connect, so a
+  stranger with one seed address meshes into the network without a manual `--connect` chain.
+
+Evidence: MODEL / NEW-EXP. **Not money.** Not production-secure — see
+`../../docs/PUBLIC_TESTNET_SCOPE.md` for what still lies ahead (a security review, signed
+releases, a faster node, and — above all — other operators).
 """
 
 from __future__ import annotations
 
 import asyncio
 import pathlib
+import random
 import sys
 
 _HERE = pathlib.Path(__file__).resolve().parent
@@ -22,31 +28,63 @@ for _p in ("model", "p2p", "nov08x"):
     sys.path.insert(0, str(_HERE.parent / _p))
 sys.path.insert(0, str(_HERE))
 
-from chainsync import ZERO, block_hash, locator_payload, nbits_of, parse_getblocks  # noqa: E402
-from p2p import MSG_BLOCK, inv_payload, parse_inv, version_payload                  # noqa: E402
+from chainsync import block_hash, locator_payload, nbits_of, parse_getblocks  # noqa: E402
+from p2p import MSG_BLOCK, inv_payload, parse_inv, version_payload            # noqa: E402
 
-from chains import ChainConfig, mine_next          # noqa: E402
-from store import BlockStore                        # noqa: E402
-from wire import WireError, frame, read_message     # noqa: E402
+from chains import ChainConfig, mine_next             # noqa: E402
+from difficulty import check_difficulty, expected_bits  # noqa: E402
+from store import BlockStore                           # noqa: E402
+from wire import WireError, frame, read_message        # noqa: E402
 
-BAN_THRESHOLD = 20            # cumulative misbehavior points before a peer is dropped
+BAN_THRESHOLD = 20
 RECONNECT_BACKOFF = 5.0
+MAX_PEERS = 8
+MAX_ADDRS_PER_MSG = 20
+
+
+# ---- addr codec (NEW-EXP: [count:2][ len:1 host port:2 ]*) --------------------
+def encode_addrs(addrs) -> bytes:
+    out = len(addrs).to_bytes(2, "little")
+    for host, port in addrs:
+        hb = host.encode("ascii", "ignore")[:255]
+        out += bytes([len(hb)]) + hb + int(port).to_bytes(2, "little")
+    return out
+
+
+def decode_addrs(payload: bytes):
+    n = int.from_bytes(payload[:2], "little")
+    i, out = 2, []
+    for _ in range(min(n, 1000)):
+        if i + 1 > len(payload):
+            break
+        ln = payload[i]; i += 1
+        host = payload[i:i + ln].decode("ascii", "replace"); i += ln
+        port = int.from_bytes(payload[i:i + 2], "little"); i += 2
+        if host and 0 < port < 65536:
+            out.append((host, port))
+    return out
 
 
 class Node:
-    def __init__(self, cfg: ChainConfig, datadir, *, listen=None, mine=False,
-                 mine_interval: float = 2.0, log=None):
+    def __init__(self, cfg: ChainConfig, datadir, *, listen=None, advertise_host=None,
+                 mine=False, mine_interval: float = 2.0, max_peers: int = MAX_PEERS, log=None):
         self.cfg = cfg
         self.store = BlockStore(datadir)
         self.chain = cfg.new_chain()
         self.listen = listen                         # (host, port) or None
+        self.advertise_host = advertise_host
         self.mine = mine
         self.mine_interval = mine_interval
+        self.max_peers = max_peers
         self._log = log or (lambda m: None)
         self._writers: set[asyncio.StreamWriter] = set()
         self._tasks: list[asyncio.Task] = []
         self._server = None
         self._closing = False
+        self.port = None
+        self.advertise = None                        # our own dialable (host, port), if listening
+        self.known_addrs: set[tuple[str, int]] = set()
+        self._dialing: set[tuple[str, int]] = set()  # outbound addrs in flight (dedup + self)
         self._load_or_init()
 
     # -- persistence / genesis -------------------------------------------------
@@ -56,7 +94,7 @@ class Node:
             self.chain.add_genesis(raws[0], nbits_of(raws[0]))
             for raw in raws[1:]:
                 self.chain.process_block(raw)
-            self._log(f"loaded {len(raws)} block(s) from disk; height={self.chain.best_height}")
+            self._log(f"loaded {len(raws)} block(s); height={self.chain.best_height}")
         else:
             g = self.cfg.mint_genesis()
             self.chain.add_genesis(g, nbits_of(g))
@@ -75,9 +113,14 @@ class Node:
     async def start(self, connect=()):
         if self.listen:
             self._server = await asyncio.start_server(self._inbound, self.listen[0], self.listen[1])
-            self._log(f"listening on {self.listen[0]}:{self.listen[1]}")
+            self.port = self._server.sockets[0].getsockname()[1]
+            host = self.advertise_host or (self.listen[0]
+                                           if self.listen[0] not in ("0.0.0.0", "") else None)
+            if host:
+                self.advertise = (host, self.port)
+            self._log(f"listening on {self.listen[0]}:{self.port}")
         for host, port in connect:
-            self._tasks.append(asyncio.create_task(self._outbound(host, port)))
+            self._dial(host, port)
         if self.mine:
             self._tasks.append(asyncio.create_task(self._mine_loop()))
 
@@ -92,20 +135,30 @@ class Node:
         self.store.close()
 
     # -- connections -----------------------------------------------------------
+    def _dial(self, host, port):
+        addr = (host, int(port))
+        if addr == self.advertise or addr in self._dialing or len(self._dialing) >= self.max_peers:
+            return
+        self._dialing.add(addr)
+        self._tasks.append(asyncio.create_task(self._outbound(host, int(port))))
+
     async def _inbound(self, reader, writer):
         await self._session(reader, writer, initiate=False)
 
     async def _outbound(self, host, port):
-        while not self._closing:
-            try:
-                reader, writer = await asyncio.open_connection(host, port)
-                self._log(f"connected out to {host}:{port}")
-                await self._session(reader, writer, initiate=True)
-            except (OSError, WireError) as e:
-                self._log(f"outbound {host}:{port} failed: {e}")
-            if self._closing:
-                return
-            await asyncio.sleep(RECONNECT_BACKOFF)   # reconnection
+        try:
+            while not self._closing:
+                try:
+                    reader, writer = await asyncio.open_connection(host, port)
+                    self._log(f"connected out to {host}:{port}")
+                    await self._session(reader, writer, initiate=True)
+                except (OSError, WireError) as e:
+                    self._log(f"outbound {host}:{port}: {e}")
+                if self._closing:
+                    return
+                await asyncio.sleep(RECONNECT_BACKOFF)
+        finally:
+            self._dialing.discard((host, int(port)))
 
     async def _send(self, writer, command, payload):
         writer.write(frame(command, payload, self.cfg.magic))
@@ -120,6 +173,12 @@ class Node:
             except (WireError, ConnectionError, OSError):
                 pass
 
+    def _addr_sample(self):
+        addrs = [self.advertise] if self.advertise else []
+        addrs += random.sample(list(self.known_addrs),
+                               min(len(self.known_addrs), MAX_ADDRS_PER_MSG))
+        return addrs[:MAX_ADDRS_PER_MSG]
+
     # -- one peer session ------------------------------------------------------
     async def _session(self, reader, writer, initiate):
         self._writers.add(writer)
@@ -129,9 +188,28 @@ class Node:
             while not self._closing:
                 command, payload = await read_message(reader, self.cfg.magic)
                 if command == "version":
-                    if initiate:                     # a fresh/behind node asks its peer for blocks
+                    if initiate:
                         await self._send(writer, "getblocks",
                                          locator_payload(self.chain.get_locator()))
+                    sample = self._addr_sample()
+                    if sample:
+                        await self._send(writer, "addr", encode_addrs(sample))
+                elif command == "addr":
+                    fresh = []
+                    for host, port in decode_addrs(payload):
+                        a = (host, port)
+                        if a != self.advertise and a not in self.known_addrs:
+                            fresh.append(a)
+                        self.known_addrs.add(a)
+                        self._dial(host, port)       # auto-connect (capped, dedup, non-self)
+                    if fresh:                        # gossip newly-learned peers onward
+                        for w in list(self._writers):
+                            if w is writer:
+                                continue
+                            try:
+                                await self._send(w, "addr", encode_addrs(fresh))
+                            except (WireError, ConnectionError, OSError):
+                                pass
                 elif command == "getblocks":
                     have, hash_stop = parse_getblocks(payload)
                     invs = self.chain.blocks_after_locator(have, hash_stop)
@@ -151,7 +229,7 @@ class Node:
                     if misbehavior >= BAN_THRESHOLD:
                         raise WireError("peer banned (misbehavior)")
                 else:
-                    misbehavior += 1                 # unknown command
+                    misbehavior += 1
         except (WireError, ConnectionError, OSError) as e:
             self._log(f"peer dropped: {e}")
         finally:
@@ -162,12 +240,12 @@ class Node:
                 pass
 
     async def _on_block(self, raw: bytes, origin) -> int:
-        """Validate + persist + relay a received block. Returns misbehavior points to add."""
+        if not check_difficulty(self.chain, raw, self.cfg.rules):   # Stage 2: reject wrong nBits
+            return 5
         status, h = self.chain.process_block(raw)
         if status in ("accepted", "orphan"):
-            self.store.append(raw)                   # persist every valid new block (orphans included)
+            self.store.append(raw)
         if status == "accepted":
-            self._log(f"block {h[::-1].hex()[:12]} height={self.chain.best_height}")
             await self._announce([(MSG_BLOCK, h)], exclude=origin)
             return 0
         if status == "orphan":
@@ -175,21 +253,19 @@ class Node:
             await self._send(origin, "getblocks",
                              locator_payload(self.chain.get_locator(), root))
             return 0
-        if status == "invalid":
-            return 5                                 # bad PoW etc. — penalise
-        return 0                                      # dup
+        return 5 if status == "invalid" else 0
 
     # -- mining ----------------------------------------------------------------
     async def _mine_loop(self):
         loop = asyncio.get_event_loop()
-        gen_nbits = self.chain.by_hash[self.chain.genesis].nBits
         while not self._closing:
-            prev, height, check = self.tip, self.height + 1, self.chain.check_block
-            raw = await loop.run_in_executor(None, mine_next, prev, height, gen_nbits,
-                                             check, self.cfg.genesis_msg[:0])
+            prev, height = self.tip, self.height + 1
+            nbits = expected_bits(self.chain, prev, self.cfg.rules)     # Stage 2: retarget
+            raw = await loop.run_in_executor(None, mine_next, prev, height, nbits,
+                                             self.chain.check_block, self.cfg.genesis_msg[:0])
             status, h = self.chain.process_block(raw)
             if status == "accepted":
                 self.store.append(raw)
-                self._log(f"mined {h[::-1].hex()[:12]} height={self.chain.best_height}")
+                self._log(f"mined {h[::-1].hex()[:12]} height={self.chain.best_height} nBits={nbits}")
                 await self._announce([(MSG_BLOCK, h)])
             await asyncio.sleep(self.mine_interval)

@@ -58,14 +58,18 @@ reconstruction.**
 
 ## A staged plan (each stage independently useful)
 
-1. **Harden the wire.** Add checksums, real TCP over the internet, timeouts,
-   reconnection, `addr` gossip, and the DoS caps. Two nodes on *different machines*
-   sync reliably.
-2. **Real difficulty + persistence.** Wire the chain's actual retarget (NOV08's
-   ±1‑bit / JAN09's proportional) and a crash‑safe store; a node survives restart and
-   reorgs.
-3. **Discovery + a public seed.** Stand up one or two seed nodes with fixed
-   addresses; document how a stranger points a node at them and syncs from genesis.
+> **Status (27 Jul 2026): Stages 1–3 are built + tested** in
+> [`../derivatives/netnode/`](../derivatives/netnode/) (13 tests): hardened wire, crash‑safe
+> store, real‑TCP sync, difficulty retarget, and `addr`‑gossip discovery. What remains is Stage 4
+> (a packaged/signed release), a security review, an optional faster node — and operators.
+
+1. **Harden the wire.** ✅ Checksums, real TCP, timeouts, reconnection, DoS size caps, misbehavior
+   scoring — two nodes on *different machines* sync reliably (`netnode/wire.py`, `livenode.py`).
+2. **Real difficulty + persistence.** ✅ A retarget following each chain's algorithm shape at the
+   network's own spacing, floored at genesis, validated on receipt; a crash‑safe on‑disk store
+   with restart recovery (`netnode/difficulty.py`, `store.py`).
+3. **Discovery + a public seed.** ✅ `addr` gossip + auto‑connect: one seed address meshes a
+   stranger in. *(Standing up a public seed with a fixed address is the operator's part.)*
 4. **A runnable release.** Package the node, write install/run docs, publish signed
    builds. This is the "docs so others can join" step.
 5. **Invite operators.** The chain is only "eternal" once **other people** run
