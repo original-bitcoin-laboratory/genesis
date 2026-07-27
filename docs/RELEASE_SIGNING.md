@@ -5,13 +5,13 @@
 it is money; nothing does. This is authenticity, not authority. **Not money.**
 
 > This uses **your** GPG key. Generating and safeguarding that key is yours to do — it is never
-> managed for you. Placeholders below (`YOUR_KEY_ID`, `YOUR_FINGERPRINT`) are for you to fill in.
+> managed for you. Placeholders below (`B0145F74B78CF1DA`, `B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA`) are for you to fill in.
 
 ## 0. One‑time: have a signing key
 
 If you don't already have one, create a GPG key (`gpg --full-generate-key`), record its fingerprint
 (`gpg --fingerprint`), and keep the private key offline/backed up. Publish only the **public** key.
-Git can auto‑use it: `git config user.signingkey YOUR_KEY_ID`.
+Git can auto‑use it: `git config user.signingkey B0145F74B78CF1DA`.
 
 ## 1. Verify before you sign
 
@@ -57,8 +57,9 @@ the archive and check the hash independently.
 
 - Attach `obl-genesis-X.Y.Z.tar.gz`, its `.asc`, and the signed `SHA256SUMS` to the GitHub release for
   the tag.
-- Publish your **public key** and its **fingerprint** *out of band* (repo `README`, the release notes,
-  and ideally a keyserver): `YOUR_FINGERPRINT`.
+- Publish your **public key** and its **fingerprint** *out of band* (the release notes and ideally a
+  keyserver): `B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA`. The public key is committed here at
+  [`parthod0x-signing-key.asc`](parthod0x-signing-key.asc).
 - Keep the release marked **pre‑release / experimental** and repeat the **NOT money** framing.
 
 ## 5. What operators run to verify
@@ -67,8 +68,8 @@ Put this in the release notes:
 
 ```bash
 # 1. import the maintainer's key and confirm the fingerprint out of band
-gpg --recv-keys YOUR_KEY_ID           # or import the published key file
-gpg --fingerprint YOUR_KEY_ID         # must match YOUR_FINGERPRINT
+gpg --recv-keys B0145F74B78CF1DA           # or import the published key file
+gpg --fingerprint B0145F74B78CF1DA         # must match B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA
 
 # 2. verify the tag / archive
 git verify-tag netnode-vX.Y.Z-experimental
