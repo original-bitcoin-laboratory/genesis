@@ -1,0 +1,283 @@
+<title>How far from the origin? — Bitcoin origin-distance tracker</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
+    --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44;
+    --brass:#c9a75f; --brass-ink:#0e1316;
+    --fill:#4c7186;            /* neutral distance fill — never good/bad */
+    --fill-soft:#2a3a43;
+    --focus:#7fb2c8;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:light){
+    :root{
+      --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6;
+      --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+      --line:#e0e5e0; --line-strong:#cfd6d0;
+      --brass:#9a7726; --brass-ink:#fffdf7;
+      --fill:#5a8298; --fill-soft:#dbe4e6; --focus:#2f6b85;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
+    --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44;
+    --brass:#c9a75f; --brass-ink:#0e1316; --fill:#4c7186; --fill-soft:#2a3a43; --focus:#7fb2c8;
+  }
+  :root[data-theme="light"]{
+    --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6;
+    --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+    --line:#e0e5e0; --line-strong:#cfd6d0;
+    --brass:#9a7726; --brass-ink:#fffdf7; --fill:#5a8298; --fill-soft:#dbe4e6; --focus:#2f6b85;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto;padding:clamp(20px,4vw,44px) clamp(16px,4vw,28px) 64px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--brass);margin:0 0 14px}
+  h1{font-family:var(--mono);font-weight:700;font-size:clamp(26px,5.2vw,40px);line-height:1.08;
+    letter-spacing:-.01em;margin:0 0 12px;text-wrap:balance}
+  .lede{font-size:clamp(15px,2.4vw,17px);color:var(--ink-dim);max-width:60ch;margin:0}
+  .lede b{color:var(--ink);font-weight:600}
+
+  .console{margin-top:30px;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;overflow:hidden}
+  .bar{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-end;justify-content:space-between;
+    padding:20px clamp(16px,3vw,24px);border-bottom:1px solid var(--line);background:var(--panel-2)}
+  .field{display:flex;flex-direction:column;gap:9px;min-width:0}
+  .field > label{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-faint)}
+  .seg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line-strong);
+    border-radius:9px;padding:3px;gap:2px}
+  .seg button{font-family:var(--mono);font-size:13px;color:var(--ink-dim);background:transparent;
+    border:0;border-radius:6px;padding:7px 13px;cursor:pointer;letter-spacing:.01em;white-space:nowrap;
+    transition:background .16s,color .16s}
+  .seg button:hover{color:var(--ink)}
+  .seg button[aria-pressed="true"]{background:var(--brass);color:var(--brass-ink);font-weight:600}
+  .seg button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+  .timefield{flex:1 1 320px}
+  .readout{display:flex;align-items:baseline;gap:10px}
+  .readout .date{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--ink);
+    font-variant-numeric:tabular-nums;letter-spacing:.01em}
+  .readout .rel{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:24px;background:transparent;cursor:pointer;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:3px;
+    background:linear-gradient(90deg,var(--line-strong),var(--fill))}
+  input[type=range]::-moz-range-track{height:3px;border-radius:3px;background:var(--line-strong)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;margin-top:-7px;
+    height:17px;width:17px;border-radius:50%;background:var(--brass);border:2px solid var(--ground);
+    box-shadow:0 0 0 1px var(--brass)}
+  input[type=range]::-moz-range-thumb{height:15px;width:15px;border-radius:50%;background:var(--brass);
+    border:2px solid var(--ground)}
+  input[type=range]:focus-visible{outline:none}
+  input[type=range]:focus-visible::-webkit-slider-thumb{outline:2px solid var(--focus);outline-offset:2px}
+  .ticks{display:flex;justify-content:space-between;margin-top:7px}
+  .ticks span{font-family:var(--mono);font-size:10px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+
+  .caption{padding:15px clamp(16px,3vw,24px) 4px;font-family:var(--mono);font-size:12px;color:var(--ink-dim)}
+  .caption b{color:var(--brass);font-weight:600}
+  .rows{padding:6px clamp(12px,3vw,18px) 16px;display:flex;flex-direction:column}
+  .row{display:grid;grid-template-columns:104px 1fr auto;gap:14px;align-items:center;
+    padding:13px 8px;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row.ref{background:linear-gradient(90deg,color-mix(in srgb,var(--brass) 12%,transparent),transparent);
+    border-radius:8px;border-bottom:1px solid var(--line)}
+  .name{font-family:var(--mono);font-size:14.5px;font-weight:600;letter-spacing:.01em}
+  .name small{display:block;font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-faint);margin-top:2px}
+  .meter{display:flex;flex-direction:column;gap:7px;min-width:0}
+  .track{height:8px;border-radius:5px;background:var(--fill-soft);overflow:hidden}
+  .track > i{display:block;height:100%;background:var(--fill);border-radius:5px;width:0;
+    transition:width .4s cubic-bezier(.4,0,.2,1)}
+  .row.ref .track > i{background:var(--brass)}
+  .chips{display:flex;flex-wrap:wrap;gap:5px}
+  .chip{font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);background:var(--panel-2);
+    border:1px solid var(--line);border-radius:5px;padding:2px 7px;letter-spacing:.02em}
+  .atorigin{font-family:var(--mono);font-size:11px;color:var(--brass);letter-spacing:.04em}
+  .dist{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);
+    font-variant-numeric:tabular-nums;text-align:right;min-width:46px}
+  .dist small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint);letter-spacing:.12em;
+    text-transform:uppercase;margin-top:1px}
+
+  .note{margin-top:22px;display:grid;gap:12px}
+  .note p{margin:0;font-size:13px;color:var(--ink-dim);max-width:66ch}
+  .note p b{color:var(--ink);font-weight:600}
+  .note code{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--panel);
+    border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+  .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
+  @media (max-width:520px){
+    .row{grid-template-columns:1fr auto;grid-template-areas:"name dist" "meter meter"}
+    .name{grid-area:name}.dist{grid-area:dist}.meter{grid-area:meter}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Original Bitcoin Laboratory · measure from the origin</p>
+  <h1>How far from the origin?</h1>
+  <p class="lede">Pick an origin. Pick a moment in history. See every version that existed then and
+    how far each stood from it. <b>The origin is a choice, not a fact</b> — so choose it, and watch
+    the distances change. This measures <b>distance, not identity</b>: which network “is” Bitcoin has
+    no factual answer.</p>
+
+  <div class="console" role="group" aria-label="origin-distance tracker">
+    <div class="bar">
+      <div class="field">
+        <label id="origin-label">Origin (reference)</label>
+        <div class="seg" role="group" aria-labelledby="origin-label" id="seg"></div>
+      </div>
+      <div class="field timefield">
+        <label for="time">Moment in history</label>
+        <div class="readout"><span class="date" id="date">—</span><span class="rel" id="rel"></span></div>
+        <input type="range" id="time" min="0" max="214" value="214" step="1" aria-describedby="date">
+        <div class="ticks">
+          <span>2008</span><span>2013</span><span>2017</span><span>2021</span><span>2026</span>
+        </div>
+      </div>
+    </div>
+    <p class="caption" id="caption"></p>
+    <div class="rows" id="rows"></div>
+  </div>
+
+  <div class="note">
+    <p><b>Distance</b> = the number of axes (of nine) on which a version’s value differs from the
+      chosen origin’s. It is <b>neutral</b>: adding a safety check (<code>MoneyRange</code>) and
+      removing a feature (disabling opcodes) both change a value, so both add distance — nothing here
+      is ranked better or worse.</p>
+    <p>Choose <b>whitepaper</b> and everything reads <code>0</code>: the design constrains none of these
+      implementation axes — it does not discriminate. Choose <b>nov08</b> and <code>v0.1.0</code> is
+      already <code>2</code> (it differs on the unit and the proof‑of‑work) — so v0.1.0 is the zero
+      point <b>only</b> when you choose it as the origin.</p>
+    <div class="tags"><span>v0.1.0 / nov08 values — source-verified [S]</span><span>change dates — public record [D]</span><span>MODEL</span></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const AXES = {
+  script_vocabulary:"which Script opcodes are enabled", value_bounds:"output value / sum sanity checks",
+  block_size:"block-size limit", script_limits:"script element / op-count / stack ceilings",
+  sig_encoding:"signature-encoding strictness", crypto_lib:"EC library for ECDSA-on-secp256k1",
+  pow_algo:"proof-of-work function + target format", monetary:"unit / subsidy / halving / spacing",
+  consensus_db:"chainstate storage engine"
+};
+const AXKEYS = Object.keys(AXES);
+const N = null;
+const FROZEN = {
+  whitepaper: Object.fromEntries(AXKEYS.map(a=>[a,N])),
+  nov08: {monetary:"nov 1e6/100/100k/15m", pow_algo:"leading-zero-bits",
+    script_vocabulary:N, value_bounds:N, block_size:N, script_limits:N, sig_encoding:N, crypto_lib:N, consensus_db:N},
+  "v0.1.0": {script_vocabulary:"full", value_bounds:"none", block_size:"no-cap", script_limits:"none",
+    sig_encoding:"lenient", crypto_lib:"openssl", pow_algo:"sha256d-compact",
+    monetary:"jan 1e8/50/210k/10m", consensus_db:"bdb"}
+};
+const CHAINS = {
+  BTC:{born:"2009-01-03",forked_from:null}, BCH:{born:"2017-08-01",forked_from:"BTC"},
+  BSV:{born:"2018-11-15",forked_from:"BCH"}, XEC:{born:"2020-11-15",forked_from:"BCH"}
+};
+const SINCE = {whitepaper:"2008-10-31", nov08:"2008-11-15", "v0.1.0":"2009-01-03",
+  BTC:"2009-01-03", BCH:"2017-08-01", BSV:"2018-11-15", XEC:"2020-11-15"};
+const EVENTS = [
+  ["2010-08-01","BTC","script_vocabulary","disabled-subset"], ["2010-08-01","BTC","value_bounds","moneyrange"],
+  ["2010-08-01","BTC","script_limits","bounded"], ["2010-09-01","BTC","block_size","1mb"],
+  ["2013-03-01","BTC","consensus_db","leveldb"], ["2015-07-04","BTC","sig_encoding","strict-der"],
+  ["2016-02-01","BTC","crypto_lib","libsecp256k1"], ["2018-05-15","BCH","script_vocabulary","restored-subset"],
+  ["2018-05-15","BCH","block_size","32mb"], ["2020-02-04","BSV","script_vocabulary","near-full"],
+  ["2020-02-04","BSV","script_limits","none"], ["2020-02-04","BSV","block_size","unbounded"]
+].map(e=>({when:e[0],chain:e[1],axis:e[2],value:e[3]})).sort((a,b)=>a.when<b.when?-1:1);
+
+function stateOf(name, at){
+  if(name in FROZEN) return {...FROZEN[name]};
+  const ch = CHAINS[name];
+  const st = ch.forked_from ? stateOf(ch.forked_from, ch.born) : {...FROZEN["v0.1.0"]};
+  for(const e of EVENTS){ if(e.chain===name && e.when>=ch.born && e.when<=at) st[e.axis]=e.value; }
+  return st;
+}
+function diffAxes(ref, cand){
+  return AXKEYS.filter(a => ref[a]!==null && cand[a]!==null && ref[a]!==cand[a]);
+}
+function distance(reference, candidate, at){
+  return diffAxes(stateOf(reference, SINCE[reference]||at), stateOf(candidate, at)).length;
+}
+function track(reference, at){
+  const refState = stateOf(reference, SINCE[reference] || at);
+  const out = [];
+  for(const name of [...Object.keys(FROZEN), ...Object.keys(CHAINS)]){
+    if(name!==reference && SINCE[name] <= at){
+      const d = diffAxes(refState, stateOf(name, at));
+      out.push({name, distance:d.length, differs:d});
+    }
+  }
+  return out.sort((a,b)=> a.distance-b.distance || (a.name<b.name?-1:1));
+}
+
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const START = 2008*12+9;                         // Oct 2008
+function idxToISO(v){ const m=START+ +v, y=Math.floor(m/12), mo=m%12;
+  return `${y}-${String(mo+1).padStart(2,"0")}-15`; }
+function idxToLabel(v){ const m=START+ +v; return `${MONTHS[m%12]} ${Math.floor(m/12)}`; }
+
+const segEl=document.getElementById("seg"), timeEl=document.getElementById("time"),
+  dateEl=document.getElementById("date"), relEl=document.getElementById("rel"),
+  rowsEl=document.getElementById("rows"), capEl=document.getElementById("caption");
+let origin="v0.1.0";
+
+Object.keys(FROZEN).forEach(name=>{
+  const b=document.createElement("button"); b.textContent=name; b.type="button";
+  b.setAttribute("aria-pressed", String(name===origin));
+  b.onclick=()=>{origin=name; [...segEl.children].forEach(c=>c.setAttribute("aria-pressed",String(c===b))); render();};
+  segEl.appendChild(b);
+});
+
+function relLabel(iso){
+  const near=[["2009-01-03","@ genesis"],["2011-01-01","post-2010 hardening"],
+    ["2016-02-01","post-BIP66 + libsecp256k1"],["2018-01-01","post BTC/BCH split"],
+    ["2020-03-01","post BSV Genesis"],["2026-01-01","≈ today"]];
+  let lab=""; for(const [d,l] of near){ if(iso>=d) lab=l; } return lab;
+}
+
+function render(){
+  const iso=idxToISO(timeEl.value);
+  dateEl.textContent=idxToLabel(timeEl.value);
+  relEl.textContent=relLabel(iso);
+  capEl.innerHTML = origin==="whitepaper"
+    ? `distance from <b>whitepaper</b> — the design constrains none of these axes`
+    : `distance from <b>${origin}</b> — ${origin==="nov08"?"only the unit + PoW are fixed by the pre-release":"the genesis client, all nine axes fixed"}`;
+  rowsEl.innerHTML="";
+
+  // the reference itself, pinned
+  rowsEl.appendChild(rowEl(origin, 0, [], true));
+  for(const r of track(origin, iso)) rowsEl.appendChild(rowEl(r.name, r.distance, r.differs, false));
+  requestAnimationFrame(()=>rowsEl.querySelectorAll(".track > i").forEach(i=>{ i.style.width=i.dataset.w; }));
+}
+
+function rowEl(name, distance, differs, isRef){
+  const row=document.createElement("div"); row.className="row"+(isRef?" ref":"");
+  const nm=document.createElement("div"); nm.className="name";
+  nm.innerHTML = name + (isRef?"<small>origin</small>":"");
+  const meter=document.createElement("div"); meter.className="meter";
+  const track=document.createElement("div"); track.className="track";
+  const fill=document.createElement("i"); fill.dataset.w=(distance/AXKEYS.length*100)+"%"; track.appendChild(fill);
+  meter.appendChild(track);
+  const chips=document.createElement("div"); chips.className="chips";
+  if(isRef){ const s=document.createElement("span"); s.className="atorigin"; s.textContent="the reference — distance 0 by definition"; chips.appendChild(s); }
+  else if(distance===0){ const s=document.createElement("span"); s.className="atorigin"; s.textContent="indistinguishable on the constrained axes"; chips.appendChild(s); }
+  else differs.forEach(a=>{ const c=document.createElement("span"); c.className="chip"; c.textContent=a; c.title=AXES[a]; chips.appendChild(c); });
+  meter.appendChild(chips);
+  const dist=document.createElement("div"); dist.className="dist";
+  dist.innerHTML = distance + "<small>"+(distance===1?"axis":"axes")+"</small>";
+  row.append(nm, meter, dist);
+  return row;
+}
+
+timeEl.addEventListener("input", render);
+render();
+</script>

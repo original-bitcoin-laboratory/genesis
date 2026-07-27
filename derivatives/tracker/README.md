@@ -1,87 +1,68 @@
-# Origin‑distance tracker — the "time axis," executed
+# Reference-distance tracker — pick any origin, pick any date
 
-The runnable form of [`WHAT_IS_BITCOIN.md` §9](https://github.com/original-bitcoin-laboratory/common/blob/main/WHAT_IS_BITCOIN.md)
+The runnable, now **reference‑selectable** form of
+[`WHAT_IS_BITCOIN.md` §9](https://github.com/original-bitcoin-laboratory/common/blob/main/WHAT_IS_BITCOIN.md)
 and [`DEFINITIONAL_FIDELITY.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/DEFINITIONAL_FIDELITY.md).
+An interactive page is at [`../../docs/tracker.html`](../../docs/tracker.html).
 
 ## What it does — and does not — do
 
-It does **not** track "*the* real Bitcoin." Which live network *is* Bitcoin is **convention**
-— no fact of the matter (see the docs). What it tracks is the one thing that *is* a fact: how
-far each claimant has **drifted from a fixed reference** at any date. The reference (v0.1.0) is
-frozen; the tracker measures displacement from it over time.
+It does **not** identify "*the* real Bitcoin" (convention — no fact of the matter). It lets you
+**choose an origin, choose a date, and see every version that existed then and how far each
+stood from that origin.** The **origin is a parameter** on purpose: "the origin" is itself a
+*choice*, not a fact (WHAT_IS_BITCOIN §8), so the tracker names it rather than smuggling one in.
 
-## What is the reference here? — a *chosen* anchor, not a certain "origin"
+**Distance is neutral** — the number of axes on which a version's *value* differs from the
+reference's. A safety fix (`MoneyRange`) and a feature removal (disabling opcodes) both change
+a value, so both add distance; nothing is ranked better or worse.
 
-The reference is **v0.1.0**, and that is a **choice, not a fact.** "The origin" is itself a
-definitional choice ([`WHAT_IS_BITCOIN.md` §8](https://github.com/original-bitcoin-laboratory/common/blob/main/WHAT_IS_BITCOIN.md)),
-so this tracker names its anchor rather than smuggling it in. v0.1.0 is the *principled* anchor
-**for this tracker** because the tracked chains (BTC/BCH/BSV/XEC) are its genesis‑*sharing*
-continuations — v0.1.0 is their **actual common root‑state**, and their history begins at the
-genesis block, not at anything earlier. But it is not "the origin" in any absolute sense:
-
-- Fix the reference at the **Nov‑2008 pre‑release** and **v0.1.0 is itself already diverged**
-  (`COIN` 10⁶→10⁸, subsidy 100→50, spacing 15→10 min, leading‑zero‑bit → compact PoW) — so the
-  whole BTC family would start at nonzero distance on the monetary and PoW axes.
-- Fix it at the **whitepaper** (the design) and v0.1.0's opcode set / `COIN` / hash / DB are
-  choices the paper never mandated.
-- Earlier still are the primitives it cites (Hashcash, Merkle, b‑money, Haber–Stornetta).
-
-So **v0.1.0 is the zero point only under this anchor.** A different anchor gives a different,
-equally valid tracker.
-
-**Distance is neutral.** Adding `MoneyRange` (a safety fix) and disabling opcodes (a feature
-removal) both *increase* distance equally. The tracker ranks nothing as better or worse — it
-measures displacement, not quality. (Reading distance as "worse" is the exact move
-[`THESIS.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/THESIS.md)
-disowns.)
-
-## What it shows
+## Choosing the origin changes everything — that's the point
 
 ```
-2009-01-03  genesis                     BTC 0.0
-2011-01-01  after the 2010 hardening    BTC 4.0   (vocabulary, value bounds, block size, script limits)
-2016-01-01  after BIP66 + libsecp256k1  BTC 6.0
-2018-01-01  after the BTC/BCH split     BTC 7.0   BCH 7.0  (BCH inherits BTC's drift at the fork)
-2021-01-01  after BSV Genesis           BSV 6.0*  BCH 6.5* XEC 6.5*  BTC 7.0
-2026-08-01  today                       JAN09-X 0.0   BSV 6.0  BCH/XEC 6.5  BTC 7.0
+reference = whitepaper :  BTC 0   nov08 0   v0.1.0 0   ...   (all zero)
+reference = nov08      :  v0.1.0 2   BTC 2   BCH 2   BSV 2   ...
+reference = v0.1.0      :  nov08 2   BSV 6   BCH 7   BTC 7   XEC 7   (2026)
 ```
 
-Three findings fall out, all neutral and all from the model:
+- **Origin = whitepaper → everyone is distance 0.** The design constrains **none** of the nine
+  implementation axes, so it does not discriminate — the executable form of "the design is too
+  thin to pick a winner."
+- **Origin = nov08 → v0.1.0 is itself distance 2** (it differs on `monetary` and `pow_algo`,
+  the only axes the pre‑release fixes). So the whole BTC family starts *nonzero* under this
+  anchor — v0.1.0 is **not** the zero point here.
+- **Origin = v0.1.0 → the familiar drift:** BTC moves to 7 of 9 axes by 2016; BSV's 2020
+  Genesis moves it *back* on `script_limits` (to 6) while `script_vocabulary` stays different
+  ("near‑full" ≠ "full"); nov08 sits at 2.
 
-- **At genesis the origin chain sits at 0** — it *is* the reference (v0.1.0) at that instant.
-  Every claimant, **including the name‑bearing chain (BTC)**, drifts away from v0.1.0 over time;
-  by 2016 BTC has moved on 7 of 9 axes (only the monetary schedule and SHA‑256d PoW unchanged).
-- **Drift is not monotonic.** A chain can move *back* toward the origin: BCH re‑enabled opcodes
-  (2018) and BSV's Genesis upgrade (2020) restored the script vocabulary and removed the script
-  limits — so BSV's distance *fell* from 6.5 to 6.0 (`*` = restored toward origin, weight 0.5).
-- **The only living zero‑distance thing today is a reconstruction** (the lab's JAN09‑X, full
-  origin profile) — and it is a *new instance*, not a continuation. Nothing that carries the
-  name is at the origin.
+The same chain has three different distances under three origins. **v0.1.0 is the zero point
+only if you choose it as the origin** — the tool makes that choice explicit and swappable.
 
 ## Model
 
-- **Axes `[S]`** — 9 origin‑defining properties from the lab's executed v0.1.0 conformance work
-  (opcode vocabulary, value bounds, block size, script limits, sig encoding, crypto lib, PoW,
-  monetary, consensus DB).
-- **Events `[D]`** — dated changes curated from the public record (2010 hardening, LevelDB 2013,
-  BIP66 2015, libsecp256k1 2016, BCH fork/restore 2017–18, BSV Genesis 2020). **A scaffold, not
-  an authoritative history** — refinable, same executed‑vs‑documented discipline as
-  `DEPENDENCY_MATRIX`.
-- **Forks inherit** the parent's state at the fork date, then diverge independently.
-- Genesis‑*sharing* continuations only (BTC/BCH/BSV/XEC). Separate‑genesis instances (LTC/DOGE)
-  are a different category — genesis‑divergent from launch — that the model could be extended
-  to; they are not continuations of the origin chain.
+- **Axes** — 9 properties a codebase takes a *value* on (opcode vocabulary, value bounds, block
+  size, script limits, sig encoding, crypto lib, PoW, monetary, consensus DB).
+- **Frozen references** — `whitepaper` (all axes unspecified — the design fixes none),
+  `nov08` (only `monetary` + `pow_algo` fixed — a partial 5‑file snapshot), `v0.1.0` (all nine).
+  `[S]` for nov08/v0.1.0 values.
+- **Events `[D]`** — dated changes a chain makes to an axis (public record; a curated scaffold,
+  refinable). Forks inherit the parent's state at the fork date, then diverge.
+- **Distance(ref, cand)** = axes where **both specify a value and differ** (axes the reference
+  does not constrain are skipped).
+
+Genesis‑*sharing* continuations only (BTC/BCH/BSV/XEC). Separate‑genesis instances (LTC/DOGE)
+are a different category — genesis‑divergent from launch — the model could be extended to.
 
 ```bash
-python tracker.py          # the timeline above
-python -m pytest           # 10 passed
+python tracker.py          # every origin × milestone dates
+python -m pytest           # 9 passed
 ```
 
-`define()` returns the fixed origin reference; `track(date)` returns every claimant's
-origin‑distance and moved axes at that date; `distance(chain, date)` the scalar.
+`references()` lists the origins; `track(reference, date)` returns every version's distance +
+differing axes at that date; `distance(reference, candidate, date)` the scalar; `define(ref)`
+the reference's axis‑values.
 
 ## Boundary
 
-MODEL; origin axes source‑verified, event dates documented; distance is neutral displacement
-from v0.1.0, **not** identity ("which is the real Bitcoin" is convention) and **not** quality.
-A tool, never authority (`AUTHORITY.md`).
+MODEL; v0.1.0/nov08 axis‑values source‑verified, chain event dates documented; distance is
+neutral displacement from a **chosen** reference, **not** identity ("which is the real Bitcoin"
+is convention) and **not** quality. A tool, never authority (`AUTHORITY.md`).

@@ -1,79 +1,79 @@
-"""Reference-distance tracker — how far each Bitcoin claimant has drifted from a fixed
-reference, over time.
+"""Reference-distance tracker — pick ANY origin, pick ANY date, see every version that existed
+then and how far each stood from that origin.
 
 This operationalises WHAT_IS_BITCOIN §9 and DEFINITIONAL_FIDELITY. It does **not** identify
-"the real Bitcoin" at a timestamp — that is convention, with no fact of the matter (see the
-docs). It fixes a **chosen reference** and measures, at any date, how far each claimant has
-moved from it. **Distance is neutral**: a safety fix (adding MoneyRange) and a feature removal
-(disabling opcodes) both *increase* it; the tracker ranks nothing as better or worse — it only
-measures displacement from the reference.
+"the real Bitcoin" (convention — no fact of the matter). The **reference is a parameter**,
+precisely because "the origin" is a *choice*, not a fact (WHAT_IS_BITCOIN §8): choose the
+whitepaper, the Nov-2008 pre-release, or v0.1.0 — each gives a different, equally valid tracker.
 
-The reference here is **v0.1.0** — and this is a *choice, not a certain fact*: "the origin" is
-itself a definitional choice (WHAT_IS_BITCOIN §8). v0.1.0 is the principled choice **for this
-tracker** because the tracked chains (BTC/BCH/BSV/XEC) are its genesis-*sharing* continuations
-— v0.1.0 is their *actual common root-state*, and their history begins at the genesis block,
-not at anything earlier. Fix the reference earlier and you get a different, equally valid
-tracker: relative to the **Nov-2008 pre-release**, v0.1.0 is *itself* already diverged
-(COIN 1e6→1e8, subsidy 100→50, 15→10 min, leading-zero-bit → compact PoW); relative to the
-**whitepaper** (the design), v0.1.0's opcode set / COIN / hash / DB are choices it didn't
-mandate. So v0.1.0 is the zero point *only under this anchor*. See the README.
+Model: each **axis** holds a *value* per codebase; a codebase's value on an axis changes over
+time via dated **events**. Distance(reference, candidate) = the number of axes on which **both
+specify a value and they differ**. Axes the reference does not constrain are skipped — so, e.g.,
+the whitepaper (which mandates none of these implementation axes) yields distance 0 for
+everyone: the design does not discriminate. **Distance is neutral** — a safety fix and a
+feature removal both change a value, hence both add distance; nothing is ranked better/worse.
 
 Epistemics (same discipline as DEPENDENCY_MATRIX):
-- the origin **axes** are `[S]` — from the lab's executed v0.1.0 conformance work;
-- the dated **events** are `[D]` — curated from the public record, refinable; this is a
-  scaffold demonstrating the method, not an authoritative complete history.
-
-Two states move an axis off the origin:
-- `diverged`  — changed away from v0.1.0 (weight 1.0);
-- `restored`  — later changed *back toward* v0.1.0, though not proven byte-identical (weight 0.5).
-
-Distance(chain, date) = Σ weights over its axes. 0.0 ⇔ indistinguishable from the origin here.
+- v0.1.0 and nov08 axis-values are `[S]` (from the lab's executed source work);
+- the whitepaper's "unspecified" is a reasoned reading (the paper fixes none of these);
+- the chains' dated **events** are `[D]` (public record; a curated scaffold, refinable).
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date
 
-# The reference this tracker measures FROM. A chosen anchor, not a certain fact (see docstring
-# + README): earlier candidates (the Nov-2008 pre-release, the whitepaper, the upstream
-# primitives it cites) would each yield a different, equally valid tracker — and under an
-# earlier anchor v0.1.0 itself is no longer the zero point.
-REFERENCE = "v0.1.0 (3 Jan 2009 genesis client)"
-
-# --- the reference axes: properties that define v0.1.0-conformance  ([S]) -------
+# --- axes: the properties a codebase can take a value on ----------------------
 AXES: dict[str, str] = {
-    "script_vocabulary": "full v0.1 opcode set enabled (only OP_NOTEQUAL disabled)",
-    "value_bounds":      "no MoneyRange / output-sum overflow check",
-    "block_size":        "no MAX_BLOCK_SIZE cap (32 MB serialization only)",
-    "script_limits":     "no element / op-count / stack ceilings (underflow guards only)",
-    "sig_encoding":      "lenient (non-strict-DER) signature parsing",
-    "crypto_lib":        "OpenSSL EC for ECDSA-on-secp256k1",
-    "pow_algo":          "SHA-256d, compact target",
-    "monetary":          "COIN=1e8, 50-coin subsidy, 210k halving, 10-min spacing",
-    "consensus_db":      "Berkeley DB for the chainstate",
+    "script_vocabulary": "which Script opcodes are enabled",
+    "value_bounds":      "output value / sum sanity checks",
+    "block_size":        "block-size limit",
+    "script_limits":     "script element / op-count / stack ceilings",
+    "sig_encoding":      "signature-encoding strictness",
+    "crypto_lib":        "EC library for ECDSA-on-secp256k1",
+    "pow_algo":          "proof-of-work function + target format",
+    "monetary":          "unit / subsidy / halving / spacing",
+    "consensus_db":      "chainstate storage engine",
 }
-ORIGIN = date(2009, 1, 3)                       # the genesis block's date
+_ = None  # UNSPECIFIED: the codebase does not constrain this axis
 
-_WEIGHT = {"origin": 0.0, "restored": 0.5, "diverged": 1.0}
+# --- frozen reference snapshots (timeless artifacts) --------------------------
+# whitepaper: the design fixes NONE of these implementation axes -> all unspecified.
+# nov08: a partial 5-file pre-release snapshot -> only monetary + PoW are defined in it.
+# v0.1.0: the genesis client -> all nine defined.  ([S] for nov08/v0.1.0 values)
+FROZEN: dict[str, dict[str, str | None]] = {
+    "whitepaper": {ax: _ for ax in AXES},
+    "nov08": {
+        "monetary": "nov 1e6/100/100k/15m", "pow_algo": "leading-zero-bits",
+        "script_vocabulary": _, "value_bounds": _, "block_size": _, "script_limits": _,
+        "sig_encoding": _, "crypto_lib": _, "consensus_db": _,
+    },
+    "v0.1.0": {
+        "script_vocabulary": "full", "value_bounds": "none", "block_size": "no-cap",
+        "script_limits": "none", "sig_encoding": "lenient", "crypto_lib": "openssl",
+        "pow_algo": "sha256d-compact", "monetary": "jan 1e8/50/210k/10m", "consensus_db": "bdb",
+    },
+}
 
 
 @dataclass(frozen=True)
 class Chain:
     name: str
     born: date
-    forked_from: str | None = None              # inherits the parent's state at `born`
-    note: str = ""
+    forked_from: str | None                     # None -> the origin chain (starts as v0.1.0)
 
 
-# genesis-SHARING continuations of the origin chain, + the lab's living reference.
-# (Separate-genesis instances like LTC/DOGE are a different category — see the README.)
+# evolving genesis-SHARING continuations of the v0.1.0 chain.
 CHAINS: dict[str, Chain] = {
-    "BTC":     Chain("BTC",     date(2009, 1, 3),  None,  "the continuous origin chain"),
-    "BCH":     Chain("BCH",     date(2017, 8, 1),  "BTC", "fork of BTC"),
-    "BSV":     Chain("BSV",     date(2018, 11, 15),"BCH", "fork of BCH"),
-    "XEC":     Chain("XEC",     date(2020, 11, 15),"BCH", "eCash; fork of BCH"),
-    "JAN09-X": Chain("JAN09-X", date(2026, 7, 1),  None,  "lab reconstruction: full origin profile (MODEL)"),
+    "BTC": Chain("BTC", date(2009, 1, 3),  None),
+    "BCH": Chain("BCH", date(2017, 8, 1),  "BTC"),
+    "BSV": Chain("BSV", date(2018, 11, 15),"BCH"),
+    "XEC": Chain("XEC", date(2020, 11, 15),"BCH"),
+}
+SINCE: dict[str, date] = {
+    "whitepaper": date(2008, 10, 31), "nov08": date(2008, 11, 15), "v0.1.0": date(2009, 1, 3),
+    **{n: c.born for n, c in CHAINS.items()},
 }
 
 
@@ -82,82 +82,85 @@ class Event:
     when: date
     chain: str
     axis: str
-    state: str                                  # "diverged" | "restored"
+    value: str
     note: str
 
 
-# --- dated divergence events  ([D], public record; curated & refinable) --------
+# --- dated events: a chain SETS an axis to a new value  ([D]) ------------------
 EVENTS: list[Event] = [
-    Event(date(2010, 8, 1),  "BTC", "script_vocabulary", "diverged", "broad opcode set disabled"),
-    Event(date(2010, 8, 1),  "BTC", "value_bounds",      "diverged", "MoneyRange added (0.3.1) after the value-overflow"),
-    Event(date(2010, 8, 1),  "BTC", "script_limits",     "diverged", "520-byte / op-count / stack ceilings added"),
-    Event(date(2010, 9, 1),  "BTC", "block_size",        "diverged", "1 MB MAX_BLOCK_SIZE cap added"),
-    Event(date(2013, 3, 1),  "BTC", "consensus_db",      "diverged", "chainstate moved to LevelDB (0.8)"),
-    Event(date(2015, 7, 4),  "BTC", "sig_encoding",      "diverged", "BIP66 strict-DER activated (block 363725)"),
-    Event(date(2016, 2, 1),  "BTC", "crypto_lib",        "diverged", "libsecp256k1 for consensus verification (0.12)"),
-    Event(date(2018, 5, 15), "BCH", "script_vocabulary", "restored", "re-enabled a subset of disabled opcodes"),
-    Event(date(2020, 2, 4),  "BSV", "script_vocabulary", "restored", "Genesis upgrade: near-original vocabulary (minus 2MUL/2DIV)"),
-    Event(date(2020, 2, 4),  "BSV", "script_limits",     "restored", "Genesis upgrade: removed script number/size limits"),
+    Event(date(2010, 8, 1),  "BTC", "script_vocabulary", "disabled-subset", "broad opcode set disabled"),
+    Event(date(2010, 8, 1),  "BTC", "value_bounds",      "moneyrange",      "MoneyRange added after the value-overflow"),
+    Event(date(2010, 8, 1),  "BTC", "script_limits",     "bounded",         "520-byte / op-count / stack ceilings"),
+    Event(date(2010, 9, 1),  "BTC", "block_size",        "1mb",             "1 MB MAX_BLOCK_SIZE cap"),
+    Event(date(2013, 3, 1),  "BTC", "consensus_db",      "leveldb",         "chainstate moved to LevelDB (0.8)"),
+    Event(date(2015, 7, 4),  "BTC", "sig_encoding",      "strict-der",      "BIP66 strict-DER (block 363725)"),
+    Event(date(2016, 2, 1),  "BTC", "crypto_lib",        "libsecp256k1",    "libsecp256k1 for consensus (0.12)"),
+    Event(date(2018, 5, 15), "BCH", "script_vocabulary", "restored-subset", "re-enabled a subset of opcodes"),
+    Event(date(2018, 5, 15), "BCH", "block_size",        "32mb",            "raised block-size limit"),
+    Event(date(2020, 2, 4),  "BSV", "script_vocabulary", "near-full",       "Genesis: restored near-original vocab (minus 2MUL/2DIV)"),
+    Event(date(2020, 2, 4),  "BSV", "script_limits",     "none",            "Genesis: removed script number/size limits"),
+    Event(date(2020, 2, 4),  "BSV", "block_size",        "unbounded",       "Genesis: removed the block-size cap"),
 ]
 
 
-# --- state, distance, tracking -------------------------------------------------
-def state_of(name: str, at: date) -> dict[str, str]:
-    """Each axis's state for `name` as of `at`: forks inherit the parent's state at the
-    moment of the fork, then apply their own events."""
+# --- state, distance, tracking ------------------------------------------------
+def state_of(name: str, at: date) -> dict[str, str | None]:
+    """Axis-values of `name` as of `at`. Frozen artifacts are timeless; evolving chains start
+    from their parent's state at the fork (the origin chain starts as v0.1.0) then apply events."""
+    if name in FROZEN:
+        return dict(FROZEN[name])
     ch = CHAINS[name]
-    st = {ax: "origin" for ax in AXES}
-    if ch.forked_from:
-        st = state_of(ch.forked_from, ch.born)          # inherit parent state at fork date
+    st = dict(FROZEN["v0.1.0"]) if ch.forked_from is None else state_of(ch.forked_from, ch.born)
     for e in sorted(EVENTS, key=lambda e: e.when):
         if e.chain == name and ch.born <= e.when <= at:
-            st[e.axis] = e.state
+            st[e.axis] = e.value
     return st
 
 
-def distance(name: str, at: date) -> float:
-    return round(sum(_WEIGHT[s] for s in state_of(name, at).values()), 3)
+def _diff_axes(ref: dict, cand: dict) -> list[str]:
+    """Axes on which BOTH specify a value and they differ (unconstrained axes are skipped)."""
+    return [ax for ax in AXES
+            if ref[ax] is not None and cand[ax] is not None and ref[ax] != cand[ax]]
 
 
-def track(at: date) -> dict[str, dict]:
-    """Every claimant that exists at `at`, with its origin-distance and moved axes."""
+def distance(reference: str, candidate: str, at: date) -> int:
+    return len(_diff_axes(state_of(reference, SINCE.get(reference, at)), state_of(candidate, at)))
+
+
+def track(reference: str, at: date) -> dict[str, dict]:
+    """Every version that exists at `at` (except the reference), with its distance from
+    `reference` and the axes on which it differs."""
+    ref_state = state_of(reference, SINCE.get(reference, at))
     out = {}
-    for name, ch in CHAINS.items():
-        if ch.born <= at:
-            st = state_of(name, at)
-            out[name] = {
-                "distance": distance(name, at),
-                "diverged": sorted(a for a, s in st.items() if s == "diverged"),
-                "restored": sorted(a for a, s in st.items() if s == "restored"),
-            }
-    return out
+    for name in list(FROZEN) + list(CHAINS):
+        if name != reference and SINCE[name] <= at:
+            diff = _diff_axes(ref_state, state_of(name, at))
+            out[name] = {"distance": len(diff), "differs_on": diff}
+    return dict(sorted(out.items(), key=lambda kv: (kv[1]["distance"], kv[0])))
 
 
-def define() -> dict[str, str]:
-    """The chosen reference (REFERENCE = v0.1.0) this tracker measures against — a definitional
-    choice, not a certain 'origin' (see the module docstring)."""
-    return dict(AXES)
+def references() -> list[str]:
+    """The named origins you can measure from."""
+    return list(FROZEN)
 
 
-_MILESTONES = [
-    (date(2009, 1, 3),  "genesis"),
-    (date(2011, 1, 1),  "after the 2010 hardening"),
-    (date(2016, 1, 1),  "after BIP66 + libsecp256k1"),
-    (date(2018, 1, 1),  "after the BTC/BCH split"),
-    (date(2021, 1, 1),  "after the BSV Genesis upgrade"),
-    (date(2026, 8, 1),  "today"),
-]
+def define(reference: str = "v0.1.0") -> dict[str, str | None]:
+    """The axis-values of a chosen reference (its 'definition' on these axes)."""
+    return dict(FROZEN[reference]) if reference in FROZEN else state_of(reference, date.today())
 
 
 def demo() -> None:
-    print("origin reference (distance 0) = v0.1.0 on", len(AXES), "axes\n")
-    for when, label in _MILESTONES:
-        print(f"{when}  — {label}")
-        for name, row in sorted(track(when).items(), key=lambda kv: kv[1]["distance"]):
-            moved = ", ".join(row["diverged"] + [a + "*" for a in row["restored"]]) or "none"
-            print(f"   {name:8} distance {row['distance']:>4}   moved: {moved}")
-        print()
-    print("* = restored toward origin (weight 0.5). Distance is neutral — not a quality score.")
+    milestones = [date(2009, 1, 3), date(2016, 1, 1), date(2021, 1, 1), date(2026, 8, 1)]
+    for ref in references():
+        print(f"\n===== reference (origin) = {ref} =====")
+        for when in milestones:
+            if when < SINCE[ref]:
+                continue
+            rows = track(ref, when)
+            cells = "  ".join(f"{n} {r['distance']}" for n, r in rows.items())
+            print(f"  {when}:  {cells or '(nothing else yet)'}")
+    print("\ndistance = # axes where both specify a value and differ (neutral; not a quality score).")
+    print("whitepaper -> ~0 for all: the design does not constrain these axes (it does not discriminate).")
 
 
 if __name__ == "__main__":

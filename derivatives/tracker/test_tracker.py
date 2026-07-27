@@ -1,7 +1,7 @@
-"""The origin-distance tracker: genesis sits at 0, claimants drift over time, forks inherit
-their parent's drift, and a restoration (BSV Genesis) moves a chain back toward the origin.
-Distance is neutral (displacement from v0.1.0), not a quality score. Evidence: origin axes [S],
-dated events [D]."""
+"""Reference-selectable origin-distance tracker: pick any origin + any date, measure each
+version's distance from it. Distance = # axes where both specify a value and differ (neutral).
+The reference is a parameter because 'the origin' is a choice. Evidence: v0.1.0/nov08 values
+[S], chain events [D]."""
 
 import pathlib
 import sys
@@ -10,65 +10,69 @@ from datetime import date
 _HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE))
 
-from tracker import AXES, CHAINS, define, distance, state_of, track  # noqa: E402
+from tracker import AXES, CHAINS, distance, references, state_of, track  # noqa: E402
 
 
-def test_genesis_is_distance_zero():
-    assert distance("BTC", date(2009, 1, 4)) == 0.0
-    assert track(date(2009, 1, 4))["BTC"]["distance"] == 0.0
+# ---- the whitepaper does not discriminate ------------------------------------
+
+def test_whitepaper_reference_gives_zero_for_everyone():
+    # the design constrains none of the 9 implementation axes -> distance 0 for all
+    for name, row in track("whitepaper", date(2026, 8, 1)).items():
+        assert row["distance"] == 0, name
 
 
-def test_only_the_origin_chain_exists_at_genesis():
-    at = date(2009, 6, 1)
-    assert set(track(at)) == {"BTC"}                      # BCH/BSV/XEC/JAN09-X not born yet
+# ---- v0.1.0 is itself diverged from the earlier nov08 anchor -----------------
+
+def test_v010_is_nonzero_distance_from_nov08():
+    # under the Nov-2008 anchor, v0.1.0 already differs on monetary + PoW (the only axes nov08 fixes)
+    assert distance("nov08", "v0.1.0", date(2009, 1, 3)) == 2
+    assert set(track("nov08", date(2009, 1, 3))["v0.1.0"]["differs_on"]) == {"monetary", "pow_algo"}
 
 
-def test_btc_drifts_monotonically_through_2016():
-    d09 = distance("BTC", date(2009, 6, 1))
-    d11 = distance("BTC", date(2011, 1, 1))               # after 2010 hardening (4 axes)
-    d16 = distance("BTC", date(2016, 6, 1))               # + LevelDB, BIP66, libsecp256k1
-    assert d09 == 0.0 < d11 < d16
-    assert d16 == 7.0                                     # 7 axes diverged by 2016
+def test_btc_distance_depends_on_the_chosen_origin():
+    at = date(2016, 6, 1)
+    d_wp = distance("whitepaper", "BTC", at)      # design: 0
+    d_nov = distance("nov08", "BTC", at)          # nov08 fixes only monetary+pow: 2
+    d_v01 = distance("v0.1.0", "BTC", at)         # v0.1.0 fixes all nine: 7 by 2016
+    assert d_wp == 0 and d_nov == 2 and d_v01 == 7
+    assert d_wp < d_nov < d_v01                   # the same chain, three different distances
 
 
-def test_only_monetary_and_pow_stay_at_origin_for_btc():
+# ---- the v0.1.0 anchor reproduces the earlier tracker's numbers --------------
+
+def test_genesis_chain_is_zero_from_v010_then_drifts():
+    assert distance("v0.1.0", "BTC", date(2009, 1, 4)) == 0     # BTC starts AS v0.1.0
+    d11 = distance("v0.1.0", "BTC", date(2011, 1, 1))
+    d16 = distance("v0.1.0", "BTC", date(2016, 6, 1))
+    assert 0 < d11 < d16 == 7
+
+
+def test_only_monetary_and_pow_stay_at_v010_for_btc():
     st = state_of("BTC", date(2016, 6, 1))
-    assert st["monetary"] == "origin" and st["pow_algo"] == "origin"
+    v = state_of("v0.1.0", date(2009, 1, 3))
+    assert st["monetary"] == v["monetary"] and st["pow_algo"] == v["pow_algo"]
 
 
-def test_a_chain_is_absent_before_its_birth():
-    assert "BCH" not in track(date(2015, 1, 1))           # BCH born 2017
-    assert "BCH" in track(date(2017, 9, 1))
+# ---- forks, births, and moving back toward the anchor ------------------------
+
+def test_a_version_is_absent_before_it_exists():
+    assert "BCH" not in track("v0.1.0", date(2015, 1, 1))       # BCH born 2017
+    assert "BCH" in track("v0.1.0", date(2017, 9, 1))
 
 
-def test_fork_inherits_parent_drift_at_birth():
-    # BCH at its fork inherits all of BTC's accumulated divergence (nonzero immediately)
-    assert distance("BCH", date(2017, 8, 2)) == distance("BTC", date(2017, 8, 1)) == 7.0
+def test_fork_inherits_parent_distance_at_birth():
+    assert distance("v0.1.0", "BCH", date(2017, 8, 2)) == distance("v0.1.0", "BTC", date(2017, 8, 1))
 
 
-def test_restoration_moves_a_chain_back_toward_origin():
-    # BCH re-enabling opcodes (2018) reduces its distance
-    assert distance("BCH", date(2018, 1, 1)) > distance("BCH", date(2018, 6, 1))
-    # BSV's Genesis upgrade (2020) reduces it further (script_limits diverged -> restored)
-    assert distance("BSV", date(2020, 1, 1)) > distance("BSV", date(2020, 3, 1))
+def test_bsv_moves_back_toward_v010_on_script_limits():
+    # BSV's 2020 Genesis sets script_limits back to "none" (== v0.1.0) -> that axis stops differing
+    before = track("v0.1.0", date(2020, 1, 1))["BSV"]["differs_on"]
+    after = track("v0.1.0", date(2020, 3, 1))["BSV"]["differs_on"]
+    assert "script_limits" in before and "script_limits" not in after
+    # but restored vocabulary is "near-full" != "full", so that axis still differs (honest)
+    assert "script_vocabulary" in after
 
 
-def test_bsv_is_closest_to_origin_on_script_among_the_forks():
-    # after Genesis, BSV has restored both script axes; BTC has restored neither
-    bsv = state_of("BSV", date(2021, 1, 1))
-    btc = state_of("BTC", date(2021, 1, 1))
-    assert bsv["script_vocabulary"] == "restored" and bsv["script_limits"] == "restored"
-    assert btc["script_vocabulary"] == "diverged" and btc["script_limits"] == "diverged"
-
-
-def test_lab_reconstruction_is_the_only_living_zero_distance_thing_today():
-    t = track(date(2026, 8, 1))
-    assert t["JAN09-X"]["distance"] == 0.0                # full origin profile, by construction
-    assert t["BTC"]["distance"] > 0.0                     # the name-bearing chain has drifted
-    zeros = [c for c, r in t.items() if r["distance"] == 0.0]
-    assert zeros == ["JAN09-X"]                           # nothing else living sits at the origin
-
-
-def test_define_returns_the_full_axis_reference():
-    assert set(define()) == set(AXES) and len(define()) == 9
-
+def test_references_are_the_named_origins():
+    assert references() == ["whitepaper", "nov08", "v0.1.0"]
+    assert len(AXES) == 9 and len(CHAINS) == 4
