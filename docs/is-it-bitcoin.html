@@ -254,7 +254,10 @@ function vOrigin(){                                 // the origin — unique, be
 }
 
 function vCandidate(){                              // a Bitcoin — the "a, not the"
-  if(!is("ledger")) return {b:"Not an instance", c:"no", why:
+  if(unk("ledger")) return {b:"Indeterminate", c:"ind", why:
+    "Set whether it's a running or runnable chain — an <em>instance</em> is an operable system, not a "+
+    "document, an idea, or a number."};
+  if(no("ledger")) return {b:"Not an instance", c:"no", why:
     "It isn't a running or runnable chain, so it isn't an <em>instance</em> of Bitcoin — it's "+
     (is("unit")?"a unit of value":"a design, document, or idea")+". Instances are the operable systems "+
     "(BTC, BSV, this lab's chains); this question is about them."};
@@ -270,6 +273,10 @@ function vCandidate(){                              // a Bitcoin — the "a, not
     "A new instance (its own genesis) that re‑realizes the origin design <em>undrifted</em>. Its claim is "+
     "<em>“I am what the design specifies.”</em> Measured by fidelity it sits at distance 0–1 from the origin — "+
     "an <b>equal contender</b> to the continuity chains, by a different lens. (RELEASE_AS_CANDIDATES)"};
+  if(unk("genesis") || unk("faithful")) return {b:"At least an instance of the genus", c:"cand-soft", why:
+    "It's a proof‑of‑work ledger, so it's a Bitcoin <em>by type</em>. Set whether it traces to the genesis "+
+    "(→ a <b>continuity</b> candidate) or reconstructs the origin (→ a <b>fidelity</b> candidate) to place it "+
+    "more precisely."};
   return {b:"An instance of the genus", c:"cand-soft", why:
     "It's a proof‑of‑work ledger — a Bitcoin <em>by type</em>, like Litecoin or Dogecoin — but it neither "+
     "traces to the genesis nor reconstructs the origin, so it makes no claim on the genesis <em>instance</em>. "+
@@ -321,8 +328,11 @@ function bottomLine(){
     return "In short: a <b>continuity candidate</b> for <em>a</em> Bitcoin — a branch of the launched chain; never <em>the</em> Bitcoin, which is convention.";
   if(is("ledger") && is("pow") && is("faithful"))
     return "In short: a <b>fidelity candidate</b> for <em>a</em> Bitcoin — the origin design re‑realized; never <em>the</em> Bitcoin, which is convention.";
-  if(is("ledger") && is("pow"))
-    return "In short: an <b>instance of the design</b> (the genus) — a Bitcoin by type, like an altcoin; not the genesis instance.";
+  if(is("ledger") && is("pow")){
+    if(no("genesis") && no("faithful"))
+      return "In short: an <b>instance of the Bitcoin design</b> (the genus), like an altcoin — not the genesis instance.";
+    return "In short: a <b>proof‑of‑work instance of the Bitcoin design</b> — set the genesis / origin properties to sharpen it to a continuity or fidelity candidate.";
+  }
   if(is("faithful") && !is("ledger"))
     return "In short: the <b>origin</b> (or its faithful reconstruction) — the one thing pointable uniquely and beyond doubt.";
   return "Set the remaining properties to sharpen the placement.";
