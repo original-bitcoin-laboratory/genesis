@@ -6,6 +6,16 @@ what exists (a MODEL) and a network others can run. It is a **sustained
 engineering + community effort**, not a switch — and it stays **experimental and
 non‑monetary** throughout. Read this before deciding it's worth it.
 
+## Why do this? — accessibility parity, not a coin
+
+The point of a live network is narrow and honest: to give NOV08‑X / JAN09‑X the **same kind of
+open accessibility a BTC or a BSV has** — a node a stranger can download, run, and sync — so they
+stand as *equally accessible* candidates, not only reproducible artifacts. It closes the
+**"network‑parity" rung** of
+[`RELEASE_AS_CANDIDATES.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/RELEASE_AS_CANDIDATES.md).
+It does **not** make them money, and it does **not** make them "the real Bitcoin" — it makes them
+*reachable on the same footing.*
+
 ## The hard truth about "eternal"
 
 A chain persists only because **independent people choose to keep running it**. One
@@ -13,6 +23,24 @@ machine broadcasting is not a network; it lasts exactly as long as that process.
 the real deliverable isn't code — it's *other operators*. Everything below is
 necessary but **not sufficient**; adoption is the sufficient part, and it can't be
 engineered, only earned.
+
+## The crux: "nothing disabled" is only safe *because* it isn't money
+
+The reconstructions are faithful to the origin — which means they **carry the origin's missing
+guardrails**: no `MoneyRange` (the value‑overflow surface), no block‑size cap, no script
+element/op/stack limits, unbounded arithmetic (see
+[`CONSENSUS_SURFACE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/CONSENSUS_SURFACE.md)).
+On a **value‑bearing** chain those absences are exploitable — an overflow mints coins, unbounded
+scripts/blocks are denial‑of‑service. On a **non‑monetary** chain they are **harmless research
+curiosities**: there is nothing to steal, so an overflow is a *demonstration*, and a DoS costs a
+restart, not money.
+
+So *"nothing disabled"* and *"not money"* are **not two rules — they are the same rule.** The only
+way to run the *undrifted* origin design in the open, safely, is to keep it valueless. Attach
+value and you are **forced** to add the 2010 guardrails — at which point it is no longer the
+origin (it has drifted), and you have simply re‑derived why those guardrails were added. That is
+the real reason path C (money) is off: it would force the reconstruction to **stop being the
+reconstruction.**
 
 ## Gap: MODEL → joinable node
 
