@@ -54,6 +54,6 @@ Bitcoin v0.1 is a **thin application over a few heavyweight libraries** — its 
 the *protocol* (the `main`/`script`/`net` logic), not the plumbing. The single most
 consequential external dependency is **OpenSSL**, which carried *all* of the crypto; its
 later replacement (by `libsecp256k1`, and the removal of `OP_*` that stressed OpenSSL's
-BN) is a direct thread from the origin the descendant matrix maps. And the **Win32/wxWidgets
-binding is what makes the release Windows‑only** — the fact that shapes R2 (see
-`docs/R2_BUILD_STEPS.md`).
+BIGNUM) is a direct thread from the origin the descendant matrix maps — told in full in
+[`THE_OPENSSL_THREAD.md`](THE_OPENSSL_THREAD.md). And the **Win32/wxWidgets binding is what
+makes the release Windows‑only** — the fact that shapes R2 (see `docs/R2_BUILD_STEPS.md`).
