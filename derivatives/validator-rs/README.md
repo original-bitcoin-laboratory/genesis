@@ -47,15 +47,16 @@ native node matters only at extreme scale; this is that node, built and tested.)
 - **a runnable node** (`net::Node`) — persistence + a real **TCP block-sync + transaction relay**: a
   peer sends its height, the server replies with the main-chain blocks above it *and* announces its
   mempool (`inv`); the client **re-validates each block into its own `NodeState`**, persists it, and
-  requests the missing transactions (`getdata`→`tx`), pooling them. Two nodes end in sync and share
-  a transaction;
+  requests the missing transactions (`getdata`→`tx`), pooling them, and **learns peers via `addr`
+  gossip** (a node learns the address of the one it dials and the peers *it* knows). Two nodes end in
+  sync, share a transaction, and discover each other;
 - **transacting** — key generation + transaction **signing** (`script::sign_input`, via `k256`), a
   validating **mempool** (`mempool`) that accepts/rejects spends against the UTXO + pooled parents
   (fees, no double-spend, maturity, script via the full interpreter), and **block assembly + mining**
   (`miner`) — so a Rust node mines coins, pools a spend, and mines it into a block.
 
-This is a whole, transacting, relaying node. The **remaining transport** the Python `netnode` also
-has — `addr` gossip / peer discovery, DoS scoring, the wallet/RPC — is not re-ported here (it exists
+This is a whole, transacting, relaying, discovering node. The **remaining transport** the Python
+`netnode` also has — DoS/misbehavior scoring and the wallet/RPC — is not re-ported here (it exists
 and is tested in Python; a second copy adds no capability). Hashes use pure-Rust RustCrypto crates (`ripemd`,
 `sha1`); arithmetic uses `num-bigint`; ECDSA uses `k256`; networking + persistence use only `std` — no
 C / OpenSSL / async runtime anywhere.
@@ -67,8 +68,8 @@ cargo test                                       # cross-checks everything again
 
 ## How it's verified
 
-`cargo test` cross-checks the Rust against the **verified Python node** — **22 tests** (covering
-70+ opcode scripts + reorg + difficulty + a live two-node TCP sync/relay + mine-and-spend):
+`cargo test` cross-checks the Rust against the **verified Python node** — **23 tests** (covering
+70+ opcode scripts + reorg + difficulty + a live two-node TCP sync/relay/discovery + mine-and-spend):
 
 - `tests/golden.rs` (3): the standard SHA-256 `"abc"`/empty vectors; golden blocks' hash / merkle /
   PoW / tx-count; and a tamper-rejection case.
@@ -97,11 +98,13 @@ cargo test                                       # cross-checks everything again
 - `tests/relay.rs` (1): **two nodes relay a transaction over real TCP** — A mines a chain, pools a
   signed spend, and serves; B syncs the blocks *and* pulls the mempool tx (`inv`→`getdata`→`tx`),
   validating it into its own mempool.
+- `tests/discovery.rs` (1): **`addr` gossip** — B, dialing A, learns A's advertised address and the
+  peers A already knows.
 
 The golden vectors come from the verified Python — the block vectors from `netnode/bench.py`'s chain
 builder, and the rest from the regenerable generators in [`tools/`](tools/) (`gen_state_vectors.py`,
 `gen_eval_vectors.py`, `gen_multisig_vectors.py`, `gen_reorg_vectors.py`). **Verified:** compiled +
-tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **22 pass**; `obl-validate` on a golden
+tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **23 pass**; `obl-validate` on a golden
 block reproduces the Python's block hash. The novel 256-bit compact-target/PoW math was additionally
 cross-checked against the Python reference across easy / hard / edge `nBits`.
 

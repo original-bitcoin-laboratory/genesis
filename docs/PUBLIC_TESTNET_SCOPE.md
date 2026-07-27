@@ -88,9 +88,10 @@ reconstruction.**
 > ECDSA byte‑faithful to pre‑BIP66 OpenSSL, and reorg + difficulty) **plus a runnable transport**
 > (hardened wire, crash‑safe store, a real TCP **block‑sync + transaction relay** [`inv`→`getdata`→
 > `tx`], **and transacting** — tx signing via `k256`, a validating mempool, and block assembly/mining,
-> so a Rust node mines coins, pools a spend, mines it into a block, and relays it to a peer). Compiled
-> + tested (22 tests) byte‑for‑byte against the Python node; the remaining transport (addr
-> gossip/DoS/RPC) exists + is tested in the Python `netnode`. Remaining toward a hardened public launch
+> so a Rust node mines coins, pools a spend, mines it into a block, relays it to a peer, and
+> **discovers peers via `addr` gossip**). Compiled + tested (23 tests) byte‑for‑byte against the
+> Python node; the remaining transport (DoS/misbehavior scoring + wallet/RPC) exists + is tested in
+> the Python `netnode`. Remaining toward a hardened public launch
 > is no longer node‑core code: **choosing/running a real difficulty floor** on a live launch,
 > GPG‑signed builds, a security review, the rest of a native node **only for extreme scale** — and,
 > above all, **other people choosing to run it.**

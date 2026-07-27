@@ -7,6 +7,7 @@
 //! client validates each into its own `NodeState` and persists it. Two nodes end in sync — over
 //! real TCP, with every block re-validated by the native consensus.
 
+use std::collections::HashSet;
 use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::path::Path;
@@ -16,6 +17,47 @@ use crate::reorg::NodeState;
 use crate::rules::Rules;
 use crate::store::BlockStore;
 use crate::wire::{frame, read_message};
+
+type Peer = (String, u16);
+
+fn encode_addrs(addrs: &[Peer]) -> Vec<u8> {
+    let mut o = (addrs.len() as u16).to_le_bytes().to_vec();
+    for (host, port) in addrs {
+        let hb = host.as_bytes();
+        let n = hb.len().min(255);
+        o.push(n as u8);
+        o.extend_from_slice(&hb[..n]);
+        o.extend_from_slice(&port.to_le_bytes());
+    }
+    o
+}
+
+fn decode_addrs(p: &[u8]) -> Vec<Peer> {
+    let mut out = Vec::new();
+    if p.len() < 2 {
+        return out;
+    }
+    let n = u16::from_le_bytes(p[0..2].try_into().unwrap()) as usize;
+    let mut i = 2;
+    for _ in 0..n.min(1000) {
+        if i >= p.len() {
+            break;
+        }
+        let ln = p[i] as usize;
+        i += 1;
+        if i + ln + 2 > p.len() {
+            break;
+        }
+        let host = String::from_utf8_lossy(&p[i..i + ln]).to_string();
+        i += ln;
+        let port = u16::from_le_bytes(p[i..i + 2].try_into().unwrap());
+        i += 2;
+        if !host.is_empty() && port != 0 {
+            out.push((host, port));
+        }
+    }
+    out
+}
 
 fn inv_payload(hashes: &[[u8; 32]]) -> Vec<u8> {
     let mut o = (hashes.len() as u32).to_le_bytes().to_vec();
@@ -49,6 +91,8 @@ pub struct Node {
     pub mempool: Mempool,
     store: BlockStore,
     magic: [u8; 4],
+    advertise: Option<Peer>,
+    known: HashSet<Peer>,
 }
 
 impl Node {
@@ -74,7 +118,31 @@ impl Node {
             }
         }
         state.activate_best();
-        Ok(Node { state, mempool: Mempool::new(maturity), store, magic })
+        Ok(Node {
+            state,
+            mempool: Mempool::new(maturity),
+            store,
+            magic,
+            advertise: None,
+            known: HashSet::new(),
+        })
+    }
+
+    /// Set this node's own reachable address, gossiped so peers can dial it back.
+    pub fn set_advertise(&mut self, host: &str, port: u16) {
+        self.advertise = Some((host.to_string(), port));
+    }
+
+    /// Learn a peer address (as `--connect` / bootstrap would).
+    pub fn add_peer(&mut self, host: &str, port: u16) {
+        self.known.insert((host.to_string(), port));
+    }
+
+    /// The peers this node knows (learned via `addr` gossip or seeded).
+    pub fn known_peers(&self) -> Vec<Peer> {
+        let mut v: Vec<Peer> = self.known.iter().cloned().collect();
+        v.sort();
+        v
     }
 
     pub fn height(&self) -> i64 {
@@ -116,6 +184,12 @@ impl Node {
             }
         }
         stream.write_all(&frame("inv", &inv_payload(&self.mempool.txids()), &self.magic))?;
+        let mut sample: Vec<Peer> = Vec::new();
+        if let Some(a) = &self.advertise {
+            sample.push(a.clone()); // our own reachable address
+        }
+        sample.extend(self.known.iter().cloned()); // + the peers we know
+        stream.write_all(&frame("addr", &encode_addrs(&sample), &self.magic))?;
         stream.flush()?;
         if let Some((command, payload)) = read_message(stream, &self.magic)? {
             if command == "getdata" {
@@ -151,6 +225,11 @@ impl Node {
                 "tx" => {
                     let h = self.state.height();
                     let _ = self.mempool.accept(&payload, self.state.utxo(), h);
+                }
+                "addr" => {
+                    for peer in decode_addrs(&payload) {
+                        self.known.insert(peer); // learn peers via gossip (discovery)
+                    }
                 }
                 _ => {}
             }
