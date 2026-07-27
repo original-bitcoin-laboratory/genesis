@@ -15,6 +15,8 @@ pub mod chainstate;
 pub mod difficulty;
 pub mod eval;
 pub mod index;
+pub mod mempool;
+pub mod miner;
 pub mod net;
 pub mod reorg;
 pub mod rules;
@@ -265,6 +267,7 @@ pub fn validate_context_free(raw: &[u8]) -> Result<Summary, &'static str> {
 // and are fully checkable against the Python node's golden vectors.
 
 /// A transaction input (outpoint + scriptSig + sequence).
+#[derive(Clone)]
 pub struct TxIn {
     pub prevhash: [u8; 32],
     pub n: u32,
@@ -273,17 +276,42 @@ pub struct TxIn {
 }
 
 /// A transaction output (value is a **signed** int64, as in v0.1) + scriptPubKey.
+#[derive(Clone)]
 pub struct TxOut {
     pub value: i64,
     pub script: Vec<u8>,
 }
 
 /// A deserialized transaction.
+#[derive(Clone)]
 pub struct Tx {
     pub version: u32,
     pub vin: Vec<TxIn>,
     pub vout: Vec<TxOut>,
     pub locktime: u32,
+}
+
+/// Serialize a transaction to bytes (the inverse of `parse_tx`).
+pub fn serialize_tx(tx: &Tx) -> Vec<u8> {
+    use crate::sighash::compact_size;
+    let mut o = Vec::new();
+    o.extend_from_slice(&tx.version.to_le_bytes());
+    o.extend_from_slice(&compact_size(tx.vin.len() as u64));
+    for i in &tx.vin {
+        o.extend_from_slice(&i.prevhash);
+        o.extend_from_slice(&i.n.to_le_bytes());
+        o.extend_from_slice(&compact_size(i.script.len() as u64));
+        o.extend_from_slice(&i.script);
+        o.extend_from_slice(&i.seq.to_le_bytes());
+    }
+    o.extend_from_slice(&compact_size(tx.vout.len() as u64));
+    for out in &tx.vout {
+        o.extend_from_slice(&out.value.to_le_bytes());
+        o.extend_from_slice(&compact_size(out.script.len() as u64));
+        o.extend_from_slice(&out.script);
+    }
+    o.extend_from_slice(&tx.locktime.to_le_bytes());
+    o
 }
 
 /// Deserialize one transaction at `off`; returns it and the offset just past it.

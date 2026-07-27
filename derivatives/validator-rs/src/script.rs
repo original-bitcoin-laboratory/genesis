@@ -7,14 +7,33 @@
 //! low-S before verifying, so a high-S (malleated) signature verifies the same, exactly as OpenSSL
 //! accepts both.
 
-use k256::ecdsa::signature::hazmat::PrehashVerifier;
-use k256::ecdsa::{Signature, VerifyingKey};
+use k256::ecdsa::signature::hazmat::{PrehashSigner, PrehashVerifier};
+use k256::ecdsa::{Signature, SigningKey, VerifyingKey};
 
 use crate::eval::{valid, SigCheck};
 use crate::sighash::signature_hash;
 use crate::Tx;
 
 const OP_CODESEPARATOR: u8 = 0xab;
+
+/// The uncompressed SEC public key (65 bytes) for a 32-byte secret — an "address" for bare P2PK.
+pub fn pubkey_sec(priv_bytes: &[u8; 32]) -> Vec<u8> {
+    let sk = SigningKey::from_slice(priv_bytes).expect("valid secret");
+    sk.verifying_key().to_encoded_point(false).as_bytes().to_vec()
+}
+
+/// Sign input `n_in` of `tx` with `priv_bytes` over `script_code` — returns the DER signature with
+/// the appended hash-type byte (the scriptSig payload for a bare-P2PK spend). Low-S canonical, so
+/// it verifies under both the faithful OpenSSL path and libsecp256k1.
+pub fn sign_input(priv_bytes: &[u8; 32], tx: &Tx, n_in: usize, script_code: &[u8], hash_type: u8) -> Vec<u8> {
+    let sk = SigningKey::from_slice(priv_bytes).expect("valid secret");
+    let digest = signature_hash(script_code, tx, n_in, hash_type);
+    let sig: Signature = sk.sign_prehash(&digest).expect("sign");
+    let sig = sig.normalize_s().unwrap_or(sig);
+    let mut out = sig.to_der().as_bytes().to_vec();
+    out.push(hash_type);
+    out
+}
 
 /// Verify a DER signature over `digest`, lenient like v0.1's OpenSSL (accepts high-S).
 pub fn ecdsa_verify(pubkey_sec: &[u8], der: &[u8], digest: &[u8; 32]) -> bool {

@@ -59,6 +59,11 @@ impl NodeState {
         self.utxo.values().map(|c| c.value).sum()
     }
 
+    /// The current validated UTXO set (for a mempool to validate against).
+    pub fn utxo(&self) -> &HashMap<Outpoint, Coin> {
+        &self.utxo
+    }
+
     pub fn is_invalid(&self, h: &[u8; 32]) -> bool {
         self.invalid.contains(h)
     }
