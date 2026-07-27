@@ -53,7 +53,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   `OP_DIV`, `OP_LSHIFT`, `OP_INVERT`, …) is **live** in v0.1.
 - [x] File/class map for all 26 `src/` units → `inventory/SOURCE_INVENTORY.md`
   (noted `market.*` commerce + a dormant poker UI in `uibase`).
-- [x] NOV08 → JAN09 structural diff → `../../common/conformance/NOV08_JAN09_DIFF.md`.
+- [x] NOV08 → JAN09 structural diff → `common/conformance/NOV08_JAN09_DIFF.md`.
 - [x] Line-numbered consensus validation-path catalog →
   `inventory/VALIDATION_PATH.md`: `ProcessBlock → CheckBlock → AcceptBlock →
   AddToBlockIndex → ConnectBlock → ConnectInputs → VerifySignature → EvalScript`

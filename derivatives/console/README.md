@@ -33,7 +33,7 @@ on **both** NOV08-X and JAN09-X and prints the event trail + a studio trace.
 
 Same driver, two constitutions — so the identical financial machine runs on
 November's rules and on January's. NOV08-X here is **NOV08-Full's executable form**
-(`../../../common/nov08x/NOV08_FULL.md`): a counterfactual completion, **not**
+(`common/nov08x/NOV08_FULL.md`): a counterfactual completion, **not**
 recovered code and **not** "true Bitcoin".
 
 ## Run

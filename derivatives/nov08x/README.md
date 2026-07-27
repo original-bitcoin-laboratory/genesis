@@ -3,7 +3,7 @@
 **Evidence level: `MODEL`.** The first executable slice of **NOV08‑X**: a
 counterfactual network that runs **November 2008's constitution** on the lab's
 existing engines — no period‑toolchain compile. Design contract:
-[`common/nov08x/DESIGN_LEDGER.md`](../../../common/nov08x/DESIGN_LEDGER.md).
+[`common/nov08x/DESIGN_LEDGER.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/nov08x/DESIGN_LEDGER.md).
 
 November's rules are read **verbatim** from the surviving pre‑release source
 (class **N‑ORIG**); January is only the differential baseline. Every rule carries a

@@ -3,7 +3,7 @@
 **Evidence level: `MODEL`.** Where [`../overflow/`](../overflow/) and
 [`../script_limits/`](../script_limits/) execute the bounds v0.1 *lacked*, this executes two
 "present machinery" rules v0.1 *had* — completing that column of
-[`CONSENSUS_SURFACE.md`](../../../common/conformance/CONSENSUS_SURFACE.md). Faithful ports of:
+[`CONSENSUS_SURFACE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/CONSENSUS_SURFACE.md). Faithful ports of:
 
 - **`GetMedianTimePast`** (`main.h:1086`, `nMedianTimeSpan = 11`) — median of the last 11
   block times.
@@ -54,4 +54,4 @@ python -m pytest       # 12 passed
 ## Boundary
 
 MODEL; line‑for‑line port of the v0.1 rules; not a live‑exploit claim (these are the rules the
-origin *had*). A tool, never authority (`../../../common/AUTHORITY.md`).
+origin *had*). A tool, never authority (`common/AUTHORITY.md`).

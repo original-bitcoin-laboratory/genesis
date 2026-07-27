@@ -43,7 +43,7 @@ python -m pytest               # 21 passed (skips if libsecp256k1 absent)
 
 `libsecp256k1` is the crypto **every descendant inherited** (Thread A *converged* — see the
 essay's neutrality note), so this is a neutral cross‑check, not a privileging of any chain;
-it is a *tool*, never authority (`../../../common/AUTHORITY.md`). Backed by
+it is a *tool*, never authority (`common/AUTHORITY.md`). Backed by
 `electrumsv-secp256k1` because the standalone `coincurve` / `secp256k1` wheels don't build
 on this Python; the underlying C library is the same libsecp256k1. Degrades gracefully
 (tests skip) if the binding is absent.

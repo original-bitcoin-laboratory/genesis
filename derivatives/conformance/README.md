@@ -63,7 +63,7 @@ Both degrade gracefully if absent — those tests simply skip.
 **BCH / XEC** have no standalone interpreter, so they are **execution‑bounded** (each cell
 pinned between two independent executions), not run through a single BCH engine — said
 plainly. Everything here is Tier 4 (interpretation) over Tier 0 source per
-`../../../common/AUTHORITY.md`; a full run against each chain's own node software is the
+`common/AUTHORITY.md`; a full run against each chain's own node software is the
 further step, applied **equally** to every candidate.
 
 ## Sources

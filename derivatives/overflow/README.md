@@ -1,7 +1,7 @@
 # Value-overflow surface, executed — v0.1's `CheckTransaction` vs the 2010 fix
 
 **Evidence level: `MODEL`.** This makes the sharpest finding of
-[`CONSENSUS_SURFACE.md`](../../../common/conformance/CONSENSUS_SURFACE.md) *runnable* — the
+[`CONSENSUS_SURFACE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/CONSENSUS_SURFACE.md) *runnable* — the
 same way [`../crypto_conformance/`](../crypto_conformance/) made the OpenSSL malleability
 thread runnable. It ports v0.1's transaction sanity check and the post‑Aug‑2010 hardened
 version **side by side**, and exhibits the exact transaction that one **accepts** and the
@@ -56,4 +56,4 @@ python -m pytest       # 10 passed
 
 MODEL; objective source port of `main.h:442` + the documented Aug‑2010 fix; historical
 amounts from the public record; no chain privileged; not a live‑exploit claim (the surface was
-patched in 0.3.1). It is a *tool*, never authority (`../../../common/AUTHORITY.md`).
+patched in 0.3.1). It is a *tool*, never authority (`common/AUTHORITY.md`).

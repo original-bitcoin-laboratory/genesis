@@ -37,7 +37,7 @@ python scripts/verify_genesis.py   # both experimental genesis blocks re-derive 
 The unmodified 2009 `bitcoin.exe` was also run and hash‑verified against these
 reconstructions — the exact genesis reproduces three independent ways (`r3-findings/run1/`,
 level `JAN09-EXECUTED`). Findings, the honest claim, and scope live in the umbrella:
-[`../common/README.md`](../common/README.md) · [`../common/CLAIMS.md`](../common/CLAIMS.md).
+[`common/README.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/README.md) · [`common/CLAIMS.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/CLAIMS.md).
 These chains are **not money** (stamped in the coinbase): a research microscope, not a coin.
 
 ## Layout
@@ -57,7 +57,7 @@ derivatives/  all modified / instrumented / modernized code
 - `artifacts/` holds acquired historical bytes and is never edited.
 - `derivatives/` holds every patch, port, harness, UI, or experiment; a
   derivative is never described as canonical original code.
-- The program-wide roadmap lives in the lab umbrella (`../common/ROADMAP.md`);
+- The program-wide roadmap lives in the lab umbrella (`common/ROADMAP.md`);
   see `docs/PROJECT_CHARTER.md` for method and evidence rules.
 
 ## License
