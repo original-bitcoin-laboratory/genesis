@@ -30,6 +30,7 @@ SUITES = [
     ("persist    (CDiskBlockIndex save/reload)",                    DERIV / "persist"),
     ("conformance(6-chain matrix, every column execution-checked)", DERIV / "conformance"),
     ("crypto     (v0.1 ECDSA vs real libsecp256k1 — Thread A)",     DERIV / "crypto_conformance"),
+    ("overflow   (v0.1 CheckTransaction vs the Aug-2010 MoneyRange fix)", DERIV / "overflow"),
     ("nov08x     (NOV08 counterfactual + live network)",           DERIV / "nov08x"),
     ("jan09x     (released chain, full vocab + live network)",     DERIV / "jan09x"),
     ("ledger     (UTXO ConnectInputs/ConnectBlock; transacting)",   DERIV / "ledger"),
