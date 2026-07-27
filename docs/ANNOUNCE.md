@@ -57,6 +57,32 @@ hashing, sighash, and value rules are pinned down.
 4. **Tell one other person.** A chain is "eternal" only once **independent** people keep nodes up. We
    can offer that; we can't manufacture it.
 
+## Join the live network — a peer you can connect to today
+
+There is a live, always‑on **JAN09‑X** node running as a bootstrap anchor:
+
+```
+143.110.255.205:18009      (JAN09‑X · magic f00ba709 · experimental · NOT money)
+```
+
+Clone the repo and point a node at it:
+
+```bash
+git clone https://github.com/original-bitcoin-laboratory/genesis
+cd genesis/derivatives
+python -m netnode --chain jan09x --datadir ./data --connect 143.110.255.205:18009
+```
+
+Your node mints the **same genesis** (`51eec236…`), dials the anchor, and downloads **and
+independently re‑validates** every block until it reaches the tip. (Needs Python 3 + `cryptography`;
+on Debian/Ubuntu install it in a `venv`. `bitcoinx` is optional — it enables the ~7× verifier. Full
+steps: [`../derivatives/netnode/RUN.md`](../derivatives/netnode/RUN.md).)
+
+This anchor is a **convenience, not an authority**: it can disappear tomorrow and nothing is lost —
+the genesis is reproducible forever from `scripts/verify_genesis.py`, and any node you run is an equal
+peer. (When a stable `seed.` hostname is published, prefer it over the raw address; the address may
+change, the recipe never does.) **Not money.**
+
 ## The one rule that makes all of this safe
 
 "**Nothing disabled**" is safe **only because** it is "**not money**." The reconstructions faithfully
