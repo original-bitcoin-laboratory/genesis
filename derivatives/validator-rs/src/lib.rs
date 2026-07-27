@@ -6,9 +6,14 @@
 //! (double-spends, script/ECDSA, no-inflation, coinbase value, difficulty retarget) are *stateful*
 //! and live in the Python `ChainState`; they are out of scope here.
 //!
-//! SHA-256 is implemented in-crate (FIPS 180-4), so the crate has **zero dependencies** and
-//! `cargo test` verifies the whole thing offline against golden vectors produced by the verified
-//! Python node (see `tests/golden.rs`). Provenance: NEW-EXP; the byte formats are the lab's.
+//! SHA-256 is implemented in-crate (FIPS 180-4), so the *context-free* validator has **zero
+//! dependencies**. The **stateful** layer (`sighash`, `script`, `chainstate` modules) adds real
+//! ECDSA via the pure-Rust `k256` crate. `cargo test` verifies everything against golden vectors
+//! produced by the verified Python node. Provenance: NEW-EXP; the byte formats are the lab's.
+
+pub mod chainstate;
+pub mod script;
+pub mod sighash;
 
 // ---- SHA-256 (FIPS 180-4) + double SHA-256 ---------------------------------------
 

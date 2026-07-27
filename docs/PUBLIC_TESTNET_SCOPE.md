@@ -82,9 +82,10 @@ reconstruction.**
 > so it does **not** drift to the BIP66 strict rule; differential‑tested). Finally, the **operator
 > rung** now has real infrastructure: a bootstrap **DNS seed** (`derivatives/dnsseed/`) that crawls
 > the network and hands fresh nodes a resolvable set of live peers, **Docker + systemd deploy
-> templates** (`netnode/deploy/`), and — as the first slice of an eventual native node — a
-> dependency‑free **Rust port of the context‑free validator** (`derivatives/validator-rs/`,
-> self‑verifying against golden vectors from the Python). Remaining toward a hardened public launch
+> templates** (`netnode/deploy/`), and a **Rust native validator** (`derivatives/validator-rs/`) —
+> the context‑free checks **and** the stateful UTXO/value/signature validation (v0.1 sighash + real
+> ECDSA via `k256`, byte‑faithful to the pre‑BIP66 OpenSSL semantics), compiled + tested (8 tests)
+> byte‑for‑byte against the Python node. Remaining toward a hardened public launch
 > is no longer node‑core code: **choosing/running a real difficulty floor** on a live launch,
 > GPG‑signed builds, a security review, the rest of a native node **only for extreme scale** — and,
 > above all, **other people choosing to run it.**
@@ -104,9 +105,10 @@ reconstruction.**
    you. The code lowers the bar (DNS seed + deploy templates); the *choosing to run it* can't be
    engineered, only earned.
 6. *(Only if ever justified)* a faster node. ✅ *started* — the dominant cost (signature
-   verification) is handled by the optional libsecp256k1 verifier, and a dependency‑free **Rust port
-   of the context‑free validator** (`derivatives/validator-rs/`) is the first slice; the rest is
-   warranted only at extreme scale.
+   verification) is handled by the optional libsecp256k1 verifier, and a **Rust native validator**
+   (`derivatives/validator-rs/`) ports both the context‑free checks and the stateful
+   UTXO/value/signature validation (compiled + tested byte‑for‑byte vs the Python); a full
+   `EvalScript` interpreter + reorg/difficulty are the remainder, warranted only at extreme scale.
 
 ## Non‑negotiable framing
 
