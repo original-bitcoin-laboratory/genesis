@@ -57,26 +57,32 @@ hashing, sighash, and value rules are pinned down.
 4. **Tell one other person.** A chain is "eternal" only once **independent** people keep nodes up. We
    can offer that; we can't manufacture it.
 
-## Join the live network — a peer you can connect to today
+## Join the live network — peers you can connect to today
 
-There is a live, always‑on **JAN09‑X** node running as a bootstrap anchor:
+**Two** live, always‑on anchors run the two reconstructions side by side:
 
 ```
-seed.bitcoin-lab.org:18009    (JAN09‑X · magic f00ba709 · experimental · NOT money)
+seed.bitcoin-lab.org:18009    JAN09‑X  (Jan 2009 v0.1.0 genesis client · magic f00ba709)
+seed.bitcoin-lab.org:18008    NOV08‑X  (15 Nov 2008 pre‑release · magic f00ba708 · leading‑zero‑bits PoW)
 ```
 
-Clone the repo and point a node at it:
+Both experimental, both **NOT money**. Clone the repo and point a node at whichever you want to run:
 
 ```bash
 git clone https://github.com/original-bitcoin-laboratory/genesis
 cd genesis/derivatives
-python -m netnode --chain jan09x --datadir ./data --connect seed.bitcoin-lab.org:18009
+
+# the January 2009 v0.1.0 chain
+python -m netnode --chain jan09x --datadir ./data-jan09 --connect seed.bitcoin-lab.org:18009
+
+# the November 2008 pre-release chain (its own genesis, its own proof-of-work)
+python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-lab.org:18008
 ```
 
-Your node mints the **same genesis** (`51eec236…`), dials the anchor, and downloads **and
-independently re‑validates** every block until it reaches the tip. (Needs Python 3 + `cryptography`;
-on Debian/Ubuntu install it in a `venv`. `bitcoinx` is optional — it enables the ~7× verifier. Full
-steps: [`../derivatives/netnode/RUN.md`](../derivatives/netnode/RUN.md).)
+Your node mints the matching genesis (JAN09‑X `51eec236…` / NOV08‑X `00000f08…`), dials the anchor,
+and downloads **and independently re‑validates** every block until it reaches the tip. (Needs Python 3
++ `cryptography`; on Debian/Ubuntu install it in a `venv`. `bitcoinx` is optional — it enables the ~7×
+verifier. Full steps: [`../derivatives/netnode/RUN.md`](../derivatives/netnode/RUN.md).)
 
 This anchor is a **convenience, not an authority**: it can disappear tomorrow and nothing is lost —
 the genesis is reproducible forever from `scripts/verify_genesis.py`, and any node you run is an equal

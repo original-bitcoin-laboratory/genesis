@@ -47,13 +47,15 @@ The consensus and node exist **twice**, cross‑checked byte‑for‑byte: a Pyt
 libsecp256k1 verifier, a DNS seed) and a standalone Rust node
 ([`derivatives/validator-rs/`](derivatives/validator-rs/), 25 tests).
 
-A live, always‑on **JAN09‑X** node runs as a public bootstrap anchor. Join it and watch your
-node sync + independently re‑validate every block:
+Two live, always‑on anchors run both reconstructions — **JAN09‑X** (`seed.bitcoin-lab.org:18009`) and
+**NOV08‑X** (`seed.bitcoin-lab.org:18008`, its own genesis + leading‑zero‑bits PoW). Join either and
+watch your node sync + independently re‑validate every block:
 
 ```bash
 git clone https://github.com/original-bitcoin-laboratory/genesis
 cd genesis/derivatives
-python -m netnode --chain jan09x --datadir ./data --connect seed.bitcoin-lab.org:18009
+python -m netnode --chain jan09x --datadir ./data-jan09 --connect seed.bitcoin-lab.org:18009   # v0.1.0
+python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-lab.org:18008   # Nov 2008
 ```
 
 Full invitation + how to run your own node or seed: [`docs/ANNOUNCE.md`](docs/ANNOUNCE.md). For an
