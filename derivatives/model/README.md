@@ -54,8 +54,16 @@ proof of `JAN09-EXECUTED` (rung: reproduced with the historical implementation),
 which requires building/porting the original C++ (blocked here: no C++ toolchain).
 When a real port exists, these vectors become its **differential oracle**.
 
+## Opcode coverage
+
+`test_opcode_coverage.py` exercises **every opcode the model can execute** — each with a
+Python vector that succeeds only if the opcode computes correctly (crypto opcodes use a real
+secp256k1 checker). A **regression guard** derives the executable opcode set from the model
+source and fails if any opcode lacks a vector, so the whole vocabulary stays covered in the
+default (no‑C++) reproducible run.
+
 ## Run
 
 ```bash
-python -m pytest derivatives/model/ -v      # 24 vectors
+python -m pytest derivatives/model/ -q      # full model suite incl. exhaustive opcode coverage
 ```
