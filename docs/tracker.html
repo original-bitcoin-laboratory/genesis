@@ -156,7 +156,12 @@
       implementation axes — it does not discriminate. Choose <b>nov08</b> and <code>v0.1.0</code> is
       already <code>2</code> (it differs on the unit and the proof‑of‑work) — so v0.1.0 is the zero
       point <b>only</b> when you choose it as the origin.</p>
-    <div class="tags"><span>v0.1.0 / nov08 values — source-verified [S]</span><span>change dates — public record [D]</span><span>MODEL</span></div>
+    <p>From <b>26 Jul 2026</b> two more appear — the lab’s own reconstructions <code>NOV08-X</code>
+      and <code>JAN09-X</code>, MODEL builds carrying the full original vocabulary (nothing disabled)
+      under each constitution. Under <b>nov08</b>, <code>NOV08-X</code> reads <code>0</code>; under
+      <b>v0.1.0</b>, <code>JAN09-X</code> reads <code>1</code> — it differs only by re‑opening the one
+      opcode v0.1 disabled. They are candidates for reference, not "the real Bitcoin."</p>
+    <div class="tags"><span>v0.1.0 / nov08 values — source-verified [S]</span><span>change dates — public record [D]</span><span>NOV08-X / JAN09-X — MODEL</span></div>
   </div>
 </div>
 
@@ -179,11 +184,18 @@ const FROZEN = {
     sig_encoding:"lenient", crypto_lib:"openssl", pow_algo:"sha256d-compact",
     monetary:"jan 1e8/50/210k/10m", consensus_db:"bdb"}
 };
+const RECON = {                                  // the lab's reconstructions (MODEL), from 26 Jul 2026
+  "NOV08-X":{monetary:"nov 1e6/100/100k/15m", pow_algo:"leading-zero-bits", script_vocabulary:"full+ne",
+    value_bounds:"none", block_size:"no-cap", script_limits:"none", sig_encoding:"lenient", crypto_lib:N, consensus_db:N},
+  "JAN09-X":{monetary:"jan 1e8/50/210k/10m", pow_algo:"sha256d-compact", script_vocabulary:"full+ne",
+    value_bounds:"none", block_size:"no-cap", script_limits:"none", sig_encoding:"lenient", crypto_lib:N, consensus_db:N}
+};
 const CHAINS = {
   BTC:{born:"2009-01-03",forked_from:null}, BCH:{born:"2017-08-01",forked_from:"BTC"},
   BSV:{born:"2018-11-15",forked_from:"BCH"}, XEC:{born:"2020-11-15",forked_from:"BCH"}
 };
 const SINCE = {whitepaper:"2008-10-31", nov08:"2008-11-15", "v0.1.0":"2009-01-03",
+  "NOV08-X":"2026-07-26", "JAN09-X":"2026-07-26",
   BTC:"2009-01-03", BCH:"2017-08-01", BSV:"2018-11-15", XEC:"2020-11-15"};
 const EVENTS = [
   ["2010-08-01","BTC","script_vocabulary","disabled-subset"], ["2010-08-01","BTC","value_bounds","moneyrange"],
@@ -196,6 +208,7 @@ const EVENTS = [
 
 function stateOf(name, at){
   if(name in FROZEN) return {...FROZEN[name]};
+  if(name in RECON) return {...RECON[name]};
   const ch = CHAINS[name];
   const st = ch.forked_from ? stateOf(ch.forked_from, ch.born) : {...FROZEN["v0.1.0"]};
   for(const e of EVENTS){ if(e.chain===name && e.when>=ch.born && e.when<=at) st[e.axis]=e.value; }
@@ -210,7 +223,7 @@ function distance(reference, candidate, at){
 function track(reference, at){
   const refState = stateOf(reference, SINCE[reference] || at);
   const out = [];
-  for(const name of [...Object.keys(FROZEN), ...Object.keys(CHAINS)]){
+  for(const name of [...Object.keys(FROZEN), ...Object.keys(RECON), ...Object.keys(CHAINS)]){
     if(name!==reference && SINCE[name] <= at){
       const d = diffAxes(refState, stateOf(name, at));
       out.push({name, distance:d.length, differs:d});

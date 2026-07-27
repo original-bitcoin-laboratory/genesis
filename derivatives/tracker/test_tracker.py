@@ -76,3 +76,23 @@ def test_bsv_moves_back_toward_v010_on_script_limits():
 def test_references_are_the_named_origins():
     assert references() == ["whitepaper", "nov08", "v0.1.0"]
     assert len(AXES) == 9 and len(CHAINS) == 4
+
+
+# ---- the lab's reconstructions, added to the candidate set -------------------
+
+def test_reconstructions_appear_only_from_the_build_date():
+    assert "JAN09-X" not in track("v0.1.0", date(2026, 7, 1))       # not yet built
+    assert "JAN09-X" in track("v0.1.0", date(2026, 8, 1))
+    assert "NOV08-X" in track("nov08", date(2026, 8, 1))
+
+
+def test_nov08x_is_a_faithful_reconstruction_of_the_november_constitution():
+    # NOV08-X matches the two axes the pre-release fixes -> distance 0 from the nov08 anchor
+    assert distance("nov08", "NOV08-X", date(2026, 8, 1)) == 0
+
+
+def test_jan09x_is_one_axis_from_v010_because_it_re_enables_op_notequal():
+    # JAN09-X reconstructs the genesis but re-opens OP_NOTEQUAL ("nothing disabled") -> +1 on vocab
+    assert distance("v0.1.0", "JAN09-X", date(2026, 8, 1)) == 1
+    assert track("v0.1.0", date(2026, 8, 1))["JAN09-X"]["differs_on"] == ["script_vocabulary"]
+    assert distance("v0.1.0", "NOV08-X", date(2026, 8, 1)) == 3    # + monetary + PoW

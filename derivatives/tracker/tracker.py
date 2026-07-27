@@ -57,6 +57,20 @@ FROZEN: dict[str, dict[str, str | None]] = {
 }
 
 
+# the lab's own reconstructions: frozen MODEL builds carrying the FULL original vocabulary
+# ("nothing disabled" -> `full+ne` re-opens the one opcode v0.1 disabled) under each
+# constitution, as isolated networks. They exist as artifacts from the lab build date;
+# crypto_lib / consensus_db are left unspecified because a Python MODEL abstracts that layer.
+RECON: dict[str, dict[str, str | None]] = {
+    "NOV08-X": {"monetary": "nov 1e6/100/100k/15m", "pow_algo": "leading-zero-bits",
+        "script_vocabulary": "full+ne", "value_bounds": "none", "block_size": "no-cap",
+        "script_limits": "none", "sig_encoding": "lenient", "crypto_lib": _, "consensus_db": _},
+    "JAN09-X": {"monetary": "jan 1e8/50/210k/10m", "pow_algo": "sha256d-compact",
+        "script_vocabulary": "full+ne", "value_bounds": "none", "block_size": "no-cap",
+        "script_limits": "none", "sig_encoding": "lenient", "crypto_lib": _, "consensus_db": _},
+}
+
+
 @dataclass(frozen=True)
 class Chain:
     name: str
@@ -73,6 +87,7 @@ CHAINS: dict[str, Chain] = {
 }
 SINCE: dict[str, date] = {
     "whitepaper": date(2008, 10, 31), "nov08": date(2008, 11, 15), "v0.1.0": date(2009, 1, 3),
+    "NOV08-X": date(2026, 7, 26), "JAN09-X": date(2026, 7, 26),
     **{n: c.born for n, c in CHAINS.items()},
 }
 
@@ -109,6 +124,8 @@ def state_of(name: str, at: date) -> dict[str, str | None]:
     from their parent's state at the fork (the origin chain starts as v0.1.0) then apply events."""
     if name in FROZEN:
         return dict(FROZEN[name])
+    if name in RECON:
+        return dict(RECON[name])
     ch = CHAINS[name]
     st = dict(FROZEN["v0.1.0"]) if ch.forked_from is None else state_of(ch.forked_from, ch.born)
     for e in sorted(EVENTS, key=lambda e: e.when):
@@ -132,7 +149,7 @@ def track(reference: str, at: date) -> dict[str, dict]:
     `reference` and the axes on which it differs."""
     ref_state = state_of(reference, SINCE.get(reference, at))
     out = {}
-    for name in list(FROZEN) + list(CHAINS):
+    for name in list(FROZEN) + list(RECON) + list(CHAINS):
         if name != reference and SINCE[name] <= at:
             diff = _diff_axes(ref_state, state_of(name, at))
             out[name] = {"distance": len(diff), "differs_on": diff}

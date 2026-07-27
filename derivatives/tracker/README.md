@@ -52,6 +52,18 @@ only if you choose it as the origin** — the tool makes that choice explicit an
 Genesis‑*sharing* continuations only (BTC/BCH/BSV/XEC). Separate‑genesis instances (LTC/DOGE)
 are a different category — genesis‑divergent from launch — the model could be extended to.
 
+**The lab's reconstructions** (`NOV08-X`, `JAN09-X`) join the candidate set from **26 Jul 2026** —
+frozen MODEL builds carrying the full original vocabulary (nothing disabled, `full+ne`) under each
+constitution. So `NOV08-X` reads **0** from the `nov08` anchor and `JAN09-X` reads **1** from
+`v0.1.0` (it differs only by re‑opening the one opcode v0.1 disabled). They are candidates *for
+reference*, not "the real Bitcoin." `crypto_lib`/`consensus_db` are unspecified for them (a Python
+MODEL abstracts that layer).
+
+**Anchors vs senses:** the three origins are the whitepaper (design, sense 1) and nov08/v0.1.0
+(reference implementation, sense 2). The network/ledger/unit/genus senses (3–7) are *not* offered
+as anchors — an origin you measure *from* must be a fixed artifact; a network‑state anchor
+("BTC @ 2015") is the one sensible extension, and the engine already supports it.
+
 ```bash
 python tracker.py          # every origin × milestone dates
 python -m pytest           # 9 passed
