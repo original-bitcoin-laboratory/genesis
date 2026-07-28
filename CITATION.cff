@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Original Bitcoin Laboratory"
+abstract: >-
+  Reproducible, executable reconstructions of the earliest Bitcoin (the 15 November 2008
+  source preview and the 3 January 2009 v0.1.0 release), with two independent node
+  implementations (Python and Rust) cross-checked byte-for-byte. A research and teaching
+  instrument, not money.
+type: software
+authors:
+  - family-names: Saxena
+    given-names: Parth Mauria
+    email: parthms.id@gmail.com
+license: MIT
+repository-code: "https://github.com/original-bitcoin-laboratory/genesis"
+url: "https://bitcoin-lab.org"
+keywords:
+  - Bitcoin
+  - blockchain
+  - consensus protocols
+  - reproducibility
+  - software archaeology
