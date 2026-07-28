@@ -1,0 +1,41 @@
+# Run the full reproduction pipeline (Python + Rust) on every push/PR. NOT money.
+# The crypto-conformance suite skips gracefully when libsecp256k1/bitcoinx is absent, so the
+# faithful `cryptography` path is all that's required here.
+name: tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "derivatives/**"
+      - "scripts/**"
+      - ".github/workflows/tests.yml"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Python dependencies
+        run: pip install --quiet cryptography pytest
+
+      - name: Verify genesis re-derives from source
+        run: python scripts/verify_genesis.py
+
+      - name: Reproduce the whole lab (Python suites + Rust cargo test)
+        run: python scripts/reproduce.py --rust
+
+      - name: No uncommitted generated drift
+        run: git diff --exit-code

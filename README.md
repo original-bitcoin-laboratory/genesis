@@ -35,7 +35,7 @@ only enables the ~7× `libsecp256k1` verifier. The Rust node needs a stable Rust
 the optional C++ port differentials need `g++`. No other setup.
 
 ```bash
-python scripts/reproduce.py        # every derivatives suite + regenerated artifacts (add --rust for cargo test)
+python scripts/reproduce.py        # every Python suite + regenerated artifacts (add --rust for the Rust node)
 python scripts/verify_genesis.py   # both experimental genesis blocks re-derive from source
 ```
 

@@ -16,18 +16,20 @@ disclosure can be public.
 - **Python node:** Python 3.10+ with `cryptography` (optional `bitcoinx` enables the accelerated
   verifier). From `derivatives/`: `python -m pytest netnode/ p2p/`.
 - **Rust node:** `cd derivatives/validator-rs && cargo test`.
-- **Whole lab:** `python scripts/reproduce.py` re-derives both genesis blocks from source and runs
-  every suite. A change should keep `reproduce.py` and `cargo test` green.
+- **Whole lab:** `python scripts/reproduce.py` runs the Python suites, the conformance surface, and the
+  artifact regeneration; add `--rust` to also run the Rust `cargo test` suite. A change should keep
+  `python scripts/reproduce.py --rust` green.
 
 ## Pull requests
 
 1. Branch from `main` and keep changes focused.
 2. Add or update tests for any behavior change; a **fidelity** change must cite a `file:line` witness
    in the primary source or the conformance documentation.
-3. Do not add the 2010-era guardrails (overflow/size/script limits): the point is the undrifted
-   origin, kept safe by being valueless. Fidelity fixes, tests, docs, and tooling are in scope.
-4. Ensure `reproduce.py` (21/21) and `cargo test` pass, then open the PR describing what changed and
-   the evidence for it.
+3. Do not add the 2010-era *consensus* guardrails (overflow/size/script limits): the point is the
+   undrifted origin, which stays defensible only because it is valueless (the running nodes add
+   *operational* hardening instead). Fidelity fixes, tests, docs, and tooling are in scope.
+4. Ensure `python scripts/reproduce.py --rust` passes (the Python lab plus the Rust suite), then open
+   the PR describing what changed and the evidence for it.
 
 ## Scope
 

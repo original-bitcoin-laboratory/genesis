@@ -33,9 +33,10 @@ native node matters only at extreme scale; this is that node, built and tested.)
   **running `scriptSig · OP_CODESEPARATOR · scriptPubKey`** through it (`script::verify_spend`),
   exactly as `VerifySignature` does — so **P2PK, P2PKH, multisig, and arbitrary scripts** all work,
   not templates;
-- **real ECDSA** (`script`) via the pure-Rust `k256` crate, **byte-faithful to v0.1's lenient
-  (pre-BIP66) OpenSSL semantics** — the signature is normalized to low-S before verifying, so
-  high-S (malleated) signatures verify the same, exactly as OpenSSL accepts them;
+- **real ECDSA** (`script`) via the pure-Rust `k256` crate, matching v0.1's lenient signature
+  acceptance **on the tested canonical-DER paths** — the signature is normalized to low-S before
+  verifying, so high-S (malleated) signatures verify the same, as OpenSSL accepts them (this does not
+  claim exhaustive emulation of historical non-strict-DER parsing);
 - **reorg + difficulty** (`reorg::NodeState` over a `BlockIndex`, `difficulty`, `rules`) — an active
   validated chain with per-block undo and `activate_best`, which moves toward the index's best
   (height-selected) chain, **gating every step on full validity** (value/script rules *and* the

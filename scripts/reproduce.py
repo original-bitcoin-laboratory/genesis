@@ -89,7 +89,8 @@ def main() -> int:
         cargo = shutil.which("cargo")
         rs_dir = DERIV / "validator-rs"
         if not cargo or not rs_dir.exists():
-            print(f"  [SKIP] {'validator-rs (cargo test)':60} (cargo/crate unavailable)")
+            print(f"  [FAIL] {'validator-rs (cargo test)':60} cargo/crate unavailable (--rust was requested)")
+            results.append(False)                        # a REQUESTED backend must fail hard, not skip-pass
         else:
             ok, tail = run([cargo, "test", "--quiet"], rs_dir)
             results.append(ok)
@@ -102,7 +103,8 @@ def main() -> int:
         bash = shutil.which("bash")
         for label, script in CPP:
             if not bash or not script.exists():
-                print(f"  [SKIP] {label:60} (bash/script unavailable)")
+                print(f"  [FAIL] {label:60} bash/script unavailable (--cpp was requested)")
+                results.append(False)                    # requested backend unavailable -> fail, not skip
                 continue
             ok, tail = run([bash, str(script)], script.parent)
             results.append(ok)

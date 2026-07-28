@@ -36,8 +36,10 @@ The most subtle area. v0.1 verifies with **OpenSSL**, which is *lenient* (accept
 signatures); modern **libsecp256k1** is *strict*. The X‑chains are faithful **pre‑BIP66**
 reconstructions, so their consensus rule is the lenient one.
 - Confirm the **accelerated verifier** (`netnode/fastverify.py`, and `validator-rs`'s `k256` path)
-  stays **byte‑faithful to OpenSSL**: it normalizes to low‑S and falls back to OpenSSL, so it does
-  **not** silently adopt BIP66 strictness. The differential tests are `test_fastverify.py`.
+  stays consistent with v0.1's lenient acceptance **on the tested canonical‑DER paths**: it normalizes
+  to low‑S and falls back to OpenSSL, so it accepts high‑S signatures rather than adopting modern
+  low‑S/strict rules. It does **not** claim exhaustive emulation of historical non‑strict‑DER parsing.
+  The differential tests are `test_fastverify.py`.
 - Confirm the crypto‑conformance thread (`derivatives/crypto_conformance/`) — v0.1 OpenSSL vs
   libsecp256k1 (via `bitcoinx`) — is the true statement it claims.
 - The quantum exposure (bare‑P2PK coinbases) is documented, shared by *all* descendants, and out of
