@@ -92,7 +92,7 @@ def main() -> int:
             print(f"  [FAIL] {'validator-rs (cargo test)':60} cargo/crate unavailable (--rust was requested)")
             results.append(False)                        # a REQUESTED backend must fail hard, not skip-pass
         else:
-            ok, tail = run([cargo, "test", "--quiet"], rs_dir)
+            ok, tail = run([cargo, "test", "--locked", "--quiet"], rs_dir)
             results.append(ok)
             msg = "all Rust suites passed" if ok else tail   # (cargo's per-binary tails are noisy)
             print(f"  [{'PASS' if ok else 'FAIL'}] {'validator-rs (cargo test)':60} {msg}")

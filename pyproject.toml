@@ -1,0 +1,33 @@
+# Dependency manifest for the Original Bitcoin Laboratory (genesis edition). NOT money.
+#
+# This is an *executable research repository*, not an importable library: the suites are run from
+# `derivatives/` with per-directory imports, and `scripts/reproduce.py` drives them. This manifest
+# exists so the environment can be installed with one command rather than pieced together by hand:
+#
+#     python -m venv .venv && . .venv/bin/activate
+#     pip install -e ".[test]"          # cryptography + pytest (add ".[test,accel]" for the fast verifier)
+#     python scripts/reproduce.py --rust
+#
+# The Rust node additionally needs a stable Rust toolchain (`cargo`); the optional `--cpp` differentials
+# need a C++ toolchain (`g++`). See README.md.
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "obl-genesis"
+version = "0.3.0"
+description = "Original Bitcoin Laboratory — runnable reconstructions of the earliest Bitcoin (NOT money)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Parth Mauria Saxena", email = "parthms.id@gmail.com" }]
+dependencies = ["cryptography"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+accel = ["bitcoinx"]   # optional: enables the ~7x libsecp256k1 verifier + the crypto-conformance differential
+
+[tool.setuptools]
+py-modules = []        # no importable top-level package; installing this only provisions the dependencies above

@@ -124,7 +124,7 @@ cargo test                                       # cross-checks everything again
 The golden vectors come from the verified Python — the block vectors from `netnode/bench.py`'s chain
 builder, and the rest from the regenerable generators in [`tools/`](tools/) (`gen_state_vectors.py`,
 `gen_eval_vectors.py`, `gen_multisig_vectors.py`, `gen_reorg_vectors.py`, `gen_nov08_vectors.py`).
-**Verified:** compiled + tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **29 pass**;
+**Verified:** compiled + tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **30 pass**;
 `obl-validate` on a golden
 block reproduces the Python's block hash. The novel 256-bit compact-target/PoW math was additionally
 cross-checked against the Python reference across easy / hard / edge `nBits`.
@@ -132,6 +132,6 @@ cross-checked against the Python reference across easy / hard / edge `nBits`.
 ## Provenance
 
 The consensus meaning is the lab's (faithful to v0.1); this is a **NEW-EXP** re-implementation in a
-second language, useful precisely because an independent port that agrees byte-for-byte — down to
-the pre-BIP66 lenient signature semantics — is extra evidence the byte formats, hashing, sighash, and
+second language, useful precisely because a second-language port that agrees byte-for-byte — down to
+the lenient, high-S-accepting signature behavior — is extra evidence the byte formats, hashing, sighash, and
 value rules are pinned down. A tool, never authority (`../../../common/AUTHORITY.md`). **Not money.**

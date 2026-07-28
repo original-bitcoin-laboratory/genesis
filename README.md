@@ -30,9 +30,10 @@ ledger, a wallet, the P2P wire + chain sync, persistence, the neutral descendant
 script **debugger**, a **full‑stack console**, and two live counterfactual networks —
 **NOV08‑X** and **JAN09‑X**.
 
-**Requirements.** Python 3.10+ with `cryptography` (the faithful crypto); `bitcoinx` is optional and
+**Requirements.** Python 3.10+ with `cryptography` and `pytest` (the faithful crypto + test runner); `bitcoinx` is optional and
 only enables the ~7× `libsecp256k1` verifier. The Rust node needs a stable Rust toolchain (`cargo`);
-the optional C++ port differentials need `g++`. No other setup.
+the optional C++ port differentials need `g++`. Install the pinned Python environment in one step with
+`python -m venv .venv && pip install -e ".[test]"` (see `pyproject.toml`).
 
 ```bash
 python scripts/reproduce.py        # every Python suite + regenerated artifacts (add --rust for the Rust node)
@@ -40,7 +41,7 @@ python scripts/verify_genesis.py   # both experimental genesis blocks re-derive 
 ```
 
 The unmodified 2009 `bitcoin.exe` was also run and hash‑verified against these
-reconstructions — the exact genesis reproduces three independent ways (`r3-findings/run1/`,
+reconstructions — the exact genesis reproduces in three-way agreement (binary, C++ port, Python model; `r3-findings/run1/`,
 level `JAN09-EXECUTED`). Findings, the honest claim, and scope live in the umbrella:
 [`common/README.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/README.md) · [`common/CLAIMS.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/CLAIMS.md).
 These chains are **not money**: no premine, no sale, and **no value assigned** (stamped in the
@@ -49,7 +50,8 @@ parties value the units is outside any software's control, but nothing here invi
 
 ## Run a node — and join the live experimental network
 
-The consensus and node exist **twice**, cross‑checked byte‑for‑byte: a Python node
+The consensus and node exist **twice**, cross‑checked byte‑for‑byte on shared vectors (a differential
+check, not full independence — one author, Python‑generated vectors): a Python node
 ([`derivatives/netnode/`](derivatives/netnode/) — validation, mempool, wallet, RPC, a ~7×
 libsecp256k1 verifier, a DNS seed) and a standalone Rust node
 ([`derivatives/validator-rs/`](derivatives/validator-rs/), 30 tests — **both** chains).
