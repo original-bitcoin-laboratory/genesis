@@ -49,13 +49,20 @@ hashing, sighash, and value rules are pinned down.
 1. **Verify the genesis yourself** — the durable, permanent artifact. `scripts/verify_genesis.py`
    re‑derives both genesis blocks from source; `scripts/reproduce.py` runs the whole lab (21/21). No
    node required, no way to be misled. This is the part that lasts forever.
-2. **Run a node** — [`../derivatives/netnode/RUN.md`](../derivatives/netnode/RUN.md) and the
-   Docker/systemd templates in [`../derivatives/netnode/deploy/`](../derivatives/netnode/deploy/). Two
-   people on two machines can sync a chain over the internet.
+2. **Run a node** — one command with the prebuilt image
+   (`docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode`), or from source
+   via [`../derivatives/netnode/RUN.md`](../derivatives/netnode/RUN.md) and the Docker/systemd
+   templates in [`../derivatives/netnode/deploy/`](../derivatives/netnode/deploy/). Two people on two
+   machines can sync a chain over the internet.
 3. **Run a seed** — [`../derivatives/dnsseed/`](../derivatives/dnsseed/) hands fresh nodes a live set
    of peers. One resolvable name meshes a stranger in.
 4. **Tell one other person.** A chain is "eternal" only once **independent** people keep nodes up. We
    can offer that; we can't manufacture it.
+
+**Watch it live:** the [status page](https://bitcoin-lab.org/status.html) and
+[block explorer](https://bitcoin-lab.org/explorer.html) show both chains' tip heights, anchor uptime,
+and recent blocks. **Verify what you run:** every release is GPG‑signed — check it against the
+[published key](https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md).
 
 ## Join the live network — peers you can connect to today
 
@@ -66,16 +73,20 @@ seed.bitcoin-lab.org:18009    JAN09‑X  (Jan 2009 v0.1.0 genesis client · magi
 seed.bitcoin-lab.org:18008    NOV08‑X  (15 Nov 2008 pre‑release · magic f00ba708 · leading‑zero‑bits PoW)
 ```
 
-Both experimental, both **NOT money**. Clone the repo and point a node at whichever you want to run:
+Both experimental, both **NOT money**. Join in **one command** with the prebuilt image — or clone and
+run from source:
 
 ```bash
+# Docker — one command, no setup (JAN09-X):
+docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode
+# NOV08-X (its own genesis + proof-of-work):
+docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode \
+    --chain nov08x --datadir /data --connect seed.bitcoin-lab.org:18008
+
+# or from source (needs Python 3 + cryptography):
 git clone https://github.com/original-bitcoin-laboratory/genesis
 cd genesis/derivatives
-
-# the January 2009 v0.1.0 chain
 python -m netnode --chain jan09x --datadir ./data-jan09 --connect seed.bitcoin-lab.org:18009
-
-# the November 2008 pre-release chain (its own genesis, its own proof-of-work)
 python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-lab.org:18008
 ```
 
