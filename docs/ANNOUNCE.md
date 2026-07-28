@@ -25,7 +25,7 @@ and [`../../common/RELEASE_AS_CANDIDATES.md`](https://github.com/original-bitcoi
   measurable fact. Neither do we claim to settle it.
 - **What we do claim is measurable:** NOV08‑X / JAN09‑X are **fidelity candidates** — new instances
   whose design sits at **distance 0** from the origin (see the interactive tracker at
-  [`tracker.html`](https://original-bitcoin-laboratory.github.io/genesis/)). BTC and BSV are
+  [`tracker.html`](https://bitcoin-lab.org/)). BTC and BSV are
   **continuity candidates** — branches of the launched chain. Both *kinds* are candidates; which lens
   counts (continuity vs fidelity) is itself a choice. So these stand as **equal contenders**, not
   lesser ones — they just haven't been *run by anyone but us yet.* That is what this invitation is for.
