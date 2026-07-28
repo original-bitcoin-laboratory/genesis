@@ -9,8 +9,9 @@ reply is one line `{"result": ...}` or `{"error": ...}`.
 
 - `getinfo` → chain / height / tip / peers / mempool size / wallet? / money:false
 - `getnewaddress` → a fresh receive address (SEC pubkey hex)              [needs --wallet]
+- `getprimaryaddress` → your existing primary key (pubkey + '1...' address), mints nothing  [--wallet]
 - `getbalance` → spendable balance (mature, owned)                        [needs --wallet]
-- `send [to_hex, amount, fee?]` → build + submit + broadcast a payment, returns the txid  [--wallet]
+- `send [to, amount, fee?]` → pay a '1...' address (P2PKH) or a pubkey hex (P2PK); returns txid  [--wallet]
 
 Evidence: MODEL / NEW-EXP.
 """
@@ -19,6 +20,22 @@ from __future__ import annotations
 
 import asyncio
 import json
+
+
+def _resolve_recipient(to: str) -> list:
+    """A recipient string -> scriptPubKey tokens: a '1...' Base58 address -> P2PKH, otherwise a
+    33/65-byte SEC pubkey hex -> bare P2PK. Both are faithful v0.1 payment forms."""
+    from base58 import address_to_hash160, is_p2pkh_address
+    to = to.strip()
+    if is_p2pkh_address(to):
+        return ["OP_DUP", "OP_HASH160", address_to_hash160(to), "OP_EQUALVERIFY", "OP_CHECKSIG"]
+    try:
+        pub = bytes.fromhex(to)
+    except ValueError as e:
+        raise ValueError("recipient is neither a '1...' address nor a pubkey hex") from e
+    if len(pub) not in (33, 65):
+        raise ValueError("pubkey must be 33 (compressed) or 65 (uncompressed) bytes")
+    return [bytes(pub), "OP_CHECKSIG"]
 
 
 class RpcServer:
@@ -69,15 +86,22 @@ class RpcServer:
         if method == "getnewaddress":
             self._need_wallet()
             return n.wallet_new_address().hex()
+        if method == "getprimaryaddress":
+            self._need_wallet()
+            from base58 import hash160, pubkey_to_address
+            pub = n.wallet_primary_pubkey()
+            return {"pubkey": pub.hex(), "address": pubkey_to_address(pub),
+                    "hash160": hash160(pub).hex(), "not_money": True}
         if method == "getbalance":
             self._need_wallet()
             return n.wallet_balance()
         if method == "send":
             self._need_wallet()
             if len(params) < 2:
-                raise ValueError("send needs [to_hex, amount, fee?]")
+                raise ValueError("send needs [to, amount, fee?] — to = a '1...' address or a pubkey hex")
             fee = int(params[2]) if len(params) > 2 else 0
-            entry = await n.wallet_send(bytes.fromhex(params[0]), int(params[1]), fee)
+            spk = _resolve_recipient(str(params[0]))
+            entry = await n.wallet_send_to_script(spk, int(params[1]), fee)
             return entry.txid[::-1].hex()
         raise ValueError(f"unknown method: {method!r}")
 

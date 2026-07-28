@@ -97,13 +97,20 @@ shell with the `ctl` client:
 
 ```bash
 python -m netnode ctl --rpc 18332 getinfo                # chain / height / peers / mempool / money:false
-python -m netnode ctl --rpc 18332 getnewaddress          # a fresh receive address (a pubkey, hex)
+python -m netnode ctl --rpc 18332 getnewaddress          # mint + return a fresh receive pubkey (hex)
+python -m netnode ctl --rpc 18332 getprimaryaddress      # your EXISTING key: {pubkey, '1...' address} — mints nothing
 python -m netnode ctl --rpc 18332 getbalance             # spendable (mature) balance
 python -m netnode ctl --rpc 18332 send <ADDRESS> <AMOUNT> [FEE]   # build + sign + broadcast; prints the txid
 ```
 
-An **address is a public key** (bare P2PK, as v0.1 pays its coinbase). The RPC is **loopback‑only
-and unauthenticated** — it is for a trusted local machine; do not bind it to a public interface or
+`send <ADDRESS>` accepts **either** a `1...` Base58 address (paid as P2PKH) **or** a raw SEC pubkey
+hex (paid as bare P2PK) — both are v0.1 payment forms. Amounts are in **base units** (1 coin = 1e8 on
+JAN09-X, 1e6 on NOV08-X); `getbalance` reports the same units.
+
+Your **coinbase pays a bare public key** (P2PK, exactly as v0.1 pays its coinbase). For receiving
+from someone, you can share either that **pubkey** or your **`1...` P2PKH address** (`getprimaryaddress`
+shows both) — the familiar v0.1 "Bitcoin address" format (Base58Check, version `0x00`). The RPC is
+**loopback‑only and unauthenticated** — it is for a trusted local machine; do not bind it to a public interface or
 forward its port. The wallet holds **experimental keys for a valueless chain** — not a secure store
 for anything of value. **Not money.** (The faithful wallet model this builds on:
 [`../wallet/`](../wallet/).)

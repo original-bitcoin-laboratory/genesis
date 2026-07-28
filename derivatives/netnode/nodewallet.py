@@ -74,6 +74,11 @@ class NodeWallet:
         self._save()
         return sec
 
+    def primary_pubkey(self) -> bytes:
+        """The wallet's first (primary) SEC pubkey — the coinbase receive key. Does NOT mint a
+        new key, so it's safe to call to display 'your address' repeatedly."""
+        return self.keys[0][1]
+
     def addresses(self) -> list[bytes]:
         return [s for _, s in self.keys]
 
@@ -102,9 +107,17 @@ class NodeWallet:
                        to_pubkey: bytes, amount: int, fee: int) -> bytes:
         """Build + sign a payment of `amount` (+`fee`) to `to_pubkey` (bare P2PK), change back to
         self. Returns raw tx bytes; raises `InsufficientFunds` if the spendable balance is short."""
+        return self.create_payment_to_script(utxo, height, maturity,
+                                              p2pk(bytes(to_pubkey)), amount, fee)
+
+    def create_payment_to_script(self, utxo, height: int, maturity: int,
+                                 recipient_spk: list, amount: int, fee: int) -> bytes:
+        """Build + sign a payment to an arbitrary recipient scriptPubKey (bare P2PK **or** P2PKH —
+        both v0.1 forms), change back to self as bare P2PK. Returns raw tx bytes; raises
+        `InsufficientFunds` if the spendable balance is short."""
         w = self._loaded(utxo, height, maturity)
         try:
-            tx, _coins, _change = w.create_transaction(p2pk(bytes(to_pubkey)), int(amount), int(fee))
+            tx, _coins, _change = w.create_transaction(recipient_spk, int(amount), int(fee))
         except ValueError as e:
             raise InsufficientFunds(str(e)) from e
         return ser_tx(tx)

@@ -65,8 +65,9 @@ def _ctl(argv):
     ap = argparse.ArgumentParser(prog="netnode ctl",
                                  description="Control a running node over its localhost RPC.")
     ap.add_argument("--rpc", required=True, metavar="[HOST:]PORT", help="the node's --rpc address")
-    ap.add_argument("method", choices=["getinfo", "getnewaddress", "getbalance", "send"])
-    ap.add_argument("args", nargs="*", help="send: <to_hex> <amount> [fee]")
+    ap.add_argument("method", choices=["getinfo", "getnewaddress", "getprimaryaddress",
+                                       "getbalance", "send"])
+    ap.add_argument("args", nargs="*", help="send: <to_address_or_pubkey_hex> <amount> [fee]")
     a = ap.parse_args(argv)
     host, port = _hostport(a.rpc, "127.0.0.1")
     req = {"method": a.method, "params": a.args}

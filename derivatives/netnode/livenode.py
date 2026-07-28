@@ -158,14 +158,23 @@ class Node:
     def wallet_new_address(self) -> bytes:
         return self.wallet.new_address()
 
+    def wallet_primary_pubkey(self) -> bytes:
+        """The wallet's primary receive pubkey — no new key is minted."""
+        return self.wallet.primary_pubkey()
+
     def wallet_balance(self) -> int:
         return self.wallet.balance(self.state.utxo, self.state.height, self.state.maturity)
 
     async def wallet_send(self, to_pubkey: bytes, amount: int, fee: int = 0):
-        """Build + sign a payment from the wallet against the validated UTXO, submit it to the
-        mempool, and broadcast it. Returns the accepted `mempool.Entry`."""
-        raw = self.wallet.create_payment(self.state.utxo, self.state.height, self.state.maturity,
-                                         to_pubkey, amount, fee)
+        """Build + sign a bare-P2PK payment, submit it to the mempool, and broadcast it."""
+        from wallet import p2pk
+        return await self.wallet_send_to_script(p2pk(bytes(to_pubkey)), amount, fee)
+
+    async def wallet_send_to_script(self, recipient_spk: list, amount: int, fee: int = 0):
+        """Build + sign a payment to an arbitrary recipient scriptPubKey (P2PK or P2PKH) against the
+        validated UTXO, submit it to the mempool, and broadcast it. Returns the `mempool.Entry`."""
+        raw = self.wallet.create_payment_to_script(self.state.utxo, self.state.height,
+                                                   self.state.maturity, recipient_spk, amount, fee)
         entry = self.submit_tx(raw)
         await self._announce([(MSG_TX, entry.txid)])
         return entry

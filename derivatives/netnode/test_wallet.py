@@ -154,3 +154,62 @@ def test_rpc_send_without_a_wallet_errors(tmp_path):
     (resp,) = _run(_rpc_session(n, [("getbalance", ())]))
     assert "error" in resp and "wallet" in resp["error"]
     n.store.close()
+
+
+# ---- P2PKH / Base58 addresses (v0.1 'Bitcoin address' format) ----------------
+
+def test_base58check_roundtrips_and_detects_addresses():
+    from base58 import (address_to_hash160, b58decode, b58encode, hash160,
+                        is_p2pkh_address, pubkey_to_address)
+    from tx_sighash import new_key
+    for raw in (b"\x00\x00\x01\x02", b"hello world", bytes(range(20))):
+        assert b58decode(b58encode(raw)) == raw               # roundtrip incl. leading-zero '1's
+    _, sec = new_key()
+    addr = pubkey_to_address(sec)
+    assert addr[0] == "1"                                      # v0.1 mainnet version byte -> '1...'
+    assert address_to_hash160(addr) == hash160(sec)           # the address commits to hash160(pubkey)
+    assert is_p2pkh_address(addr)
+    assert not is_p2pkh_address(sec.hex())                    # a raw pubkey hex is not an address
+    bad = addr[:-1] + ("2" if addr[-1] != "2" else "3")       # corrupt the checksum
+    assert not is_p2pkh_address(bad)
+
+
+def test_rpc_getprimaryaddress_shows_the_existing_key_without_minting(tmp_path):
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "PP"), wallet=True, maturity=1)
+    _mine_to_wallet(n, 1)
+    keys_before = len(n.wallet.keys)
+    a1, a2 = _run(_rpc_session(n, [("getprimaryaddress", ()), ("getprimaryaddress", ())]))
+    r1, r2 = a1["result"], a2["result"]
+    assert r1 == r2                                            # stable across calls
+    assert len(n.wallet.keys) == keys_before                  # minted nothing
+    from base58 import address_to_hash160, hash160
+    assert address_to_hash160(r1["address"]) == hash160(bytes.fromhex(r1["pubkey"]))
+    assert r1["address"][0] == "1" and r1["not_money"] is True
+    n.store.close()
+
+
+def test_send_to_a_p2pkh_address_is_owned_by_the_recipient(tmp_path):
+    cfg = CHAINS["jan09x"]
+    a = Node(cfg, str(tmp_path / "PA"), wallet=True, maturity=1)
+    _mine_to_wallet(a, 2)                                      # block-1 coinbase matured
+    recipient = NodeWallet(tmp_path / "PB.json")
+    from base58 import pubkey_to_address
+    addr = pubkey_to_address(recipient.addresses()[0])        # a '1...' P2PKH address
+    assert addr[0] == "1"
+    amount = a.wallet_balance() // 2
+    (resp,) = _run(_rpc_session(a, [("send", (addr, amount, 0))]))   # exercises the address resolver
+    assert "result" in resp, resp
+    assert len(a.mempool) == 1
+    selected = a.mempool.select(a.state.utxo)
+    from difficulty import expected_bits
+    nbits = expected_bits(a.chain, a.tip, cfg.rules)
+    subsidy = cfg.rules.get_block_value(a.height)
+    blk = mine_block(a.tip, a.height + 1, nbits, a.chain.check_block,
+                     subsidy + sum(x.fee for x in selected), [x.tx for x in selected],
+                     b"", a.wallet.receive_script())
+    assert a.chain.process_block(blk)[0] == "accepted"
+    a.state.activate_best()
+    # the recipient owns the P2PKH output — IsMine resolves it via the hash160 -> pubkey map
+    assert recipient.balance(a.state.utxo, a.state.height, a.state.maturity) == amount
+    a.store.close()
