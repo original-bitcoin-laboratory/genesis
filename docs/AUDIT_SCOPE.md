@@ -44,9 +44,13 @@ reconstructions, so their consensus rule is the lenient one.
   scope to "fix" (it would be a drift): [`QUANTUM_EXPOSURE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/QUANTUM_EXPOSURE.md).
 
 ### 3. Transport robustness (adversarial input)
-- **Parser panic‑safety** — untrusted network bytes must never panic the node. The Rust sync has a
-  bounds‑safe `well_formed_block` gate (`validator-rs/src/net.rs`); review the Python `netnode` wire/
-  parser paths for the same property, and fuzz both.
+- **Parser panic‑safety** — untrusted network bytes must never hang or panic the node. Both nodes now
+  gate every untrusted path: the Rust sync has bounds‑safe `well_formed_block` **and** `well_formed_tx`
+  gates before the indexing parsers (`validator-rs/src/net.rs`); the Python `netnode` parsers bound
+  every wire count to the actual payload length before looping/allocating. An internal robustness pass
+  ([`AUDIT.md`](AUDIT.md)) closed a set of parser‑bounds findings (unbounded‑count DoS in
+  `parse_inv`/`parse_getblocks`; an ungated tx‑parse panic); an independent reviewer should re‑fuzz
+  both and confirm.
 - **Wire** — checksum, size cap, timeouts (`wire.py` / `wire.rs`).
 - **DoS bounds** — misbehavior scoring, rate limits, connection/table caps, mempool bounds
   (`livenode.py`, `mempool.py`; `validator-rs` misbehavior scoring).
@@ -78,7 +82,7 @@ so a reviewer can confirm the boundary, not treat them as surprises:
 
 - `scripts/verify_genesis.py` — re‑derive both genesis blocks from source.
 - `scripts/reproduce.py` — the full lab (**21/21** steps, incl. both node suites and the DNS seed).
-- `cd derivatives/validator-rs && cargo test` — the Rust node (**29** tests — now covering NOV08's leading-zero-bits PoW + `==` coinbase rule too).
+- `cd derivatives/validator-rs && cargo test` — the Rust node (**30** tests — covering NOV08's leading-zero-bits PoW + `==` coinbase rule, and the malformed‑block/tx flood DoS gates).
 
 ## What a signoff would — and would not — mean
 

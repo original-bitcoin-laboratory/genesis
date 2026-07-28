@@ -279,6 +279,52 @@ def test_rate_limit_drops_a_flooding_peer(tmp_path):
     assert _run(_rate_limit_scenario(str(tmp_path / "R"))) is True
 
 
+async def _adversarial_survival_scenario(da, db):
+    from p2p import version_payload
+    cfg = CHAINS["jan09x"]
+    a = Node(cfg, da, listen=("127.0.0.1", 0))
+    _seed(a, 4)
+    await a.start()
+    # a hostile raw peer floods malformed frames — including the "huge claimed count" vectors that
+    # once spun an unbounded parse loop and hung the whole event loop (a one-packet DoS).
+    r, w = await asyncio.open_connection("127.0.0.1", a.port)
+    w.write(frame("version", version_payload(), cfg.magic))
+    for atk in (
+        frame("inv", b"\xff" + b"\xff" * 8, cfg.magic),                        # inv claims 2**64 items
+        frame("getblocks", b"\x00\x00\x00\x00\xff" + b"\xff" * 8, cfg.magic),  # getblocks claims 2**64 hashes
+        frame("tx", b"\x01\x00\x00\x00\xff" + b"\x00" * 8, cfg.magic),         # tx claims 2**64 inputs
+        frame("getblocks", b"\x05", cfg.magic),                               # truncated locator
+        frame("block", b"\x00" * 80 + b"\xfd\xff\xff", cfg.magic),            # header + junk ntx
+        frame("addr", b"\xff\x01\x02\x03", cfg.magic),                        # garbage addr
+        frame("frobnicate", b"\x00" * 20, cfg.magic),                        # unknown command
+    ):
+        w.write(atk)
+    await w.drain()
+    await asyncio.sleep(0.1)
+    # liveness proof: a legitimate node must still fully sync from the victim — impossible if the
+    # victim's event loop had hung on the barrage.
+    b = Node(cfg, db, listen=("127.0.0.1", 0))
+    await b.start(connect=[("127.0.0.1", a.port)])
+    synced = False
+    for _ in range(250):
+        if b.height == a.height and b.tip == a.tip:
+            synced = True
+            break
+        await asyncio.sleep(0.02)
+    w.close()
+    result = (synced, a.height, b.height)
+    await a.stop()
+    await b.stop()
+    return result
+
+
+def test_node_survives_a_malformed_message_flood_and_still_serves(tmp_path):
+    # regression: a huge claimed count in inv/getblocks/tx must not spin an unbounded loop (which hung
+    # the event loop). The node shrugs off the barrage and a fresh peer still syncs the whole chain.
+    synced, ha, hb = _run(_adversarial_survival_scenario(str(tmp_path / "A"), str(tmp_path / "B")))
+    assert synced and hb == ha == 4
+
+
 # ---- production node (part 1): full block validation ------------------------
 
 def test_block_tx_parser_roundtrips_serialization():

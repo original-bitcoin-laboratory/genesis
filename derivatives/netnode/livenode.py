@@ -319,6 +319,8 @@ class Node:
                     misbehavior += 1
         except (WireError, ConnectionError, OSError) as e:
             self._log(f"peer dropped: {e}")
+        except Exception as e:      # malformed/adversarial payload (bad parse) — drop the peer, never crash the node
+            self._log(f"peer dropped (bad message): {e!r}")
         finally:
             self._writers.discard(writer)
             try:

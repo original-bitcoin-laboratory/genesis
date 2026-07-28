@@ -73,6 +73,8 @@ def parse_getblocks(payload: bytes):
     n, i = read_compact(payload, i)
     hashes = []
     for _ in range(n):
+        if i + 32 > len(payload):                  # bound to the real bytes: a huge count must not spin
+            break
         hashes.append(payload[i:i + 32]); i += 32
     return hashes, payload[i:i + 32]               # (vHave, hashStop)
 

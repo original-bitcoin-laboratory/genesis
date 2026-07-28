@@ -98,6 +98,12 @@ fn well_formed_block(raw: &[u8]) -> bool {
     i == body.len()
 }
 
+/// True iff `raw` is a structurally well-formed transaction that consumes exactly its bytes — the
+/// **panic-safe** gate for an untrusted `tx` message before the (indexing, `with_capacity`) `parse_tx`.
+fn well_formed_tx(raw: &[u8]) -> bool {
+    matches!(tx_len_safe(raw, 0), Some(l) if l == raw.len())
+}
+
 fn encode_addrs(addrs: &[Peer]) -> Vec<u8> {
     let mut o = (addrs.len() as u16).to_le_bytes().to_vec();
     for (host, port) in addrs {
@@ -352,9 +358,15 @@ impl Node {
                     s.flush()?;
                 }
                 "tx" => {
-                    let h = self.state.height();
-                    if self.mempool.accept(&payload, self.state.utxo(), h).is_err() {
-                        misbehavior += 1;
+                    // panic-safe gate: never hand a malformed tx to the indexing parser (with_capacity /
+                    // slice unwraps would panic); a hostile peer that floods them is scored and dropped.
+                    if !well_formed_tx(&payload) {
+                        misbehavior += 5;
+                    } else {
+                        let h = self.state.height();
+                        if self.mempool.accept(&payload, self.state.utxo(), h).is_err() {
+                            misbehavior += 1;
+                        }
                     }
                 }
                 "addr" => {

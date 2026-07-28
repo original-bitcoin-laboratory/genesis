@@ -16,8 +16,13 @@ value would force adding the 2010 guardrails — at which point it stops being t
 
 ## What *is* defended (Stages 1–4 + full‑node core)
 
-- **Wire**: message checksums, a 4 MiB size cap, read timeouts, and per‑peer misbehavior scoring
-  → a peer that sends garbage, oversize, or bad‑magic frames is dropped (`wire.py`, `livenode.py`).
+- **Wire & parsers**: message checksums, a 4 MiB size cap, read timeouts, and per‑peer misbehavior
+  scoring → a peer that sends garbage, oversize, or bad‑magic frames is dropped. Every wire count
+  (`inv` / `getblocks` / `addr` / tx‑input) is **bounded to the actual payload** before it drives a
+  loop or allocation, and untrusted bytes pass a bounds‑safe gate before any indexing parser, so a
+  malformed message drops the **peer, never the node** (`wire.py`, `livenode.py`; `net.rs`
+  `well_formed_block` / `well_formed_tx`). See the internal robustness pass in
+  [`../../docs/AUDIT.md`](../../docs/AUDIT.md).
 - **Difficulty**: a block's `nBits` must equal the expected retarget for its parent — checked on
   the direct path (`difficulty.py`) **and authoritatively on connect** (`ChainState._connect`), so
   a wrong‑difficulty block can't slip in via the **orphan reconnection** path either. An optional
@@ -82,9 +87,11 @@ value would force adding the 2010 guardrails — at which point it stops being t
 
 Full transaction/script/value validation; difficulty as a validated consensus rule on **every**
 path (incl. orphans/reorgs) at real (non‑easy) difficulty; eclipse/Sybil/DoS resistance and peer
-authentication; rigorous resource bounds; wire/parser fuzzing; and — realistically — a
-production‑grade node (not this Python MODEL). Until all of that exists **and** an independent
-audit signs off, treat this strictly as a **valueless experiment.**
+authentication; rigorous resource bounds; wire/parser fuzzing (an **internal** robustness pass has
+closed the parser‑bounds findings — see [`../../docs/AUDIT.md`](../../docs/AUDIT.md) — but that is not
+a substitute for independent review); and — realistically — a production‑grade node (not this Python
+MODEL). Until all of that exists **and** an independent audit signs off, treat this strictly as a
+**valueless experiment.**
 
 ## Reporting
 

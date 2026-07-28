@@ -65,6 +65,22 @@ def test_inv_roundtrips_across_compactsize_boundary():
         assert parsed == items, f"count {n}: item mismatch"
 
 
+def test_inv_and_getblocks_bound_a_huge_claimed_count():
+    """A malformed inv/getblocks claiming a huge item count must NOT spin an unbounded loop over
+    empty slices (a one-packet DoS that hangs the event loop). The parse is bounded to the real
+    bytes — if this test returns at all, the bound holds (an unbounded loop would hang it)."""
+    from p2p import parse_inv
+    from chainsync import parse_getblocks
+    # inv claims 2**64-1 CInv items but carries only 2 real (36 B) ones
+    huge_inv = b"\xff" + b"\xff" * 8 + (b"\x01\x00\x00\x00" + b"\xab" * 32) * 2
+    assert len(parse_inv(huge_inv)) == 2
+    assert parse_inv(b"") == []                       # empty payload is benign, not a crash
+    # getblocks claims a huge locator but carries only ~1 hash + hashStop
+    huge_gb = b"\x00\x00\x00\x00" + b"\xff" + b"\xff" * 8 + b"\xcd" * 32 + b"\x00" * 32
+    hashes, _stop = parse_getblocks(huge_gb)
+    assert len(hashes) <= 2
+
+
 async def _scenario():
     B = Node("B")
     server = await asyncio.start_server(B.handle, "127.0.0.1", 0)
