@@ -56,7 +56,8 @@ MAX_PEERS = 8
 MAX_ADDRS_PER_MSG = 20
 MAX_INBOUND = 64                 # cap inbound connections (connection-flood DoS)
 MAX_KNOWN_ADDRS = 1024           # cap the gossiped peer table (addr-flood / poisoning)
-MSG_RATE_MAX = 600               # per-peer messages allowed per window (flood)
+MSG_RATE_MAX = 5000              # per-peer messages allowed per window (flood); high enough that a
+                                 # legitimate initial-block-download burst isn't throttled
 MSG_RATE_WINDOW = 10.0           # seconds
 
 

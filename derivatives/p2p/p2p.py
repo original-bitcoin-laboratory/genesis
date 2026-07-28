@@ -72,8 +72,18 @@ def inv_payload(items) -> bytes:
 
 
 def parse_inv(payload: bytes):
-    # minimal CompactSize + [type(4) hash(32)]*
-    n = payload[0]; i = 1; items = []
+    # CompactSize count + [type(4) hash(32)]* — decode the FULL varint, not just the first byte
+    # (counts >= 0xfd use a multi-byte prefix; reading payload[0] alone breaks any inv of >=253 items).
+    b0 = payload[0]
+    if b0 < 0xFD:
+        n, i = b0, 1
+    elif b0 == 0xFD:
+        n, i = int.from_bytes(payload[1:3], "little"), 3
+    elif b0 == 0xFE:
+        n, i = int.from_bytes(payload[1:5], "little"), 5
+    else:
+        n, i = int.from_bytes(payload[1:9], "little"), 9
+    items = []
     for _ in range(n):
         typ = int.from_bytes(payload[i:i + 4], "little"); i += 4
         h = payload[i:i + 32]; i += 32

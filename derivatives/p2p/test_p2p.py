@@ -52,6 +52,19 @@ def test_wire_framing_roundtrip():
     assert msg[20:] == payload
 
 
+def test_inv_roundtrips_across_compactsize_boundary():
+    """inv_payload/parse_inv must round-trip counts >= 0xfd (the CompactSize prefix boundary).
+    Regression: parse_inv read only payload[0] as the count, so any inv of >= 253 items misparsed
+    (0xfd/0xfe/0xff were taken as a literal count) and initial-block-download silently stalled for a
+    chain past ~252 blocks."""
+    from p2p import inv_payload, parse_inv, MSG_BLOCK
+    for n in (1, 200, 252, 253, 512, 1357):
+        items = [(MSG_BLOCK, bytes([i & 0xFF, (i >> 8) & 0xFF]) + b"\x00" * 30) for i in range(n)]
+        parsed = parse_inv(inv_payload(items))
+        assert len(parsed) == n, f"count {n}: parsed {len(parsed)} items"
+        assert parsed == items, f"count {n}: item mismatch"
+
+
 async def _scenario():
     B = Node("B")
     server = await asyncio.start_server(B.handle, "127.0.0.1", 0)
