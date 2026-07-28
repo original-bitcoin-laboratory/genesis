@@ -1,2 +1,3 @@
 /target
-Cargo.lock
+# Cargo.lock is committed: validator-rs is an application/node, so the lockfile is authoritative
+# and `cargo test --locked` (CI + reproduce.py --rust) reproduces the exact dependency versions.
