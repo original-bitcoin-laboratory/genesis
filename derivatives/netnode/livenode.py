@@ -47,6 +47,7 @@ from difficulty import expected_bits                  # noqa: E402
 from fullnode import validate_block                   # noqa: E402
 from mempool import Mempool, MempoolReject            # noqa: E402
 from nodewallet import NodeWallet                      # noqa: E402
+from peerdb import PeerDB, group_of                    # noqa: E402
 from store import BlockStore                           # noqa: E402
 from wire import WireError, frame, read_message        # noqa: E402
 
@@ -56,6 +57,8 @@ MAX_PEERS = 8
 MAX_ADDRS_PER_MSG = 20
 MAX_INBOUND = 64                 # cap inbound connections (connection-flood DoS)
 MAX_KNOWN_ADDRS = 1024           # cap the gossiped peer table (addr-flood / poisoning)
+MAX_OUTBOUND_PER_GROUP = 2       # cap outbound dials per /16 (anti-eclipse: not all peers in one subnet)
+PEERS_SAVE_INTERVAL = 60.0       # persist the peer table this often (+ on stop)
 MSG_RATE_MAX = 5000              # per-peer messages allowed per window (flood); high enough that a
                                  # legitimate initial-block-download burst isn't throttled
 MSG_RATE_WINDOW = 10.0           # seconds
@@ -110,7 +113,9 @@ class Node:
         self._inbound_count = 0
         self.port = None
         self.advertise = None                        # our own dialable (host, port), if listening
-        self.known_addrs: set[tuple[str, int]] = set()
+        self.peers = PeerDB(max_addrs=max_known_addrs)   # persisted, diversity-aware peer table
+        self._peers_path = self.datadir / "peers.json"
+        self.peers.load(self._peers_path)            # remember peers across restarts
         self._dialing: set[tuple[str, int]] = set()  # outbound addrs in flight (dedup + self)
         self._load_or_init()
         self.state = ChainState(self.chain, cfg.rules, maturity=maturity, min_bits=min_bits)  # validated UTXO chainstate
@@ -118,14 +123,16 @@ class Node:
         self.mempool = Mempool(maturity=maturity)        # not-yet-mined transactions (policy)
         self.wallet = NodeWallet(self.datadir / "wallet.json") if wallet else None
 
+    @property
+    def known_addrs(self) -> set:
+        """All peers we know (tried + gossiped) — for gossip, discovery, and status."""
+        return self.peers.addrs()
+
     def _learn_addr(self, addr) -> bool:
-        """Record a gossiped peer, bounded (DoS). Returns True if it was new."""
-        if addr == self.advertise or addr in self.known_addrs:
+        """Record a gossiped peer, bounded per-/16 and in total (anti-eclipse). Returns True if new."""
+        if addr == self.advertise:
             return False
-        if len(self.known_addrs) >= self.max_known_addrs:
-            return False                             # table full — ignore (bounded)
-        self.known_addrs.add(addr)
-        return True
+        return self.peers.add(addr)
 
     # -- persistence / genesis -------------------------------------------------
     def _load_or_init(self):
@@ -191,6 +198,10 @@ class Node:
             self._log(f"listening on {self.listen[0]}:{self.port}")
         for host, port in connect:
             self._dial(host, port)
+        for host, port in self.peers.sample(self.max_peers, exclude=set(connect),
+                                            per_group=MAX_OUTBOUND_PER_GROUP):
+            self._dial(host, port)               # re-mesh from remembered peers (persisted DB)
+        self._tasks.append(asyncio.create_task(self._peers_save_loop()))
         if self.mine:
             self._tasks.append(asyncio.create_task(self._mine_loop()))
 
@@ -203,12 +214,17 @@ class Node:
         for w in list(self._writers):
             w.close()
         self.store.close()
+        self._save_peers()                           # persist the peer table for next start
 
     # -- connections -----------------------------------------------------------
     def _dial(self, host, port):
         addr = (host, int(port))
         if addr == self.advertise or addr in self._dialing or len(self._dialing) >= self.max_peers:
             return
+        if not (host == "localhost" or host.startswith("127.") or host == "::1"):
+            g = group_of(host)                       # anti-eclipse: cap outbound per /16 (routable only)
+            if sum(1 for d in self._dialing if group_of(d[0]) == g) >= MAX_OUTBOUND_PER_GROUP:
+                return
         self._dialing.add(addr)
         self._tasks.append(asyncio.create_task(self._outbound(host, int(port))))
 
@@ -228,6 +244,7 @@ class Node:
                 try:
                     reader, writer = await asyncio.open_connection(host, port)
                     self._log(f"connected out to {host}:{port}")
+                    self.peers.mark_good((host, int(port)))   # promote to 'tried' (preferred later)
                     await self._session(reader, writer, initiate=True)
                 except (OSError, WireError) as e:
                     self._log(f"outbound {host}:{port}: {e}")
@@ -252,9 +269,23 @@ class Node:
 
     def _addr_sample(self):
         addrs = [self.advertise] if self.advertise else []
-        addrs += random.sample(list(self.known_addrs),
-                               min(len(self.known_addrs), MAX_ADDRS_PER_MSG))
+        addrs += self.peers.sample(MAX_ADDRS_PER_MSG - len(addrs), exclude=addrs,
+                                   per_group=max(2, MAX_ADDRS_PER_MSG // 4))
         return addrs[:MAX_ADDRS_PER_MSG]
+
+    def _save_peers(self):
+        try:
+            self.peers.save(self._peers_path)
+        except OSError as e:
+            self._log(f"peers save failed: {e}")
+
+    async def _peers_save_loop(self):
+        try:
+            while not self._closing:
+                await asyncio.sleep(PEERS_SAVE_INTERVAL)
+                self._save_peers()
+        except asyncio.CancelledError:
+            pass
 
     # -- one peer session ------------------------------------------------------
     async def _session(self, reader, writer, initiate):

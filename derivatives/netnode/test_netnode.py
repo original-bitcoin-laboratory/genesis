@@ -226,6 +226,31 @@ def test_known_addrs_are_bounded(tmp_path):
     n.store.close()
 
 
+def test_one_subnet_cannot_fill_the_peer_table(tmp_path):
+    # eclipse resistance: a flood of addresses from a single /16 is capped, so it can't crowd out
+    # the diverse peers a node needs to stay meshed with the honest network.
+    n = Node(CHAINS["jan09x"], str(tmp_path / "EC"), max_known_addrs=1000)
+    for i in range(400):
+        n._learn_addr((f"9.9.{i // 256}.{i % 256}", 1000 + i))     # all one /16
+    assert len(n.known_addrs) == n.peers.max_per_group             # that subnet is bounded
+    assert n._learn_addr(("8.8.8.8", 18009))                       # a different /16 still gets in
+    n.store.close()
+
+
+def test_peer_table_persists_across_restart(tmp_path):
+    cfg = CHAINS["jan09x"]
+    d = str(tmp_path / "PP")
+    n1 = Node(cfg, d)
+    n1._learn_addr(("143.110.255.205", 18009))
+    n1._learn_addr(("178.62.236.102", 18008))
+    n1._save_peers()                                               # (also happens on stop())
+    n1.store.close()
+    n2 = Node(cfg, d)                                              # fresh node, same datadir
+    assert ("143.110.255.205", 18009) in n2.known_addrs
+    assert ("178.62.236.102", 18008) in n2.known_addrs
+    n2.store.close()
+
+
 async def _inbound_cap_scenario(d):
     from p2p import version_payload
     cfg = CHAINS["jan09x"]
