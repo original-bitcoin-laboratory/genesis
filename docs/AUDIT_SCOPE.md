@@ -78,7 +78,7 @@ so a reviewer can confirm the boundary, not treat them as surprises:
 
 - `scripts/verify_genesis.py` — re‑derive both genesis blocks from source.
 - `scripts/reproduce.py` — the full lab (**21/21** steps, incl. both node suites and the DNS seed).
-- `cd derivatives/validator-rs && cargo test` — the Rust node (**25** tests).
+- `cd derivatives/validator-rs && cargo test` — the Rust node (**29** tests — now covering NOV08's leading-zero-bits PoW + `==` coinbase rule too).
 
 ## What a signoff would — and would not — mean
 

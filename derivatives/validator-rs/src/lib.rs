@@ -205,11 +205,38 @@ pub fn target_from_bits(nbits: u32) -> [u8; 32] {
     t
 }
 
-/// PoW check: the header hash, read as a little-endian integer, is <= the target.
+/// PoW check (JAN09 / compact): the header hash, read as a little-endian integer, is <= the target.
 pub fn pow_ok(raw: &[u8], nbits: u32) -> bool {
     let mut hbe = block_hash(raw); // little-endian integer per the node…
     hbe.reverse(); // …compare as big-endian bytes == integer comparison
     hbe <= target_from_bits(nbits)
+}
+
+/// The NOV08 leading-zero-bits target as 32 big-endian bytes: `2^(256-nbits) - 1` — i.e. the top
+/// `nbits` bits zero, the rest one (Python `Rules.pow_target`, NOV08 `main.h:875`: `(~0) >> nBits`).
+pub fn target_lzb(nbits: u32) -> [u8; 32] {
+    let mut t = [0xffu8; 32];
+    let zbytes = (nbits / 8).min(32) as usize;
+    for b in t.iter_mut().take(zbytes) {
+        *b = 0;
+    }
+    let rem = nbits % 8;
+    if zbytes < 32 && rem > 0 {
+        t[zbytes] = 0xffu8 >> rem;
+    }
+    t
+}
+
+/// PoW check (NOV08 / leading-zero-bits): `nbits >= min_pow`, and the header hash (little-endian
+/// integer) is within `target_lzb(nbits)`. Byte-for-byte the Python `Rules.pow_ok` for the
+/// `leading-zero-bits` encoding, including the `MINPROOFOFWORK` gate. NOT money.
+pub fn pow_ok_lzb(raw: &[u8], nbits: u32, min_pow: u32) -> bool {
+    if nbits < min_pow {
+        return false;
+    }
+    let mut hbe = block_hash(raw);
+    hbe.reverse();
+    hbe <= target_lzb(nbits)
 }
 
 // ---- the context-free validator --------------------------------------------------

@@ -16,7 +16,8 @@ native node matters only at extreme scale; this is that node, built and tested.)
 - **SHA-256 / double-SHA-256** — implemented in-crate (FIPS 180-4), no dependencies;
 - **block hash** + **merkle root** recomputation;
 - **structure** — ≥1 transaction, the first is a coinbase, no other is;
-- **proof-of-work** — the 256-bit target from compact `nBits`, header-hash ≤ target.
+- **proof-of-work** — **both encodings**: the 256-bit target from compact `nBits` (JAN09) **or**
+  leading-zero-bits with `MINPROOFOFWORK` (NOV08), header-hash ≤ target — enforced on connect.
 
 **Stateful** (mirrors [`netnode/chainstate.py`](../netnode/chainstate.py) `ChainState._connect`):
 
@@ -73,9 +74,9 @@ cargo test                                       # cross-checks everything again
 
 ## How it's verified
 
-`cargo test` cross-checks the Rust against the **verified Python node** — **25 tests** (covering
+`cargo test` cross-checks the Rust against the **verified Python node** — **29 tests** (covering
 70+ opcode scripts + reorg + difficulty + a live two-node TCP sync/relay/discovery + mine-and-spend
-+ DoS hardening + wallet/RPC):
++ DoS hardening + wallet/RPC + **both chains' consensus — JAN09 _and_ NOV08**):
 
 - `tests/golden.rs` (3): the standard SHA-256 `"abc"`/empty vectors; golden blocks' hash / merkle /
   PoW / tx-count; and a tamper-rejection case.
@@ -111,11 +112,19 @@ cargo test                                       # cross-checks everything again
 - `tests/rpc.rs` (1): a node **mines coins to its wallet**, then a client drives it over the
   **localhost RPC** — `getbalance` (the matured coinbase), `getnewaddress`, `send` (returns a txid),
   `getinfo`.
+- `tests/nov08.rs` (4): **NOV08-X parity** — the second reconstruction's *leading-zero-bits* PoW and
+  *strict `==`* coinbase rule, cross-checked against the Python. Golden blocks match under
+  leading-zero-bits (and the JAN09 *compact* reading rejects them, so the **encoding** is precisely
+  what differs); the Rust node **validates the exact deployed NOV08-X chain** (genesis
+  `00000f08…`), **mines** leading-zero-bits blocks and **rejects an under-claiming coinbase** a `<=`
+  chain would accept; and **two NOV08 nodes sync over real TCP** (magic `f00ba708`). NOV08-X is now a
+  byte-for-byte twin too, not only JAN09-X.
 
 The golden vectors come from the verified Python — the block vectors from `netnode/bench.py`'s chain
 builder, and the rest from the regenerable generators in [`tools/`](tools/) (`gen_state_vectors.py`,
-`gen_eval_vectors.py`, `gen_multisig_vectors.py`, `gen_reorg_vectors.py`). **Verified:** compiled +
-tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **25 pass**; `obl-validate` on a golden
+`gen_eval_vectors.py`, `gen_multisig_vectors.py`, `gen_reorg_vectors.py`, `gen_nov08_vectors.py`).
+**Verified:** compiled + tested with **rustc 1.97.1** (`x86_64-pc-windows-gnu`), all **29 pass**;
+`obl-validate` on a golden
 block reproduces the Python's block hash. The novel 256-bit compact-target/PoW math was additionally
 cross-checked against the Python reference across easy / hard / edge `nBits`.
 

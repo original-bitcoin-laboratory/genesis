@@ -78,6 +78,9 @@ impl NodeState {
             if nbits != expected_bits(&self.index, &prev, &self.rules, self.min_bits) {
                 return Err("wrong difficulty");
             }
+            if !self.rules.pow_ok(&raw, nbits) {
+                return Err("bad proof-of-work"); // hash must meet the stated difficulty (both encodings)
+            }
         }
         let subsidy = self.rules.subsidy(height - 1);
         let undo = apply_txs(

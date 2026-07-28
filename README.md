@@ -45,7 +45,7 @@ These chains are **not money** (stamped in the coinbase): a research microscope,
 The consensus and node exist **twice**, cross‑checked byte‑for‑byte: a Python node
 ([`derivatives/netnode/`](derivatives/netnode/) — validation, mempool, wallet, RPC, a ~7×
 libsecp256k1 verifier, a DNS seed) and a standalone Rust node
-([`derivatives/validator-rs/`](derivatives/validator-rs/), 25 tests).
+([`derivatives/validator-rs/`](derivatives/validator-rs/), 29 tests — **both** chains).
 
 Two live, always‑on anchors run both reconstructions — **JAN09‑X** (`seed.bitcoin-lab.org:18009`) and
 **NOV08‑X** (`seed.bitcoin-lab.org:18008`, its own genesis + leading‑zero‑bits PoW). Join either and

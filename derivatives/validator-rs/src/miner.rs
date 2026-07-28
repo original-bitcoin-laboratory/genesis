@@ -2,7 +2,7 @@
 //! mempool transactions), not only validate them. NOT money.
 
 use crate::sighash::compact_size;
-use crate::{block_hash, dsha256, serialize_tx, target_from_bits, Tx, TxIn, TxOut};
+use crate::{block_hash, dsha256, serialize_tx, target_from_bits, target_lzb, Tx, TxIn, TxOut};
 
 /// A coinbase paying `value` to `spk`, with `height` + `tag` in the scriptSig for uniqueness.
 pub fn coinbase(height: i64, value: i64, spk: &[u8], tag: u32) -> Tx {
@@ -78,6 +78,34 @@ pub fn mine(
         let raw = build_block(prev, &merkle, time, nbits, nonce, &raws);
         let mut h = block_hash(&raw); // little-endian integer
         h.reverse(); // -> big-endian bytes for comparison
+        if h <= target {
+            return raw;
+        }
+    }
+    panic!("no nonce found");
+}
+
+/// Mine under NOV08 **leading-zero-bits** PoW: identical block assembly to `mine`, but grind a
+/// nonce until the header hash has at least `nbits` leading zero bits (`target_lzb`). NOT money.
+pub fn mine_lzb(
+    prev: &[u8; 32],
+    height: i64,
+    nbits: u32,
+    time: u32,
+    coinbase_value: i64,
+    coinbase_spk: &[u8],
+    extra: &[Tx],
+    tag: u32,
+) -> Vec<u8> {
+    let cb = coinbase(height, coinbase_value, coinbase_spk, tag);
+    let mut raws = vec![serialize_tx(&cb)];
+    raws.extend(extra.iter().map(serialize_tx));
+    let merkle = merkle_of(&raws);
+    let target = target_lzb(nbits); // big-endian
+    for nonce in 0..u32::MAX {
+        let raw = build_block(prev, &merkle, time, nbits, nonce, &raws);
+        let mut h = block_hash(&raw);
+        h.reverse();
         if h <= target {
             return raw;
         }
