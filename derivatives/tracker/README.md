@@ -43,10 +43,13 @@ only if you choose it as the origin** — the tool makes that choice explicit an
 
 - **Axes** — 11 properties a codebase takes a *value* on (opcode vocabulary, value bounds, block
   size, script limits, sig encoding, crypto lib, PoW, monetary, consensus DB, **witness/SegWit**,
-  **signature scheme/Schnorr**). The set is itself a choice and is extensible — difficulty
-  algorithm, address formats, and finer chain‑splits are natural additions.
+  **signature scheme/Schnorr**). Each has an **operational definition** in `AXIS_DEFS` — the
+  checkable property that fixes its value (e.g. `block_size` records that v0.1.0 has no dedicated
+  `MAX_BLOCK_SIZE` but a 32 MiB `MAX_SIZE` serialization ceiling, distinct from BSV's removed cap),
+  so a value is contested against evidence, not opinion. The set is itself a choice and is
+  extensible — difficulty algorithm, address formats, and finer chain‑splits are natural additions.
 - **Frozen references** — `whitepaper` (all axes unspecified — the design fixes none),
-  `nov08` (only `monetary` + `pow_algo` fixed — a partial 5‑file snapshot), `v0.1.0` (all nine).
+  `nov08` (only `monetary` + `pow_algo` fixed — a partial 5‑file snapshot), `v0.1.0` (all eleven).
   `[S]` for nov08/v0.1.0 values.
 - **Events `[D]`** — dated changes a chain makes to an axis (public record; a curated scaffold,
   refinable). Forks inherit the parent's state at the fork date, then diverge.
@@ -69,13 +72,22 @@ as anchors — an origin you measure *from* must be a fixed artifact; a network�
 ("BTC @ 2015") is the one sensible extension, and the engine already supports it.
 
 ```bash
-python tracker.py          # every origin × milestone dates
-python -m pytest           # 9 passed
+python tracker.py          # every origin × milestone dates + a robustness line
+python -m pytest           # 18 passed
 ```
 
 `references()` lists the origins; `track(reference, date)` returns every version's distance +
 differing axes at that date; `distance(reference, candidate, date)` the scalar; `define(ref)`
-the reference's axis‑values.
+the reference's axis‑values; `differing_axes(ref, cand, date)` the axis list.
+
+**Robustness (does the answer depend on which axes we chose?)** — because the axis set is a choice,
+a conclusion is only worth stating if it survives that choice. `robustness(ref, closer, farther,
+date)` enumerates all axis subsets and reports the fraction in which the ordering holds;
+`subset_lattice(ref, date)` shows which chains' differing‑axis sets contain which. When one
+differing set is a subset of another the ordering holds in **every** subset (structurally) — e.g.
+from the `v0.1.0` origin, BSV's differing set is a subset of BTC's, so "BSV at least as close as
+BTC" holds in 2047/2047 axis subsets. Absolute distances are not so robust and are always reported
+with their `(origin, axis‑set)`.
 
 ## Boundary
 

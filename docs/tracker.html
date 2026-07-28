@@ -145,10 +145,11 @@
     </div>
     <p class="caption" id="caption"></p>
     <div class="rows" id="rows"></div>
+    <p class="caption" id="robust" style="border-top:1px solid var(--line);padding-top:12px;margin-top:2px;color:var(--ink-faint)"></p>
   </div>
 
   <div class="note">
-    <p><b>Distance</b> = the number of axes (of nine) on which a version’s value differs from the
+    <p><b>Distance</b> = the number of axes (of eleven) on which a version’s value differs from the
       chosen origin’s. It is <b>neutral</b>: adding a safety check (<code>MoneyRange</code>) and
       removing a feature (disabling opcodes) both change a value, so both add distance — nothing here
       is ranked better or worse.</p>
@@ -161,6 +162,12 @@
       under each constitution. Under <b>nov08</b>, <code>NOV08-X</code> reads <code>0</code>; under
       <b>v0.1.0</b>, <code>JAN09-X</code> reads <code>1</code> — it differs only by re‑opening the one
       opcode v0.1 disabled. They are candidates for reference, not "the real Bitcoin."</p>
+    <p><b>Does the answer depend on which axes we picked?</b> The axis set is itself a choice, so an
+      ordering is only worth stating if it survives that choice. When one version’s differing axes are
+      a <b>subset</b> of another’s, the ordering between them holds under <b>every</b> axis subset —
+      structurally, not by luck of selection. The line under the table reports this for the current
+      origin; absolute distances are not so robust, which is why each is always shown with its origin.
+      (<code>tracker.py</code> computes it via <code>robustness()</code> / <code>subset_lattice()</code>.)</p>
     <p>Companion: <a href="./is-it-bitcoin.html" style="color:var(--focus)">Is it a Bitcoin?</a> — a
       reasoning compass that maps any object onto the seven senses of the word, honest about where the
       answer is convention rather than fact.</p>
@@ -170,13 +177,18 @@
 
 <script>
 "use strict";
-const AXES = {
-  script_vocabulary:"which Script opcodes are enabled", value_bounds:"output value / sum sanity checks",
-  block_size:"block-size limit", script_limits:"script element / op-count / stack ceilings",
-  sig_encoding:"signature-encoding strictness", crypto_lib:"EC library for ECDSA-on-secp256k1",
-  pow_algo:"proof-of-work function + target format", monetary:"unit / subsidy / halving / spacing",
-  consensus_db:"chainstate storage engine", witness:"transaction / witness format (SegWit)",
-  sig_scheme:"signature scheme(s): ECDSA / Schnorr"
+const AXES = {   // operational definition of each axis (shown on chip hover) — mirrors tracker.py AXIS_DEFS
+  script_vocabulary:"which Script opcodes the interpreter executes vs treats as disabled",
+  value_bounds:"presence/absence of an output-value + money-supply sanity check (MoneyRange)",
+  block_size:"the protocol ceiling on block bytes — v0.1.0 has no MAX_BLOCK_SIZE but a 32 MiB MAX_SIZE serialization cap; BTC added a 1 MB cap (2010); BSV removed the protocol cap (2020), distinct from v0.1.0",
+  script_limits:"element-size / op-count / stack-depth ceilings in the interpreter",
+  sig_encoding:"how strictly signature encoding is enforced (lenient vs strict-DER / BIP66)",
+  crypto_lib:"the library performing ECDSA-on-secp256k1 for consensus",
+  pow_algo:"the proof-of-work function together with its target encoding",
+  monetary:"unit (COIN), initial subsidy, halving interval, block spacing",
+  consensus_db:"the chainstate storage engine",
+  witness:"whether the signature is committed inline or segregated from the txid (SegWit)",
+  sig_scheme:"which signature scheme(s) are accepted for CHECKSIG (ECDSA / Schnorr)"
 };
 const AXKEYS = Object.keys(AXES);
 const N = null;
@@ -240,6 +252,24 @@ function track(reference, at){
   }
   return out.sort((a,b)=> a.distance-b.distance || (a.name<b.name?-1:1));
 }
+// If one chain's differing-axis set is a subset of another's, the ordering between them holds under
+// EVERY axis subset (structural). This reports the widest such robust ordering for the current origin.
+function robustNote(origin, at){
+  if(origin==="whitepaper")
+    return "Robustness: every version reads 0 from this origin regardless of the axis set — the design constrains none of them.";
+  const chains = Object.keys(CHAINS).filter(n => SINCE[n] <= at);
+  const ref = stateOf(origin, SINCE[origin]||at);
+  const diff = {}; chains.forEach(n => diff[n] = new Set(diffAxes(ref, stateOf(n, at))));
+  let best=null;
+  for(const a of chains) for(const b of chains){
+    if(a===b) continue;
+    const A=diff[a], B=diff[b];
+    if(A.size < B.size && [...A].every(x=>B.has(x)) && (!best || B.size-A.size>best.gap))
+      best={a,b,gap:B.size-A.size};
+  }
+  if(!best) return "Robustness: no ordering here is structurally guaranteed across all axis subsets — compare with care.";
+  return `Robustness: ${best.a}'s differing axes are a subset of ${best.b}'s, so "${best.a} at least as close as ${best.b}" holds under every axis subset — structural, not an artifact of the axes chosen.`;
+}
 
 const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const START = 2008*12+9;                         // Oct 2008
@@ -272,12 +302,13 @@ function render(){
   relEl.textContent=relLabel(iso);
   capEl.innerHTML = origin==="whitepaper"
     ? `distance from <b>whitepaper</b> — the design constrains none of these axes`
-    : `distance from <b>${origin}</b> — ${origin==="nov08"?"only the unit + PoW are fixed by the pre-release":"the genesis client, all nine axes fixed"}`;
+    : `distance from <b>${origin}</b> — ${origin==="nov08"?"only the unit + PoW are fixed by the pre-release":"the genesis client, all eleven axes fixed"}`;
   rowsEl.innerHTML="";
 
   // the reference itself, pinned
   rowsEl.appendChild(rowEl(origin, 0, [], true));
   for(const r of track(origin, iso)) rowsEl.appendChild(rowEl(r.name, r.distance, r.differs, false));
+  document.getElementById("robust").textContent = robustNote(origin, iso);
   requestAnimationFrame(()=>rowsEl.querySelectorAll(".track > i").forEach(i=>{ i.style.width=i.dataset.w; }));
 }
 

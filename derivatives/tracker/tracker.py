@@ -40,10 +40,32 @@ AXES: dict[str, str] = {
 }
 _ = None  # UNSPECIFIED: the codebase does not constrain this axis
 
+# Operational definition of each axis: the checkable property that fixes a value, so a value is
+# contested against evidence, not opinion. (Value provenance: v0.1.0 / nov08 are [S], the lab's
+# source-verified work; dated chain changes are [D], public record.)
+AXIS_DEFS: dict[str, str] = {
+    "script_vocabulary": "which Script opcodes the interpreter executes vs treats as disabled.",
+    "value_bounds":      "presence/absence of an output-value and money-supply sanity check (MoneyRange).",
+    "block_size":        "the protocol-enforced ceiling on block bytes. v0.1.0 has NO dedicated "
+                         "MAX_BLOCK_SIZE; block size is bounded by MAX_SIZE = 0x02000000 (32 MiB), the "
+                         "serialization cap (main.h; see common/conformance/CONSENSUS_SURFACE.md). A "
+                         "dedicated 1 MB cap was added in 2010; BSV's 2020 Genesis removed the protocol "
+                         "cap (miner-configurable) — a state distinct from v0.1.0's fixed 32 MiB ceiling.",
+    "script_limits":     "element-size, op-count, and stack-depth ceilings in the interpreter.",
+    "sig_encoding":      "how strictly signature encoding is enforced (lenient vs strict-DER / BIP66).",
+    "crypto_lib":        "the library performing ECDSA-on-secp256k1 for consensus.",
+    "pow_algo":          "the proof-of-work function together with its target encoding.",
+    "monetary":          "unit (COIN), initial subsidy, halving interval, and block spacing.",
+    "consensus_db":      "the chainstate storage engine.",
+    "witness":           "whether the signature is committed inline or segregated from the txid (SegWit).",
+    "sig_scheme":        "which signature scheme(s) are accepted for CHECKSIG (ECDSA, Schnorr).",
+}
+assert set(AXIS_DEFS) == set(AXES), "AXIS_DEFS must define exactly the axes in AXES"
+
 # --- frozen reference snapshots (timeless artifacts) --------------------------
 # whitepaper: the design fixes NONE of these implementation axes -> all unspecified.
 # nov08: a partial 5-file pre-release snapshot -> only monetary + PoW are defined in it.
-# v0.1.0: the genesis client -> all nine defined.  ([S] for nov08/v0.1.0 values)
+# v0.1.0: the genesis client -> all eleven defined.  ([S] for nov08/v0.1.0 values)
 FROZEN: dict[str, dict[str, str | None]] = {
     "whitepaper": {ax: _ for ax in AXES},
     "nov08": {
@@ -168,6 +190,38 @@ def track(reference: str, at: date) -> dict[str, dict]:
     return dict(sorted(out.items(), key=lambda kv: (kv[1]["distance"], kv[0])))
 
 
+def differing_axes(reference: str, candidate: str, at: date) -> list[str]:
+    """The axes on which `candidate` differs from `reference` at `at` — the public form of the diff."""
+    return _diff_axes(state_of(reference, SINCE.get(reference, at)), state_of(candidate, at))
+
+
+def subset_lattice(reference: str, at: date) -> dict[str, list[str]]:
+    """For each evolving chain, the OTHER chains whose differing-axis set contains its own. If A's
+    differing set is a subset of B's, then distance(A) <= distance(B) under EVERY axis subset — so an
+    ordering backed by a subset relation is not an artifact of which axes were chosen."""
+    names = [n for n in CHAINS if SINCE[n] <= at]
+    diff = {n: set(differing_axes(reference, n, at)) for n in names}
+    return {n: sorted(m for m in names if m != n and diff[n] <= diff[m]) for n in names}
+
+
+def robustness(reference: str, closer: str, farther: str, at: date) -> dict[str, object]:
+    """Whether 'closer is at least as close to `reference` as `farther`' survives the axis-set choice.
+    Enumerates all non-empty axis subsets. A subset relation between their differing sets means the
+    ordering holds in 100% of subsets structurally, not because of which axes were picked."""
+    import itertools
+    dc = set(differing_axes(reference, closer, at))
+    df = set(differing_axes(reference, farther, at))
+    axes = list(AXES)
+    total = hold = 0
+    for k in range(1, len(axes) + 1):
+        for sub in itertools.combinations(axes, k):
+            s = set(sub)
+            total += 1
+            if len(dc & s) <= len(df & s):
+                hold += 1
+    return {"holds": hold, "total": total, "structural_subset": dc <= df, "fraction": hold / total}
+
+
 def references() -> list[str]:
     """The named origins you can measure from."""
     return list(FROZEN)
@@ -190,6 +244,10 @@ def demo() -> None:
             print(f"  {when}:  {cells or '(nothing else yet)'}")
     print("\ndistance = # axes where both specify a value and differ (neutral; not a quality score).")
     print("whitepaper -> ~0 for all: the design does not constrain these axes (it does not discriminate).")
+    r = robustness("v0.1.0", "BSV", "BTC", date(2026, 8, 1))
+    print(f"robustness (origin v0.1.0): 'BSV at least as close as BTC' holds in {r['holds']}/{r['total']} "
+          f"axis subsets; structural subset = {r['structural_subset']} (so the ordering is not an "
+          f"artifact of the chosen axes).")
 
 
 if __name__ == "__main__":

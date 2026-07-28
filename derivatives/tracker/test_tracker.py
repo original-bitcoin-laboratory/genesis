@@ -10,13 +10,16 @@ from datetime import date
 _HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE))
 
-from tracker import AXES, CHAINS, distance, references, state_of, track  # noqa: E402
+from tracker import (  # noqa: E402
+    AXES, AXIS_DEFS, CHAINS, distance, differing_axes, references,
+    robustness, state_of, subset_lattice, track,
+)
 
 
 # ---- the whitepaper does not discriminate ------------------------------------
 
 def test_whitepaper_reference_gives_zero_for_everyone():
-    # the design constrains none of the 9 implementation axes -> distance 0 for all
+    # the design constrains none of the 11 implementation axes -> distance 0 for all
     for name, row in track("whitepaper", date(2026, 8, 1)).items():
         assert row["distance"] == 0, name
 
@@ -33,7 +36,7 @@ def test_btc_distance_depends_on_the_chosen_origin():
     at = date(2016, 6, 1)
     d_wp = distance("whitepaper", "BTC", at)      # design: 0
     d_nov = distance("nov08", "BTC", at)          # nov08 fixes only monetary+pow: 2
-    d_v01 = distance("v0.1.0", "BTC", at)         # v0.1.0 fixes all nine: 7 by 2016
+    d_v01 = distance("v0.1.0", "BTC", at)         # v0.1.0 fixes all eleven: 7 by 2016
     assert d_wp == 0 and d_nov == 2 and d_v01 == 7
     assert d_wp < d_nov < d_v01                   # the same chain, three different distances
 
@@ -113,3 +116,32 @@ def test_jan09x_is_one_axis_from_v010_because_it_re_enables_op_notequal():
     assert distance("v0.1.0", "JAN09-X", date(2026, 8, 1)) == 1
     assert track("v0.1.0", date(2026, 8, 1))["JAN09-X"]["differs_on"] == ["script_vocabulary"]
     assert distance("v0.1.0", "NOV08-X", date(2026, 8, 1)) == 3    # + monetary + PoW
+
+
+# ---- each axis is operationally defined; conclusions self-report their robustness ----
+
+def test_axis_defs_cover_exactly_the_axes():
+    # every axis has an operational definition -> a value is contestable against evidence, not opinion
+    assert set(AXIS_DEFS) == set(AXES)
+
+
+def test_bsv_closer_than_btc_is_robust_to_the_axis_choice():
+    # BSV's differing-axis set is a subset of BTC's, so the ordering holds under EVERY axis subset:
+    # the conclusion is structural, not an artifact of which axes were chosen.
+    r = robustness("v0.1.0", "BSV", "BTC", date(2026, 8, 1))
+    assert r["structural_subset"] is True
+    assert r["holds"] == r["total"]                            # 100% of non-empty axis subsets
+    assert set(differing_axes("v0.1.0", "BSV", date(2026, 8, 1))) <= \
+           set(differing_axes("v0.1.0", "BTC", date(2026, 8, 1)))
+
+
+def test_whitepaper_zero_is_analytic_not_axis_dependent():
+    # the whitepaper specifies no axis, so distance 0 for all is independent of the axis set chosen
+    wp = state_of("whitepaper", date(2008, 10, 31))
+    assert all(wp[ax] is None for ax in AXES)
+
+
+def test_subset_lattice_orders_the_genesis_chains():
+    # BSV's differing set is contained in BTC's (and BCH's) -> reported in the lattice
+    lat = subset_lattice("v0.1.0", date(2026, 8, 1))
+    assert "BTC" in lat["BSV"] and "BCH" in lat["BSV"]
