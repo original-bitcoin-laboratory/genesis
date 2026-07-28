@@ -74,7 +74,7 @@ cargo test                                       # cross-checks everything again
 
 ## How it's verified
 
-`cargo test` cross-checks the Rust against the **verified Python node** — **29 tests** (covering
+`cargo test` cross-checks the Rust against the **verified Python node** — **30 tests** (covering
 70+ opcode scripts + reorg + difficulty + a live two-node TCP sync/relay/discovery + mine-and-spend
 + DoS hardening + wallet/RPC + **both chains' consensus — JAN09 _and_ NOV08**):
 

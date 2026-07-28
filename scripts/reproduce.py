@@ -3,11 +3,12 @@
 
 Runs every headless derivatives test suite, and regenerates the two derived
 artifacts (the neutral descendant matrix and the NOV08-X differential) to prove they
-reproduce from source. Python only by default — no build step. Pass --cpp to also run
-the C++/OpenSSL port differentials (needs MSYS2 g++ on PATH).
+reproduce from source. Python only by default — no build step. Pass --rust to also run
+the Rust node's `cargo test` suite, and/or --cpp to run the C++/OpenSSL port differentials.
 
     python scripts/reproduce.py          # all Python suites + regenerate artifacts
-    python scripts/reproduce.py --cpp    # + the C++ port differentials
+    python scripts/reproduce.py --rust   # + the Rust node suite (needs cargo)
+    python scripts/reproduce.py --cpp    # + the C++ port differentials (needs MSYS2 g++)
 
 Exit code 0 iff everything passed.
 """
@@ -64,6 +65,7 @@ def run(cmd, cwd) -> tuple[bool, str]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--rust", action="store_true", help="also run the Rust node suite (needs cargo)")
     ap.add_argument("--cpp", action="store_true", help="also run the C++ port differentials (needs g++)")
     args = ap.parse_args()
     py = sys.executable
@@ -80,6 +82,19 @@ def main() -> int:
         ok, tail = run([py, script], d)
         results.append(ok)
         print(f"  [{'PASS' if ok else 'FAIL'}] {label:60} {tail}")
+
+    if args.rust:
+        print("== Rust node (validator-rs) ==")
+        import shutil
+        cargo = shutil.which("cargo")
+        rs_dir = DERIV / "validator-rs"
+        if not cargo or not rs_dir.exists():
+            print(f"  [SKIP] {'validator-rs (cargo test)':60} (cargo/crate unavailable)")
+        else:
+            ok, tail = run([cargo, "test", "--quiet"], rs_dir)
+            results.append(ok)
+            msg = "all Rust suites passed" if ok else tail   # (cargo's per-binary tails are noisy)
+            print(f"  [{'PASS' if ok else 'FAIL'}] {'validator-rs (cargo test)':60} {msg}")
 
     if args.cpp:
         print("== C++/OpenSSL port differentials ==")

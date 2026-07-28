@@ -91,7 +91,7 @@ reconstruction.**
 > so a Rust node mines coins, pools a spend, mines it into a block, relays it to a peer, and
 > **discovers peers via `addr` gossip**, is **DoS‑hardened** — a bounds‑safe gate rejects malformed
 > blocks with no panic + misbehavior scoring drops flooding peers — and has a **wallet + localhost
-> RPC** (`getinfo`/`getnewaddress`/`getbalance`/`send`)). Compiled + tested (29 tests, both chains) byte‑for‑byte
+> RPC** (`getinfo`/`getnewaddress`/`getbalance`/`send`)). Compiled + tested (30 tests, both chains) byte‑for‑byte
 > against the Python node — a **complete second‑language node**, with no consensus or transport feature
 > left to port. Remaining toward a hardened public launch
 > is no longer node‑core code: **choosing/running a real difficulty floor** on a live launch,
@@ -116,7 +116,7 @@ reconstruction.**
    examine), and [`RELEASE_SIGNING.md`](RELEASE_SIGNING.md) (reproducible, GPG‑signed releases).
 6. *(Only if ever justified)* a faster node. ✅ *started* — the dominant cost (signature
    verification) is handled by the optional libsecp256k1 verifier, and a **complete Rust node**
-   (`derivatives/validator-rs/`, 29 tests) — a byte‑for‑byte twin of the Python `netnode`: every
+   (`derivatives/validator-rs/`, 30 tests) — a byte‑for‑byte twin of the Python `netnode`: every
    consensus check (context‑free, stateful UTXO/value, the full v0.1 `EvalScript` interpreter, reorg +
    difficulty) **and the full transport** (hardened wire, crash‑safe store, TCP block‑sync + tx relay +
    mempool + mining, `addr` discovery, DoS hardening, wallet + localhost RPC). Nothing remains to port.

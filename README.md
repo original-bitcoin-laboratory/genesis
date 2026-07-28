@@ -3,9 +3,10 @@
 Self-contained reconstruction of the **January 2009 Bitcoin v0.1.0** release — the
 first publicly announced Bitcoin implementation (node + wallet + miner + validator
 + Script interpreter + P2P networking + database + market experiments). This is the
-principal **behavioral oracle** for "original Bitcoin". One of the two editions of
-the Original Bitcoin Laboratory (the other is the sibling `pre-genesis` repo,
-November 2008 pre-release).
+principal **behavioral oracle** for "original Bitcoin", and its runnable `derivatives/`
+contain **both** reconstructions — the January 2009 `JAN09-X` and the 15 November 2008
+pre-release `NOV08-X`. (The sibling `pre-genesis` repo holds the November 2008 source
+edition and its differential.)
 
 ## Quick start
 
@@ -29,8 +30,12 @@ ledger, a wallet, the P2P wire + chain sync, persistence, the neutral descendant
 script **debugger**, a **full‑stack console**, and two live counterfactual networks —
 **NOV08‑X** and **JAN09‑X**.
 
+**Requirements.** Python 3.10+ with `cryptography` (the faithful crypto); `bitcoinx` is optional and
+only enables the ~7× `libsecp256k1` verifier. The Rust node needs a stable Rust toolchain (`cargo`);
+the optional C++ port differentials need `g++`. No other setup.
+
 ```bash
-python scripts/reproduce.py        # every derivatives suite + regenerated artifacts
+python scripts/reproduce.py        # every derivatives suite + regenerated artifacts (add --rust for cargo test)
 python scripts/verify_genesis.py   # both experimental genesis blocks re-derive from source
 ```
 
@@ -45,7 +50,7 @@ These chains are **not money** (stamped in the coinbase): a research microscope,
 The consensus and node exist **twice**, cross‑checked byte‑for‑byte: a Python node
 ([`derivatives/netnode/`](derivatives/netnode/) — validation, mempool, wallet, RPC, a ~7×
 libsecp256k1 verifier, a DNS seed) and a standalone Rust node
-([`derivatives/validator-rs/`](derivatives/validator-rs/), 29 tests — **both** chains).
+([`derivatives/validator-rs/`](derivatives/validator-rs/), 30 tests — **both** chains).
 
 Two live, always‑on anchors run both reconstructions — **JAN09‑X** (`seed.bitcoin-lab.org:18009`) and
 **NOV08‑X** (`seed.bitcoin-lab.org:18008`, its own genesis + leading‑zero‑bits PoW). Join either and

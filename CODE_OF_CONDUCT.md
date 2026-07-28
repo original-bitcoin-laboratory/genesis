@@ -31,10 +31,10 @@ when an individual is representing the project in public spaces.
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by opening an issue
-or contacting the maintainer at `parthms.id@gmail.com`. All complaints will be reviewed and
-investigated and will result in a response that is deemed necessary and appropriate to the
-circumstances. Maintainers who do not follow or enforce the Code of Conduct in good faith may face
+Instances of abusive, harassing, or otherwise unacceptable behavior should be reported **privately** to
+the maintainer at `parthms.id@gmail.com`. Please do **not** use the public issue tracker for sensitive
+reports. All complaints will be reviewed and investigated and will result in a response that is deemed
+necessary and appropriate to the circumstances. Maintainers who do not follow or enforce the Code of Conduct in good faith may face
 repercussions as determined by the project's leadership.
 
 ## Attribution
