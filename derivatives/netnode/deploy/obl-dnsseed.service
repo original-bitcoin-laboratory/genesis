@@ -1,0 +1,27 @@
+# The concrete crawling DNS seed unit as deployed (see dnsseed/ACTIVATION.md).  NOT money.
+#
+# Binds the node's PUBLIC IP on :53 (systemd-resolved keeps the 127.0.0.53 stub, so the public IP:53
+# is free). Crawls both anchors on jan09x, verifies each is a reachable node on the right chain, and
+# answers A queries for seed.bitcoin-lab.org with the live healthy set. Delegate the zone to this host
+# (NS record) to make it the network's bootstrap. NOT money.
+#
+#   ufw allow 53/udp
+#   cp obl-dnsseed.service /etc/systemd/system/ && systemctl enable --now obl-dnsseed
+
+[Unit]
+Description=OBL experimental crawling DNS seed for seed.bitcoin-lab.org (X-chains) - NOT money
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/genesis/derivatives
+# --listen must be the PUBLIC IP (not 0.0.0.0) so it doesn't collide with systemd-resolved's 127.0.0.53
+ExecStart=/opt/genesis/.venv/bin/python -m dnsseed --chain jan09x --zone seed.bitcoin-lab.org \
+          --seed 143.110.255.205:18009 --seed 178.62.236.102:18009 \
+          --listen 178.62.236.102:53 --interval 60
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

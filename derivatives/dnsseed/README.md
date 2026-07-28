@@ -26,6 +26,11 @@ this server with an `NS` record so port‑53 resolvers reach it; binding `:53` d
 privileges). Swap `jan09x`↔`nov08x` — each chain has its own magic/port, so the seed only reports
 nodes actually on that chain.
 
+> **Live deployment.** A crawling seed for `seed.bitcoin-lab.org` runs now on Box 2
+> (`178.62.236.102:53`); today the hostname uses static A records to both anchors, with the crawler
+> ready to take over via one NS delegation once independent nodes exist. The decision, the live
+> details, and the exact registrar records are in [`ACTIVATION.md`](ACTIVATION.md).
+
 ## Why this is the "operators" piece
 
 Everything else in the lab is code you can finish; a live chain's last mile is **other people
