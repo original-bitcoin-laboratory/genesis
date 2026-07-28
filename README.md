@@ -2,7 +2,7 @@
 
 Self-contained reconstruction of the **January 2009 Bitcoin v0.1.0** release — the
 first publicly announced Bitcoin implementation (node + wallet + miner + validator
-+ Script interpreter + P2P networking + database + market experiments). This is the
++ Script interpreter + P2P networking + database + a commerce/market subsystem). This is the
 principal **behavioral oracle** for "original Bitcoin", and its runnable `derivatives/`
 contain **both** reconstructions — the January 2009 `JAN09-X` and the 15 November 2008
 pre-release `NOV08-X`. (The sibling `pre-genesis` repo holds the November 2008 source
@@ -26,7 +26,7 @@ recovery thread — `bitcoin-0.1.0.rar` = `8b17eb9a…`, `bitcoin-0.1.0.tgz` =
 (Python MODEL + C++ PORT), sighash, `OP_CHECKSIG`/`CHECKMULTISIG` on real secp256k1,
 native instruments (escrow / hash‑lock / assurance), a UTXO `ConnectInputs`/`ConnectBlock`
 ledger, a wallet, the P2P wire + chain sync, persistence, the neutral descendant matrix
-(BTC + BSV **executed**), the commerce subsystem (signed listings + atoms reputation), a
+(BTC + BSV **executed**), a model of v0.1's commerce subsystem (signed listings + atoms reputation), a
 script **debugger**, a **full‑stack console**, and two live counterfactual networks —
 **NOV08‑X** and **JAN09‑X**.
 
@@ -43,7 +43,9 @@ The unmodified 2009 `bitcoin.exe` was also run and hash‑verified against these
 reconstructions — the exact genesis reproduces three independent ways (`r3-findings/run1/`,
 level `JAN09-EXECUTED`). Findings, the honest claim, and scope live in the umbrella:
 [`common/README.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/README.md) · [`common/CLAIMS.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/CLAIMS.md).
-These chains are **not money** (stamped in the coinbase): a research microscope, not a coin.
+These chains are **not money**: no premine, no sale, and **no value assigned** (stamped in the
+coinbase) — a research microscope, not a coin. The maintainers solicit no market; whether third
+parties value the units is outside any software's control, but nothing here invites it.
 
 ## Run a node — and join the live experimental network
 

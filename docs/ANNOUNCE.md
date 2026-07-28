@@ -107,7 +107,9 @@ carry the origin's *missing* guardrails (no value‑overflow check, no block‑s
 limits). On a **value‑bearing** chain those are exploitable; on a **valueless** one they are harmless
 research curiosities — there is nothing to steal. Attach value and you are *forced* to add the 2010
 guardrails, at which point it stops being the origin. **So these stay valueless. No premine, no sale,
-no "token," no promises, ever.** (See [`PUBLIC_TESTNET_SCOPE.md`](PUBLIC_TESTNET_SCOPE.md) and each
+no "token," no promises, ever — the maintainers assign the units no value and solicit no market;
+whether anyone else values them is outside any software's control, but nothing here invites it.** (See
+[`PUBLIC_TESTNET_SCOPE.md`](PUBLIC_TESTNET_SCOPE.md) and each
 node's `SECURITY.md`.)
 
 ## What we are asking, and not asking
