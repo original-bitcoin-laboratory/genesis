@@ -39,7 +39,7 @@ The consensus and the node exist **twice**, cross‑checked byte‑for‑byte:
 - a Python node — [`../derivatives/netnode/`](../derivatives/netnode/) (validation, mempool, wallet,
   RPC, a ~7× libsecp256k1 verifier, the DNS seed);
 - a Rust node — [`../derivatives/validator-rs/`](../derivatives/validator-rs/) (every consensus rule +
-  the full v0.1 script interpreter + transport, 29 tests — validating **both** chains' consensus).
+  the full v0.1 script interpreter + transport, 30 tests — validating **both** chains' consensus).
 
 An independent second implementation that agrees to the byte is extra evidence the byte formats,
 hashing, sighash, and value rules are pinned down.
