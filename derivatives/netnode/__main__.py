@@ -66,7 +66,7 @@ def _ctl(argv):
                                  description="Control a running node over its localhost RPC.")
     ap.add_argument("--rpc", required=True, metavar="[HOST:]PORT", help="the node's --rpc address")
     ap.add_argument("method", choices=["getinfo", "getnewaddress", "getprimaryaddress",
-                                       "getbalance", "send"])
+                                       "getbalance", "getrecentblocks", "send"])
     ap.add_argument("args", nargs="*", help="send: <to_address_or_pubkey_hex> <amount> [fee]")
     a = ap.parse_args(argv)
     host, port = _hostport(a.rpc, "127.0.0.1")

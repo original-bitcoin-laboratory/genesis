@@ -1,0 +1,45 @@
+# Probe the public anchors over their own P2P protocol and publish status.json for the status page +
+# block explorer. No box access, no secrets beyond the built-in token. NOT money.
+name: status
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"      # every 15 minutes (best-effort; GitHub may delay/skip under load)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: status
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install --quiet cryptography
+
+      - name: Probe anchors -> status.json
+        run: |
+          python derivatives/netnode/status_probe.py --out /tmp/status.json \
+            --chain jan09x:18009 --chain nov08x:18008 \
+            --anchor 143.110.255.205 --anchor 178.62.236.102 \
+            --recent 15 --timeout 8
+
+      - name: Publish to the 'status' branch
+        run: |
+          git config user.name "obl-status-bot"
+          git config user.email "status@users.noreply.github.com"
+          git checkout --orphan status
+          git rm -rf . >/dev/null 2>&1 || true
+          cp /tmp/status.json status.json
+          git add status.json
+          git commit -m "status $(date -u +%FT%TZ)"
+          git push -f origin status

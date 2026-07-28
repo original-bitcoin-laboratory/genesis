@@ -148,6 +148,18 @@ def test_rpc_send_builds_and_submits_a_payment(tmp_path):
     n.store.close()
 
 
+def test_rpc_getrecentblocks_summarizes_the_chain(tmp_path):
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "RB"), wallet=True, maturity=1)
+    _mine_to_wallet(n, 3)
+    (resp,) = _run(_rpc_session(n, [("getrecentblocks", (2,))]))
+    blocks = resp["result"]
+    assert len(blocks) == 2                                # last 2 blocks, newest first
+    assert blocks[0]["height"] == 3 and blocks[1]["height"] == 2
+    assert all(len(b["hash"]) == 64 and b["ntx"] >= 1 for b in blocks)
+    n.store.close()
+
+
 def test_rpc_send_without_a_wallet_errors(tmp_path):
     cfg = CHAINS["jan09x"]
     n = Node(cfg, str(tmp_path / "NW"))                            # no --wallet

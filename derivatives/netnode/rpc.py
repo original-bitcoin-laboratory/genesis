@@ -11,6 +11,7 @@ reply is one line `{"result": ...}` or `{"error": ...}`.
 - `getnewaddress` → a fresh receive address (SEC pubkey hex)              [needs --wallet]
 - `getprimaryaddress` → your existing primary key (pubkey + '1...' address), mints nothing  [--wallet]
 - `getbalance` → spendable balance (mature, owned)                        [needs --wallet]
+- `getrecentblocks [count]` → the last N validated blocks (height/hash/time/ntx) — status/explorer
 - `send [to, amount, fee?]` → pay a '1...' address (P2PKH) or a pubkey hex (P2PK); returns txid  [--wallet]
 
 Evidence: MODEL / NEW-EXP.
@@ -92,6 +93,9 @@ class RpcServer:
             pub = n.wallet_primary_pubkey()
             return {"pubkey": pub.hex(), "address": pubkey_to_address(pub),
                     "hash160": hash160(pub).hex(), "not_money": True}
+        if method == "getrecentblocks":
+            count = int(params[0]) if params else 15
+            return n.recent_blocks(min(max(count, 1), 100))
         if method == "getbalance":
             self._need_wallet()
             return n.wallet_balance()

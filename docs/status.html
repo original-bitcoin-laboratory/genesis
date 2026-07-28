@@ -1,0 +1,108 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Network status — Original Bitcoin Laboratory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Live status of the NOV08-X / JAN09-X experimental chains: anchor uptime, tip heights, mempool. Not money.">
+<style>
+  :root{
+    --ground:#0e1316;--panel:#151d22;--panel-2:#11181c;--ink:#e7eaec;--ink-dim:#93a0a7;--ink-faint:#5f6d74;
+    --line:#222e34;--line-strong:#2f3d44;--brass:#c9a75f;--fill:#4c7186;--focus:#7fb2c8;
+    --up:#5fb98a;--down:#d1707a;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;}
+  @media (prefers-color-scheme:light){:root{
+    --ground:#f3f5f2;--panel:#ffffff;--panel-2:#f7f9f6;--ink:#18211f;--ink-dim:#4f5c60;--ink-faint:#859295;
+    --line:#e0e5e0;--line-strong:#cfd6d0;--brass:#9a7726;--fill:#5a8298;--focus:#2f6b85;--up:#2f8f62;--down:#b0505c;}}
+  :root[data-theme="dark"]{--ground:#0e1316;--panel:#151d22;--panel-2:#11181c;--ink:#e7eaec;--ink-dim:#93a0a7;--ink-faint:#5f6d74;--line:#222e34;--line-strong:#2f3d44;--brass:#c9a75f;--fill:#4c7186;--focus:#7fb2c8;--up:#5fb98a;--down:#d1707a;}
+  :root[data-theme="light"]{--ground:#f3f5f2;--panel:#ffffff;--panel-2:#f7f9f6;--ink:#18211f;--ink-dim:#4f5c60;--ink-faint:#859295;--line:#e0e5e0;--line-strong:#cfd6d0;--brass:#9a7726;--fill:#5a8298;--focus:#2f6b85;--up:#2f8f62;--down:#b0505c;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:clamp(28px,6vw,68px) clamp(16px,4vw,28px) 72px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:0 0 16px}
+  h1{font-family:var(--mono);font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0 0 12px}
+  .lede{font-size:clamp(14px,2.2vw,16px);color:var(--ink-dim);max-width:64ch;margin:0}
+  .lede b{color:var(--ink);font-weight:600}
+  .bar{margin-top:20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+  .bar a{color:var(--focus);text-decoration:none}.bar a:hover{color:var(--brass)}
+  .grid{margin-top:26px;display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:620px){.grid{grid-template-columns:1fr 1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+  .card h2{font-family:var(--mono);font-size:17px;font-weight:700;margin:6px 0 14px;letter-spacing:.01em}
+  .badge{float:right;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:5px;border:1px solid var(--line-strong)}
+  .badge.on{color:var(--up);border-color:var(--up)}.badge.off{color:var(--down);border-color:var(--down)}
+  .height{font-family:var(--mono);font-size:34px;font-weight:700;letter-spacing:-.01em;line-height:1}
+  .height small{font-size:12px;font-weight:400;color:var(--ink-faint);letter-spacing:.12em;text-transform:uppercase;margin-left:8px}
+  .rows{margin-top:14px;font-family:var(--mono);font-size:12.5px;color:var(--ink-dim)}
+  .rows div{display:flex;justify-content:space-between;padding:4px 0;border-top:1px solid var(--line)}
+  .rows .lbl{color:var(--ink-faint)} .mono{font-family:var(--mono)}
+  .anchor{display:inline-flex;align-items:center;gap:6px;margin-right:12px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--down)}.dot.up{background:var(--up)}
+  .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:70ch;line-height:1.6}
+  .note b{color:var(--ink-dim)}
+  .tags{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+  .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Original Bitcoin Laboratory · live</p>
+  <h1>Network status</h1>
+  <p class="lede">Proof of life for the two experimental chains — <b>anchor uptime</b>, <b>tip
+    height</b>, and mempool — measured over each chain's own peer‑to‑peer protocol. <b>Not money.</b></p>
+  <div class="bar">
+    <span id="updated">loading…</span>
+    <a href="explorer.html">block explorer →</a>
+    <a href="/">← home</a>
+  </div>
+
+  <div class="grid" id="chains"></div>
+
+  <p class="note"><b>How this is measured.</b> A scheduled probe connects to each anchor over the real
+    node wire (magic + checksum framing), does the <span class="mono">version</span> handshake, and
+    walks <span class="mono">getblocks</span> to the tip — the same protocol any node speaks. No
+    authority is involved; the durable guarantee is the reproducible genesis, not this page. A chain
+    reads <b>offline</b> only if no anchor answered the probe. <b>Not money.</b></p>
+  <div class="tags"><span>experimental</span><span>heights are on easy difficulty</span><span>not money</span></div>
+</div>
+
+<script>
+const SRC = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
+const LABEL = {jan09x:"JAN09-X · Jan 2009 v0.1.0", nov08x:"NOV08-X · Nov 2008 pre-release"};
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const short = h => h ? esc(h.slice(0,12) + "…" + h.slice(-8)) : "—";
+function ago(iso){ const s = Math.max(0,(Date.now()-Date.parse(iso))/1000);
+  if(s<90) return Math.round(s)+"s ago"; if(s<5400) return Math.round(s/60)+"m ago"; return Math.round(s/3600)+"h ago"; }
+
+function chainCard(name, c){
+  const on = !!c.online, port = c.p2p_port;
+  const anchors = (c.anchors||[]).map(a =>
+    `<span class="anchor"><span class="dot ${a.reachable?'up':''}"></span>${esc(a.ip)}</span>`).join("");
+  return `<div class="card">
+    <span class="badge ${on?'on':'off'}">${on?'online':'offline'}</span>
+    <div class="k">${esc(name)} · :${esc(port)}</div>
+    <h2>${esc(LABEL[name]||name)}</h2>
+    <div class="height">${on?Number(c.height).toLocaleString():'—'}<small>blocks</small></div>
+    <div class="rows">
+      <div><span class="lbl">tip</span><span>${short(c.tip)}</span></div>
+      <div><span class="lbl">mempool</span><span>${on&&c.mempool!=null?esc(c.mempool):'—'}</span></div>
+      <div><span class="lbl">anchors reachable</span><span>${esc(c.reachable_anchors??0)} / ${(c.anchors||[]).length}</span></div>
+    </div>
+    <div class="rows"><div style="border:0;padding-top:10px">${anchors||'—'}</div></div>
+  </div>`;
+}
+
+fetch(SRC, {cache:"no-store"}).then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d => {
+    document.getElementById("updated").textContent = "updated " + ago(d.updated) + " · " + d.updated;
+    const order = ["jan09x","nov08x"].filter(n => d.chains[n]).concat(Object.keys(d.chains).filter(n=>!["jan09x","nov08x"].includes(n)));
+    document.getElementById("chains").innerHTML = order.map(n => chainCard(n, d.chains[n])).join("");
+  })
+  .catch(e => {
+    document.getElementById("updated").textContent = "status not yet published";
+    document.getElementById("chains").innerHTML =
+      `<div class="card"><div class="k">no data</div><h2>Status feed not available yet</h2>
+       <p style="color:var(--ink-dim);font-size:13.5px;margin:0">The scheduled probe hasn't published
+       <span class="mono">status.json</span> yet (or the run is pending). Meanwhile, any node you run
+       shows its own <span class="mono">getinfo</span>. Not money.</p></div>`;
+  });
+</script>

@@ -1,0 +1,102 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Block explorer — Original Bitcoin Laboratory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Recent blocks on the NOV08-X / JAN09-X experimental chains — height, hash, time, tx count. Not money.">
+<style>
+  :root{
+    --ground:#0e1316;--panel:#151d22;--panel-2:#11181c;--ink:#e7eaec;--ink-dim:#93a0a7;--ink-faint:#5f6d74;
+    --line:#222e34;--line-strong:#2f3d44;--brass:#c9a75f;--fill:#4c7186;--focus:#7fb2c8;--up:#5fb98a;--down:#d1707a;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;}
+  @media (prefers-color-scheme:light){:root{
+    --ground:#f3f5f2;--panel:#ffffff;--panel-2:#f7f9f6;--ink:#18211f;--ink-dim:#4f5c60;--ink-faint:#859295;
+    --line:#e0e5e0;--line-strong:#cfd6d0;--brass:#9a7726;--fill:#5a8298;--focus:#2f6b85;--up:#2f8f62;--down:#b0505c;}}
+  :root[data-theme="dark"]{--ground:#0e1316;--panel:#151d22;--panel-2:#11181c;--ink:#e7eaec;--ink-dim:#93a0a7;--ink-faint:#5f6d74;--line:#222e34;--line-strong:#2f3d44;--brass:#c9a75f;--fill:#4c7186;--focus:#7fb2c8;--up:#5fb98a;--down:#d1707a;}
+  :root[data-theme="light"]{--ground:#f3f5f2;--panel:#ffffff;--panel-2:#f7f9f6;--ink:#18211f;--ink-dim:#4f5c60;--ink-faint:#859295;--line:#e0e5e0;--line-strong:#cfd6d0;--brass:#9a7726;--fill:#5a8298;--focus:#2f6b85;--up:#2f8f62;--down:#b0505c;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:clamp(28px,6vw,68px) clamp(16px,4vw,28px) 72px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:0 0 16px}
+  h1{font-family:var(--mono);font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0 0 12px}
+  .lede{font-size:clamp(14px,2.2vw,16px);color:var(--ink-dim);max-width:66ch;margin:0}
+  .lede b{color:var(--ink);font-weight:600}
+  .bar{margin-top:20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+  .bar a{color:var(--focus);text-decoration:none}.bar a:hover{color:var(--brass)}
+  section{margin-top:30px}
+  .chead{display:flex;align-items:baseline;gap:12px;font-family:var(--mono)}
+  .chead h2{font-size:16px;font-weight:700;margin:0}
+  .chead .tip{font-size:12px;color:var(--ink-faint)}
+  .tablewrap{margin-top:12px;overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+  th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line)}
+  th{color:var(--ink-faint);font-weight:400;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
+  tbody tr:last-child td{border-bottom:0}
+  td.h{color:var(--brass)} td.right{text-align:right;font-variant-numeric:tabular-nums}
+  .hash{color:var(--ink-dim)}
+  .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:70ch;line-height:1.6}
+  .note b{color:var(--ink-dim)}
+  .tags{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+  .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Original Bitcoin Laboratory · live</p>
+  <h1>Block explorer</h1>
+  <p class="lede">The most recent blocks on each experimental chain — <b>height</b>, <b>hash</b>,
+    <b>time</b>, and <b>tx count</b> — read straight off the anchors over the peer‑to‑peer protocol.
+    <b>Not money.</b></p>
+  <div class="bar">
+    <span id="updated">loading…</span>
+    <a href="status.html">← network status</a>
+    <a href="/">home</a>
+  </div>
+
+  <div id="chains"></div>
+
+  <p class="note"><b>What you're seeing.</b> A scheduled probe walks each chain to its tip and fetches
+    the latest block headers. Coinbases are bare P2PK (uncompressed <span class="hash">04…</span> keys
+    + OP_CHECKSIG) — the earliest Bitcoin payment form. This is a recent‑blocks view, not a full
+    index; run a node for the complete, independently‑validated chain. <b>Not money.</b></p>
+  <div class="tags"><span>experimental</span><span>recent blocks only</span><span>not money</span></div>
+</div>
+
+<script>
+const SRC = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
+const LABEL = {jan09x:"JAN09-X", nov08x:"NOV08-X"};
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const short = h => h ? esc(h.slice(0,10) + "…" + h.slice(-8)) : "—";
+function ago(iso){ const s=Math.max(0,(Date.now()-Date.parse(iso))/1000);
+  if(s<90) return Math.round(s)+"s ago"; if(s<5400) return Math.round(s/60)+"m ago"; return Math.round(s/3600)+"h ago"; }
+function when(t){ try{ return new Date(t*1000).toISOString().replace("T"," ").replace(".000Z"," UTC"); }catch(e){ return t; } }
+
+function section(name, c){
+  const rows = (c.recent||[]).map(b => `<tr>
+      <td class="h">${Number(b.height).toLocaleString()}</td>
+      <td class="hash">${short(b.hash)}</td>
+      <td>${esc(when(b.time))}</td>
+      <td class="right">${esc(b.ntx)}</td>
+      <td class="right">${esc(b.bytes)}</td></tr>`).join("");
+  const body = rows || `<tr><td colspan="5" style="color:var(--ink-faint)">no recent blocks (chain offline?)</td></tr>`;
+  return `<section>
+    <div class="chead"><h2>${esc(LABEL[name]||name)}</h2>
+      <span class="tip">${c.online?('height '+Number(c.height).toLocaleString()):'offline'}</span></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Height</th><th>Hash</th><th>Time</th><th class="right">Txs</th><th class="right">Bytes</th></tr></thead>
+      <tbody>${body}</tbody></table></div></section>`;
+}
+
+fetch(SRC, {cache:"no-store"}).then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d => {
+    document.getElementById("updated").textContent = "updated " + ago(d.updated) + " · " + d.updated;
+    const order = ["jan09x","nov08x"].filter(n => d.chains[n]);
+    document.getElementById("chains").innerHTML = order.map(n => section(n, d.chains[n])).join("");
+  })
+  .catch(e => {
+    document.getElementById("updated").textContent = "status not yet published";
+    document.getElementById("chains").innerHTML =
+      `<section><p style="color:var(--ink-dim);font-size:13.5px">The block feed
+       (<span style="font-family:var(--mono)">status.json</span>) isn't published yet, or the scheduled
+       run is pending. Run a node to browse the full validated chain. Not money.</p></section>`;
+  });
+</script>

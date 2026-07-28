@@ -156,6 +156,23 @@ class Node:
     def tip(self) -> bytes:
         return self.state.tip
 
+    def recent_blocks(self, count: int = 15) -> list:
+        """Summaries of the last `count` validated main-chain blocks (newest first) — for a status
+        page / lightweight explorer. Read-only, derived from the validated active chain."""
+        from chainsync import read_compact
+        out = []
+        for h in self.state.active[-count:][::-1]:
+            idx = self.chain.by_hash[h]
+            raw = idx.raw
+            ntime = int.from_bytes(raw[68:72], "little")
+            try:
+                ntx, _ = read_compact(raw, 80)
+            except (IndexError, ValueError):
+                ntx = 0
+            out.append({"height": idx.height, "hash": h[::-1].hex(),
+                        "time": ntime, "ntx": int(ntx), "bytes": len(raw)})
+        return out
+
     def submit_tx(self, raw: bytes):
         """Validate a raw transaction into the local mempool (against the validated UTXO).
         Returns the accepted `mempool.Entry`; raises `MempoolReject` if it fails validation."""
