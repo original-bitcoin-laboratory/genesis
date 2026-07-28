@@ -22,17 +22,18 @@ one NS delegation away from taking over the moment that's true.
 
 ## The live crawler (deployed, verified)
 
-A crawling DNS seed runs as `obl-dnsseed.service` on **178.62.236.102 (Box 2)**, bound to the public
-IP on **:53** (systemd-resolved keeps only the `127.0.0.53` stub, so the public `:53` is free). It
-connects to each known node over the real netnode wire, does the `version` handshake — proving the
-node is **reachable and on jan09x** — harvests the peers it gossips, and answers `A` queries for
-`seed.bitcoin-lab.org` with the live **healthy** set. (Both anchors run both chains, so these IPs
-serve NOV08-X bootstrap too; a dedicated nov08x seed can run on a second host/zone later.)
+Crawling DNS seeds run as `obl-dnsseed.service` on **both anchors** — `143.110.255.205` (Box 1) and
+`178.62.236.102` (Box 2) — each bound to its public IP on **:53** (systemd-resolved keeps only the
+`127.0.0.53` stub, so the public `:53` is free). Each connects to every known node over the real
+netnode wire, does the `version` handshake — proving the node is **reachable and on jan09x** — harvests
+the peers it gossips, and answers `A` queries for `seed.bitcoin-lab.org` with the live **healthy** set.
+**Two nameservers means the delegation has no single point of failure.** (Both anchors run both chains,
+so these IPs serve NOV08-X bootstrap too.)
 
-Verify it directly (works regardless of delegation — it queries the seed host itself):
+Verify either directly (works regardless of delegation — it queries the seed host itself):
 
 ```bash
-dig  @178.62.236.102 seed.bitcoin-lab.org +short      # -> the live healthy node IPs
+dig @143.110.255.205 seed.bitcoin-lab.org +short      # or @178.62.236.102 -> the live healthy IPs
 # Windows:
 Resolve-DnsName -Server 178.62.236.102 seed.bitcoin-lab.org -Type A
 ```
@@ -42,25 +43,25 @@ Deploy/redeploy: [`../netnode/deploy/obl-dnsseed.service`](../netnode/deploy/obl
 
 ## To activate crawling (delegate the zone) — Namecheap
 
-When independent operators are running nodes, delegate the seed hostname to the crawler so the whole
-internet's resolvers reach it. In **Namecheap → Domain → Advanced DNS**:
+Both nameservers are live and **redundant**, so the delegation is ready to flip whenever you want a
+fully dynamic seed. In **Namecheap → Domain List → bitcoin-lab.org → Manage → Advanced DNS**:
 
 1. **Remove** the two `A` records for host `seed` (the current static anchors).
-2. **Add** an `A` record — host `ns-seed`, value `178.62.236.102`  *(glue: the nameserver's address)*.
-3. **Add** an `NS` record — host `seed`, value `ns-seed.bitcoin-lab.org.`  *(delegates the subdomain to the crawler)*.
+2. **Add** two `A` records — the nameservers' own addresses (glue):
+   - host `ns1`, value `143.110.255.205`
+   - host `ns2`, value `178.62.236.102`
+3. **Add** two `NS` records — delegate the subdomain to both nameservers:
+   - host `seed`, value `ns1.bitcoin-lab.org.`
+   - host `seed`, value `ns2.bitcoin-lab.org.`
 
 Propagation is minutes-to-hours. After it takes effect, any resolver querying `seed.bitcoin-lab.org`
-is answered by the live crawler, so `--connect seed.bitcoin-lab.org:18009` always dials a currently
-reachable peer — no hardcoded IP.
-
-**Redundancy (recommended before relying on delegation):** a single delegated nameserver is a single
-point of failure — if Box 2 is down, `seed.bitcoin-lab.org` stops resolving. Before flipping, run a
-second `obl-dnsseed` on Box 1 (`--listen 143.110.255.205:53`) and add a second glue `A`
-(`ns-seed2 -> 143.110.255.205`) + `NS seed -> ns-seed2.bitcoin-lab.org.` so either host can answer.
+is answered by the live crawlers (either nameserver), so `--connect seed.bitcoin-lab.org:18009` always
+dials a currently reachable peer — no hardcoded IP. **To revert:** delete the `NS` + `ns1`/`ns2` records
+and re-add the static `A` records for `seed`.
 
 ## Why this is the honest call
 
 Everything durable about the lab is reproducible from source; a live network's last mile is **other
 people running nodes**. The seed is *offered infrastructure, never authority* — anyone can run their
-own, or hardcode peers. Static-until-diverse keeps bootstrap dependable now; the crawler is stood up
-and proven so activation is a two-record change, not a project. **Not money.**
+own, or hardcode peers. Static-until-diverse keeps bootstrap dependable now; two redundant crawlers are
+stood up and proven, so activation is a handful of registrar records, not a project. **Not money.**
