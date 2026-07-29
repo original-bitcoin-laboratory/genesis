@@ -27,9 +27,22 @@ def combined(script_sig_tokens: list, script_pubkey_tokens: list) -> list:
     return list(script_sig_tokens) + ["OP_CODESEPARATOR"] + list(script_pubkey_tokens)
 
 
-def verify_spend(script_sig_tokens: list, script_pubkey_tokens: list, tx, n_in: int) -> bool:
-    """True iff the combined script runs and leaves a true top-of-stack."""
-    return valid(combined(script_sig_tokens, script_pubkey_tokens), SigChecker(tx, n_in))
+def _reopen(tokens: list, reopen) -> list:
+    """Re-open the opcode v0.1 disabled — `OP_NOTEQUAL` == `OP_EQUAL` then `OP_NOT` — for the
+    experimental 'nothing-disabled' posture. An empty `reopen` (the faithful default) leaves the tokens
+    unchanged, so faithful validation still rejects `OP_NOTEQUAL`."""
+    if not reopen or "OP_NOTEQUAL" not in reopen:
+        return tokens
+    out: list = []
+    for t in tokens:
+        out += ["OP_EQUAL", "OP_NOT"] if t == "OP_NOTEQUAL" else [t]
+    return out
+
+
+def verify_spend(script_sig_tokens: list, script_pubkey_tokens: list, tx, n_in: int, reopen=frozenset()) -> bool:
+    """True iff the combined script runs and leaves a true top-of-stack. `reopen` selects the script
+    posture: empty (faithful — `OP_NOTEQUAL` disabled) or `{'OP_NOTEQUAL'}` (the nothing-disabled posture)."""
+    return valid(_reopen(combined(script_sig_tokens, script_pubkey_tokens), reopen), SigChecker(tx, n_in))
 
 
 def run_spend(script_sig_tokens: list, script_pubkey_tokens: list, tx, n_in: int):

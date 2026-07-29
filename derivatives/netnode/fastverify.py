@@ -106,14 +106,15 @@ def _is_p2pk(spk) -> bool:
     return len(spk) == 2 and isinstance(spk[0], (bytes, bytearray)) and spk[1] == "OP_CHECKSIG"
 
 
-def verify_spend_fast(script_sig_tokens, spk_tokens, tx, n_in: int) -> bool:
+def verify_spend_fast(script_sig_tokens, spk_tokens, tx, n_in: int, reopen=frozenset()) -> bool:
     """A drop-in for `spend.verify_spend` that fast-paths the bare-P2PK case (native ECDSA, no
     Python script interpreter) and **delegates every other script to the faithful interpreter**.
-    Differential-tested to equal `verify_spend` on every input."""
+    Differential-tested to equal `verify_spend` on every input. `reopen` forwards the script posture
+    (empty = faithful; `{'OP_NOTEQUAL'}` = nothing-disabled) — the P2PK fast path is unaffected by it."""
     if (_is_p2pk(spk_tokens) and len(script_sig_tokens) == 1
             and isinstance(script_sig_tokens[0], (bytes, bytearray)) and script_sig_tokens[0]):
         sig = bytes(script_sig_tokens[0])
         hashtype, der = sig[-1], sig[:-1]
         digest = signature_hash(assemble(list(spk_tokens)), tx, n_in, hashtype)   # scriptCode = the P2PK spk
         return faithful_verify(bytes(spk_tokens[0]), der, digest)
-    return verify_spend(script_sig_tokens, spk_tokens, tx, n_in)
+    return verify_spend(script_sig_tokens, spk_tokens, tx, n_in, reopen=reopen)

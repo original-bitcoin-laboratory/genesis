@@ -51,11 +51,13 @@ class Coin:
 
 
 class ChainState:
-    def __init__(self, chain, rules, maturity: int = COINBASE_MATURITY, min_bits: int | None = None):
+    def __init__(self, chain, rules, maturity: int = COINBASE_MATURITY, min_bits: int | None = None,
+                 reopen=frozenset()):
         self.chain = chain
         self.rules = rules
         self.maturity = maturity
         self.min_bits = min_bits                            # difficulty floor (None -> genesis nBits)
+        self.reopen = frozenset(reopen)                     # script posture: {} faithful | {'OP_NOTEQUAL'} nothing-disabled
         self.utxo: dict[tuple[bytes, int], Coin] = {}
         self.active: list[bytes] = []                       # genesis .. validated tip
         self.undo: dict[bytes, tuple[list, list]] = {}      # block -> (spent_prior, created_keys)
@@ -120,7 +122,7 @@ class ChainState:
                             raise InvalidBlock("input missing or already spent")
                         if coin.coinbase and height - coin.height < self.maturity:
                             raise InvalidBlock("immature coinbase spend")
-                        if not verify_spend_fast(cscript.parse(vin.script), coin.spk, tx, i):
+                        if not verify_spend_fast(cscript.parse(vin.script), coin.spk, tx, i, reopen=self.reopen):
                             raise InvalidBlock("input script does not satisfy output")
                         value_in += coin.value
                         del self.utxo[key]

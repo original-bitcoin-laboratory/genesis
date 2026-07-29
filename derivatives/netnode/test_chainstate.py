@@ -269,3 +269,25 @@ def test_height_beats_cumulative_work_the_discriminating_fork():
 
     # ...and the node switches to A anyway: selection is by height, never by cumulative work.
     assert st.tip == a_tip and st.height == a_h
+
+
+def test_op_notequal_posture_controls_the_node_verifier():
+    """The node's own script verifier — `verify_spend_fast`, the function `ChainState._connect` calls on
+    every spend — honors the profile's script posture: a predicate using OP_NOTEQUAL is REJECTED under the
+    faithful posture (`reopen={}`) and ACCEPTED under nothing-disabled (`reopen={'OP_NOTEQUAL'}`). So the
+    posture controls the node, not merely a standalone declaration.
+
+    OP_NOTEQUAL additionally has NO serialized byte — it was never an `opcodetype` enum value, only a
+    commented-out case — so it cannot appear in a real (byte-serialized) transaction the node parses. Its
+    disabling is thus doubly secured and the distinction is inherently token-level; we assert both facts."""
+    from fastverify import verify_spend_fast
+    # (1) OP_NOTEQUAL is unserializable -> it can never reach validation through a real script
+    with pytest.raises(Exception):
+        cscript.assemble(["OP_NOTEQUAL"])
+    # (2) the node verifier honors the posture on a pure-OP_NOTEQUAL predicate (no CHECKSIG): bb != aa
+    tx = Tx(1, [TxIn(ZERO, 0, b"", 0xFFFFFFFF)], [TxOut(0, b"\x51")], 0)
+    ss, spk = [b"\xbb"], [b"\xaa", "OP_NOTEQUAL"]
+    assert verify_spend_fast(ss, spk, tx, 0, reopen=frozenset()) is False            # faithful: disabled -> reject
+    assert verify_spend_fast(ss, spk, tx, 0, reopen={"OP_NOTEQUAL"}) is True          # nothing-disabled: accept
+    # equal operands are false under the reopened posture too (bb != bb is false)
+    assert verify_spend_fast([b"\xbb"], [b"\xbb", "OP_NOTEQUAL"], tx, 0, reopen={"OP_NOTEQUAL"}) is False
