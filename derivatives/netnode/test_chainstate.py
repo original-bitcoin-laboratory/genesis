@@ -22,6 +22,7 @@ from spend import sign                                     # noqa: E402
 
 from chainstate import ChainState                          # noqa: E402
 from chains import CHAINS                                  # noqa: E402
+from difficulty import expected_bits                       # noqa: E402
 
 ZERO = b"\x00" * 32
 EASY = 0x207FFFFF
@@ -199,3 +200,64 @@ def test_disconnect_restores_the_utxo():
     # every live coin belongs to the now-active branch B (block-1-A's coin was disconnected)
     assert all(k in st.utxo for k in st.utxo)               # sanity: internally consistent
     assert st.balance() == 0 + _subsidy(1) + _subsidy(2)    # genesis + B1 + B2
+
+
+# ---- discriminating fork choice: HEIGHT beats cumulative WORK ---------------------------------
+
+def _mine_at(prev, height, nbits, t):
+    """Mine one coinbase-only block on `prev` at a chosen difficulty `nbits` and timestamp `t`."""
+    _tag[0] += 1
+    s = bytes([height & 0xFF, (height >> 8) & 0xFF, _tag[0] & 0xFF, (_tag[0] >> 8) & 0xFF])
+    cb = Tx(1, [TxIn(ZERO, 0xFFFFFFFF, s, 0xFFFFFFFF)], [TxOut(RULES.get_block_value(height - 1), b"\x51")], 0)
+    mr = merkle_root([cb])
+    for nonce in range(1 << 24):
+        raw = block_bytes(1, prev, mr, t, nbits, nonce, [cb])
+        if pow_ok(raw, nbits):
+            return raw
+    raise RuntimeError("no nonce")
+
+
+def _chainwork(nbits):
+    return (1 << 256) // (RULES.pow_target(nbits) + 1)       # standard per-block work = 2^256 / (target+1)
+
+
+def test_height_beats_cumulative_work_the_discriminating_fork():
+    """The *discriminating* experiment for "v0.1 selects by height, not cumulative work": a TALLER
+    branch of LOWER total work displaces a SHORTER branch of HIGHER work. Difficulty is deliberately
+    NOT held uniform here — one branch's first retarget window is mined fast (retargeting harder) and
+    the other slow (staying at the genesis floor), so the two branches carry genuinely different work
+    and the honest `nBits` still validates on every block."""
+    BASE = 1_231_006_506
+    chain = Chain()
+    g = _mine_at(ZERO, 0, EASY, BASE)
+    chain.add_genesis(g, EASY)
+    gh = block_hash(g)
+
+    def build(gap, n):
+        prev, wtot, seen = gh, 0, set()
+        for h in range(1, n + 1):
+            nb = expected_bits(chain, prev, RULES)          # honest difficulty: genesis until a retarget kicks in
+            raw = _mine_at(prev, h, nb, BASE + h * gap)
+            assert chain.process_block(raw)[0] in ("accepted", "orphan")
+            prev, wtot = block_hash(raw), wtot + _chainwork(nb)
+            seen.add(nb)
+        return prev, n, wtot, seen
+
+    # Incumbent B: a FAST first window retargets it HARDER, and we keep it SHORT.
+    b_tip, b_h, b_work, b_seen = build(gap=5, n=122)
+    st = ChainState(chain, RULES, maturity=1)
+    st.activate_best()
+    assert st.tip == b_tip and st.height == b_h             # B is the incumbent best chain
+
+    # Challenger A: a SLOW first window keeps it at the genesis floor, and we grow it TALLER.
+    a_tip, a_h, a_work, a_seen = build(gap=120, n=125)
+    st.activate_best()
+
+    # The setup is genuinely discriminating: A is taller yet carries LESS total work than B.
+    assert a_h > b_h                                        # A is the taller branch
+    assert a_work < b_work                                  # ...but has LESS cumulative work
+    assert b_seen != {EASY}                                 # B really retargeted above the floor
+    assert a_seen == {EASY}                                 # A stayed at the floor
+
+    # ...and the node switches to A anyway: selection is by height, never by cumulative work.
+    assert st.tip == a_tip and st.height == a_h
