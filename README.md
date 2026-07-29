@@ -30,6 +30,12 @@ ledger, a wallet, the P2P wire + chain sync, persistence, the neutral descendant
 script **debugger**, a **full‑stack console**, and two live counterfactual networks —
 **NOV08‑X** and **JAN09‑X**.
 
+Which rule posture a run uses — the **faithful** reconstruction (v0.1 as written, its one disabled opcode
+`OP_NOTEQUAL` preserved) or the experimental **"nothing disabled"** posture that re‑opens it — is declared
+and machine‑verified in [`derivatives/profiles/`](derivatives/profiles/): each profile's vocabulary is
+checked against the source opcode inventory and the live engine, so the distinction can never silently
+drift.
+
 **Requirements.** Python 3.10+ with `cryptography` and `pytest` (the faithful crypto + test runner); `bitcoinx` is optional and
 only enables the ~7× `libsecp256k1` verifier. The Rust node needs a stable Rust toolchain (`cargo`);
 the optional C++ port differentials need `g++`. Install the pinned Python environment in one step with
