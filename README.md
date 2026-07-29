@@ -22,7 +22,9 @@ recovery thread — `bitcoin-0.1.0.rar` = `8b17eb9a…`, `bitcoin-0.1.0.tgz` =
 
 ## Reproduce the executable reconstruction
 
-`derivatives/` is v0.1.0 made to **run, with nothing disabled**: the full Script engine
+`derivatives/` is v0.1.0 made to **run** in two declared postures — faithfully as written (`OP_NOTEQUAL`
+disabled), and, for the isolated experimental networks, with **"nothing disabled"** (both are declared and
+verified in `derivatives/profiles/`, below): the full Script engine
 (Python MODEL + C++ PORT), sighash, `OP_CHECKSIG`/`CHECKMULTISIG` on real secp256k1,
 native instruments (escrow / hash‑lock / assurance), a UTXO `ConnectInputs`/`ConnectBlock`
 ledger, a wallet, the P2P wire + chain sync, persistence, the neutral descendant matrix
@@ -47,8 +49,10 @@ python scripts/verify_genesis.py   # both experimental genesis blocks re-derive 
 ```
 
 The unmodified 2009 `bitcoin.exe` was also run and hash‑verified against these
-reconstructions — the exact genesis reproduces in three-way agreement (binary, C++ port, Python model; `r3-findings/run1/`,
-level `JAN09-EXECUTED`). Findings, the honest claim, and scope live in the umbrella:
+reconstructions — the **historical** genesis is reconstructed from source by the C++/OpenSSL port and
+reproduced by the unmodified 2009 binary (`r3-findings/run1/`, level `JAN09-EXECUTED`); the Python and Rust
+nodes regenerate the *experimental-network* genesis blocks, which they check differ from the historical
+hash. Findings, the honest claim, and scope live in the umbrella:
 [`common/README.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/README.md) · [`common/CLAIMS.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/CLAIMS.md).
 These chains are **not money**: no premine, no sale, and **no value assigned** (stamped in the
 coinbase) — a research microscope, not a coin. The maintainers solicit no market; whether third
@@ -69,7 +73,7 @@ watch your node sync + independently re‑validate every block:
 ```bash
 git clone https://github.com/original-bitcoin-laboratory/genesis
 cd genesis/derivatives
-python -m netnode --chain jan09x --datadir ./data-jan09 --connect seed.bitcoin-lab.org:18009   # v0.1.0
+python -m netnode --chain jan09x --datadir ./data-jan09 --connect seed.bitcoin-lab.org:18009   # JAN09-X (Jan 2009 edition)
 python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-lab.org:18008   # Nov 2008
 ```
 
@@ -83,8 +87,8 @@ Releases are **GPG‑signed** (key `B0145F74B78CF1DA`, fingerprint
 [`docs/parthod0x-signing-key.asc`](docs/parthod0x-signing-key.asc)). See the latest under
 [**Releases**](https://github.com/original-bitcoin-laboratory/genesis/releases) and the checklist in
 [`docs/RELEASE_SIGNING.md`](docs/RELEASE_SIGNING.md). A signature authenticates *a distribution*;
-the reproducible recipe (`scripts/verify_genesis.py`) authenticates *the artifact* — that is the
-guarantee that lasts, with no key and no node to trust.
+the reproducible recipe (`scripts/verify_genesis.py`) *regenerates* the artifact from a stated input —
+inspectability rather than authentication, and the guarantee that lasts, with no key and no node to trust.
 
 ## Layout
 
