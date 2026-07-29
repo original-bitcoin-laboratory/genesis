@@ -49,7 +49,7 @@ reconstruction.**
 | Wire / P2P | localhost asyncio, no checksum, trusting | real sockets over the internet, message checksums, timeouts, reconnection, `addr` gossip |
 | DoS resistance | none | rate limits, ban scoring, message‑size caps, orphan/mempool limits, misbehavior disconnects |
 | Persistence | in‑memory + a KV‑file model | crash‑safe on‑disk block/UTXO store, reorg‑safe writes, restart recovery |
-| Difficulty | regtest‑easy (instant) | a real retarget so blocks pace ~evenly and the chain can't be trivially rewritten |
+| Difficulty | regtest‑easy genesis (so the genesis reproduces exactly + demos mine instantly) | a real retarget + a floor so blocks pace evenly and the chain isn't trivially rewritten. **Delivered** the faithful‑shape retarget + a `min_bits` floor *independent* of the easy genesis (`../derivatives/netnode/difficulty.py`). Easy difficulty is a **NEW‑EXP network parameter confined to the live nets** — the historical genesis/binary reproduce at real difficulty `0x1d00ffff` (see `common/DEFINITIONAL_FIDELITY.md`) |
 | Mining | brute‑force in a test | a miner others can run; enough distributed hashpower that no single party dominates |
 | Discovery | none | seed nodes / a DNS‑seed equivalent so a fresh node finds peers. **Delivered** a bootstrap **DNS seed** (`derivatives/dnsseed/`): crawls the network over the real wire, verifies reachable nodes on the right magic, and answers `A` queries with their IPs — one resolvable name meshes a stranger in |
 | Wallet | minimal SelectCoins model | key backup, address book, resync, fee handling — safe enough for others to use. **Delivered** a persistent node wallet + loopback RPC (`netnode/nodewallet.py`, `rpc.py`); key encryption / backup discipline still absent (fine while valueless) |
