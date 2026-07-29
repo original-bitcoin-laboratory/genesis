@@ -61,9 +61,26 @@ verified by `derivatives/r3/test_mini_ircd.py`.)
 
 ## Run + mine
 
-- Start with the GUI, or `BITCOIN.EXE /gen` to mine (Options → *Generate Coins*
-  toggles `fGenerateBitcoins`). On a fresh isolated chain from the hardcoded
-  genesis, early blocks mine at the minimum difficulty and are CPU-mineable.
+- **★ The miner is peer-gated — a *lone* node never hashes.** `BitcoinMiner()` parks
+  in `while (vNodes.empty())` (`main.cpp:2195`) until at least one peer connects, so a
+  single isolated node with `fGenerateBitcoins` on will start the miner *thread* but
+  **never hash** — no hashmeter, no blocks. (Observed directly: a 2-hour solo GUI run
+  with *Generate Coins* on used ~13 CPU-seconds total, wrote no hashmeter line, and
+  stayed at 1 block.) Combined with IRC-only discovery and no `-connect`/`-addnode`,
+  this means **mining requires the two-node IRC setup above** — one node cannot mine
+  alone, by the origin's own design. This is itself a finding: *the earliest client
+  could not mine in isolation; it needed the IRC rendezvous to find a peer first.*
+- Once two nodes are peered, `BITCOIN.EXE /gen` (or Options → *Generate Coins*, which
+  toggles `fGenerateBitcoins`) mines: on a fresh isolated chain from the hardcoded
+  genesis, blocks mine at the minimum difficulty — though still minutes per block at
+  real difficulty 1 on one CPU core with the 2009 miner.
+- **Contrast — the lab's reconstruction mines solo (NEW-EXP).** The Python/Rust
+  `netnode` reconstruction that runs the live NOV08-X / JAN09-X networks has **no such
+  peer-gate**: its `_mine_loop` (`derivatives/netnode/livenode.py`) mines standalone.
+  That is a deliberate operational choice (the peer-gate is a UI/operational behavior
+  of the 2009 GUI client, **not** a consensus rule), which is why one lab anchor keeps
+  the experimental chains moving while one lone 2009 binary cannot — the answer to
+  "why do my experimental chains mine but the real binary doesn't."
 
 ## Evidence to capture — each result tagged **JAN09-EXECUTED**
 
