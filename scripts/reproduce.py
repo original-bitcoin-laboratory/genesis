@@ -25,6 +25,7 @@ DERIV = ROOT / "derivatives"
 
 # (label, working dir) — one pytest run per suite (each has its own local imports)
 SUITES = [
+    ("profiles   (rule postures declared == inventory == live engine)", DERIV / "profiles"),
     ("model      (script engine, sighash, checksig, instruments)", DERIV / "model"),
     ("p2p        (wire relay + chain sync)",                        DERIV / "p2p"),
     ("wallet     (SelectCoins / CreateTransaction)",               DERIV / "wallet"),

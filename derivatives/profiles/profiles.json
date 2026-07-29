@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "purpose": "Declares the lab's rule postures so that 'which rules is this run using' is an explicit, verifiable object rather than an implicit code path. Each profile pairs a consensus rule set (monetary / PoW / coinbase, faithful to a source edition) with a script-vocabulary posture. NOT money.",
+  "invariant": "A 'nothing-disabled' posture re-opens the one functional opcode v0.1 disabled (OP_NOTEQUAL); it is safe ONLY because the isolated experimental networks carry no value. A 'faithful-v0.1' posture reproduces v0.1's EvalScript as written, with OP_NOTEQUAL disabled.",
+  "script_postures": {
+    "faithful-v0.1": {
+      "runner": "model/evalscript_model.py:run",
+      "disabled_opcodes": ["OP_NOTEQUAL"],
+      "reopened_opcodes": [],
+      "source_witness": "script.cpp:486 (case commented out); reason at script.cpp:494",
+      "class": "faithful"
+    },
+    "nothing-disabled": {
+      "runner": "jan09x/script_full.py:run_full",
+      "disabled_opcodes": [],
+      "reopened_opcodes": ["OP_NOTEQUAL"],
+      "realized_as": "OP_EQUAL then OP_NOT (both native to v0.1); no new behavior invented",
+      "class": "NEW-EXP"
+    }
+  },
+  "profiles": [
+    {
+      "name": "jan09-faithful",
+      "chain": "jan09",
+      "consensus_rules": "jan09",
+      "script_posture": "faithful-v0.1",
+      "class": "faithful",
+      "description": "The released v0.1.0 client as written: January consensus parameters over the v0.1 script vocabulary with OP_NOTEQUAL disabled."
+    },
+    {
+      "name": "jan09-x",
+      "chain": "jan09",
+      "consensus_rules": "jan09",
+      "script_posture": "nothing-disabled",
+      "class": "NEW-EXP",
+      "description": "The isolated JAN09-X experimental network: January consensus with the full vocabulary, OP_NOTEQUAL re-opened. Safe only because it is not money."
+    },
+    {
+      "name": "nov08-source-bounded",
+      "chain": "nov08",
+      "consensus_rules": "nov08",
+      "script_posture": "faithful-v0.1",
+      "class": "source-bounded",
+      "description": "The November 2008 pre-release constitution (its monetary / PoW / coinbase rules) over the v0.1-derived script substrate the preview itself lacks, OP_NOTEQUAL disabled."
+    },
+    {
+      "name": "nov08-x",
+      "chain": "nov08",
+      "consensus_rules": "nov08",
+      "script_posture": "nothing-disabled",
+      "class": "NEW-EXP",
+      "description": "The isolated NOV08-X experimental network: November constitution with the full vocabulary, OP_NOTEQUAL re-opened. Safe only because it is not money."
+    }
+  ]
+}
