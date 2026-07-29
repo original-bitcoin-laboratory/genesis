@@ -58,6 +58,34 @@ CPP = [  # optional: C++/OpenSSL port differentials (bash run scripts)
     ("node  ports (genesis + chain connect)",          DERIV / "node" / "run.sh"),
 ]
 
+# `--core`: the consensus / script / value / ledger reconstruction core only. Excludes the neutral
+# descendant tracker + conformance matrix (a separate comparison study), the UI tools, and the
+# bootstrap seed — none of which are part of the reconstruction's own fidelity claims.
+CORE_EXCLUDE_SUITES = {"conformance", "tracker", "console", "studio", "dnsseed"}
+CORE_EXCLUDE_ARTIFACTS = {"conformance.py"}
+
+
+def _manifest(steps, args, path) -> None:
+    import datetime
+    import json
+    import platform
+    ok_git, commit = run(["git", "rev-parse", "HEAD"], ROOT)
+    doc = {
+        "schema": 1,
+        "generated": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
+        "commit": commit if ok_git else None,
+        "core_only": args.core,
+        "python": sys.version.split()[0],
+        "platform": platform.platform(),
+        "backends": {"rust": args.rust, "cpp": args.cpp},
+        "steps": [{"step": lbl.split("(")[0].strip(), "passed": ok} for lbl, ok in steps],
+        "passed": sum(1 for _, ok in steps if ok),
+        "total": len(steps),
+        "all_passed": all(ok for _, ok in steps),
+    }
+    path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+    print(f"manifest -> {path.name} ({doc['passed']}/{doc['total']} green, commit {(commit or '?')[:12]})")
+
 
 def run(cmd, cwd) -> tuple[bool, str]:
     p = subprocess.run(cmd, cwd=str(cwd), capture_output=True, text=True)
@@ -68,20 +96,34 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--rust", action="store_true", help="also run the Rust node suite (needs cargo)")
     ap.add_argument("--cpp", action="store_true", help="also run the C++ port differentials (needs g++)")
+    ap.add_argument("--core", action="store_true",
+                    help="run only the consensus/script/value/ledger reconstruction core (excludes the "
+                         "descendant tracker + conformance matrix, UI tools, and bootstrap seed); "
+                         "writes a machine-readable results manifest")
+    ap.add_argument("--manifest", type=Path, default=None,
+                    help="write a results manifest to this path (implied by --core)")
     args = ap.parse_args()
     py = sys.executable
-    results = []
+    steps: list[tuple[str, bool]] = []
 
-    print("== derivatives test suites ==")
-    for label, d in SUITES:
+    def _first_word(label: str) -> str:                  # "conformance(6-chain ...)" -> "conformance"
+        return label.split("(")[0].split()[0]
+
+    suites, artifacts = SUITES, ARTIFACTS
+    if args.core:
+        suites = [(l, d) for (l, d) in SUITES if _first_word(l) not in CORE_EXCLUDE_SUITES]
+        artifacts = [(l, s, d) for (l, s, d) in ARTIFACTS if s not in CORE_EXCLUDE_ARTIFACTS]
+
+    print(f"== derivatives test suites{' (core)' if args.core else ''} ==")
+    for label, d in suites:
         ok, tail = run([py, "-m", "pytest", "-q"], d)
-        results.append(ok)
+        steps.append((label, ok))
         print(f"  [{'PASS' if ok else 'FAIL'}] {label:60} {tail}")
 
     print("== regenerate derived artifacts ==")
-    for label, script, d in ARTIFACTS:
+    for label, script, d in artifacts:
         ok, tail = run([py, script], d)
-        results.append(ok)
+        steps.append((label, ok))
         print(f"  [{'PASS' if ok else 'FAIL'}] {label:60} {tail}")
 
     if args.rust:
@@ -91,10 +133,10 @@ def main() -> int:
         rs_dir = DERIV / "validator-rs"
         if not cargo or not rs_dir.exists():
             print(f"  [FAIL] {'validator-rs (cargo test)':60} cargo/crate unavailable (--rust was requested)")
-            results.append(False)                        # a REQUESTED backend must fail hard, not skip-pass
+            steps.append(("validator-rs (cargo test)", False))   # a REQUESTED backend must fail hard, not skip-pass
         else:
             ok, tail = run([cargo, "test", "--locked", "--quiet"], rs_dir)
-            results.append(ok)
+            steps.append(("validator-rs (cargo test)", ok))
             msg = "all Rust suites passed" if ok else tail   # (cargo's per-binary tails are noisy)
             print(f"  [{'PASS' if ok else 'FAIL'}] {'validator-rs (cargo test)':60} {msg}")
 
@@ -105,14 +147,16 @@ def main() -> int:
         for label, script in CPP:
             if not bash or not script.exists():
                 print(f"  [FAIL] {label:60} bash/script unavailable (--cpp was requested)")
-                results.append(False)                    # requested backend unavailable -> fail, not skip
+                steps.append((label, False))             # requested backend unavailable -> fail, not skip
                 continue
             ok, tail = run([bash, str(script)], script.parent)
-            results.append(ok)
+            steps.append((label, ok))
             print(f"  [{'PASS' if ok else 'FAIL'}] {label:60} {tail}")
 
-    ok_all = all(results)
-    print(f"\n{'ALL PASSED' if ok_all else 'FAILURES ABOVE'} — {sum(results)}/{len(results)} steps green.")
+    ok_all = all(ok for _, ok in steps)
+    print(f"\n{'ALL PASSED' if ok_all else 'FAILURES ABOVE'} — {sum(ok for _, ok in steps)}/{len(steps)} steps green.")
+    if args.core or args.manifest:
+        _manifest(steps, args, args.manifest or (ROOT / "reproduce-manifest.json"))
     return 0 if ok_all else 1
 
 
