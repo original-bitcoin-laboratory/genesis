@@ -133,6 +133,44 @@ def test_two_nodes_sync_over_tcp(tmp_path):
     assert ta == tb                                       # same tip
 
 
+# ---- self-healing sync watchdog: a stuck node with a gap recovers on its own -------------------
+
+async def _resync_watchdog_scenario(dir_a, dir_b):
+    """B is left in exactly the failure state that stalled the live replica: it holds a far-ahead
+    block as an ORPHAN with a gap it never filled. B only *listens* (A dials it), so B never sends
+    the handshake `getblocks` and A, being static, never announces its tip — so without the watchdog
+    B would sit stuck forever. Only `_resync_loop` can heal it, which is what this asserts."""
+    cfg = CHAINS["jan09x"]
+    a = Node(cfg, dir_a, listen=("127.0.0.1", 0))
+    _seed(a, 12)
+    ablocks = [a.chain.by_hash[h].raw for h in a.state.active[1:]]     # A's blocks 1..12 in order
+    b = Node(cfg, dir_b, listen=("127.0.0.1", 0), resync_interval=0.1)
+    for raw in ablocks[:5]:                                            # B is on A's chain up to height 5
+        assert b.chain.process_block(raw)[0] == "accepted"
+        b.store.append(raw); b.state.activate_best()
+    assert b.height == 5
+    assert b.chain.process_block(ablocks[11])[0] == "orphan"          # A's block 12 -> orphan (gap 6..11)
+    assert b.height == 5 and b.chain.orphans                          # stuck with a gap, no way to self-fill
+    await b.start()                                                   # B listens; sends NO handshake getblocks
+    port_b = b._server.sockets[0].getsockname()[1]
+    await a.start(connect=[("127.0.0.1", port_b)])                    # A dials B (A is the initiator)
+    healed = False
+    for _ in range(200):                                             # up to ~10s of 0.1s watchdog ticks
+        if b.height == a.height and not b.chain.orphans:
+            healed = True
+            break
+        await asyncio.sleep(0.05)
+    result = (a.height, b.height, healed)
+    await a.stop(); await b.stop()
+    return result
+
+
+def test_resync_watchdog_heals_a_stuck_gap(tmp_path):
+    ha, hb, healed = _run(_resync_watchdog_scenario(str(tmp_path / "A"), str(tmp_path / "B")))
+    assert ha == 12
+    assert healed and hb == 12                            # B recovered a gap with no handshake getblocks
+
+
 # ---- restart recovery -------------------------------------------------------
 
 def test_node_reloads_chain_from_disk(tmp_path):

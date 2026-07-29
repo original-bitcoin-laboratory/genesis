@@ -59,6 +59,11 @@ MAX_INBOUND = 64                 # cap inbound connections (connection-flood DoS
 MAX_KNOWN_ADDRS = 1024           # cap the gossiped peer table (addr-flood / poisoning)
 MAX_OUTBOUND_PER_GROUP = 2       # cap outbound dials per /16 (anti-eclipse: not all peers in one subnet)
 PEERS_SAVE_INTERVAL = 60.0       # persist the peer table this often (+ on stop)
+RESYNC_INTERVAL = 30.0           # self-healing sync watchdog: `getblocks` is otherwise sent only at
+                                 # handshake and on an orphan, so a node that ends up with a gap (orphans
+                                 # it can't connect, or a tip that stops advancing while peers are present)
+                                 # would sit stuck forever. Re-request the chain this often; a no-op once
+                                 # caught up (the peer's blocks_after returns nothing).
 MSG_RATE_MAX = 5000              # per-peer messages allowed per window (flood); high enough that a
                                  # legitimate initial-block-download burst isn't throttled
 MSG_RATE_WINDOW = 10.0           # seconds
@@ -92,7 +97,7 @@ class Node:
                  mine=False, mine_interval: float = 2.0, max_peers: int = MAX_PEERS,
                  max_inbound: int = MAX_INBOUND, max_known_addrs: int = MAX_KNOWN_ADDRS,
                  maturity: int = COINBASE_MATURITY, min_bits: int | None = None,
-                 wallet: bool = False, log=None):
+                 wallet: bool = False, resync_interval: float = RESYNC_INTERVAL, log=None):
         self.cfg = cfg
         self.datadir = pathlib.Path(datadir)
         self.store = BlockStore(datadir)
@@ -101,6 +106,7 @@ class Node:
         self.advertise_host = advertise_host
         self.mine = mine
         self.mine_interval = mine_interval
+        self.resync_interval = resync_interval
         self.max_peers = max_peers
         self.max_inbound = max_inbound
         self.max_known_addrs = max_known_addrs
@@ -219,6 +225,7 @@ class Node:
                                             per_group=MAX_OUTBOUND_PER_GROUP):
             self._dial(host, port)               # re-mesh from remembered peers (persisted DB)
         self._tasks.append(asyncio.create_task(self._peers_save_loop()))
+        self._tasks.append(asyncio.create_task(self._resync_loop()))
         if self.mine:
             self._tasks.append(asyncio.create_task(self._mine_loop()))
 
@@ -301,6 +308,31 @@ class Node:
             while not self._closing:
                 await asyncio.sleep(PEERS_SAVE_INTERVAL)
                 self._save_peers()
+        except asyncio.CancelledError:
+            pass
+
+    async def _resync_loop(self):
+        """Self-healing sync watchdog. If, over one interval, the validated tip has not advanced
+        while peers are connected, or the chain is holding orphan blocks it could not connect,
+        re-request the chain from every peer so a stuck node recovers on its own instead of sitting
+        on a gap forever. Once caught up this is a no-op (the peer's `blocks_after` returns nothing)."""
+        try:
+            last_height = self.height
+            while not self._closing:
+                await asyncio.sleep(self.resync_interval)
+                if not self._writers:                        # no peer to ask
+                    last_height = self.height
+                    continue
+                stalled = self.height == last_height         # no validated progress this window
+                gapped = bool(self.chain.orphans)            # received blocks we could not connect
+                if stalled or gapped:
+                    loc = locator_payload(self.state.get_locator())
+                    for w in list(self._writers):
+                        try:
+                            await self._send(w, "getblocks", loc)
+                        except (WireError, ConnectionError, OSError):
+                            pass
+                last_height = self.height
         except asyncio.CancelledError:
             pass
 
