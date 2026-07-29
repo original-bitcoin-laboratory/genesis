@@ -10,7 +10,7 @@ import sys
 import pytest
 
 _HERE = pathlib.Path(__file__).resolve().parent
-for _p in ("model", "p2p", "nov08x", "wallet"):
+for _p in ("model", "p2p", "nov08x", "wallet", "profiles"):
     sys.path.insert(0, str(_HERE.parent / _p))
 sys.path.insert(0, str(_HERE))
 
@@ -23,6 +23,7 @@ from spend import sign                                     # noqa: E402
 from chainstate import ChainState                          # noqa: E402
 from chains import CHAINS                                  # noqa: E402
 from difficulty import expected_bits                       # noqa: E402
+import profiles                                            # noqa: E402  (the named rule profiles)
 
 ZERO = b"\x00" * 32
 EASY = 0x207FFFFF
@@ -227,6 +228,13 @@ def test_height_beats_cumulative_work_the_discriminating_fork():
     NOT held uniform here — one branch's first retarget window is mined fast (retargeting harder) and
     the other slow (staying at the genesis floor), so the two branches carry genuinely different work
     and the honest `nBits` still validates on every block."""
+    # Run under the faithful profile jan09-faithful (not the experimental jan09-x); its consensus
+    # rules are what this test uses (Script posture is irrelevant to a coinbase-only fork).
+    faithful = profiles.load("jan09-faithful")
+    assert faithful.name == "jan09-faithful" and faithful.script_posture == "faithful-v0.1"
+    fr = faithful.rules()
+    assert (fr.COIN, fr.subsidy_base, fr.halving, fr.spacing, fr.coinbase_rule) == \
+        (RULES.COIN, RULES.subsidy_base, RULES.halving, RULES.spacing, RULES.coinbase_rule)
     BASE = 1_231_006_506
     chain = Chain()
     g = _mine_at(ZERO, 0, EASY, BASE)
