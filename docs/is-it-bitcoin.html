@@ -90,6 +90,9 @@
     border:1px solid var(--line);border-left:3px solid var(--brass);border-radius:10px;
     padding:14px 16px;font-size:14.5px;color:var(--ink)}
   .bottomline b{color:var(--brass)}
+  .subjecho{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);
+    letter-spacing:.02em;margin:0 2px 10px}
+  .subjecho b{color:var(--ink)}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px}
   .card .top{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:baseline;justify-content:space-between}
   .card .qn{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink);letter-spacing:.01em}
@@ -134,7 +137,8 @@
     not fact</b>. Grounded only in the whitepaper and the v0.1.0 source.</p>
 
   <nav class="nav">
-    <a href="./tracker.html">← origin‑distance tracker</a>
+    <a href="/">Lab home</a>
+    <a href="./tracker.html">origin‑distance tracker</a>
     <a href="https://github.com/original-bitcoin-laboratory/common/blob/main/WHAT_IS_BITCOIN.md">WHAT_IS_BITCOIN.md (the § references)</a>
     <a href="https://github.com/original-bitcoin-laboratory/genesis">repo</a>
   </nav>
@@ -152,6 +156,7 @@
     </section>
 
     <section class="verdicts" aria-live="polite" aria-label="reasoning across the senses">
+      <div class="subjecho" id="subjecho"></div>
       <div class="bottomline" id="bottomline"></div>
       <div id="cards" style="display:flex;flex-direction:column;gap:14px"></div>
     </section>
@@ -341,7 +346,9 @@ function bottomLine(){
 /* ---------------- rendering ---------------- */
 const propsEl=document.getElementById("props"), cardsEl=document.getElementById("cards"),
   presetsEl=document.getElementById("presets"), blEl=document.getElementById("bottomline"),
-  subjectEl=document.getElementById("subject");
+  subjectEl=document.getElementById("subject"), subjEchoEl=document.getElementById("subjecho");
+
+const esc=s=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 PROPS.forEach(p=>{
   const wrap=document.createElement("div"); wrap.className="prop";
@@ -371,6 +378,8 @@ document.getElementById("reset").onclick=()=>{
   PROPS.forEach(p=>S[p.k]="u"); subjectEl.value=""; syncSegs(); render();
 };
 
+subjectEl.oninput=render;   // the typed name now drives the verdict panel (live)
+
 function syncSegs(){
   [...propsEl.querySelectorAll(".prop")].forEach((wrap,i)=>{
     const k=PROPS[i].k, order=["y","u","n"];
@@ -379,6 +388,8 @@ function syncSegs(){
 }
 
 function render(){
+  const name=subjectEl.value.trim();
+  subjEchoEl.innerHTML=name?`Placing <b>${esc(name)}</b> across the four senses:`:"";
   blEl.innerHTML=bottomLine();
   cardsEl.innerHTML="";
   for(const q of QUESTIONS){
