@@ -95,13 +95,28 @@ PASS CKey     static Verify(pubkey) round-trip
 ```
 
 So Satoshi's original `class CBigNum : public BIGNUM` and the secp256k1 `CKey` — the two things the
-modern host could not build — compile *and run byte-correct* under the period toolchain. Reproduce
-with [`period_build_wsl.sh`](period_build_wsl.sh) (OpenSSL source pinned by SHA-256
-`ecd0c6ff…669d16`). `base58.h` and `script.cpp` still need donor declarations (`Hash()`/`Hash160()`
-from `util.h`, the tx types from `main.h`) — a coupling gap, not a toolchain lock; the full-vocabulary
-interpreter is separately re-derived and differential-tested in `derivatives/model` + `derivatives/port`.
-The remaining piece for a full runnable `bitcoin.exe` is the GUI/DB layer (wxWidgets 2.8 + BDB 4.7),
-which `PERIOD_BUILD.md` pins.
+modern host could not build — compile *and run byte-correct* under the period toolchain.
+
+**The interpreter, too.** `base58.h` and `script.cpp` were never toolchain-locked — only *coupled*,
+needing `Hash()`/`Hash160()` (util.h) and the tx types (main.h). Supplying just those surfaces as
+donor scaffolding (`compat/donor_util.h`, `compat/donor_hashes.h`, `compat/donor_tx.h` — the util
+macros/helpers, the two hashes, and a faithful minimal `CTransaction` whose serialization mirrors
+main.h so the sighash is exact) — **no wxWidgets, no Berkeley DB** — makes the ORIGINAL `script.cpp`
+compile and link, and [`script_exec_test.cpp`](script_exec_test.cpp) runs a real pay-to-pubkey
+verification straight through it:
+
+```
+PASS VerifySignature P2PK  (original EvalScript + SignatureHash + CheckSig)
+PASS tampered output rejected
+PASS wrong pubkey rejected
+```
+
+That is the consensus verify path — `EvalScript → OP_CHECKSIG → CheckSig`, against a genuine
+secp256k1 signature over exactly the digest the original `SignatureHash` computes. Reproduce the whole
+thing (crypto core + interpreter) with [`period_build_wsl.sh`](period_build_wsl.sh) (OpenSSL source
+pinned by SHA-256 `ecd0c6ff…669d16`). The full-vocabulary interpreter is additionally re-derived and
+differential-tested in `derivatives/model` + `derivatives/port`. The only piece left for a full
+runnable `bitcoin.exe` is the GUI/DB layer (wxWidgets 2.8 + BDB 4.7), which `PERIOD_BUILD.md` pins.
 
 ## Conclusion — what a faithful full build requires
 

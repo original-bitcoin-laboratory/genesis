@@ -45,7 +45,7 @@ fi
 INC="-I$OSSL/include -I$HERE -I$HERE/compat -I$SRC"
 STD="-std=gnu++11 -w -DOPENSSL_SUPPRESS_DEPRECATED"
 
-echo; echo "-- [2/4] compile the ORIGINAL core (both locks now lifted) --"
+echo; echo "-- [2/5] compile the ORIGINAL core (both locks now lifted) --"
 probe() { # $1 label  $2 headers
   { echo '#include "compat/prelude.h"'; for h in $2; do echo "#include \"$h\""; done; echo 'int main(){return 0;}'; } > "$WORK/p.cpp"
   if $GXX $STD $INC -c "$WORK/p.cpp" -o "$WORK/p.o" 2>"$WORK/p.err"; then echo "   COMPILES: $1"
@@ -56,18 +56,27 @@ probe "uint256.h"                           "serialize.h uint256.h"
 probe "bignum.h  (was the OpenSSL lock)"    "serialize.h uint256.h bignum.h"
 probe "key.h     (secp256k1 EC_KEY)"        "serialize.h uint256.h bignum.h key.h"
 
-echo; echo "-- [3/4] build the execution test (i686 PE, static, period OpenSSL) --"
-$GXX $STD $INC "$HERE/period_exec_test.cpp" \
-  -L"$OSSL" -lcrypto -lws2_32 -lgdi32 -lcrypt32 -ladvapi32 -luser32 \
-  -static -static-libgcc -static-libstdc++ \
-  -o "$WORK/period_exec_test.exe"
+LIBS="-lcrypto -lws2_32 -lgdi32 -lcrypt32 -ladvapi32 -luser32 -static -static-libgcc -static-libstdc++"
+
+echo; echo "-- [3/5] build the crypto exec test (original bignum.h + key.h) --"
+$GXX $STD $INC "$HERE/period_exec_test.cpp" -L"$OSSL" $LIBS -o "$WORK/period_exec_test.exe"
 echo "   built: $WORK/period_exec_test.exe ($(stat -c%s "$WORK/period_exec_test.exe") bytes)"
 
-echo; echo "-- [4/4] run it --"
-if command -v wine >/dev/null 2>&1; then
-  wine "$WORK/period_exec_test.exe" || true
-else
-  echo "   wine not installed; run this i686 PE on Windows (WOW64):"
-  echo "   $(wslpath -w "$WORK/period_exec_test.exe" 2>/dev/null || echo "$WORK/period_exec_test.exe")"
-fi
+echo; echo "-- [4/5] build the INTERPRETER test (original script.cpp, donor-assisted) --"
+# verbatim copy of script.cpp + a one-line headers.h shim next to it, so its
+# #include "headers.h" resolves to our headless one (donor tx/util surfaces, no wx/BDB).
+SB="$WORK/script-build"; mkdir -p "$SB"
+cp "$SRC/script.cpp" "$SB/script.cpp"
+echo "#include \"$HERE/compat/headers_headless.h\"" > "$SB/headers.h"
+# NB: -I"$SB" must precede -I"$SRC" so our headers.h shadows the original wx-laden one.
+$GXX $STD -I"$SB" $INC "$SB/script.cpp" "$HERE/script_exec_test.cpp" -L"$OSSL" $LIBS \
+  -o "$WORK/script_exec_test.exe"
+echo "   built: $WORK/script_exec_test.exe ($(stat -c%s "$WORK/script_exec_test.exe") bytes)"
+
+echo; echo "-- [5/5] run them --"
+for exe in "$WORK/period_exec_test.exe" "$WORK/script_exec_test.exe"; do
+  echo "   >> $(basename "$exe")"
+  if command -v wine >/dev/null 2>&1; then wine "$exe" 2>/dev/null || true
+  else echo "      (run on Windows/WOW64): $(wslpath -w "$exe" 2>/dev/null || echo "$exe")"; fi
+done
 echo; echo "done."

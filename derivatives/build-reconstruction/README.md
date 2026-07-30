@@ -10,9 +10,11 @@ toolchain — the empirical answer to roadmap R2's "maximum executable reconstru
 - **[`PERIOD_BUILD.md`](PERIOD_BUILD.md)** — the period-toolchain recipe that pins the versions
   those locks require (i686 + OpenSSL 0.9.8–1.0.2 + wxWidgets 2.8 + BDB 4.7 + Boost 1.3x).
 - **[`period_build_wsl.sh`](period_build_wsl.sh)** — *runs* the period build (WSL i686 + a
-  from-source OpenSSL 1.0.2): the original `serialize/uint256/bignum/key` **compile**, and
-  **[`period_exec_test.cpp`](period_exec_test.cpp)** builds an i686 PE that **executes** the original
-  `bignum.h` + `key.h` (CBigNum + secp256k1 ECDSA) byte-correct on Windows.
+  from-source OpenSSL 1.0.2): the original `serialize/uint256/bignum/key` **compile**;
+  **[`period_exec_test.cpp`](period_exec_test.cpp)** executes the original `bignum.h` + `key.h`
+  (CBigNum + secp256k1 ECDSA); and **[`script_exec_test.cpp`](script_exec_test.cpp)** compiles the
+  original **`script.cpp`** (with the `compat/donor_*.h` tx/util scaffolding — no wx/BDB) and runs a
+  real P2PK verify through `EvalScript + SignatureHash + CheckSig`. Both run byte-correct on Windows.
 - **[`build.sh`](build.sh)** — reproducible probe: hash-verifies the originals against
   [`MANIFEST.sha256`](MANIFEST.sha256), compiles + runs `sha.cpp`, and reproduces both locks.
 - **[`sha_selftest.cpp`](sha_selftest.cpp)** — driver that runs Satoshi's `SHA256::Transform`
