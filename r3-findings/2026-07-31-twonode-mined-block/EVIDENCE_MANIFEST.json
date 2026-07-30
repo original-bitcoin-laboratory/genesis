@@ -4,8 +4,93 @@
   "run": "2026-07-31-twonode-mined-block",
   "generated": "2026-07-31",
   "evidence_dir": "r3-evidence/2026-07-31-twonode-mined-block (gitignored)",
-  "file_count": 5,
+  "file_count": 29,
   "files": [
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 210625.png",
+      "size": 127041,
+      "sha256": "47d6cc51c665055a62f72afe13b8b0df851811154edf390387103d30495983a3"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 210643.png",
+      "size": 127183,
+      "sha256": "30ce94cb0cc31b061f24236237a5ede83a04acdfb20511498c2f2ef14d7c2ab0"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 215007.png",
+      "size": 153520,
+      "sha256": "922e461254af961e2c3905f34b1fa19e6f4e0933788ac2e240eb44d37a61505c"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 215016.png",
+      "size": 153520,
+      "sha256": "922e461254af961e2c3905f34b1fa19e6f4e0933788ac2e240eb44d37a61505c"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 222805.png",
+      "size": 244427,
+      "sha256": "83e9ea95a3f879c101d658fa5ec5cc23d99ef3a8925c38d71953456165a705ce"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 222841.png",
+      "size": 233716,
+      "sha256": "ba4319b636d6e885a1c729bd1e22c03cadbff6b04d85ac5284262aab336afa2d"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 223337.png",
+      "size": 355500,
+      "sha256": "062082e6536c0f80c843fa23eb438a8f292d2634fb6128574290d3a0a8aeb8ea"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 223442.png",
+      "size": 347869,
+      "sha256": "492a1bb584166b66d58c4c342af54415b7e24d918834f6178e28c90310555094"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 223855.png",
+      "size": 340424,
+      "sha256": "cc8866016afeb2948451c665bddebfd8a78bb313ba4eaf4b00af75159896d13d"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 234343.png",
+      "size": 346996,
+      "sha256": "9eb1a6e94e535a4b68ad353377f76cf914739a2adb0c183e5f1d0ae87230d7ce"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-30 235605.png",
+      "size": 473296,
+      "sha256": "e63b97413216074fb9c15f5e8fae3f62e2598b59ebcf7dfb82016680f0f33524"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-31 003255.png",
+      "size": 404080,
+      "sha256": "479cf624b4b14e1502aebe4061a43f436d745108163cf33116b5c37ae9d743b9"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-31 005138.png",
+      "size": 231117,
+      "sha256": "981d92ccf5bf6c382d368540c1d76546e6f513a2a7d0ab478678e062f3c909e3"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-31 005428.png",
+      "size": 232130,
+      "sha256": "5b004c5acbe0a20abaa4e521f08f8b7a119bb5fbf033b7a61995d506a9513cb8"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-31 005559.png",
+      "size": 236652,
+      "sha256": "09f3b6b91430155cec1f16ecf7bd9646bf9d352a8500fe511d23029a986dc77f"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-31 010216.png",
+      "size": 299863,
+      "sha256": "e0ced20f07508814225e3d9c058a4c22a63a626e36c68abf5e614d60b7b9878e"
+    },
+    {
+      "path": "host-screenshots/Screenshot 2026-07-31 010326.png",
+      "size": 359639,
+      "sha256": "1d2f9a2619946a948756e0321d2a243576de9d5d9e03b2bdc27938dc091c24fb"
+    },
     {
       "path": "nodeA/blk0001.dat",
       "size": 516,
@@ -17,6 +102,26 @@
       "sha256": "e4cf981463b014f344c38b385d7272c6f10a709c29a567596e3ae8b669ab593e"
     },
     {
+      "path": "nodeA/debug.log",
+      "size": 9690,
+      "sha256": "2a218c57c176e04a7cd75cb28ee4d874dec2367e2cf6c975f66504b6d0dfd75a"
+    },
+    {
+      "path": "nodeA/screenshots/Annotation 2026-07-30 195815.png",
+      "size": 426690,
+      "sha256": "40ca0f6b14dd074bb452bd7ba5b8b9f7a699f3bbd87b0e3813e17e1f62e5a9a3"
+    },
+    {
+      "path": "nodeA/screenshots/Annotation 2026-07-30 201634.png",
+      "size": 92087,
+      "sha256": "7ed8fb835ddbc63c58921548e237498e1798e59617fa5301341598d0adf226fd"
+    },
+    {
+      "path": "nodeA/screenshots/Annotation 2026-07-30 201917.png",
+      "size": 140147,
+      "sha256": "d3b9d60b11b0663de0714ab2e96c64d8f768bac655745947f5da25f27d9758f5"
+    },
+    {
       "path": "nodeB/blk0001.dat",
       "size": 516,
       "sha256": "899c94d23ee7a89520625e69229e8892a15d78008a8bd95039e4d6d3678c04c2"
@@ -25,6 +130,21 @@
       "path": "nodeB/debug-excerpt.txt",
       "size": 360,
       "sha256": "618e218b92295bf8bead28e030600b72042d56719fb5ca9bb51a66e362c28180"
+    },
+    {
+      "path": "nodeB/debug.log",
+      "size": 9625,
+      "sha256": "37be062aac850a5cf0ccf2d50fbedc3f0deb3413cd25141a3751a762c47dc806"
+    },
+    {
+      "path": "nodeB/screenshots/Annotation 2026-07-30 194036.png",
+      "size": 441086,
+      "sha256": "d4181fb71e4854a41317d9f452572c4fb4c153f8595d36d43a7fb6ba5e064852"
+    },
+    {
+      "path": "nodeB/screenshots/Annotation 2026-07-30 201539.png",
+      "size": 84025,
+      "sha256": "1d0954cc30e614a01bd83ab960610505af610647f661ae9c7fded3b55f3d3e8b"
     },
     {
       "path": "verify_r3.py",

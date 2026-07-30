@@ -31,9 +31,9 @@ formed a P2P connection on port 8333, and:
 | # | Observation | Result | Evidence |
 |---|---|:--:|---|
 | 1 | Both nodes recognise the historical genesis `000000000019d668…0a8ce26f` (Chancellor coinbase) | ✓ | `*/blk0001.dat` block 0 |
-| 2 | Node B connects to node A over the isolated net (address learned via IRC: `…ff ff ac 14 00 02` = `172.20.0.2`) | ✓ | `nodeA/debug-excerpt.txt` (`received: addr`) |
-| 3 | Node B **mines** block 1 at real difficulty 1 (`proof-of-work found` → `ProcessBlock: ACCEPTED`) | ✓ | `nodeB/debug-excerpt.txt` |
-| 4 | Node A **receives and accepts** node B's block (`inv` → `received: block (215 B)` → `ProcessBlock: ACCEPTED`) | ✓ | `nodeA/debug-excerpt.txt` |
+| 2 | Node B connects to node A over the isolated net (address learned via IRC: `…ff ff ac 14 00 02` = `172.20.0.2`) | ✓ | `nodeA/debug.log` (`received: addr`) |
+| 3 | Node B **mines** block 1 at real difficulty 1 (`proof-of-work found` → `ProcessBlock: ACCEPTED`) | ✓ | `nodeB/debug.log` |
+| 4 | Node A **receives and accepts** node B's block (`inv` → `received: block (215 B)` → `ProcessBlock: ACCEPTED`) | ✓ | `nodeA/debug.log` |
 | 5 | Both nodes end holding the **byte-identical** two-block chain | ✓ | `nodeA/blk0001.dat` == `nodeB/blk0001.dat` (sha256 `899c94d2…78c04c2`) |
 
 ### The block, verified from the raw `blk0001.dat` bytes
@@ -63,6 +63,15 @@ for byte, that node B produced this block and node A accepted it.
 - The peer-gated miner behaves exactly as the source reads: mining only began once the second node
   connected; with both miners running the VMs saturate CPU, which starves the P2P threads — turning the
   miners off is what let the already-found block relay to node A.
+
+## Captured artifacts
+
+The complete run is preserved and hashed in `EVIDENCE_MANIFEST.json` (29 files; bytes stay gitignored
+under `r3-evidence/`): both nodes' **full `debug.log`**, both nodes' `blk0001.dat` (byte-identical), the
+annotated protocol excerpts, `verify_r3.py`, **five in-guest screenshots** (node A and node B GUIs at
+2 blocks, node B showing the coinbase), and **seventeen host screenshots** spanning setup through the mined
+block. Both captured `bitcoin.exe` copies re-hash to the oracle `fbcac071…`, confirming the exact 2009
+binary produced this run.
 
 ## Conclusion
 
