@@ -23,7 +23,7 @@ from spend import sign, scriptcode                         # noqa: E402
 
 from chainstate import ChainState                          # noqa: E402
 from chains import CHAINS                                  # noqa: E402
-from difficulty import expected_bits                       # noqa: E402
+from difficulty import NET_RETARGET_INTERVAL, expected_bits   # noqa: E402
 import profiles                                            # noqa: E402  (the named rule profiles)
 
 ZERO = b"\x00" * 32
@@ -228,7 +228,14 @@ def test_height_beats_cumulative_work_the_discriminating_fork():
     branch of LOWER total work displaces a SHORTER branch of HIGHER work. Difficulty is deliberately
     NOT held uniform here — one branch's first retarget window is mined fast (retargeting harder) and
     the other slow (staying at the genesis floor), so the two branches carry genuinely different work
-    and the honest `nBits` still validates on every block."""
+    and the honest `nBits` still validates on every block.
+
+    Attribution (kept explicit): the *fork-choice predicate* under test — best chain by
+    `pindexNew->nHeight > nBestHeight`, never by summed work — is the **faithful v0.1 source rule**
+    (`main.cpp`). The *retarget horizon* is a **laboratory substitution**: `NET_RETARGET_INTERVAL`
+    (60 blocks, NEW-EXP) replaces v0.1's 2016-block window so the discriminating state is reachable in
+    a unit test; the shortened horizon changes only the *time to reach* a taller/lower-work fork, not
+    the predicate being tested."""
     # Run under the faithful profile jan09-faithful (not the experimental jan09-x); its consensus
     # rules are what this test uses (Script posture is irrelevant to a coinbase-only fork).
     faithful = profiles.load("jan09-faithful")
@@ -236,6 +243,10 @@ def test_height_beats_cumulative_work_the_discriminating_fork():
     fr = faithful.rules()
     assert (fr.COIN, fr.subsidy_base, fr.halving, fr.spacing, fr.coinbase_rule) == \
         (RULES.COIN, RULES.subsidy_base, RULES.halving, RULES.spacing, RULES.coinbase_rule)
+    # The retarget horizon is a laboratory substitution (recorded, not hidden): a 60-block NEW-EXP
+    # window stands in for v0.1's 2016-block interval — it moves only the *time* to the discriminating
+    # state, not the height-over-work predicate under test.
+    assert NET_RETARGET_INTERVAL == 60 and NET_RETARGET_INTERVAL < 2016
     BASE = 1_231_006_506
     chain = Chain()
     g = _mine_at(ZERO, 0, EASY, BASE)
@@ -270,6 +281,27 @@ def test_height_beats_cumulative_work_the_discriminating_fork():
 
     # ...and the node switches to A anyway: selection is by height, never by cumulative work.
     assert st.tip == a_tip and st.height == a_h
+
+
+def test_chainstate_profile_bearing_context_records_the_profile_hash():
+    """A profile-bearing `ChainState(profile=...)` derives its consensus rules and Script posture from
+    the named profile and records exactly which profile governed the run — so "this finding used
+    jan09-faithful" is a checkable `profile_hash`, not a bare claim (reviewer ask, §3)."""
+    faithful = profiles.load("jan09-faithful")
+    experimental = profiles.load("jan09-x")
+    chain = Chain()
+    g = _mine_at(ZERO, 0, EASY, 1_231_006_506)
+    chain.add_genesis(g, EASY)
+
+    st = ChainState(chain, profile=faithful, maturity=1)            # rules + posture come from the profile
+    st.activate_best()
+    assert st.profile_name == "jan09-faithful"
+    assert st.profile_hash == faithful.profile_hash() and len(st.profile_hash) == 64
+    assert st.reopen == frozenset()                                 # faithful: nothing reopened
+
+    st_x = ChainState(chain, profile=experimental, maturity=1)      # the posture is genuinely carried
+    assert st_x.profile_name == "jan09-x" and st_x.reopen == frozenset({"OP_NOTEQUAL"})
+    assert st_x.profile_hash != st.profile_hash                     # distinct profiles -> distinct hashes
 
 
 def test_op_notequal_posture_controls_the_node_verifier():

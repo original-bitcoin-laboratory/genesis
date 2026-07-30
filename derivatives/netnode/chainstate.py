@@ -51,8 +51,23 @@ class Coin:
 
 
 class ChainState:
-    def __init__(self, chain, rules, maturity: int = COINBASE_MATURITY, min_bits: int | None = None,
-                 reopen=frozenset()):
+    def __init__(self, chain, rules=None, maturity: int = COINBASE_MATURITY, min_bits: int | None = None,
+                 reopen=frozenset(), *, profile=None):
+        # Profile-bearing context (optional): pass a `profiles.Profile` (duck-typed, so the node core
+        # keeps no hard dependency on the profiles package). It supplies the consensus rules and the
+        # script posture *and* records exactly which profile governed this state, so a paper claim of
+        # "this finding used profile X" is a checkable object (`self.profile_hash`), not a bare claim.
+        self.profile_name = None
+        self.profile_hash = None
+        if profile is not None:
+            if rules is None:
+                rules = profile.rules()
+            if not reopen:
+                reopen = frozenset(profile.reopened_opcodes)
+            self.profile_name = profile.name
+            self.profile_hash = profile.profile_hash()
+        if rules is None:
+            raise ValueError("ChainState requires rules= or profile=")
         self.chain = chain
         self.rules = rules
         self.maturity = maturity

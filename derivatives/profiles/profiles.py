@@ -17,6 +17,7 @@ NOT money.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import pathlib
 import sys
@@ -67,6 +68,22 @@ class Profile:
     def rules(self) -> Rules:
         """The consensus (monetary / PoW / coinbase) rule set."""
         return Rules.load(self.consensus_rules)
+
+    def profile_hash(self) -> str:
+        """A stable SHA-256 over this profile's identity — its declared fields plus the resolved
+        script posture. Lets a run record *exactly which* profile governed a result, so the paper's
+        'this finding used profile X' is a checkable object, not a claim."""
+        ident = {
+            "name": self.name,
+            "chain": self.chain,
+            "consensus_rules": self.consensus_rules,
+            "script_posture": self.script_posture,
+            "class": self.klass,
+            "disabled_opcodes": sorted(self.disabled_opcodes),
+            "reopened_opcodes": sorted(self.reopened_opcodes),
+        }
+        blob = json.dumps(ident, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        return hashlib.sha256(blob).hexdigest()
 
     def __repr__(self):
         return f"Profile({self.name}: {self.chain}/{self.script_posture})"

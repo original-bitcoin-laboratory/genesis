@@ -27,7 +27,7 @@ transport** a public node needs — the "rewrite for adversarial conditions," no
 | Validation | PoW only | **beyond PoW** — structure/merkle/difficulty ([`fullnode.py`](fullnode.py)) + a **validated UTXO chainstate** that is the **sole authority** for serving/mining — no double‑spends / bad scripts / inflation / immature‑coinbase / over‑claimed coinbase / wrong‑difficulty, reorg‑safe with abort‑on‑invalid ([`chainstate.py`](chainstate.py)) |
 | Transactions | — | a validating **mempool** ([`mempool.py`](mempool.py)) — `tx` messages validated, pooled, and **relayed** (`inv`→`getdata`→`tx`), with an **orphan buffer** (retried when the parent arrives) and **fee‑rate eviction** when full; the miner assembles pooled txs after the coinbase (claiming subsidy + fees) and drops them once mined |
 | Wallet | — | a persistent **wallet** ([`nodewallet.py`](nodewallet.py), on the faithful v0.1 wallet MODEL) — a mining node **earns its coinbase** to it, and it **builds + signs payments** (SelectCoins / CreateTransaction), plus a localhost **control interface** ([`rpc.py`](rpc.py)) — `getinfo` / `getnewaddress` / `getbalance` / `send` via `python -m netnode ctl` |
-| Speed | pure‑Python verify | an **optional libsecp256k1 verifier** ([`fastverify.py`](fastverify.py)) on the hot path — ~7× per signature, **byte‑faithful** to the origin's pre‑BIP66 OpenSSL semantics (differential‑tested), with automatic fallback |
+| Speed | pure‑Python verify | an **optional libsecp256k1 verifier** ([`fastverify.py`](fastverify.py)) on the hot path — ~7× per signature, **faithful** to the origin's lenient (high-S) OpenSSL acceptance on the tested canonical-DER paths (differential‑tested), with automatic fallback |
 | Discovery | manual only | **`addr` gossip + auto‑connect** — one seed address meshes you in |
 | Run it | a pytest scenario | a **CLI** anyone can run (`python -m netnode`) |
 
@@ -95,12 +95,10 @@ hash it — txids come straight from the parsed bytes.)
 
 **The fidelity catch (why it's not a naive swap).** libsecp256k1 rejects **high‑S** (malleated)
 signatures and enforces strict DER; the v0.1 origin verifies with **OpenSSL**, which *accepts* them.
-The X‑chains are faithful **pre‑BIP66** reconstructions, so a raw libsecp256k1 swap would reject
-signatures the origin accepts — a **consensus drift** (the July‑2015 BIP66 fix, exactly what
-[`crypto_conformance/`](../crypto_conformance/) documents). `verify_spend_fast` avoids this: it
-verifies the low‑S‑normalized signature natively and **falls back to OpenSSL**, so it is *provably
-identical* to the origin's lenient semantics on every input — **differential‑tested**
-([`test_fastverify.py`](test_fastverify.py)). Speed *and* fidelity, not one at the other's expense.
+The X‑chains are faithful **pre‑strictness** reconstructions (high-S accepted), so a raw libsecp256k1 swap would reject
+signatures the origin accepts — a **consensus drift** (see [`crypto_conformance/`](../crypto_conformance/); this high-S axis is distinct from BIP66's strict-DER *encoding* rule). `verify_spend_fast` avoids this: it
+verifies the low‑S‑normalized signature natively and **falls back to OpenSSL**, so it is *identical to this node's OpenSSL backend* on every input (matching the origin's lenient, high-S acceptance on the tested canonical-DER paths) — **differential‑tested**
+([`test_fastverify.py`](test_fastverify.py)). It does not claim exhaustive emulation of the 2009 OpenSSL parser on non-strict DER. Speed *and* fidelity, not one at the other's expense.
 
 ## Tests (`test_netnode.py` + `test_chainstate.py` + `test_mempool.py` + `test_wallet.py` + `test_fastverify.py`, 57)
 

@@ -86,8 +86,29 @@ def _profiles_block():
             "class": getattr(pr, "klass", getattr(pr, "class_", None)) or pr.__dict__.get("klass"),
             "consensus_rules": pr.consensus_rules,
             "reopened_opcodes": pr.reopened_opcodes,
+            "profile_hash": pr.profile_hash(),          # stable id of the exact profile these claims used
         }
     return block
+
+
+def _environment() -> dict:
+    env = {"python": sys.version.split()[0], "platform": platform.platform()}
+    try:
+        import ssl
+        env["openssl"] = ssl.OPENSSL_VERSION            # the verify backend's actual OpenSSL
+    except Exception:                                    # noqa: BLE001
+        env["openssl"] = None
+    try:
+        import cryptography
+        env["cryptography"] = cryptography.__version__
+    except Exception:                                    # noqa: BLE001
+        env["cryptography"] = None
+    try:
+        import bitcoinx                                  # optional libsecp256k1 accel path
+        env["libsecp_accel"] = getattr(bitcoinx, "__version__", "present")
+    except Exception:                                    # noqa: BLE001
+        env["libsecp_accel"] = None
+    return env
 
 
 def main() -> int:
@@ -161,7 +182,7 @@ def main() -> int:
         "generated": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
         "commit": commit if ok_git else None,
         "not_money": True,
-        "environment": {"python": sys.version.split()[0], "platform": platform.platform()},
+        "environment": _environment(),
         "requested_backends": backends,
         "skipped_requested_checks": skipped_requested,
         "profiles": _profiles_block(),
@@ -170,6 +191,9 @@ def main() -> int:
             "OPCODES.json": _sha256(ROOT / "inventory" / "OPCODES.json"),
             "script.h": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "script.h"),
             "script.cpp": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "script.cpp"),
+            "main.cpp": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "main.cpp"),
+            "main.h": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "main.h"),
+            "util.h": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "util.h"),
         },
         "claims": claim_docs,
         "artifact_drift": {"nov08x_differential_regenerates": drift_ok},

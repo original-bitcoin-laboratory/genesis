@@ -1,9 +1,10 @@
-"""The optional libsecp256k1 fast verifier stays byte-faithful to v0.1 (production node, part 7):
-`faithful_verify` returns exactly what OpenSSL would on low-S / high-S / invalid signatures, and
-`verify_spend_fast` equals the faithful interpreter on bare-P2PK spends (valid, wrong-key,
-high-S-malleated) while **delegating** every non-standard script. It also documents the fidelity
-catch — raw libsecp256k1 rejects high-S where OpenSSL accepts (the BIP66 axis) — which is *why* the
-fast path normalizes + falls back rather than swapping. Evidence: MODEL / NEW-EXP (not money)."""
+"""The optional libsecp256k1 fast verifier stays faithful to v0.1's lenient acceptance on the tested
+paths (production node, part 7): `faithful_verify` returns what this node's OpenSSL backend does on
+low-S / high-S / invalid signatures, and `verify_spend_fast` equals the faithful interpreter on
+bare-P2PK spends (valid, wrong-key, high-S-malleated) while **delegating** every non-standard script.
+It also documents the fidelity catch — raw libsecp256k1 rejects high-S where OpenSSL accepts (the
+high-S / malleability axis, distinct from BIP66's strict-DER encoding rule) — which is *why* the fast
+path normalizes + falls back rather than swapping. Evidence: MODEL / NEW-EXP (not money)."""
 
 import hashlib
 import pathlib

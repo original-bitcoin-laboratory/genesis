@@ -5,11 +5,12 @@ a faster node is a **native verifier**. libsecp256k1 (via `bitcoinx` / `electrum
 that verifier — but it **cannot be dropped in naively**, and this module is about *why*, and the
 consensus-safe way to use it anyway.
 
-**The fidelity catch (the BIP66 axis).** libsecp256k1 rejects **high-S** (malleated) signatures and
-enforces strict DER; the v0.1 origin verifies with **OpenSSL**, which *accepts* them. The X-chains
-are faithful **pre-BIP66** reconstructions, so their consensus is the *lenient* OpenSSL behaviour.
-Swapping in raw libsecp256k1 would make the node reject signatures the origin accepts — i.e. adopt
-the July-2015 BIP66 fix, a **consensus drift** from the origin (see `crypto_conformance/`).
+**The fidelity catch (the high-S / malleability axis).** libsecp256k1 rejects **high-S** (malleated)
+signatures and enforces strict DER; the v0.1 origin verifies with **OpenSSL**, which *accepts* high-S.
+The X-chains are faithful **pre-strictness** reconstructions, so their consensus is the *lenient*
+OpenSSL behaviour. Swapping in raw libsecp256k1 would make the node reject signatures the origin
+accepts — a **consensus drift** from the origin (see `crypto_conformance/`). (This high-S axis is
+*distinct from BIP66*, which enforces strict DER *encoding*, not the S value.)
 
 **The consensus-safe fast path.** For any DER signature, OpenSSL accepts `(r, s)` iff it accepts
 `(r, n−s)` (both are valid signatures for the same message — that *is* the malleability). So
@@ -17,12 +18,13 @@ the July-2015 BIP66 fix, a **consensus drift** from the origin (see `crypto_conf
 
     faithful_verify(der)  ==  libsecp(to_low_s(der))  OR  openssl(der)
 
-is **provably identical to `openssl(der)` on every input** — it just lets the fast native verifier
-short-circuit the common (valid) case and only falls back to OpenSSL for the rare divergent one. On
-top of that, `verify_spend_fast` bypasses the pure-Python script interpreter for the bare-P2PK
-template (the overwhelmingly common script), delegating everything non-standard to the faithful
-interpreter. Every claim here is differential-tested against the faithful path. Evidence: MODEL /
-NEW-EXP.
+is identical to this module's own `openssl_verify` backend on every input — it just lets the fast
+native verifier short-circuit the common (valid) case and only falls back to OpenSSL for the rare
+divergent one. This is **differential-tested against `openssl_verify` on the canonical-DER / high-S
+corpus**; it does **not** claim exhaustive emulation of the 2009 OpenSSL parser's acceptance of
+non-strict DER encodings. On top of that, `verify_spend_fast` bypasses the pure-Python script
+interpreter for the bare-P2PK template (the overwhelmingly common script), delegating everything
+non-standard to the faithful interpreter. Evidence: MODEL / NEW-EXP.
 """
 
 from __future__ import annotations
@@ -60,8 +62,10 @@ _ID = lambda x: x                                # identity "hasher": operate on
 
 
 def openssl_verify(pubkey_sec: bytes, der: bytes, digest: bytes) -> bool:
-    """The faithful v0.1 verify: OpenSSL EC — **lenient** (accepts high-S). This IS the origin's
-    signature semantics; it is the ground truth every fast path must match exactly."""
+    """The reference backend the fast path must match: a modern OpenSSL EC verify (via `cryptography`),
+    **lenient** — accepts high-S. It matches v0.1's OpenSSL acceptance on the tested canonical-DER /
+    high-S paths; it is not a bit-exact emulation of the 2009 OpenSSL DER parser on non-strict
+    encodings."""
     try:
         pub = ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256K1(), bytes(pubkey_sec))
         pub.verify(bytes(der), bytes(digest), ec.ECDSA(utils.Prehashed(hashes.SHA256())))
