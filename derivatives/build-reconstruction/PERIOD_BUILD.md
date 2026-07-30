@@ -56,7 +56,13 @@ WSL Ubuntu 24.04 — the original `serialize.h / uint256.h / bignum.h / key.h` c
 on Windows. Reproduce with [`period_build_wsl.sh`](period_build_wsl.sh); see the "Period build" section
 of [`BUILD_RECONSTRUCTION.md`](BUILD_RECONSTRUCTION.md).
 
-**Full GUI binary: not yet.** The wxWidgets 2.8 + Berkeley DB 4.7 layer (needed for a runnable
-`bitcoin.exe` linking `ui.*`/`db.*`/`net.*`) is the remaining cross-build and is not done here. The
-released `bitcoin.exe` is the JAN09-EXECUTED oracle regardless (see `docs/R3_*`); the modern-host
-substitute (opaque-`BIGNUM` port + experimental X-chains) is what the lab runs day to day.
+**Full GUI binary: DONE.** [`full_build_wsl.sh`](full_build_wsl.sh) cross-builds all four period
+libraries — OpenSSL 1.0.2u, **wxWidgets 2.8.12**, **Berkeley DB 4.8.30.NC** (4.7-API-compatible), and
+period **Boost 1.42.0** — then compiles **every** original `.cpp` against the real `headers.h` and
+links a self-contained **14.8 MB i686 `bitcoin.exe`** that imports only system DLLs (no wx/openssl/bdb
+DLLs), exactly like the 2009 release. The enabling insight: build wxWidgets and the Bitcoin source in
+their era dialect (`-std=gnu++98`), which sidesteps the modern-compiler rejections (narrowing, and the
+`std::array` vs `boost::array` ambiguity that C++11 introduces under `using namespace std` + `boost`).
+Verified on WSL Ubuntu 24.04 + mingw i686 gcc 13. The released `bitcoin.exe` (sha256 `fbcac071…`)
+remains the JAN09-EXECUTED oracle; this is a *from-source* rebuild of the same client. Run it only in
+an isolated VM (`docs/R3_*`) — it is a live 2009 node.

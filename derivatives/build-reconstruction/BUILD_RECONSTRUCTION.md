@@ -115,8 +115,19 @@ That is the consensus verify path — `EvalScript → OP_CHECKSIG → CheckSig`,
 secp256k1 signature over exactly the digest the original `SignatureHash` computes. Reproduce the whole
 thing (crypto core + interpreter) with [`period_build_wsl.sh`](period_build_wsl.sh) (OpenSSL source
 pinned by SHA-256 `ecd0c6ff…669d16`). The full-vocabulary interpreter is additionally re-derived and
-differential-tested in `derivatives/model` + `derivatives/port`. The only piece left for a full
-runnable `bitcoin.exe` is the GUI/DB layer (wxWidgets 2.8 + BDB 4.7), which `PERIOD_BUILD.md` pins.
+differential-tested in `derivatives/model` + `derivatives/port`.
+
+**And the whole client, from source.** [`full_build_wsl.sh`](full_build_wsl.sh) goes all the way:
+it cross-builds the four period libraries (OpenSSL 1.0.2u, wxWidgets 2.8.12, Berkeley DB 4.8.30.NC,
+period Boost 1.42.0 — all SHA-256-pinned), compiles **every** original `.cpp` against the *real*
+`headers.h`, and links a self-contained **14.8 MB i686 `bitcoin.exe`** that imports only system DLLs
+(no wx/openssl/bdb DLLs) — structurally the same shape as the 2009 release. The one trick: build
+wxWidgets and the Bitcoin source in their era dialect (`-std=gnu++98`), which clears the modern-compiler
+rejections at a stroke (narrowing; and the `std::array` vs `boost::array` clash C++11 creates under
+`using namespace std` + `boost`). So the reconstruction now spans the full ladder: unmodified `sha.cpp`
+runs on a stock modern compiler; the crypto core and the script interpreter build+run under the period
+toolchain from original source; and the entire GUI client links from source. `PERIOD_BUILD.md` pins the
+recipe. (It is a live 2009 node — run only in the isolated VM of `docs/R3_*`.)
 
 ## Conclusion — what a faithful full build requires
 

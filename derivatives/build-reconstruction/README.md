@@ -9,6 +9,10 @@ toolchain — the empirical answer to roadmap R2's "maximum executable reconstru
   lock (`bignum.h:49`, `class CBigNum : public BIGNUM`) — plus wxWidgets/Win32 in `util.h`.
 - **[`PERIOD_BUILD.md`](PERIOD_BUILD.md)** — the period-toolchain recipe that pins the versions
   those locks require (i686 + OpenSSL 0.9.8–1.0.2 + wxWidgets 2.8 + BDB 4.7 + Boost 1.3x).
+- **[`full_build_wsl.sh`](full_build_wsl.sh)** — builds the **entire client from source**: cross-builds
+  all four period libraries (SHA-256-pinned) and links a self-contained 14.8 MB i686 `bitcoin.exe` from
+  every original `.cpp`, by compiling in the era dialect (`-std=gnu++98`). Run the result only in an
+  isolated VM (it's a live 2009 node).
 - **[`period_build_wsl.sh`](period_build_wsl.sh)** — *runs* the period build (WSL i686 + a
   from-source OpenSSL 1.0.2): the original `serialize/uint256/bignum/key` **compile**;
   **[`period_exec_test.cpp`](period_exec_test.cpp)** executes the original `bignum.h` + `key.h`
