@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "evidence_level": "JAN09-EXECUTED",
+  "run": "2026-07-31-twonode-mined-block",
+  "generated": "2026-07-31",
+  "evidence_dir": "r3-evidence/2026-07-31-twonode-mined-block (gitignored)",
+  "file_count": 5,
+  "files": [
+    {
+      "path": "nodeA/blk0001.dat",
+      "size": 516,
+      "sha256": "899c94d23ee7a89520625e69229e8892a15d78008a8bd95039e4d6d3678c04c2"
+    },
+    {
+      "path": "nodeA/debug-excerpt.txt",
+      "size": 558,
+      "sha256": "e4cf981463b014f344c38b385d7272c6f10a709c29a567596e3ae8b669ab593e"
+    },
+    {
+      "path": "nodeB/blk0001.dat",
+      "size": 516,
+      "sha256": "899c94d23ee7a89520625e69229e8892a15d78008a8bd95039e4d6d3678c04c2"
+    },
+    {
+      "path": "nodeB/debug-excerpt.txt",
+      "size": 360,
+      "sha256": "618e218b92295bf8bead28e030600b72042d56719fb5ca9bb51a66e362c28180"
+    },
+    {
+      "path": "verify_r3.py",
+      "size": 2687,
+      "sha256": "4b5ab9eb950946fcc269a9fd7ede0f24250fb15dc4b4cef0547a6cacd5710dee"
+    }
+  ]
+}
