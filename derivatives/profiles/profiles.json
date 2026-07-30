@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "purpose": "Declares the lab's rule postures so that 'which rules is this run using' is an explicit, verifiable object rather than an implicit code path. Each profile pairs a consensus rule set (monetary / PoW / coinbase, faithful to a source edition) with a script-vocabulary posture. NOT money.",
-  "invariant": "A 'nothing-disabled' posture re-opens the one functional opcode v0.1 disabled (OP_NOTEQUAL); it is safe ONLY because the isolated experimental networks carry no value. A 'faithful-v0.1' posture reproduces v0.1's EvalScript as written, with OP_NOTEQUAL disabled.",
+  "invariant": "A 'nothing-disabled' posture restores the one functional opcode v0.1 disabled (OP_NOTEQUAL) as a MODEL-LEVEL TOKEN MACRO -- it rewrites the OP_NOTEQUAL token to OP_EQUAL OP_NOT (both already live). v0.1 has no OP_NOTEQUAL enum value or serialized wire byte, so this is not a reactivated on-wire opcode; it is safe ONLY because the isolated experimental networks carry no value. A 'faithful-v0.1' posture reproduces v0.1's EvalScript as written, with OP_NOTEQUAL disabled.",
   "script_postures": {
     "faithful-v0.1": {
       "runner": "model/evalscript_model.py:run",

@@ -22,18 +22,20 @@ recovery thread — `bitcoin-0.1.0.rar` = `8b17eb9a…`, `bitcoin-0.1.0.tgz` =
 
 ## Reproduce the executable reconstruction
 
-`derivatives/` is v0.1.0 made to **run** in two declared postures — faithfully as written (`OP_NOTEQUAL`
-disabled), and, for the isolated experimental networks, with **"nothing disabled"** (both are declared and
-verified in `derivatives/profiles/`, below): the full Script engine
-(Python MODEL + C++ PORT), sighash, `OP_CHECKSIG`/`CHECKMULTISIG` on real secp256k1,
-native instruments (escrow / hash‑lock / assurance), a UTXO `ConnectInputs`/`ConnectBlock`
+`derivatives/` is a faithful reconstruction of v0.1.0's rules, made to **run** in two declared postures —
+faithfully as written (`OP_NOTEQUAL` disabled), and, for the isolated experimental networks, with
+**"nothing disabled"** (both are declared and verified in `derivatives/profiles/`, below): the full Script
+engine (Python MODEL + C++ PORT), sighash, `OP_CHECKSIG`/`CHECKMULTISIG` on real secp256k1,
+lab-executed constructions (escrow / hash‑lock / assurance), a UTXO `ConnectInputs`/`ConnectBlock`
 ledger, a wallet, the P2P wire + chain sync, persistence, the neutral descendant matrix
 (BTC + BSV **executed**), a model of v0.1's commerce subsystem (signed listings + atoms reputation), a
 script **debugger**, a **full‑stack console**, and two live counterfactual networks —
 **NOV08‑X** and **JAN09‑X**.
 
 Which rule posture a run uses — the **faithful** reconstruction (v0.1 as written, its one disabled opcode
-`OP_NOTEQUAL` preserved) or the experimental **"nothing disabled"** posture that re‑opens it — is declared
+`OP_NOTEQUAL` preserved) or the experimental **"nothing disabled"** posture, which rewrites the
+`OP_NOTEQUAL` *token* to `OP_EQUAL OP_NOT` as a model-level macro (v0.1 has no such enum value or wire
+byte, so this is not a reopened on-wire opcode) — is declared
 and machine‑verified in [`derivatives/profiles/`](derivatives/profiles/): each profile's vocabulary is
 checked against the source opcode inventory and the live engine, so the distinction can never silently
 drift.
