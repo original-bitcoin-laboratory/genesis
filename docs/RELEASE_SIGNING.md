@@ -61,9 +61,11 @@ the archive and check the hash independently.
   keyserver): `B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA`. The public key is committed here at
   [`parthod0x-signing-key.asc`](parthod0x-signing-key.asc).
 - Keep the release marked **pre‑release / experimental** and repeat the **NOT money** framing.
-- Bump the version label in the site footer (`docs/*.html`, the `lab-footer` block, currently
-  `vX.Y.Z-experimental`) so the published site stays in sync with the newest release. The footer link
-  already targets `/releases/latest`, so only the label needs updating.
+- Bump the version in the site footer (`docs/*.html`, the `lab-footer` block) so the published site
+  stays in sync with the newest release — **both** the label **and** the link target, which points at
+  the exact release tag `.../releases/tag/vX.Y.Z-experimental`. (The tag URL is used instead of
+  `/releases/latest` because every release is a *pre-release*, and GitHub's `/releases/latest` resolves
+  only to full releases — it would otherwise bounce to the releases list.)
 
 ## 5. What operators run to verify
 
