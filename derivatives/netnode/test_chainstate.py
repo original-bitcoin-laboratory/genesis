@@ -17,8 +17,9 @@ sys.path.insert(0, str(_HERE))
 import cscript                                              # noqa: E402
 from chainsync import Chain, block_hash                    # noqa: E402
 from p2p import block_bytes, merkle_root, pow_ok           # noqa: E402
-from tx_sighash import Tx, TxIn, TxOut, dsha256, new_key, serialize as ser_tx  # noqa: E402
-from spend import sign                                     # noqa: E402
+from tx_sighash import (Tx, TxIn, TxOut, dsha256, new_key, serialize as ser_tx,   # noqa: E402
+                        SIGHASH_ALL, SIGHASH_ANYONECANPAY, sign_input)            # noqa: E402
+from spend import sign, scriptcode                         # noqa: E402
 
 from chainstate import ChainState                          # noqa: E402
 from chains import CHAINS                                  # noqa: E402
@@ -272,22 +273,139 @@ def test_height_beats_cumulative_work_the_discriminating_fork():
 
 
 def test_op_notequal_posture_controls_the_node_verifier():
-    """The node's own script verifier — `verify_spend_fast`, the function `ChainState._connect` calls on
-    every spend — honors the profile's script posture: a predicate using OP_NOTEQUAL is REJECTED under the
-    faithful posture (`reopen={}`) and ACCEPTED under nothing-disabled (`reopen={'OP_NOTEQUAL'}`). So the
-    posture controls the node, not merely a standalone declaration.
+    """OP_NOTEQUAL through the node's own script verifier — `verify_spend_fast`, the function
+    `ChainState._connect` calls on every spend — driven by the two NAMED profiles:
 
-    OP_NOTEQUAL additionally has NO serialized byte — it was never an `opcodetype` enum value, only a
-    commented-out case — so it cannot appear in a real (byte-serialized) transaction the node parses. Its
-    disabling is thus doubly secured and the distinction is inherently token-level; we assert both facts."""
+        profile          full-node result
+        jan09-faithful   serialized OP_NOTEQUAL unavailable AND the token rejected
+        jan09-x          the token honored, as the OP_EQUAL OP_NOT macro (documented behavior)
+
+    Two facts underlie the "unavailable" row. First, OP_NOTEQUAL has NO serialized byte — it was never an
+    `opcodetype` enum value, only a commented-out case — so it cannot appear in a byte-serialized
+    transaction the node parses. Second, the experimental posture does not re-open an on-wire opcode; it
+    rewrites the OP_NOTEQUAL *token* to `OP_EQUAL OP_NOT`, a model-level macro using two existing opcodes."""
     from fastverify import verify_spend_fast
-    # (1) OP_NOTEQUAL is unserializable -> it can never reach validation through a real script
+    faithful = frozenset(profiles.load("jan09-faithful").reopened_opcodes)     # ()
+    experimental = frozenset(profiles.load("jan09-x").reopened_opcodes)        # {'OP_NOTEQUAL'}
+    assert faithful == frozenset() and experimental == frozenset({"OP_NOTEQUAL"})
+    # (1) serialized OP_NOTEQUAL is unavailable -> it can never reach validation through a real script
     with pytest.raises(Exception):
         cscript.assemble(["OP_NOTEQUAL"])
-    # (2) the node verifier honors the posture on a pure-OP_NOTEQUAL predicate (no CHECKSIG): bb != aa
+    # (2) the node verifier honors each profile's posture on a pure-OP_NOTEQUAL predicate: bb != aa
     tx = Tx(1, [TxIn(ZERO, 0, b"", 0xFFFFFFFF)], [TxOut(0, b"\x51")], 0)
     ss, spk = [b"\xbb"], [b"\xaa", "OP_NOTEQUAL"]
-    assert verify_spend_fast(ss, spk, tx, 0, reopen=frozenset()) is False            # faithful: disabled -> reject
-    assert verify_spend_fast(ss, spk, tx, 0, reopen={"OP_NOTEQUAL"}) is True          # nothing-disabled: accept
-    # equal operands are false under the reopened posture too (bb != bb is false)
-    assert verify_spend_fast([b"\xbb"], [b"\xbb", "OP_NOTEQUAL"], tx, 0, reopen={"OP_NOTEQUAL"}) is False
+    assert verify_spend_fast(ss, spk, tx, 0, reopen=faithful) is False         # jan09-faithful: reject
+    assert verify_spend_fast(ss, spk, tx, 0, reopen=experimental) is True      # jan09-x: honored (bb != aa)
+    # documented experimental behavior: equal operands are false under the macro (bb != bb is false)
+    assert verify_spend_fast([b"\xbb"], [b"\xbb", "OP_NOTEQUAL"], tx, 0, reopen=experimental) is False
+
+
+# ---- full-node native instruments: exercised through ChainState (the ConnectBlock path) -----------
+
+def _spend_block(chain, st, tx):
+    """Connect a block carrying `tx` plus a coinbase that claims subsidy + tx fee. Returns st.height."""
+    fee = sum(st.utxo[(vin.prevhash, vin.n)].value for vin in tx.vin) - sum(o.value for o in tx.vout)
+    h = chain.by_hash[chain.tip].height + 1
+    _add(chain, st, [_coinbase(h, _subsidy(h) + fee), tx])
+    return st.height
+
+
+def _fund(chain, st, out_spk_tokens, value):
+    """Spend a fresh matured P2PK coinbase into one output with the given scriptPubKey; return its txid."""
+    priv, spk, cb = _matured_coin(chain, st)
+    tx = Tx(1, [TxIn(_txid(cb), 0, b"", 0xFFFFFFFF)],
+            [TxOut(value, cscript.assemble(out_spk_tokens))], 0)
+    tx.vin[0].script = cscript.assemble([sign(priv, spk, tx, 0)])
+    _spend_block(chain, st, tx)
+    assert (_txid(tx), 0) in st.utxo
+    return _txid(tx)
+
+
+def test_fullnode_hashlock_spend_and_reject():
+    """A faithful hash-lock output (`OP_HASH256 <H> OP_EQUALVERIFY <pub> OP_CHECKSIG`), created and then
+    spent through the full node: correct (preimage + signature) connects; a wrong preimage is rejected."""
+    chain, st = _fresh(maturity=1)
+    secret = b"correct horse battery staple"
+    H = dsha256(secret)                                    # OP_HASH256 == double-SHA256
+    kpriv, kpub = new_key()
+    hl = ["OP_HASH256", H, "OP_EQUALVERIFY", kpub, "OP_CHECKSIG"]
+    tid = _fund(chain, st, hl, 5_000_000)
+
+    # correct spend: <sig> <preimage>
+    good = Tx(1, [TxIn(tid, 0, b"", 0xFFFFFFFF)], [TxOut(4_000_000, b"\x51")], 0)
+    good.vin[0].script = cscript.assemble([sign(kpriv, hl, good, 0), secret])
+    h0 = st.height
+    assert _spend_block(chain, st, good) == h0 + 1         # connected
+    assert (tid, 0) not in st.utxo                         # hash-lock consumed
+
+    # a second hash-lock, spent with the WRONG preimage -> block rejected, tip unchanged
+    tid2 = _fund(chain, st, hl, 5_000_000)
+    bad = Tx(1, [TxIn(tid2, 0, b"", 0xFFFFFFFF)], [TxOut(4_000_000, b"\x51")], 0)
+    bad.vin[0].script = cscript.assemble([sign(kpriv, hl, bad, 0), b"wrong-secret"])
+    h1 = st.height
+    _add(chain, st, [_coinbase(st.height + 1, _subsidy(st.height + 1) + 1_000_000), bad])
+    assert st.height == h1                                 # NOT connected: wrong preimage
+    assert (tid2, 0) in st.utxo                            # coin untouched
+
+
+def test_fullnode_conditional_refund_both_branches():
+    """A hash-lock-OR-refund output (`OP_IF <hashlock> OP_ELSE <refund> OP_ENDIF`) spent through the full
+    node on BOTH branches: the recipient claims with (preimage + sig + OP_1); the sender refunds with
+    (sig + OP_0)."""
+    chain, st = _fresh(maturity=1)
+    rpriv, rpub = new_key()                                # recipient (claim)
+    spriv, spub = new_key()                                # sender (refund)
+    secret = b"payment-secret"
+    spk = ["OP_IF",
+           "OP_HASH256", dsha256(secret), "OP_EQUALVERIFY", rpub, "OP_CHECKSIG",
+           "OP_ELSE",
+           spub, "OP_CHECKSIG",
+           "OP_ENDIF"]
+
+    # claim path: <sig_r> <preimage> OP_1
+    tid = _fund(chain, st, spk, 5_000_000)
+    claim = Tx(1, [TxIn(tid, 0, b"", 0xFFFFFFFF)], [TxOut(4_000_000, b"\x51")], 0)
+    claim.vin[0].script = cscript.assemble([sign(rpriv, spk, claim, 0), secret, "OP_1"])
+    h0 = st.height
+    assert _spend_block(chain, st, claim) == h0 + 1
+
+    # refund path: <sig_s> OP_0
+    tid2 = _fund(chain, st, spk, 5_000_000)
+    refund = Tx(1, [TxIn(tid2, 0, b"", 0xFFFFFFFF)], [TxOut(4_000_000, b"\x52")], 0)
+    refund.vin[0].script = cscript.assemble([sign(spriv, spk, refund, 0), "OP_0"])
+    h1 = st.height
+    assert _spend_block(chain, st, refund) == h1 + 1
+    assert (tid, 0) not in st.utxo and (tid2, 0) not in st.utxo
+
+
+def test_fullnode_assurance_anyonecanpay_survives_added_input():
+    """An assurance/crowdfund aggregate through the full node: two pledges signed `SIGHASH_ANYONECANPAY`
+    are collected into one tx that funds a goal output and connects; the pledges commit only to their own
+    input, so this is the on-chain form of the model's assurance construction. A `SIGHASH_ALL` control is
+    rejected once a second input joins, because it commits to the whole input set."""
+    chain, st = _fresh(maturity=1)
+    acp = SIGHASH_ALL | SIGHASH_ANYONECANPAY               # 0x81
+
+    # two matured P2PK coins to pledge
+    p1, spk1, cb1 = _matured_coin(chain, st)
+    p2, spk2, cb2 = _matured_coin(chain, st)
+    v1 = st.utxo[(_txid(cb1), 0)].value
+    v2 = st.utxo[(_txid(cb2), 0)].value
+
+    goal = Tx(1,
+              [TxIn(_txid(cb1), 0, b"", 0xFFFFFFFF), TxIn(_txid(cb2), 0, b"", 0xFFFFFFFF)],
+              [TxOut(v1 + v2 - 2000, cscript.assemble(["OP_1"]))], 0)
+    # each pledger signs ONLY their own input under ANYONECANPAY
+    goal.vin[0].script = cscript.assemble([sign(p1, spk1, goal, 0, acp)])
+    goal.vin[1].script = cscript.assemble([sign(p2, spk2, goal, 1, acp)])
+    h0 = st.height
+    assert _spend_block(chain, st, goal) == h0 + 1         # both pledges collected -> connected
+
+    # control: a SIGHASH_ALL pledge does NOT survive a later-added input (verify_spend_fast level).
+    from fastverify import verify_spend_fast
+    tx_a = Tx(1, [TxIn(_txid(cb1), 0, b"", 0xFFFFFFFF)], [TxOut(v1 - 1000, cscript.assemble(["OP_1"]))], 0)
+    sig_all = sign(p1, spk1, tx_a, 0, SIGHASH_ALL)
+    assert verify_spend_fast([sig_all], spk1, tx_a, 0) is True
+    tx_b = Tx(1, [TxIn(_txid(cb1), 0, b"", 0xFFFFFFFF), TxIn(_txid(cb2), 0, b"", 0xFFFFFFFF)],
+              [TxOut(v1 - 1000, cscript.assemble(["OP_1"]))], 0)
+    assert verify_spend_fast([sig_all], spk1, tx_b, 0) is False   # SIGHASH_ALL broke when input 1 joined

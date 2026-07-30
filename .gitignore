@@ -30,3 +30,4 @@ __pycache__/
 .pytest_cache/
 .DS_Store
 reproduce-manifest.json
+reproduce-claims-manifest.json

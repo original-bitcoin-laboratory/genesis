@@ -41,3 +41,18 @@ jobs:
 
       - name: Reproduce the whole lab (Python suites + Rust cargo test)
         run: python scripts/reproduce.py --rust
+
+  # A focused, required gate: re-run only the checks behind the reconstruction's four findings, under
+  # the faithful profiles, cross-implemented in Rust. Fails hard if a requested backend is unavailable.
+  claims:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Python dependencies
+        run: pip install --quiet cryptography pytest
+      - name: Reproduce the four findings (faithful profiles, Rust cross-check)
+        run: python scripts/reproduce_claims.py --rust
