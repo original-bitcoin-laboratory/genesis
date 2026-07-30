@@ -61,6 +61,9 @@ the archive and check the hash independently.
   keyserver): `B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA`. The public key is committed here at
   [`parthod0x-signing-key.asc`](parthod0x-signing-key.asc).
 - Keep the release marked **pre‑release / experimental** and repeat the **NOT money** framing.
+- Bump the version label in the site footer (`docs/*.html`, the `lab-footer` block, currently
+  `vX.Y.Z-experimental`) so the published site stays in sync with the newest release. The footer link
+  already targets `/releases/latest`, so only the label needs updating.
 
 ## 5. What operators run to verify
 
