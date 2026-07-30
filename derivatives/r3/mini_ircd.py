@@ -42,23 +42,14 @@ class MiniIRCd:
         c = Client(reader, writer)
         c.send(f":{SERVER} NOTICE AUTH :*** Found your hostname")   # irc.cpp RecvUntil
         await writer.drain()
-        buf = b""
         try:
             while True:
-                chunk = await reader.read(4096)
-                if not chunk:
-                    break
-                # v0.1 terminates IRC lines with a BARE '\r' (irc.cpp: Send "...\r"), not '\r\n'.
-                # `readline()` only splits on '\n', so normalize '\r' -> '\n' to parse the real client
-                # (and still accept ordinary CRLF/LF lines from test clients).
-                buf += chunk.replace(b"\r", b"\n")
-                while b"\n" in buf:
-                    raw, buf = buf.split(b"\n", 1)
-                    line = raw.decode("latin-1", "replace").strip()
-                    if line:
-                        await self.on_line(c, line)
+                raw = await reader.readuntil(b"\r")     # v0.1 ends IRC lines with a bare '\r', not CRLF
+                line = raw.decode("latin-1", "replace").strip("\r\n")
+                if line:
+                    await self.on_line(c, line)
                 await writer.drain()
-        except (ConnectionError, asyncio.IncompleteReadError):
+        except (ConnectionError, asyncio.IncompleteReadError, asyncio.LimitOverrunError):
             pass
         finally:
             self.channel.discard(c)
