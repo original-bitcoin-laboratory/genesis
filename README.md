@@ -52,7 +52,10 @@ python scripts/verify_genesis.py   # both experimental genesis blocks re-derive 
 
 The unmodified 2009 `bitcoin.exe` was also run and hash‑verified against these
 reconstructions — the **historical** genesis is reconstructed from source by the C++/OpenSSL port and
-reproduced by the unmodified 2009 binary (`r3-findings/run1/`, level `JAN09-EXECUTED`); the Python and Rust
+reproduced by the unmodified 2009 binary (`r3-findings/run1/`, level `JAN09-EXECUTED`). Two such binaries,
+air‑gapped in isolated VMs, then **produced and relayed a block**: one mined block 1 at real difficulty 1 on
+that genesis and the other received and accepted it, both `blk0001.dat` byte‑identical — verified from the raw
+block bytes (`r3-findings/2026-07-31-twonode-mined-block/`, level `JAN09-EXECUTED`). The Python and Rust
 nodes regenerate the *experimental-network* genesis blocks, which they check differ from the historical
 hash. Findings, the honest claim, and scope live in the umbrella:
 [`common/README.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/README.md) · [`common/CLAIMS.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/CLAIMS.md).

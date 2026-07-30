@@ -193,11 +193,14 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   artifact, walled off: the full financial machine assembled on November's constitution
   (= the console under `nov08` rules), every completion decision disclosed + classed, **never
   presented as recovered code / "true Bitcoin"**. N-ORIG rules still win over J-DONOR/NEW-EXP.
-- [x] **R2 status** → `docs/R2_BUILD_RECONSTRUCTION.md` — honest: a verbatim **period build**
-  (MinGW 3.4 / wxWidgets 2.8 / OpenSSL 0.9.8 / BDB 4.x) is toolchain-hard and **not attempted**;
-  R2's behavioural intent is **met** (the C++ PORT reproduces consensus + exact genesis, and
-  the released binary was **run** — `r3-findings/run1`); NOV08's max reconstruction ceiling
-  established (= NOV08-Minimal). reproduce.py now **11 suites / 177 tests** (13/13 steps).
+- [x] **R2 status** → `docs/R2_BUILD_RECONSTRUCTION.md` — the period **build is done**: on a
+  pinned period toolchain (i686 · OpenSSL 1.0.2u · wxWidgets 2.8.12 · BDB 4.8 · Boost 1.42) the
+  unmodified source compiles, links, and runs — crypto core (`period_build_wsl.sh`) and a full
+  from‑source **`bitcoin.exe`** (`full_build_wsl.sh`), both **period locks** cleared. Honest
+  boundary: a **byte‑exact** reproduction of `fbcac071…` is **not** claimed (structural, not
+  bit‑for‑bit). Behavioural intent also met by the C++ PORT + the run binary (`r3-findings/run1`,
+  `…/2026-07-31-twonode-mined-block`); NOV08 ceiling established (= NOV08-Minimal). reproduce.py
+  now **11 suites / 177 tests** (13/13 steps).
 - [~] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
   unmodified v0.1.0 `bitcoin.exe` (sha256 `fbcac071…`, verified pre-run) was run and
   **reconstructed the exact genesis block** — hash `000000000019d668…`, merkle
@@ -207,7 +210,12 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   (`node_port.cpp`) = MODEL.** Wallet key-gen executed (addr `18YDsakg…`). Full GUI
   documented; observed **"version 0.1.1 Alpha"** (`VERSION=101`) and the historical
   **pay-to-IP** send mode. Findings + hashed manifest committed (raw bytes gitignored).
-  - Boundary / deferred: **sustained mining (block 1+) and the two-node network**
-    (relay / tx / reorg) — the 2009 GUI is stable only online on Win11 and difficulty-1
-    mining is a long grind; best done in a Windows-XP VM. Those behaviours are already
-    covered headlessly by `derivatives/node` + `derivatives/p2p`.
+  - [x] **Two-node block production + relay — witnessed (2026-07-31, `r3-findings/2026-07-31-twonode-mined-block/`).**
+    Two unmodified `bitcoin.exe` (both `fbcac071…`), air-gapped in VirtualBox on an isolated
+    `172.20.0.0/24`, discovered each other over the **original IRC path**; node B **mined block 1** at
+    real difficulty 1 (`000000005bdcfb…`, valid PoW, nonce `899943534`) on the **real genesis**, node A
+    **received and accepted** it, and both `blk0001.dat` are **byte-identical** (`899c94d2…`) — verified
+    from the raw block bytes, not just the GUI. This lifts **block production + relay** for the released
+    binary from MODEL/PORT to **JAN09-EXECUTED**. Findings + hashed manifest committed (raw bytes gitignored).
+  - Still to capture: **sustained multi-block mining, transaction relay, and reorg** between the two
+    nodes — already covered headlessly by `derivatives/node` + `derivatives/p2p`.
