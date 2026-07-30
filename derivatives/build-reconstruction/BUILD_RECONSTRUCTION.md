@@ -68,6 +68,41 @@ rely on — `VERSION` (`serialize.h:22`, value `101`) and `secure_allocator`
 in isolation except `sha.*`, which stands alone by design. This is why the reconstruction
 is all-or-nothing at the toolchain level.
 
+## Period build — the locks lift, and the original code runs (achieved)
+
+The two locks are not just documented — they have been cleared with a real period toolchain and
+the original source built and executed. On **WSL Ubuntu 24.04**, cross-compiling to **i686**
+(kills `serialize.h:462`) against **OpenSSL 1.0.2u** built from source (kills `bignum.h:49` — its
+`BIGNUM` is still public) makes the original crypto core compile:
+
+```
+COMPILES: serialize.h
+COMPILES: uint256.h
+COMPILES: bignum.h   (was the OpenSSL lock)
+COMPILES: key.h      (secp256k1 EC_KEY)
+```
+
+and [`period_exec_test.cpp`](period_exec_test.cpp) — linking the ORIGINAL `bignum.h` + `key.h`
+into a static i686 PE and run on Windows — passes every check:
+
+```
+PASS CBigNum  1000000*1000=1000000000
+PASS CBigNum  sign-mag vch {0,1,-1,127,128}
+PASS CKey     pubkey 65-byte uncompressed 0x04 (got 65)
+PASS CKey     secp256k1 sign (~71-byte DER)
+PASS CKey     verify(correct)=T verify(wrong)=F
+PASS CKey     static Verify(pubkey) round-trip
+```
+
+So Satoshi's original `class CBigNum : public BIGNUM` and the secp256k1 `CKey` — the two things the
+modern host could not build — compile *and run byte-correct* under the period toolchain. Reproduce
+with [`period_build_wsl.sh`](period_build_wsl.sh) (OpenSSL source pinned by SHA-256
+`ecd0c6ff…669d16`). `base58.h` and `script.cpp` still need donor declarations (`Hash()`/`Hash160()`
+from `util.h`, the tx types from `main.h`) — a coupling gap, not a toolchain lock; the full-vocabulary
+interpreter is separately re-derived and differential-tested in `derivatives/model` + `derivatives/port`.
+The remaining piece for a full runnable `bitcoin.exe` is the GUI/DB layer (wxWidgets 2.8 + BDB 4.7),
+which `PERIOD_BUILD.md` pins.
+
 ## Conclusion — what a faithful full build requires
 
 A byte-faithful build of the January 2009 client is **not** a matter of a few shims; it is

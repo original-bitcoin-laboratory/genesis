@@ -50,6 +50,13 @@ units this reconstruction marks as out of reach on a modern host.
 
 ## Status
 
-Not executed in this environment (host MSYS2 ships only 64-bit + OpenSSL 3.x; no i686
-toolchain or period libraries present). Recorded here as the faithful path; the modern-host
-substitute (opaque-`BIGNUM` port + experimental X-chains) is what the lab actually runs.
+**Crypto/consensus core: DONE.** The i686 + OpenSSL 1.0.2 half of this recipe has been executed on
+WSL Ubuntu 24.04 — the original `serialize.h / uint256.h / bignum.h / key.h` compile, and
+`period_exec_test.cpp` (original `bignum.h` + `key.h`) builds to a static i686 PE and runs byte-correct
+on Windows. Reproduce with [`period_build_wsl.sh`](period_build_wsl.sh); see the "Period build" section
+of [`BUILD_RECONSTRUCTION.md`](BUILD_RECONSTRUCTION.md).
+
+**Full GUI binary: not yet.** The wxWidgets 2.8 + Berkeley DB 4.7 layer (needed for a runnable
+`bitcoin.exe` linking `ui.*`/`db.*`/`net.*`) is the remaining cross-build and is not done here. The
+released `bitcoin.exe` is the JAN09-EXECUTED oracle regardless (see `docs/R3_*`); the modern-host
+substitute (opaque-`BIGNUM` port + experimental X-chains) is what the lab runs day to day.
