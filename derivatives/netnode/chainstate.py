@@ -57,7 +57,7 @@ class ChainState:
         self.rules = rules
         self.maturity = maturity
         self.min_bits = min_bits                            # difficulty floor (None -> genesis nBits)
-        self.reopen = frozenset(reopen)                     # script posture: {} faithful | {'OP_NOTEQUAL'} nothing-disabled
+        self.reopen = frozenset(reopen)                     # script posture: {} faithful | {'OP_NOTEQUAL'} experimental (token-macro, not a wire opcode)
         self.utxo: dict[tuple[bytes, int], Coin] = {}
         self.active: list[bytes] = []                       # genesis .. validated tip
         self.undo: dict[bytes, tuple[list, list]] = {}      # block -> (spent_prior, created_keys)

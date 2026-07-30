@@ -28,8 +28,12 @@ def combined(script_sig_tokens: list, script_pubkey_tokens: list) -> list:
 
 
 def _reopen(tokens: list, reopen) -> list:
-    """Re-open the opcode v0.1 disabled — `OP_NOTEQUAL` == `OP_EQUAL` then `OP_NOT` — for the
-    experimental 'nothing-disabled' posture. An empty `reopen` (the faithful default) leaves the tokens
+    """Expand the model token `OP_NOTEQUAL` to `OP_EQUAL`, `OP_NOT` for the experimental posture.
+
+    This is a MODEL-LEVEL CONVENIENCE MACRO, not the reactivation of an on-wire opcode: v0.1 has no
+    `OP_NOTEQUAL` enum value and no serialized opcode byte (see `inventory/OPCODES.json`), so the token
+    cannot be assembled to bytes or reach a node over the wire — the rewrite is purely at the token level,
+    using two opcodes that already exist. An empty `reopen` (the faithful default) leaves the tokens
     unchanged, so faithful validation still rejects `OP_NOTEQUAL`."""
     if not reopen or "OP_NOTEQUAL" not in reopen:
         return tokens
@@ -41,7 +45,8 @@ def _reopen(tokens: list, reopen) -> list:
 
 def verify_spend(script_sig_tokens: list, script_pubkey_tokens: list, tx, n_in: int, reopen=frozenset()) -> bool:
     """True iff the combined script runs and leaves a true top-of-stack. `reopen` selects the script
-    posture: empty (faithful — `OP_NOTEQUAL` disabled) or `{'OP_NOTEQUAL'}` (the nothing-disabled posture)."""
+    posture: empty (faithful — `OP_NOTEQUAL` rejected) or `{'OP_NOTEQUAL'}` (the experimental posture, which
+    expands the token to `OP_EQUAL OP_NOT` as a model-level macro — not a reopened wire opcode)."""
     return valid(_reopen(combined(script_sig_tokens, script_pubkey_tokens), reopen), SigChecker(tx, n_in))
 
 

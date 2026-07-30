@@ -110,7 +110,8 @@ def verify_spend_fast(script_sig_tokens, spk_tokens, tx, n_in: int, reopen=froze
     """A drop-in for `spend.verify_spend` that fast-paths the bare-P2PK case (native ECDSA, no
     Python script interpreter) and **delegates every other script to the faithful interpreter**.
     Differential-tested to equal `verify_spend` on every input. `reopen` forwards the script posture
-    (empty = faithful; `{'OP_NOTEQUAL'}` = nothing-disabled) — the P2PK fast path is unaffected by it."""
+    (empty = faithful; `{'OP_NOTEQUAL'}` = experimental, a token-level `OP_EQUAL OP_NOT` macro rather than a
+    reopened wire opcode) — the P2PK fast path is unaffected by it."""
     if (_is_p2pk(spk_tokens) and len(script_sig_tokens) == 1
             and isinstance(script_sig_tokens[0], (bytes, bytearray)) and script_sig_tokens[0]):
         sig = bytes(script_sig_tokens[0])
