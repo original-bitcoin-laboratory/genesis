@@ -95,6 +95,13 @@ Releases are **GPG‑signed** (key `B0145F74B78CF1DA`, fingerprint
 the reproducible recipe (`scripts/verify_genesis.py`) *regenerates* the artifact from a stated input —
 inspectability rather than authentication, and the guarantee that lasts, with no key and no node to trust.
 
+Two things extend that guarantee. Anyone can **re-derive the historical genesis in a browser, offline** —
+[`docs/verify-genesis.html`](docs/verify-genesis.html) (live at
+[bitcoin-lab.org/verify-genesis.html](https://bitcoin-lab.org/verify-genesis.html)) rebuilds the 3 January
+2009 block from its source bytes with a self-contained SHA-256, nothing to install. And the source of truth
+is preserved on independent, content-addressed roots — Software Heritage, IPFS, and Radicle
+([`docs/PRESERVATION.md`](docs/PRESERVATION.md)) — so it stays retrievable even if a host disappears.
+
 ## Layout
 
 ```text
