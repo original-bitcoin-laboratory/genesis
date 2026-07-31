@@ -164,7 +164,13 @@ def main() -> int:
                 "sources": src,
                 "sighash": sighash,
                 "opcodes": opcodes,
-                "disabled_commented_out": sorted(commented),
+                # disabled cases carry a file:line witness too, so EVERY inventory entry — including
+                # OP_NOTEQUAL, which has no enum value, only a commented-out case — is source-anchored.
+                "disabled_commented_out": [
+                    {"name": n, "file": "script.cpp", "line": disabled_line[n],
+                     "source_sha256": src["script.cpp"]["sha256"]}
+                    for n in sorted(commented)
+                ],
             },
             indent=2,
         )
@@ -199,7 +205,8 @@ def main() -> int:
     L.append("")
     L.append(f"**{impl_count}** opcodes have an `EvalScript` execution branch.")
     if commented:
-        L.append(f" Explicitly disabled / commented-out in `script.cpp`: {', '.join('`'+c+'`' for c in sorted(commented))}.")
+        L.append(" Explicitly disabled / commented-out in `script.cpp`: " +
+                 ", ".join(f"`{c}` (`script.cpp:{disabled_line[c]}`)" for c in sorted(commented)) + ".")
     L.append("")
     L.append("Each opcode carries a `file:line` source witness: `script.h` for its `opcodetype`")
     L.append("declaration and `script.cpp` for its `EvalScript` execution branch (both hashed above).")

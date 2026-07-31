@@ -37,15 +37,27 @@ DERIV = ROOT / "derivatives"
 # sub-check (the isolated blocks reproduce and differ from the historical hash) and is explicitly NOT evidence
 # for the historical-genesis claim, which the C++/OpenSSL port (--cpp) and the deposited binary carry.
 CLAIMS = {
-    "C1-reconstruction": (
-        "Reproducible reconstruction: the experimental-network genesis blocks are deterministic (and differ "
-        "from the historical hash); the HISTORICAL January genesis is re-derived by the C++/OpenSSL port "
-        "(--cpp) and the unmodified 2009 binary (deposited separately, DOI in the paper); the consensus core "
-        "is cross-implemented (Python here, Rust via --rust) and reorg-safe",
-        [("experimental-network genesis determinism (NOV08-X, JAN09-X) -- NOT the historical block", ROOT / "scripts", None),
-         ("consensus core (sighash/checksig/script), Python", DERIV / "model",
-          ["-k", "sighash or checksig or evalscript or cscript"]),
-         ("reorg-safety", DERIV / "netnode", ["-k", "reorg or disconnect"])],
+    "C1a-experimental-genesis-determinism": (
+        "The two experimental-network genesis blocks (NOV08-X, JAN09-X) re-derive deterministically from "
+        "source and differ from the historical hash -- explicitly NOT the historical block",
+        [("experimental-network genesis determinism (verify_genesis.py)", ROOT / "scripts", None)],
+    ),
+    "C1b-consensus-core-cross-implemented": (
+        "The consensus core (sighash, CHECKSIG/CHECKMULTISIG, Script) is cross-implemented and agrees -- "
+        "Python here, Rust via --rust, C++/OpenSSL via --cpp",
+        [("consensus core (sighash/checksig/script), Python", DERIV / "model",
+          ["-k", "sighash or checksig or evalscript or cscript"])],
+    ),
+    "C1c-reorg-safety": (
+        "The validated chainstate reorganises safely: it activates the taller VALID branch and aborts a "
+        "reorg to an invalid branch, restoring the prior tip",
+        [("reorg-safety", DERIV / "netnode", ["-k", "reorg or disconnect"])],
+    ),
+    "C1d-historical-genesis-reconstruction": (
+        "The HISTORICAL January genesis (000000000019d668...) is re-derived by the C++/OpenSSL period build "
+        "and the unmodified 2009 binary (the historical-binary witness, deposited separately; DOI in the "
+        "paper). EXTERNAL to this reproducer -- author-reported and hash-manifested, not executed here",
+        "EXTERNAL",
     ),
     "C2-broad-interpreter": (
         "A broad spending-predicate interpreter: opcode vocabulary + escrow/hash-lock/assurance + a marketplace source component",
@@ -80,6 +92,28 @@ def run(cmd, cwd) -> tuple[bool, str]:
     p = subprocess.run(cmd, cwd=str(cwd), capture_output=True, text=True)
     out = (p.stdout + p.stderr).strip()
     return p.returncode == 0, (out.splitlines()[-1] if out else "")
+
+
+def _cpp_toolchain(gxx: str) -> dict:
+    """The OpenSSL the C++ port actually links: the toolchain's `openssl version` and the libcrypto DLL
+    imported by port.exe (name / path / sha256) -- not Python's OpenSSL, which need not be the same lib."""
+    info: dict = {}
+    gp = Path(gxx)
+    mingw_bin = gp.resolve().parent if gp.exists() else None
+    ossl = shutil.which("openssl") or (str(mingw_bin / "openssl.exe") if mingw_bin else None)
+    if ossl and Path(ossl).exists():
+        r = subprocess.run([ossl, "version"], capture_output=True, text=True)
+        info["openssl_version"] = r.stdout.strip() if r.returncode == 0 else None
+    objdump = shutil.which("objdump")
+    port_exe = DERIV / "port" / "port.exe"
+    if objdump and port_exe.exists():
+        r = subprocess.run([objdump, "-p", str(port_exe)], capture_output=True, text=True)
+        dlls = re.findall(r"DLL Name:\s*(\S*crypto\S*)", r.stdout, re.IGNORECASE)
+        if dlls:
+            dll = (mingw_bin / dlls[0]) if mingw_bin else None
+            info["libcrypto"] = {"name": dlls[0], "path": str(dll) if dll and dll.exists() else None,
+                                 "sha256": _sha256(dll) if dll and dll.exists() else None}
+    return info
 
 
 def _profiles_block():
@@ -132,10 +166,18 @@ def main() -> int:
     claim_docs = []
     for cid, (desc, checks) in CLAIMS.items():
         print(f"\n{cid}: {desc}")
+        if checks == "EXTERNAL":
+            # A claim whose evidence lives outside this reproducer (the deposited historical-binary
+            # witness). Recorded with its own state -- author-reported -- and NOT folded into all_passed.
+            print("  [EXTERNAL] author-reported (historical-binary witness); not executed by this reproducer")
+            claim_docs.append({"id": cid, "description": desc, "external": True, "passed": None,
+                               "note": "author-reported and hash-manifested; carried by the C++/OpenSSL "
+                                       "period build and the deposited 2009 binary (see the archival deposit)"})
+            continue
         checks_doc, claim_ok = [], True
         for label, d, extra in checks:
             if extra is None and (d / "run.sh").exists() is False and (d.name == "scripts"):
-                ok, tail = run([py, "verify_genesis.py"], d)          # C1 script check
+                ok, tail = run([py, "verify_genesis.py"], d)          # experimental-genesis script check
             elif extra is None:
                 ok, tail = run([py, "-m", "pytest", "-q"], d)          # whole small suite
             else:
@@ -179,25 +221,34 @@ def main() -> int:
             print(f"  [{'PASS' if ok else 'FAIL'}] validator-rs cargo test ({summary})")
             results.append(ok)
             _, ver = run([cargo, "--version"], rs)
+            eval_data = rs / "tests" / "data" / "eval_data.rs"
+            nvec = (len(re.findall(r'\(\s*"', eval_data.read_text(encoding="utf-8")))
+                    if eval_data.exists() else None)     # opcode differential vectors (paper §3: "73")
             backends["rust"] = {"requested": True, "ran": True, "passed": ok, "cargo": ver,
                                 "cargo_lock_sha256": _sha256(rs / "Cargo.lock"),
-                                "tests_passed": npass, "result": summary}
+                                "tests_passed": npass, "opcode_differential_vectors": nvec, "result": summary}
     if args.cpp:
-        print("\n== C++/OpenSSL port differential ==")
-        bash, script = shutil.which("bash"), DERIV / "port" / "run.sh"
-        if not bash or not script.exists():
-            print("  [FAIL] port: bash/script unavailable (--cpp requested)"); results.append(False); skipped_requested += 1
+        print("\n== C++/OpenSSL port (differential + sighash + CHECKSIG/CHECKMULTISIG) ==")
+        bash = shutil.which("bash")
+        port = DERIV / "port"
+        harnesses = [("bn_opcode_differential", port / "run.sh"),               # BN/opcode vectors
+                     ("sighash_incl_anyonecanpay", port / "run_sighash.sh"),     # SignatureHash + ANYONECANPAY
+                     ("checksig_checkmultisig_e2e", port / "run_checksig.sh")]   # end-to-end secp256k1
+        if not bash or not all(s.exists() for _, s in harnesses):
+            print("  [FAIL] port: bash/scripts unavailable (--cpp requested)"); results.append(False); skipped_requested += 1
             backends["cpp"] = {"requested": True, "ran": False}
         else:
-            ok, tail = run([bash, str(script)], script.parent)
-            print(f"  [{'PASS' if ok else 'FAIL'}] MODEL == PORT differential {tail}")
-            results.append(ok)
+            runs, all_cpp = {}, True
+            for name, script in harnesses:
+                ok, tail = run([bash, str(script)], port)
+                print(f"  [{'PASS' if ok else 'FAIL'}] {name:28} {tail}")
+                results.append(ok); all_cpp = all_cpp and ok
+                m = re.search(r"\bon (\d+)\b", tail) or re.search(r"\b(\d+)\s+PASS\b", tail)  # count exercised
+                runs[name] = {"passed": ok, "result": tail, "count": int(m.group(1)) if m else None}
             gxx = shutil.which("g++") or "/c/msys64/mingw64/bin/g++"
-            gproc = subprocess.run([gxx, "--version"], capture_output=True, text=True)
-            gver = (gproc.stdout.splitlines() or [""])[0]                 # first line = the version
-            _, ossl = run([py, "-c", "import ssl;print(ssl.OPENSSL_VERSION)"], ROOT)
-            backends["cpp"] = {"requested": True, "ran": True, "passed": ok, "g++": gver, "openssl": ossl,
-                               "result": tail}
+            gver = (subprocess.run([gxx, "--version"], capture_output=True, text=True).stdout.splitlines() or [""])[0]
+            backends["cpp"] = {"requested": True, "ran": True, "passed": all_cpp, "g++": gver,
+                               "cpp_toolchain": _cpp_toolchain(gxx), "harnesses": runs}
 
     ok_git, commit = run(["git", "rev-parse", "HEAD"], ROOT)
     all_passed = all(results) and skipped_requested == 0

@@ -11,7 +11,7 @@ GXX="${GXX:-g++}"
 python ../model/tx_sighash.py > py_sighash_out.txt
 
 if diff -u cxx_sighash_out.txt py_sighash_out.txt; then
-  echo "IDENTICAL SignatureHash on $(grep -c . cxx_sighash_out.txt) (nIn x SIGHASH) cases — MODEL == OpenSSL port"
+  echo "IDENTICAL SignatureHash on $(grep -c . cxx_sighash_out.txt) (nIn x SIGHASH) cases -- MODEL == OpenSSL port"
 else
   echo "DIFFERENCES"; exit 1
 fi
