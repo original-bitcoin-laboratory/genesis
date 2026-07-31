@@ -27,18 +27,34 @@ preserved as primary evidence; behaviour independently regenerable) from "publis
 "retrievable from several independent, content-addressed archives." Still **not money**: no premine, no
 token, no market — a valueless research instrument, preserved.
 
-## Enabling the two scaffolded layers (one-time)
+## Enabling the two scaffolded layers
 
-**Radicle (peer-to-peer git mirror).** Install `rad`, create a dedicated Laboratory identity, and bind the
-repository to its Radicle Identifier (`rid`). Export the keypair and add it as the repository secret
-`RAD_KEYPAIR`; the `radicle` job in `preserve.yml` then syncs on each run. For hourly mirroring once it is
-configured, add `- cron: '0 * * * *'` to the workflow's `schedule`.
+### IPFS (content-addressed pinning) — automated once a token is set
+1. Create an account at a pinning service and generate an **API JWT** (e.g. Pinata → *API Keys* → *New Key*
+   with `pinFileToIPFS` permission → copy the JWT).
+2. In the `genesis` repo: **Settings → Secrets and variables → Actions → New repository secret**, name it
+   `IPFS_TOKEN`, paste the JWT.
 
-**IPFS (content-addressed pinning).** Obtain a token from any pinning service (or run a self-hosted node),
-add it as the secret `IPFS_TOKEN`, and the `ipfs` job pins the signed release bundle whenever a release is
-published, recording the resulting CID so anyone can retrieve the exact bytes by hash.
+That is all. On the next published release the `ipfs` job downloads the signed `*.tar.gz`, `SHA256SUMS`, and
+`*.asc`, pins each to IPFS, and logs the CIDs — retrievable from any gateway and cross-checkable against
+`SHA256SUMS`.
 
-Until those secrets are set, the two jobs log a clear "skipped — not configured" and do nothing; Software
-Heritage archival runs regardless.
+### Radicle (peer-to-peer git mirror) — a one-time local publish, then keep in sync
+Radicle is published from a machine running the `rad` node, once:
+1. Install: `curl -sSf https://radicle.xyz/install | sh` (adds `rad` under `~/.radicle/bin`).
+2. Create the Laboratory identity: `rad auth` (choose an alias, set a passphrase). Keys are written to
+   `~/.radicle/keys/`.
+3. In a clone of this repo: `rad init --public --name genesis` — this publishes the repository to Radicle
+   and prints its **Repository ID** (`rad:z…`). Start the node if prompted: `rad node start`. The repo is now
+   replicated across public Radicle seeds — no single host.
+4. Keep it in sync: after each GitHub push, run `git push rad` (the `rad` remote is added by `rad init`), or
+   `rad sync --announce`.
+
+Record the `rad:z…` Repository ID once published. *(Optional CI:* add the exported key as `RAD_KEYPAIR` and
+its passphrase as `RAD_PASSPHRASE` to let the `radicle` job attempt an automated sync — but the local
+`git push rad` above is the reliable path.)*
+
+Until the secrets/identity are set, the scaffolded jobs log "skipped — not configured"; Software Heritage
+archival runs regardless.
 
 **NOT money.**

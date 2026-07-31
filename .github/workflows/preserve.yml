@@ -56,14 +56,27 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' }}
     steps:
-      - name: Pin the signed reproduction bundle (if configured)
+      - name: Pin the signed release bundle to IPFS via Pinata (if configured)
         env:
-          IPFS_TOKEN: ${{ secrets.IPFS_TOKEN }}
-          TARBALL_URL: ${{ github.event.release.tarball_url }}
+          IPFS_TOKEN: ${{ secrets.IPFS_TOKEN }}   # a Pinata JWT; see docs/PRESERVATION.md
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
         run: |
           if [ -z "$IPFS_TOKEN" ]; then
             echo "IPFS_TOKEN not set — IPFS pin skipped. See docs/PRESERVATION.md to enable."
             exit 0
           fi
-          echo "IPFS_TOKEN present — pinning the release source + SHA256SUMS to a content-addressed store."
-          # Scaffolded: fetch the release assets and pin them; record the resulting CID in the release notes.
+          mkdir -p dist
+          gh release download "$TAG" -R "$GITHUB_REPOSITORY" -D dist -p '*.tar.gz' -p 'SHA256SUMS' -p '*.asc' || true
+          shopt -s nullglob
+          for f in dist/*; do
+            echo "== pinning $(basename "$f") =="
+            resp=$(curl -sS -X POST "https://api.pinata.cloud/pinning/pinFileToIPFS" \
+              -H "Authorization: Bearer $IPFS_TOKEN" \
+              -F "file=@$f" \
+              -F "pinataMetadata={\"name\":\"$(basename "$f")\"}")
+            cid=$(printf '%s' "$resp" | grep -o '"IpfsHash":"[^"]*"' | cut -d'"' -f4)
+            echo "  CID: ${cid:-<none - check response>}   ${resp:0:200}"
+          done
+          echo "Every pinned file is content-addressed by CID and also SHA256-listed in SHA256SUMS, so a"
+          echo "gateway copy either matches or does not. Retrieve with: ipfs get <CID>  (or any IPFS gateway)."
