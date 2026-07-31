@@ -14,7 +14,10 @@ wallet, persistence, marketplace/UI tools, the neutral descendant tracker/matrix
     python scripts/reproduce_claims.py --rust --cpp    # + cross-implementation backends
     python scripts/reproduce_claims.py --manifest out.json
 
-Exit code 0 iff every requested check passed with zero skips and no artifact drift.
+Completeness is reported in three states, not one boolean: `all_internal_checks_passed` (the runnable
+checks), `cross_implementation_complete` (C1b's Python+Rust+C++ agreement — needs `--rust --cpp`), and
+`external_claims_complete` (the author-reported historical claim C1d, false until its archival deposit is
+public). Exit code 0 iff every internal runnable check passed; the external claim never flips it.
 """
 from __future__ import annotations
 
@@ -251,9 +254,34 @@ def main() -> int:
                                "cpp_toolchain": _cpp_toolchain(gxx), "harnesses": runs}
 
     ok_git, commit = run(["git", "rev-parse", "HEAD"], ROOT)
-    all_passed = all(results) and skipped_requested == 0
+
+    # Bind the cross-implementation claim (C1b) to the ACTUAL backend results, not the Python check
+    # alone: it counts as passed only when Python AND Rust AND C++ all ran and agreed. A Python-only or
+    # single-backend run leaves it null (incomplete) — never a false pass on unrun evidence.
+    rust_ok = backends.get("rust", {}).get("passed") is True
+    cpp_ok = backends.get("cpp", {}).get("passed") is True
+    for c in claim_docs:
+        if c["id"].startswith("C1b"):
+            py_ok = c["passed"] is True
+            c["cross_implementation"] = {"python": py_ok,
+                                         "rust": rust_ok if args.rust else None,
+                                         "cpp": cpp_ok if args.cpp else None}
+            if args.rust and args.cpp:
+                c["passed"] = bool(py_ok and rust_ok and cpp_ok)
+            else:
+                c["passed"] = None
+                c["incomplete"] = "cross-implementation requires --rust --cpp"
+
+    internal = [c for c in claim_docs if not c.get("external")]
+    backends_ok = all(b.get("passed") for b in backends.values() if b.get("requested"))
+    all_internal = (all(c.get("passed") is True for c in internal)
+                    and drift_ok and backends_ok and skipped_requested == 0)
+    cross_impl_complete = bool(args.rust and args.cpp and rust_ok and cpp_ok)
+    external_complete = False   # C1d depends on the PUBLIC archival deposit (author-gated); flip at deposit
+    submission_complete = bool(all_internal and cross_impl_complete and external_complete)
+
     manifest = {
-        "schema": 1,
+        "schema": 2,   # 2: three-state completeness; C1b bound to backends; external C1d excluded
         "kind": "claim-scoped reconstruction reproduction",
         "generated": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
         "commit": commit if ok_git else None,
@@ -273,13 +301,26 @@ def main() -> int:
         },
         "claims": claim_docs,
         "artifact_regeneration": {"monetary_difference_reproducible": drift_ok, "path": "paper-artifacts/monetary-difference.json"},
-        "all_passed": all_passed,
+        # completeness is three-state: internal runnable checks are separate from the external
+        # (author-reported) historical claim and from cross-implementation coverage.
+        "all_internal_checks_passed": all_internal,
+        "cross_implementation_complete": cross_impl_complete,
+        "external_claims_complete": external_complete,
+        "submission_evidence_complete": submission_complete,
     }
     args.manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    print(f"\n{'ALL CLAIMS REPRODUCED' if all_passed else 'FAILURES ABOVE'} — "
-          f"{sum(results)}/{len(results)} checks, {skipped_requested} skipped-requested.")
+    if all_internal and not external_complete:
+        print("\nAll internally runnable claims passed; one external historical claim (C1d) remains "
+              "author-reported pending archival deposit — submission evidence is NOT yet complete.")
+    elif all_internal:
+        print("\nAll internal claims passed and external claims complete.")
+    else:
+        print("\nINCOMPLETE or FAILURES above — see per-claim states (C1b needs --rust --cpp).")
+    print(f"  internal claims {sum(1 for c in internal if c.get('passed') is True)}/{len(internal)}, "
+          f"{sum(results)}/{len(results)} checks; cross-impl complete: {cross_impl_complete}; "
+          f"external complete: {external_complete}")
     print(f"manifest -> {args.manifest.name}")
-    return 0 if all_passed else 1
+    return 0 if all_internal else 1
 
 
 if __name__ == "__main__":

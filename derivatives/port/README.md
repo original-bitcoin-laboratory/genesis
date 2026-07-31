@@ -16,7 +16,7 @@ reimplementation's.
 | arithmetic (`BN_add/sub/mul/div/mod/lshift/rshift`, `BN_cmp`) | **real OpenSSL** — the actual engine |
 | opcode bodies (splice / bitwise / numeric / compare / within) | reproduced from `script.cpp` EvalScript |
 | `CBigNum` **class shape** | **ported**: 2009 code did `class CBigNum : public BIGNUM`, impossible on OpenSSL 3.x (opaque `BIGNUM`), so this holds a `BIGNUM*` member instead |
-| script parser, ECDSA (`OP_CHECKSIG`/`CHECKMULTISIG`), control flow | out of scope (as in the MODEL) |
+| script parser, ECDSA (`OP_CHECKSIG`/`CHECKMULTISIG`), sighash, control flow | out of scope for **this** BN port (`port.cpp`) — the sighash path is covered by `run_sighash.sh` and `OP_CHECKSIG`/`CHECKMULTISIG` by `run_checksig.sh` (see *Other harnesses* below); the script parser stays in the MODEL |
 
 ## Differential result
 
@@ -24,7 +24,7 @@ reimplementation's.
 `vectors.txt`, and diffs. Current result:
 
 ```
-IDENTICAL on 39 vectors — Python MODEL == real OpenSSL BN port
+IDENTICAL on 63 vectors -- Python MODEL == real OpenSSL BN port
 ```
 
 i.e. the Python MODEL's number/opcode semantics are confirmed against real
