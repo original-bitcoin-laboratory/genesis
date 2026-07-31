@@ -77,7 +77,12 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
+          # git + diffutils are MSYS base packages the reproduction needs inside the msys2 shell:
+          # reproduce_claims.py shells out to `git rev-parse HEAD`, and the C++/OpenSSL port
+          # harnesses (run.sh / run_sighash.sh) diff their output against golden vectors. The
+          # native Windows git is not on the msys2 PATH, so it must be installed here.
           install: >-
+            git diffutils
             mingw-w64-x86_64-gcc mingw-w64-x86_64-openssl
             mingw-w64-x86_64-python
             mingw-w64-x86_64-python-cryptography mingw-w64-x86_64-python-pytest
