@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "evidence_level": "JAN09-EXECUTED",
+  "run": "2026-08-01-sustained-relay",
+  "generated": "2026-08-01",
+  "evidence_dir": "r4-evidence/2026-08-01-sustained-relay (gitignored)",
+  "file_count": 6,
+  "files": [
+    {
+      "path": "nodeA/blk0001.dat",
+      "size": 962,
+      "sha256": "aaf08aa3827bc62ef42ebd0b8424cdb304d49ca43ecb4855549a1eea6dbebc4c"
+    },
+    {
+      "path": "nodeA/debug-excerpt.txt",
+      "size": 2018,
+      "sha256": "cc19c0deec279f281e7a77e41f7e4af8e4194bcd6f691b3cb26e2cd215b3e2f7"
+    },
+    {
+      "path": "nodeA/debug.log",
+      "size": 6248,
+      "sha256": "b050669d34d8021aef406538c8bd2a6056a1d1d5995ca335d0d66da900ed2e94"
+    },
+    {
+      "path": "nodeB/blk0001.dat",
+      "size": 962,
+      "sha256": "aaf08aa3827bc62ef42ebd0b8424cdb304d49ca43ecb4855549a1eea6dbebc4c"
+    },
+    {
+      "path": "nodeB/debug-excerpt.txt",
+      "size": 2116,
+      "sha256": "393d5db909ad7c4f99b68ea9f9047803f2cbfb41027561f3c2c6bc1670803aaf"
+    },
+    {
+      "path": "nodeB/debug.log",
+      "size": 6982,
+      "sha256": "ee9522f33b372b07d67d5eb33f306647b2851c5d78ec4535b583143614adb722"
+    }
+  ]
+}

@@ -217,5 +217,14 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     **received and accepted** it, and both `blk0001.dat` are **byte-identical** (`899c94d2…`) — verified
     from the raw block bytes, not just the GUI. This lifts **block production + relay** for the released
     binary from MODEL/PORT to **JAN09-EXECUTED**. Findings + hashed manifest committed (raw bytes gitignored).
-  - Still to capture: **sustained multi-block mining, transaction relay, and reorg** between the two
-    nodes — already covered headlessly by `derivatives/node` + `derivatives/p2p`.
+  - [x] **Sustained multi-block mining + relay — witnessed (2026-08-01, `r4-findings/2026-08-01-sustained-relay/`; R4a).**
+    In a fresh two-VM setup (`obl-r4`, both `bitcoin.exe` `fbcac071…`), node B (peer-gated miner) **mined
+    three** valid difficulty-1 blocks in succession on the real genesis (`000000005df5e9…`, `00000000092b53…`,
+    `00000000b719a9…`; nonces 2048796966 / 1227982862 / 309381835), and node A **received and accepted every
+    one** (`inv → getdata → received block → ProcessBlock: ACCEPTED`, height 1→2→3 in lockstep). Both
+    `blk0001.dat` are **byte-identical** (`aaf08aa3…`) and `verify_r4.py` confirms 0 orphans, all-valid PoW,
+    and both nodes on the **same tip** — lifting sustained mining + relay for the released binary from
+    MODEL to **JAN09-EXECUTED**. Findings + hashed manifest committed (raw bytes gitignored).
+  - Still to capture: **a reorganisation** (R4b) and a **relayed spend** (R4c, needs a matured coinbase
+    ~101 blocks) between the two nodes — both already covered headlessly by `derivatives/node` +
+    `derivatives/p2p`.
