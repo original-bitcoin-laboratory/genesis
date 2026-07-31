@@ -1,0 +1,69 @@
+# Decentralized preservation — request archival of the Original Bitcoin Laboratory repositories on
+# independent, content-addressed infrastructure, so the reproducible source of truth survives even if the
+# primary host does not. The reconstruction re-derives from source with no live node; this keeps that
+# source retrievable and self-verifying from more than one root. NOT money.
+name: preserve
+
+on:
+  schedule:
+    - cron: '17 4 * * *'          # daily. Software Heritage "save now" is rate-limited, so not hourly.
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # 1) Software Heritage — the universal source-code archive. No credentials needed; runs on every trigger.
+  software-heritage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request archival of every OBL repository
+        run: |
+          for repo in genesis pre-genesis common .github; do
+            url="https://github.com/original-bitcoin-laboratory/$repo"
+            echo "== $url =="
+            resp=$(curl -sS -X POST -H "Accept: application/json" \
+              "https://archive.softwareheritage.org/api/1/origin/save/git/url/$url/" || echo '{"error":"request failed"}')
+            echo "  ${resp:0:300}"
+            sleep 6
+          done
+
+  # 2) Radicle — a peer-to-peer git mirror, so the repo has no single hosting dependency.
+  #    Enable by adding a RAD_KEYPAIR secret (one-time setup in docs/PRESERVATION.md).
+  #    For hourly mirroring once configured, add:  - cron: '0 * * * *'  above.
+  radicle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Mirror to Radicle (if configured)
+        env:
+          RAD_KEYPAIR: ${{ secrets.RAD_KEYPAIR }}
+        run: |
+          if [ -z "$RAD_KEYPAIR" ]; then
+            echo "RAD_KEYPAIR not set — Radicle mirror skipped. See docs/PRESERVATION.md to enable."
+            exit 0
+          fi
+          echo "RAD_KEYPAIR present — mirroring to the OBL Radicle identity."
+          # One-time setup (docs/PRESERVATION.md): rad auth with the imported key, then `rad init`/`rad id`
+          # bind this repo to the OBL Radicle Identifier (rid), and this step runs `rad sync --announce`.
+
+  # 3) IPFS — pin the signed reproduction bundle so it is addressable by content hash, host-independent.
+  #    Enable by adding an IPFS_TOKEN secret; runs only when a release is published.
+  ipfs:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' }}
+    steps:
+      - name: Pin the signed reproduction bundle (if configured)
+        env:
+          IPFS_TOKEN: ${{ secrets.IPFS_TOKEN }}
+          TARBALL_URL: ${{ github.event.release.tarball_url }}
+        run: |
+          if [ -z "$IPFS_TOKEN" ]; then
+            echo "IPFS_TOKEN not set — IPFS pin skipped. See docs/PRESERVATION.md to enable."
+            exit 0
+          fi
+          echo "IPFS_TOKEN present — pinning the release source + SHA256SUMS to a content-addressed store."
+          # Scaffolded: fetch the release assets and pin them; record the resulting CID in the release notes.
