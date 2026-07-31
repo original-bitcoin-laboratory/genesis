@@ -5,6 +5,9 @@
 > Bitcoin," and explicitly valueless. There is no coin to buy, sell, or hold. Read
 > [`SECURITY.md`](SECURITY.md) before exposing a node to the internet.
 
+> Already running? [`PARTICIPATE.md`](PARTICIPATE.md) is the participant guide — the whole coin lifecycle
+> (generate / mine / send / receive) plus the opcode vocabulary and the contract forms the node validates.
+
 ## Requirements
 
 - **Python 3.10+.** The node runs on the standard library plus the lab's own modules (its faithful
