@@ -5,7 +5,7 @@
   "generator": {
     "script": "inventory-symbols.py",
     "sha256": "27ee3ad96738b2c950cf06088b0f6f0724ef79bd96a355c49143e543e7aacf47",
-    "commit": "c0e4b15de846cbd2834d9542301d75b4f8cb86a1"
+    "commit": "482b7acbce2abf2e631c623adcf40a89d74e1e6c"
   },
   "sources": {
     "script.h": {
