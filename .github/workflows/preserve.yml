@@ -66,7 +66,10 @@ jobs:
             echo "IPFS_TOKEN not set — IPFS pin skipped. See docs/PRESERVATION.md to enable."
             exit 0
           fi
-          if [ -z "$TAG" ]; then TAG=$(gh release view -R "$GITHUB_REPOSITORY" --json tagName -q .tagName); fi
+          # every OBL release is a pre-release, so `gh release view` (latest, non-prerelease) finds nothing;
+          # use `gh release list`, which includes pre-releases, and take the most recent tag.
+          if [ -z "$TAG" ]; then TAG=$(gh release list -R "$GITHUB_REPOSITORY" --limit 1 --json tagName --jq '.[0].tagName'); fi
+          if [ -z "$TAG" ]; then echo "no release found to pin"; exit 1; fi
           echo "Pinning signed assets from release $TAG"
           mkdir -p dist
           gh release download "$TAG" -R "$GITHUB_REPOSITORY" -D dist -p '*.tar.gz' -p 'SHA256SUMS' -p '*.asc' || true
