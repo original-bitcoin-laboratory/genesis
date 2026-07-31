@@ -103,7 +103,12 @@ inspectability rather than authentication, and the guarantee that lasts, with no
 Two things extend that guarantee. Anyone can **re-derive the historical genesis in a browser, offline** —
 [`docs/verify-genesis.html`](docs/verify-genesis.html) (live at
 [bitcoin-lab.org/verify-genesis.html](https://bitcoin-lab.org/verify-genesis.html)) rebuilds the 3 January
-2009 block from its source bytes with a self-contained SHA-256, nothing to install. And the source of truth
+2009 block from its source bytes with a self-contained SHA-256, nothing to install. A companion
+**full-node verifier** — [`docs/verify.html`](docs/verify.html) (live at
+[bitcoin-lab.org/verify.html](https://bitcoin-lab.org/verify.html)) — goes further: it re-validates a
+**block, script, or spend** you paste in (proof-of-work, the merkle commitment, the script interpreter,
+ECDSA) by running the node's own Rust validator compiled to **WebAssembly**, entirely on your device
+(regenerate it with `derivatives/validator-rs/tools/build_wasm_verifier.py`). And the source of truth
 is preserved on independent, content-addressed roots — Software Heritage, IPFS, and Radicle
 ([`docs/PRESERVATION.md`](docs/PRESERVATION.md)) — so it stays retrievable even if a host disappears.
 

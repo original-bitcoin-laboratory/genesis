@@ -1,0 +1,308 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Verify it yourself — Original Bitcoin Laboratory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Re-validate a block, a script, or a spend in your browser — the node's own Rust consensus core, compiled to WebAssembly, running entirely on your device. No server. Not money.">
+<style>
+  :root{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
+    --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44;
+    --brass:#c9a75f; --focus:#7fb2c8; --pass:#5fbf8f; --fail:#d9a34a;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:light){:root{
+    --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6; --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+    --line:#e0e5e0; --line-strong:#cfd6d0; --brass:#9a7726; --focus:#2f6b85; --pass:#2f8f63; --fail:#a9741f; }}
+  :root[data-theme="dark"]{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c; --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44; --brass:#c9a75f; --focus:#7fb2c8; --pass:#5fbf8f; --fail:#d9a34a; }
+  :root[data-theme="light"]{
+    --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6; --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+    --line:#e0e5e0; --line-strong:#cfd6d0; --brass:#9a7726; --focus:#2f6b85; --pass:#2f8f63; --fail:#a9741f; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:840px;margin:0 auto;padding:clamp(26px,6vw,60px) clamp(15px,4vw,26px) 64px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:0 0 14px}
+  h1{font-family:var(--mono);font-weight:700;font-size:clamp(25px,5vw,40px);line-height:1.07;letter-spacing:-.01em;margin:0 0 14px;text-wrap:balance}
+  .lede{font-size:clamp(14.5px,2.3vw,17px);color:var(--ink-dim);max-width:66ch;margin:0}
+  .lede b{color:var(--ink);font-weight:600}
+  .engine{margin:16px 0 0;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);letter-spacing:.02em}
+  .engine b{color:var(--brass);font-weight:600}
+  .tabs{display:flex;gap:6px;margin:26px 0 0;flex-wrap:wrap}
+  .tab{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);
+    background:var(--panel-2);border:1px solid var(--line);border-radius:9px 9px 0 0;padding:9px 15px;cursor:pointer;
+    border-bottom:none;transition:color .15s,background .15s}
+  .tab[aria-selected="true"]{color:var(--ink);background:var(--panel);border-color:var(--line-strong)}
+  .tab:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+  .panel{background:var(--panel);border:1px solid var(--line-strong);border-radius:0 12px 12px 12px;padding:18px 20px}
+  .panel[hidden]{display:none}
+  label.fl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 6px}
+  .field+.field{margin-top:13px}
+  textarea,input.hl{width:100%;font-family:var(--mono);font-size:12.5px;color:var(--ink);background:var(--panel-2);
+    border:1px solid var(--line-strong);border-radius:8px;padding:9px 11px;resize:vertical;line-height:1.5}
+  textarea{min-height:96px;word-break:break-all}
+  textarea:focus,input.hl:focus{outline:none;border-color:var(--focus)}
+  .exrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;align-items:center}
+  .chip{font-family:var(--mono);font-size:11px;color:var(--ink-dim);background:var(--panel-2);border:1px solid var(--line);
+    border-radius:6px;padding:4px 9px;cursor:pointer}
+  .chip:hover{border-color:var(--focus);color:var(--ink)}
+  .chip.lead{color:var(--ink-faint);border:none;background:none;padding-left:0;cursor:default;letter-spacing:.08em;text-transform:uppercase;font-size:10px}
+  .verdict{margin:16px 0 0;border:1px solid var(--line-strong);border-radius:12px;padding:16px 18px;background:var(--panel-2);
+    display:flex;align-items:center;gap:15px;transition:border-color .2s}
+  .verdict.ok{border-color:var(--pass)} .verdict.no{border-color:var(--fail)}
+  .vdot{width:13px;height:13px;border-radius:50%;flex:none;background:var(--ink-faint);box-shadow:0 0 0 4px color-mix(in srgb,var(--ink-faint) 20%,transparent)}
+  .verdict.ok .vdot{background:var(--pass);box-shadow:0 0 0 4px color-mix(in srgb,var(--pass) 22%,transparent)}
+  .verdict.no .vdot{background:var(--fail);box-shadow:0 0 0 4px color-mix(in srgb,var(--fail) 22%,transparent)}
+  .vtext b{font-family:var(--mono);font-size:14px;display:block;color:var(--ink)}
+  .vtext span{font-size:12.5px;color:var(--ink-dim)}
+  .rows{margin-top:14px}
+  .row{display:grid;grid-template-columns:150px 1fr;gap:8px 14px;align-items:baseline;padding:7px 0;border-top:1px solid var(--line)}
+  .row:first-child{border-top:0}
+  .row .k{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint)}
+  .row .v{font-family:var(--mono);font-size:12.5px;color:var(--ink);word-break:break-all;line-height:1.5}
+  .row .v.dim{color:var(--ink-dim)} .row .v .y{color:var(--pass)} .row .v .n{color:var(--fail)}
+  .txs{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .txline{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);padding:3px 0;word-break:break-all}
+  .txline b{color:var(--ink);font-weight:600}
+  .cb{color:var(--brass)}
+  .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:72ch;line-height:1.65}
+  .note b{color:var(--ink-dim)}
+  .tags{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+  .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
+  a{color:var(--focus)}
+  @media(max-width:540px){.row{grid-template-columns:1fr;gap:2px}}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Original Bitcoin Laboratory</p>
+  <h1>Verify it yourself.</h1>
+  <p class="lede">Paste a <b>block</b>, a <b>script</b>, or a <b>spend</b> and re-validate it <b>on your device</b>.
+    This page runs the node's own Rust consensus core — the same validator the network uses — compiled to
+    <b>WebAssembly</b>. No server, no network, no dependencies. Don't trust the lab; re-check the bytes.</p>
+  <p class="engine" id="engine">loading the validator…</p>
+
+  <div class="tabs" role="tablist" aria-label="What to verify">
+    <button class="tab" role="tab" id="tab-block"  aria-selected="true"  aria-controls="p-block">Block</button>
+    <button class="tab" role="tab" id="tab-script" aria-selected="false" aria-controls="p-script">Script</button>
+    <button class="tab" role="tab" id="tab-spend"  aria-selected="false" aria-controls="p-spend">Spend</button>
+  </div>
+
+  <!-- BLOCK -->
+  <section class="panel" id="p-block" role="tabpanel" aria-labelledby="tab-block">
+    <div class="field">
+      <label class="fl" for="block-hex">Raw block (hex)</label>
+      <textarea id="block-hex" spellcheck="false" autocapitalize="off"></textarea>
+    </div>
+    <div class="exrow"><span class="chip lead">try</span>
+      <button class="chip" data-ex="block-valid">a valid block</button>
+      <button class="chip" data-ex="block-clear">clear</button>
+    </div>
+    <div class="verdict" id="v-block"><div class="vdot"></div><div class="vtext"><b id="vb-t">…</b><span id="vb-s"></span></div></div>
+    <div class="rows" id="r-block"></div>
+  </section>
+
+  <!-- SCRIPT -->
+  <section class="panel" id="p-script" role="tabpanel" aria-labelledby="tab-script" hidden>
+    <div class="field">
+      <label class="fl" for="script-hex">Script (hex) — runs the v0.1 interpreter, no signature checker</label>
+      <textarea id="script-hex" spellcheck="false" autocapitalize="off"></textarea>
+    </div>
+    <div class="exrow"><span class="chip lead">try</span>
+      <button class="chip" data-ex="s-add">2 + 3 = 5</button>
+      <button class="chip" data-ex="s-hash">SHA-256 equals</button>
+      <button class="chip" data-ex="s-within">3 in [1,5)</button>
+      <button class="chip" data-ex="s-false">a failing script</button>
+    </div>
+    <div class="verdict" id="v-script"><div class="vdot"></div><div class="vtext"><b id="vs-t">…</b><span id="vs-s"></span></div></div>
+    <div class="rows" id="r-script"></div>
+  </section>
+
+  <!-- SPEND -->
+  <section class="panel" id="p-spend" role="tabpanel" aria-labelledby="tab-spend" hidden>
+    <div class="field"><label class="fl" for="sp-sig">scriptSig (hex)</label><textarea id="sp-sig" spellcheck="false" autocapitalize="off" style="min-height:64px"></textarea></div>
+    <div class="field"><label class="fl" for="sp-spk">scriptPubKey (hex) — the output being spent</label><textarea id="sp-spk" spellcheck="false" autocapitalize="off" style="min-height:64px"></textarea></div>
+    <div class="field"><label class="fl" for="sp-tx">spending transaction (hex)</label><textarea id="sp-tx" spellcheck="false" autocapitalize="off" style="min-height:64px"></textarea></div>
+    <div class="field" style="max-width:160px"><label class="fl" for="sp-n">input index</label><input class="hl" id="sp-n" inputmode="numeric" value="0"></div>
+    <div class="exrow"><span class="chip lead">try</span>
+      <button class="chip" data-ex="sp-multisig">a 2-of-2 multisig spend</button>
+      <button class="chip" data-ex="sp-clear">clear</button>
+    </div>
+    <div class="verdict" id="v-spend"><div class="vdot"></div><div class="vtext"><b id="vp-t">…</b><span id="vp-s"></span></div></div>
+    <div class="rows" id="r-spend"></div>
+  </section>
+
+  <p class="note"><b>What this proves.</b> The earliest Bitcoin survives as hash-identified source, and most claims about
+    it circulate as lore. Here the actual validation — proof-of-work, the merkle commitment, coinbase placement, the
+    script interpreter, ECDSA — runs in front of you, from the <i>same</i> Rust core the reconstruction's nodes run, so
+    a result is something you regenerate, not something you take on faith. Everything is inside this one file:
+    <b>save it (Ctrl/⌘-S) and it works forever, offline, and device to device.</b></p>
+  <p class="note"><b>Not money.</b> This verifies historical and experimental artifacts; nothing here holds, moves, or is
+    worth anything. It is a reproducibility instrument, part of the <a href="/">Original Bitcoin Laboratory</a>.
+    Want to run a node or transact on the experimental chains? See
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/derivatives/netnode/PARTICIPATE.md">PARTICIPATE.md</a>.</p>
+  <div class="tags"><span>offline · self-contained</span><span>same core as the node (WASM)</span><span>re-derivable, not asserted</span><span>not money</span></div>
+</div>
+
+<footer style="max-width:840px;margin:44px auto 40px;padding:18px clamp(15px,4vw,26px) 0;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:12px;line-height:1.75;color:var(--ink-faint);text-align:center">
+  <div style="letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);font-size:11px;margin-bottom:8px">
+    <a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none">◆ Original Bitcoin Laboratory</a></div>
+  <div>Genesis <span style="color:var(--ink-dim)">000000000019d668…0a8ce26f</span> · 3 January 2009</div>
+  <div><a href="https://github.com/original-bitcoin-laboratory/genesis" style="color:var(--ink-faint)">source</a> ·
+    the node's Rust validator in WebAssembly — <b style="color:var(--brass)">NOT money</b> · no warranty</div>
+</footer>
+
+<script>
+// ---- inlined validator core (obl-validator, wasm32) + examples ----
+const WASM_B64="__WASM_B64__";
+const EX={ block:"__EX_BLOCK__", sig:"__EX_SIG__", spk:"__EX_SPK__", tx:"__EX_TX__" };
+const SCRIPTS={
+  "s-add":"5253935587",                               // OP_2 OP_3 OP_ADD OP_5 OP_EQUAL -> true
+  "s-hash":"__EX_SHA__",                               // <"abc"> OP_SHA256 <sha256("abc")> OP_EQUAL -> true
+  "s-within":"535155a5",                              // OP_3 OP_1 OP_5 OP_WITHIN -> 1<=3<5 -> true
+  "s-false":"5253935487"                              // OP_2 OP_3 OP_ADD OP_4 OP_EQUAL -> false
+};
+
+// ---- wasm marshaling (no wasm-bindgen: the module has zero imports) ----
+let EXPORTS=null;
+function b64ToBytes(b64){const bin=atob(b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u;}
+function readResult(rptr){
+  const mem=EXPORTS.memory;
+  const len=new DataView(mem.buffer).getUint32(rptr,true);
+  const s=new TextDecoder().decode(new Uint8Array(mem.buffer,rptr+4,len));
+  EXPORTS.__dealloc(rptr,4+len);
+  return JSON.parse(s);
+}
+function call(fn,str){
+  const mem=EXPORTS.memory;
+  const bytes=new TextEncoder().encode(str);
+  const ptr=EXPORTS.__alloc(bytes.length);
+  new Uint8Array(mem.buffer,ptr,bytes.length).set(bytes);
+  const rptr=EXPORTS[fn](ptr,bytes.length);
+  EXPORTS.__dealloc(ptr,bytes.length);
+  return readResult(rptr);
+}
+
+// ---- rendering helpers ----
+const $=id=>document.getElementById(id);
+function setVerdict(pre,cls,title,sub){
+  const v=$("v-"+pre); v.className="verdict "+cls;
+  $(pre==="block"?"vb-t":pre==="script"?"vs-t":"vp-t").textContent=title;
+  $(pre==="block"?"vb-s":pre==="script"?"vs-s":"vp-s").textContent=sub||"";
+}
+function rowsHTML(pairs){
+  return pairs.map(([k,v,cls])=>`<div class="row"><div class="k">${k}</div><div class="v ${cls||""}">${v}</div></div>`).join("");
+}
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const yn=b=>b?'<span class="y">yes</span>':'<span class="n">no</span>';
+
+// ---- BLOCK ----
+function runBlock(){
+  const hex=$("block-hex").value.trim();
+  if(!hex){ setVerdict("block","","waiting for a block…","paste raw block hex above"); $("r-block").innerHTML=""; return; }
+  const r=call("verify_block",hex);
+  if(r.error && !r.header){ setVerdict("block","no","Could not read this block.",r.error); $("r-block").innerHTML=""; return; }
+  const valid=r.ok && r.pow_ok;
+  setVerdict("block", valid?"ok":"no",
+    valid?"This is a valid block.":"This block does not validate.",
+    valid?"Structure, coinbase, merkle commitment and proof-of-work all check out — recomputed here."
+         :(r.error?("Rejected: "+r.error):"Proof-of-work does not meet the target."));
+  const h=r.header||{};
+  const merkleOk=r.merkle_ok!==false && !r.error;
+  let rows=[
+    ["block hash", esc(r.block_hash)],
+    ["version", esc(h.version), "dim"],
+    ["prev block", esc(h.prev), "dim"],
+    ["merkle (committed)", esc(h.merkle_root)],
+    ["merkle (recomputed)", (r.merkle_recomputed?esc(r.merkle_recomputed):"—")+"  "+(r.merkle_recomputed?yn(merkleOk):"")],
+    ["timestamp", esc(h.time), "dim"],
+    ["bits / target", esc(h.bits)+" &nbsp; <span class='dim'>"+esc(r.target||"")+"</span>"],
+    ["nonce", esc(h.nonce), "dim"],
+    ["proof-of-work", yn(!!r.pow_ok)],
+  ];
+  if(r.ntx!=null) rows.push(["transactions", esc(r.ntx)]);
+  let html=rowsHTML(rows);
+  if(r.txs && r.txs.length){
+    html+='<div class="txs">'+r.txs.map((t,i)=>
+      `<div class="txline">${t.coinbase?'<span class="cb">coinbase</span>':'tx '+i} · <b>${esc(t.txid)}</b> · ${t.vin} in / ${t.vout} out · out ${esc(t.out_total)}</div>`
+    ).join("")+'</div>';
+  }
+  $("r-block").innerHTML=html;
+}
+
+// ---- SCRIPT ----
+function runScript(){
+  const hex=$("script-hex").value.trim();
+  if(!hex){ setVerdict("script","","waiting for a script…","paste script hex above"); $("r-script").innerHTML=""; return; }
+  const r=call("run_script",hex);
+  if(r.error){ setVerdict("script","no","Could not read this script.",r.error); $("r-script").innerHTML=""; return; }
+  setVerdict("script", r.ok?"ok":"no",
+    r.ok?"Script succeeds — leaves true on the stack.":"Script does not succeed.",
+    r.executed?"The v0.1 interpreter ran it to completion; the verdict is the top of the final stack."
+              :"The interpreter aborted before finishing.");
+  const stack=(r.stack||[]).map(x=>x===""?"<span class='dim'>(empty)</span>":esc(x));
+  $("r-script").innerHTML=rowsHTML([
+    ["executed", yn(!!r.executed)],
+    ["result", r.ok?'<span class="y">true</span>':'<span class="n">false</span>'],
+    ["final stack", stack.length?stack.join("<br>"):"<span class='dim'>(empty)</span>"],
+  ]);
+}
+
+// ---- SPEND ----
+function runSpend(){
+  const sig=$("sp-sig").value.trim(), spk=$("sp-spk").value.trim(), tx=$("sp-tx").value.trim();
+  const n=parseInt($("sp-n").value.trim()||"0",10)||0;
+  if(!sig||!spk||!tx){ setVerdict("spend","","waiting for a spend…","fill scriptSig, scriptPubKey and the transaction"); $("r-spend").innerHTML=""; return; }
+  const r=call("verify_spend",JSON.stringify({script_sig:sig,script_pubkey:spk,tx:tx,n_in:n}));
+  if(r.error){ setVerdict("spend","no","Could not evaluate this spend.",r.error); $("r-spend").innerHTML=""; return; }
+  setVerdict("spend", r.ok?"ok":"no",
+    r.ok?"The spend is authorized.":"The spend is rejected.",
+    r.ok?"scriptSig · scriptPubKey satisfies the predicate under this transaction — signatures and all."
+        :"The combined script left false on top (bad signature, wrong preimage, or unmet condition).");
+  $("r-spend").innerHTML=rowsHTML([
+    ["input index", esc(n)],
+    ["result", r.ok?'<span class="y">authorized</span>':'<span class="n">rejected</span>'],
+  ]);
+}
+
+// ---- examples + tabs ----
+function loadExample(id){
+  if(id==="block-valid"){ $("block-hex").value=EX.block; runBlock(); }
+  else if(id==="block-clear"){ $("block-hex").value=""; runBlock(); }
+  else if(id in SCRIPTS){ $("script-hex").value=SCRIPTS[id]; runScript(); }
+  else if(id==="sp-multisig"){ $("sp-sig").value=EX.sig; $("sp-spk").value=EX.spk; $("sp-tx").value=EX.tx; $("sp-n").value="0"; runSpend(); }
+  else if(id==="sp-clear"){ $("sp-sig").value=$("sp-spk").value=$("sp-tx").value=""; runSpend(); }
+}
+document.querySelectorAll("[data-ex]").forEach(b=>b.addEventListener("click",()=>loadExample(b.dataset.ex)));
+
+const TABS=[["tab-block","p-block"],["tab-script","p-script"],["tab-spend","p-spend"]];
+function selectTab(tabId){
+  TABS.forEach(([t,p])=>{
+    const on=t===tabId;
+    $(t).setAttribute("aria-selected",on?"true":"false");
+    $(p).hidden=!on;
+  });
+  if(tabId==="tab-block") runBlock(); else if(tabId==="tab-script") runScript(); else runSpend();
+}
+TABS.forEach(([t])=>$(t).addEventListener("click",()=>selectTab(t)));
+
+// live re-verify on input (debounced)
+let deb; const on=(id,fn)=>$(id).addEventListener("input",()=>{clearTimeout(deb);deb=setTimeout(fn,120);});
+on("block-hex",runBlock);
+on("script-hex",runScript);
+["sp-sig","sp-spk","sp-tx","sp-n"].forEach(id=>on(id,runSpend));
+
+// ---- boot ----
+WebAssembly.instantiate(b64ToBytes(WASM_B64),{}).then(({instance})=>{
+  EXPORTS=instance.exports;
+  const v=readResult(EXPORTS.version());
+  $("engine").innerHTML=`validator: <b>${esc(v.crate)} ${esc(v.version)}</b> — the node's Rust consensus core, compiled to WebAssembly, running on your device.`;
+  // prefill the block example so the page shows a real result immediately
+  $("block-hex").value=EX.block;
+  runBlock();
+}).catch(e=>{
+  $("engine").textContent="failed to load the validator: "+e;
+});
+</script>

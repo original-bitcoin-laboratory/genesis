@@ -9,6 +9,8 @@ authors = ["parthod0x"]
 [lib]
 name = "obl_validator"
 path = "src/lib.rs"
+# rlib for the native bin + `cargo test`; cdylib for the wasm32 build that backs the browser verifier.
+crate-type = ["cdylib", "rlib"]
 
 [[bin]]
 name = "obl-validate"
@@ -24,3 +26,11 @@ num-bigint = "0.4"
 num-traits = "0.2"
 ripemd = "0.1"
 sha1 = "0.10"
+
+# wasm32 only (the browser verifier). `serde_json` builds the result objects. `getrandom` is pulled
+# transitively by k256; the verifier never signs (signing is deterministic RFC6979 and unused here), so
+# we register a stub via the `custom` feature rather than `js` — that keeps the wasm import-free (no
+# wasm-bindgen), so it instantiates from inlined bytes. None of this reaches native builds.
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+serde_json = "1"
+getrandom = { version = "0.2", features = ["custom"] }

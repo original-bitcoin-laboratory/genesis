@@ -27,6 +27,11 @@ pub mod store;
 pub mod wallet;
 pub mod wire;
 
+// Browser verifier: raw `extern "C"` exports + a tiny JS marshaling shim (no wasm-bindgen), compiled
+// only for the wasm32 target so the same validation core runs client-side. See `docs/verify.html`.
+#[cfg(target_arch = "wasm32")]
+pub mod wasmapi;
+
 // ---- SHA-256 (FIPS 180-4) + double SHA-256 ---------------------------------------
 
 const K: [u32; 64] = [

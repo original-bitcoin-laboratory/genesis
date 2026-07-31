@@ -129,6 +129,20 @@ builder, and the rest from the regenerable generators in [`tools/`](tools/) (`ge
 block reproduces the Python's block hash. The novel 256-bit compact-target/PoW math was additionally
 cross-checked against the Python reference across easy / hard / edge `nBits`.
 
+## Browser verifier (WebAssembly)
+
+The same core compiles to `wasm32-unknown-unknown` and backs a self-contained browser page
+([`../../docs/verify.html`](../../docs/verify.html), live at
+[bitcoin-lab.org/verify.html](https://bitcoin-lab.org/verify.html)): paste a **block, script, or spend**
+and it re-validates on your device — no server, no `wasm-bindgen`, a zero-import module instantiated from
+inlined bytes. The wasm layer (`src/wasmapi.rs`, `#[cfg(target_arch = "wasm32")]`) exposes `verify_block` /
+`run_script` / `verify_spend` over a small hand-written FFI. Regenerate the page from source:
+
+```
+rustup target add wasm32-unknown-unknown
+python tools/build_wasm_verifier.py
+```
+
 ## Provenance
 
 The consensus meaning is the lab's (faithful to v0.1); this is a **NEW-EXP** re-implementation in a
