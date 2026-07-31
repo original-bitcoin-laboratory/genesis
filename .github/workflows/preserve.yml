@@ -54,7 +54,7 @@ jobs:
   #    Enable by adding an IPFS_TOKEN secret; runs only when a release is published.
   ipfs:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'release' }}
+    if: ${{ github.event_name == 'release' || github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Pin the signed release bundle to IPFS via Pinata (if configured)
         env:
@@ -66,6 +66,8 @@ jobs:
             echo "IPFS_TOKEN not set — IPFS pin skipped. See docs/PRESERVATION.md to enable."
             exit 0
           fi
+          if [ -z "$TAG" ]; then TAG=$(gh release view -R "$GITHUB_REPOSITORY" --json tagName -q .tagName); fi
+          echo "Pinning signed assets from release $TAG"
           mkdir -p dist
           gh release download "$TAG" -R "$GITHUB_REPOSITORY" -D dist -p '*.tar.gz' -p 'SHA256SUMS' -p '*.asc' || true
           shopt -s nullglob
