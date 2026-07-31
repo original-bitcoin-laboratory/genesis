@@ -28,7 +28,15 @@ import profiles                                            # noqa: E402  (the na
 
 ZERO = b"\x00" * 32
 EASY = 0x207FFFFF
-RULES = CHAINS["jan09x"].rules
+# The paper-facing consensus tests are governed by the FAITHFUL profile (jan09-faithful), never by the
+# experimental jan09-x network. Its monetary rules are provably identical to CHAINS["jan09x"].rules
+# (asserted in test_height_beats_… below), so this only removes the appearance that the X-network object
+# supplies evidence — the numbers are unchanged.
+FAITHFUL = profiles.load("jan09-faithful")
+RULES = FAITHFUL.rules()
+assert (RULES.COIN, RULES.subsidy_base, RULES.halving, RULES.spacing, RULES.coinbase_rule) == (
+    (lambda r: (r.COIN, r.subsidy_base, r.halving, r.spacing, r.coinbase_rule))(CHAINS["jan09x"].rules)
+), "faithful vs experimental monetary rules diverged"
 _tag = [0]
 
 

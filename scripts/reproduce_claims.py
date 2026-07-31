@@ -23,6 +23,7 @@ import datetime
 import hashlib
 import json
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -31,15 +32,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent            # genesis/
 DERIV = ROOT / "derivatives"
 
-# claim id -> (description, [(label, dir, pytest args)]). Each finding maps to the exact tests that
-# demonstrate it; run under the faithful profiles only.
+# claim id -> (description, [(label, dir, pytest args)]). The paper's findings rest on the faithful profiles
+# (jan09-faithful, nov08-source-bounded); the one experimental-genesis check under C1 is a determinism-only
+# sub-check (the isolated blocks reproduce and differ from the historical hash) and is explicitly NOT evidence
+# for the historical-genesis claim, which the C++/OpenSSL port (--cpp) and the deposited binary carry.
 CLAIMS = {
-    "C1-genesis-dual-impl": (
-        "January genesis re-derives byte-for-byte; consensus core cross-implemented and reorg-safe",
-        [("verify_genesis", ROOT / "scripts", None),      # run as a script, not pytest
-         ("netnode reorg/disconnect", DERIV / "netnode", ["-k", "reorg or disconnect"]),
-         ("model core (sighash/checksig/script)", DERIV / "model",
-          ["-k", "sighash or checksig or evalscript or cscript"])],
+    "C1-reconstruction": (
+        "Reproducible reconstruction: the experimental-network genesis blocks are deterministic (and differ "
+        "from the historical hash); the HISTORICAL January genesis is re-derived by the C++/OpenSSL port "
+        "(--cpp) and the unmodified 2009 binary (deposited separately, DOI in the paper); the consensus core "
+        "is cross-implemented (Python here, Rust via --rust) and reorg-safe",
+        [("experimental-network genesis determinism (NOV08-X, JAN09-X) -- NOT the historical block", ROOT / "scripts", None),
+         ("consensus core (sighash/checksig/script), Python", DERIV / "model",
+          ["-k", "sighash or checksig or evalscript or cscript"]),
+         ("reorg-safety", DERIV / "netnode", ["-k", "reorg or disconnect"])],
     ),
     "C2-broad-interpreter": (
         "A broad spending-predicate interpreter: opcode vocabulary + escrow/hash-lock/assurance + a marketplace source component",
@@ -48,8 +54,10 @@ CLAIMS = {
          ("marketplace source component (model)", DERIV / "market", None)],
     ),
     "C3-monetary-params-differ": (
-        "The five monetary parameters differ between the November preview and the January release",
-        [("NOV08-X differential (regenerate + check 5 params)", DERIV / "nov08x", ["-k", "differential or param or monetary"])],
+        "The five monetary parameters differ between the November preview and the January release "
+        "(source-bounded profiles only; no experimental X network involved)",
+        [("source-bounded monetary difference (nov08-source-bounded vs jan09-faithful)", DERIV / "profiles",
+          ["-k", "source_bounded_monetary"])],
     ),
     "C4-height-fork-and-missing-bounds": (
         "Best chain by height not cumulative work; substantial machinery, several 2010-era bounds absent",
@@ -138,10 +146,17 @@ def main() -> int:
         claim_docs.append({"id": cid, "description": desc, "checks": checks_doc, "passed": claim_ok})
         results.append(claim_ok)
 
-    # artifact drift: regenerate the NOV08-X differential and confirm it still runs
-    print("\n== artifact drift ==")
-    drift_ok, tail = run([py, "differential.py"], DERIV / "nov08x")
-    print(f"  [{'PASS' if drift_ok else 'FAIL'}] NOV08-X differential regenerates {tail}")
+    # artifact regeneration: regenerate the paper's monetary-difference artifact and confirm it is byte-stable
+    # (a real reproducibility check on a paper artifact — not the experimental X-network differential)
+    print("\n== artifact regeneration ==")
+    prof = DERIV / "profiles"
+    art = ROOT / "paper-artifacts" / "monetary-difference.json"
+    ok1, _ = run([py, "test_source_bounded_monetary.py"], prof)
+    first = art.read_bytes() if art.exists() else b""
+    ok2, _ = run([py, "test_source_bounded_monetary.py"], prof)
+    second = art.read_bytes() if art.exists() else b""
+    drift_ok = bool(ok1 and ok2 and first and first == second)
+    print(f"  [{'PASS' if drift_ok else 'FAIL'}] paper-artifacts/monetary-difference.json regenerates byte-identically")
     results.append(drift_ok)
 
     # requested cross-implementation backends (fail hard, never skip-pass)
@@ -154,11 +169,19 @@ def main() -> int:
             print("  [FAIL] validator-rs: cargo/crate unavailable (--rust requested)"); results.append(False); skipped_requested += 1
             backends["rust"] = {"requested": True, "ran": False}
         else:
-            ok, tail = run([cargo, "test", "--locked", "--quiet"], rs)
-            print(f"  [{'PASS' if ok else 'FAIL'}] validator-rs cargo test {'(all passed)' if ok else tail}")
+            proc = subprocess.run([cargo, "test", "--locked", "--quiet"], cwd=str(rs), capture_output=True, text=True)
+            ok = proc.returncode == 0
+            # cargo prints one "test result: ok. N passed" per test binary (unit + doc); the LAST line is
+            # the doc-test summary (0), so sum across all binaries for the true count rather than tailing.
+            blob = proc.stdout + proc.stderr
+            npass = sum(int(m) for m in re.findall(r"test result: ok\. (\d+) passed", blob))
+            summary = f"{npass} passed" if ok else (blob.strip().splitlines() or ["failed"])[-1]
+            print(f"  [{'PASS' if ok else 'FAIL'}] validator-rs cargo test ({summary})")
             results.append(ok)
             _, ver = run([cargo, "--version"], rs)
-            backends["rust"] = {"requested": True, "ran": True, "passed": ok, "cargo": ver}
+            backends["rust"] = {"requested": True, "ran": True, "passed": ok, "cargo": ver,
+                                "cargo_lock_sha256": _sha256(rs / "Cargo.lock"),
+                                "tests_passed": npass, "result": summary}
     if args.cpp:
         print("\n== C++/OpenSSL port differential ==")
         bash, script = shutil.which("bash"), DERIV / "port" / "run.sh"
@@ -170,9 +193,11 @@ def main() -> int:
             print(f"  [{'PASS' if ok else 'FAIL'}] MODEL == PORT differential {tail}")
             results.append(ok)
             gxx = shutil.which("g++") or "/c/msys64/mingw64/bin/g++"
-            _, gver = run([gxx, "--version"], script.parent)
+            gproc = subprocess.run([gxx, "--version"], capture_output=True, text=True)
+            gver = (gproc.stdout.splitlines() or [""])[0]                 # first line = the version
             _, ossl = run([py, "-c", "import ssl;print(ssl.OPENSSL_VERSION)"], ROOT)
-            backends["cpp"] = {"requested": True, "ran": True, "passed": ok, "g++": gver, "openssl": ossl}
+            backends["cpp"] = {"requested": True, "ran": True, "passed": ok, "g++": gver, "openssl": ossl,
+                               "result": tail}
 
     ok_git, commit = run(["git", "rev-parse", "HEAD"], ROOT)
     all_passed = all(results) and skipped_requested == 0
@@ -196,7 +221,7 @@ def main() -> int:
             "util.h": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "util.h"),
         },
         "claims": claim_docs,
-        "artifact_drift": {"nov08x_differential_regenerates": drift_ok},
+        "artifact_regeneration": {"monetary_difference_reproducible": drift_ok, "path": "paper-artifacts/monetary-difference.json"},
         "all_passed": all_passed,
     }
     args.manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

@@ -1,0 +1,45 @@
+{
+  "not_money": true,
+  "claim": "The five monetary parameters differ between the November 2008 preview and the January 2009 release",
+  "profiles": {
+    "january": {
+      "name": "jan09-faithful",
+      "consensus_rules": "jan09",
+      "profile_hash": "28c3fdfe2c50163d701cd8caf9b08bef51b262b83db2a7c5fd256d0d429df9f3"
+    },
+    "november": {
+      "name": "nov08-source-bounded",
+      "consensus_rules": "nov08",
+      "profile_hash": "1abd12b1784205d3daaaf2e288ff4fdf2d1172a241d93dda28c7e41232ccb149"
+    }
+  },
+  "parameters": {
+    "COIN": {
+      "november": 1000000,
+      "january": 100000000,
+      "differs": true
+    },
+    "subsidy_base": {
+      "november": 100000000,
+      "january": 5000000000,
+      "differs": true
+    },
+    "halving": {
+      "november": 100000,
+      "january": 210000,
+      "differs": true
+    },
+    "spacing": {
+      "november": 900,
+      "january": 600,
+      "differs": true
+    },
+    "coinbase_rule": {
+      "november": "equal",
+      "january": "le",
+      "differs": true
+    }
+  },
+  "all_five_differ": true,
+  "source_witness": "consensus.Rules for 'nov08' vs 'jan09', derived from the hash-matched source (see common/NOV08_JAN09_DIFF.md); no experimental X network involved"
+}
