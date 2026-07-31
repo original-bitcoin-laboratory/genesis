@@ -25,7 +25,7 @@
 ## Opcodes (106 distinct values, 2 aliases)
 
 **94** opcodes have an `EvalScript` execution branch.
- Explicitly disabled / commented-out in `script.cpp`: `OP_NOTEQUAL`.
+ Explicitly disabled / commented-out in `script.cpp`: `OP_NOTEQUAL` (`script.cpp:486`).
 
 Each opcode carries a `file:line` source witness: `script.h` for its `opcodetype`
 declaration and `script.cpp` for its `EvalScript` execution branch (both hashed above).

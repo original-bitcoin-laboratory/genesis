@@ -4,8 +4,8 @@
   "generated": "2026-07-31",
   "generator": {
     "script": "inventory-symbols.py",
-    "sha256": "27ee3ad96738b2c950cf06088b0f6f0724ef79bd96a355c49143e543e7aacf47",
-    "commit": "482b7acbce2abf2e631c623adcf40a89d74e1e6c"
+    "sha256": "d4eb0c26b28466392571205d84e28380781b63354236cac2c5582743d751f069",
+    "commit": "0c43cf9c264e58b118651f664e52c2559875d8b5"
   },
   "sources": {
     "script.h": {
@@ -1912,6 +1912,11 @@
     }
   ],
   "disabled_commented_out": [
-    "OP_NOTEQUAL"
+    {
+      "name": "OP_NOTEQUAL",
+      "file": "script.cpp",
+      "line": 486,
+      "source_sha256": "347c7526932d42a4d10ae487150b709e2ead737aa4b05f50aa9e2eefeb05a5b5"
+    }
   ]
 }
