@@ -37,6 +37,16 @@ def sha256(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
+def _git_commit() -> str | None:
+    """The repo commit this inventory was generated at (None outside a checkout)."""
+    import subprocess
+    try:
+        r = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(ROOT), capture_output=True, text=True)
+        return r.stdout.strip() if r.returncode == 0 else None
+    except OSError:
+        return None
+
+
 def parse_named_enum(lines: list[str], header_re: str) -> list[dict]:
     """Parse a C enum body into ordered entries, evaluating C value semantics."""
     start = next(i for i, l in enumerate(lines) if re.search(header_re, l))
@@ -49,6 +59,7 @@ def parse_named_enum(lines: list[str], header_re: str) -> list[dict]:
     nextval = 0
     category: str | None = None
     while i < len(lines):
+        lineno = i + 1                        # 1-indexed source line of this entry
         s = lines[i].strip()
         i += 1
         if s.startswith("}"):
@@ -80,7 +91,7 @@ def parse_named_enum(lines: list[str], header_re: str) -> list[dict]:
         else:
             val = nextval
         values[name] = val
-        entries.append({"name": name, "value": val, "category": category, "alias_of": alias_of})
+        entries.append({"name": name, "value": val, "category": category, "alias_of": alias_of, "_enum_line": lineno})
         nextval = val + 1
     return entries
 
@@ -98,22 +109,47 @@ def main() -> int:
         for m in re.finditer(r"\b(SIGHASH_[A-Z]+)\s*=\s*(0x[0-9a-fA-F]+|\d+)", "\n".join(h_lines))
     ]
 
-    implemented = set(re.findall(r"(?<!//)\bcase\s+(OP_[A-Z0-9_]+)\s*:", cpp_text))
-    # Disabled = an inline `//case OP_X` on a single line (avoid matching a `//` comment
-    # line that merely precedes a real case, which crosses newlines under re.findall).
-    commented = set()
-    for line in cpp_text.splitlines():
-        m = re.search(r"//\s*case\s+(OP_[A-Z0-9_]+)", line)
-        if m:
-            commented.add(m.group(1))
-
-    for op in opcodes:
-        op["evalscript_case"] = op["name"] in implemented
+    # Line-track each execution branch so every opcode carries a file:line witness: a real
+    # `case OP_X:` (implemented) versus a disabled `//case OP_X` (commented out). setdefault
+    # keeps the FIRST occurrence, which is the branch label the case falls through from.
+    impl_line: dict[str, int] = {}
+    disabled_line: dict[str, int] = {}
+    for n, line in enumerate(cpp_text.splitlines(), 1):
+        mc = re.search(r"//\s*case\s+(OP_[A-Z0-9_]+)", line)
+        if mc:
+            disabled_line.setdefault(mc.group(1), n)
+            continue
+        mi = re.search(r"\bcase\s+(OP_[A-Z0-9_]+)\s*:", line)
+        if mi:
+            impl_line.setdefault(mi.group(1), n)
+    implemented, commented = set(impl_line), set(disabled_line)
 
     src = {
         "script.h": {"sha256": sha256(script_h), "lines": len(h_lines)},
         "script.cpp": {"sha256": sha256(script_cpp), "lines": cpp_text.count(chr(10)) + 1},
     }
+    # per-opcode source witnesses: the declaration in script.h and, when present, the
+    # execution (or disabled) branch in script.cpp — each carrying its file's source hash
+    # so a single opcode entry is independently checkable against the extracted source.
+    for op in opcodes:
+        op["evalscript_case"] = op["name"] in implemented
+        op["enum_witness"] = {
+            "file": "script.h",
+            "line": op.pop("_enum_line"),
+            "source_sha256": src["script.h"]["sha256"],
+        }
+        if op["name"] in impl_line:
+            op["execution_witness"] = {
+                "file": "script.cpp", "line": impl_line[op["name"]],
+                "disabled": False, "source_sha256": src["script.cpp"]["sha256"],
+            }
+        elif op["name"] in disabled_line:
+            op["execution_witness"] = {
+                "file": "script.cpp", "line": disabled_line[op["name"]],
+                "disabled": True, "source_sha256": src["script.cpp"]["sha256"],
+            }
+        else:
+            op["execution_witness"] = None    # push-decoded / template sentinel / reserved: no EvalScript branch
     real = [o for o in opcodes if o["alias_of"] is None]
     impl_count = sum(1 for o in real if o["evalscript_case"])
 
@@ -121,9 +157,10 @@ def main() -> int:
     (OUT_DIR / "OPCODES.json").write_text(
         json.dumps(
             {
-                "schema": 1,
+                "schema": 2,        # 2: each opcode carries enum_witness + execution_witness (file:line)
                 "profile": "OBL-JAN09",
                 "generated": date.today().isoformat(),
+                "generator": {"script": Path(__file__).name, "sha256": sha256(Path(__file__).resolve()), "commit": _git_commit()},
                 "sources": src,
                 "sighash": sighash,
                 "opcodes": opcodes,
@@ -164,13 +201,23 @@ def main() -> int:
     if commented:
         L.append(f" Explicitly disabled / commented-out in `script.cpp`: {', '.join('`'+c+'`' for c in sorted(commented))}.")
     L.append("")
-    L.append("| Opcode | hex | dec | category | EvalScript case | note |")
-    L.append("|---|---|--:|---|:--:|---|")
+    L.append("Each opcode carries a `file:line` source witness: `script.h` for its `opcodetype`")
+    L.append("declaration and `script.cpp` for its `EvalScript` execution branch (both hashed above).")
+    L.append("")
+    L.append("| Opcode | hex | dec | category | decl (`script.h`) | EvalScript (`script.cpp`) | note |")
+    L.append("|---|---|--:|---|--:|--:|---|")
     for o in opcodes:
         hexv = f"0x{o['value']:02x}" if o["value"] <= 0xFF else f"0x{o['value']:04x}"
         note = f"alias of `{o['alias_of']}`" if o["alias_of"] else ""
-        case = "" if o["alias_of"] else ("yes" if o["evalscript_case"] else "—")
-        L.append(f"| `{o['name']}` | {hexv} | {o['value']} | {o['category'] or ''} | {case} | {note} |")
+        decl = f"L{o['enum_witness']['line']}"
+        xw = o["execution_witness"]
+        if o["alias_of"]:
+            case = ""
+        elif xw:
+            case = f"L{xw['line']}" + (" (disabled)" if xw["disabled"] else "")
+        else:
+            case = "—"
+        L.append(f"| `{o['name']}` | {hexv} | {o['value']} | {o['category'] or ''} | {decl} | {case} | {note} |")
     L.append("")
     (OUT_DIR / "OPCODES.md").write_text("\n".join(L) + "\n", encoding="utf-8")
 
