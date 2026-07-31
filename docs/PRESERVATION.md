@@ -51,7 +51,16 @@ Radicle is published from a machine running the `rad` node, once:
 4. Keep it in sync: after each GitHub push, run `git push rad` (the `rad` remote is added by `rad init`), or
    `rad sync --announce`.
 
-Record the `rad:z…` Repository ID once published. *(Optional CI:* add the exported key as `RAD_KEYPAIR` and
+**Published.** The genesis repository is on Radicle as **`rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg`**, owned by the
+`parthod0x` identity (`did:key:z6MkqZAx6fnZ3iosXhTk7K3GzyzcNC2pxy5peUAuvYL45kUA`). Fetch the decentralized
+mirror with:
+
+```
+rad clone rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg
+```
+
+Durable public availability depends on a seed replicating the repository; keep a node online or arrange a
+seed to hold `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg`. *(Optional CI:* add the exported key as `RAD_KEYPAIR` and
 its passphrase as `RAD_PASSPHRASE` to let the `radicle` job attempt an automated sync — but the local
 `git push rad` above is the reliable path.)*
 
