@@ -66,19 +66,28 @@ def _ctl(argv):
                                  description="Control a running node over its localhost RPC.")
     ap.add_argument("--rpc", required=True, metavar="[HOST:]PORT", help="the node's --rpc address")
     ap.add_argument("method", choices=["getinfo", "getnewaddress", "getprimaryaddress",
-                                       "getbalance", "getrecentblocks", "send"])
-    ap.add_argument("args", nargs="*", help="send: <to_address_or_pubkey_hex> <amount> [fee]")
+                                       "getbalance", "getrecentblocks", "send",
+                                       "sendtoscript", "sendrawtransaction"])
+    ap.add_argument("args", nargs="*",
+                    help="send: <to_address_or_pubkey_hex> <amount> [fee] · "
+                         "sendtoscript: '<json_script_array>' <amount> [fee] · "
+                         "sendrawtransaction: <signed_tx_hex>")
     a = ap.parse_args(argv)
     host, port = _hostport(a.rpc, "127.0.0.1")
     req = {"method": a.method, "params": a.args}
-    with socket.create_connection((host, port), timeout=15) as s:
-        s.sendall((json.dumps(req) + "\n").encode())
-        buf = b""
-        while b"\n" not in buf:
-            chunk = s.recv(4096)
-            if not chunk:
-                break
-            buf += chunk
+    try:
+        with socket.create_connection((host, port), timeout=15) as s:
+            s.sendall((json.dumps(req) + "\n").encode())
+            buf = b""
+            while b"\n" not in buf:
+                chunk = s.recv(4096)
+                if not chunk:
+                    break
+                buf += chunk
+    except OSError as e:
+        print(f"error: cannot reach the node RPC at {host}:{port} — is the node running with "
+              f"--rpc {host}:{port}? ({e})", file=sys.stderr)
+        return 1
     resp = json.loads(buf.decode() or "{}")
     if "error" in resp:
         print(f"error: {resp['error']}", file=sys.stderr)

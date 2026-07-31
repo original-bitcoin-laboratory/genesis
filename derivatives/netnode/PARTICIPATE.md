@@ -139,34 +139,44 @@ interpreter already made expressible — here executed end‑to‑end on a runni
 
 ## Part 3 — Putting a richer script on‑chain
 
-The one‑line `send` RPC covers the two everyday payment forms (P2PK, P2PKH). For any of the richer
-constructions above you build the transaction with the lab's own helpers and hand the **raw bytes** to the
-node, which validates them against the live UTXO and broadcasts them exactly like any other transaction:
+Two RPC methods cover the whole vocabulary, no Python required:
+
+**Create a contract output — `sendtoscript`.** Fund *any* `scriptPubKey` straight from your wallet by
+passing a JSON array of `OP_` names and hex data literals. A hash‑lock, for example:
+
+```bash
+python -m netnode ctl --rpc 18332 sendtoscript \
+  '["OP_HASH256","<sha256d-of-secret-hex>","OP_EQUALVERIFY","<pubkey-hex>","OP_CHECKSIG"]' \
+  5000000        # amount in base units → prints the funding txid
+```
+
+**Spend it — `sendrawtransaction`.** Build the spending transaction with any tool (the lab's helpers, or
+your own), sign it, and submit the raw hex. The node runs the **same** validation a peer's transaction gets
+— no double‑spend, script satisfied, no inflation, coinbase maturity — then relays it (`inv → getdata →
+tx`); a mining node folds it into its next block:
+
+```bash
+python -m netnode ctl --rpc 18332 sendrawtransaction <signed-tx-hex>   # prints the txid
+```
+
+To build that raw spend in Python (e.g. `<sig> <preimage>` to open the hash‑lock above):
 
 ```python
-# inside genesis/derivatives, with a running LiveNode `node`
+# inside genesis/derivatives
 import cscript
 from tx_sighash import Tx, TxIn, TxOut, serialize as ser_tx
 from spend import sign
 
-spk = ["OP_HASH256", H, "OP_EQUALVERIFY", pub, "OP_CHECKSIG"]      # e.g. a hash-lock
-tx  = Tx(1, [TxIn(prev_txid, vout, b"", 0xFFFFFFFF)],
-            [TxOut(amount, cscript.assemble(spk))], 0)
-tx.vin[0].script = cscript.assemble([sign(my_priv, funding_spk, tx, 0)])
-
-entry = node.submit_tx(ser_tx(tx))     # validate into the mempool + broadcast (inv→getdata→tx)
-print(entry.txid[::-1].hex())
+hl   = ["OP_HASH256", H, "OP_EQUALVERIFY", pub, "OP_CHECKSIG"]     # the funded scriptPubKey (bytes tokens)
+spend = Tx(1, [TxIn(prev_txid, vout, b"", 0xFFFFFFFF)], [TxOut(amount - 1000, b"\x51")], 0)
+spend.vin[0].script = cscript.assemble([sign(my_priv, hl, spend, 0), secret])
+print(ser_tx(spend).hex())          # hand this to `sendrawtransaction`
 ```
 
-`node.submit_tx(raw)` runs the **same** validation a peer's transaction gets — no double‑spend, script
-satisfied, no inflation, coinbase maturity — then relays it; a mining node folds it into its next block.
 The tested `test_chainstate.py` functions (`test_fullnode_hashlock_spend_and_reject`,
 `test_fullnode_conditional_refund_both_branches`, `test_fullnode_assurance_anyonecanpay_survives_added_input`)
-are working, copyable templates for each form.
-
-> **Not yet a one‑liner.** There is deliberately no `sendrawtransaction` / `createcontract` RPC today — the
-> richer forms go through the Python helpers above. Exposing a raw‑submit RPC is a reasonable future
-> convenience; it is not present now, and this document does not pretend otherwise.
+and `test_wallet.py::test_rpc_contract_lifecycle_via_sendtoscript_and_sendrawtransaction` are working,
+copyable templates for each form and for the full create‑then‑spend round trip over the RPC.
 
 ---
 

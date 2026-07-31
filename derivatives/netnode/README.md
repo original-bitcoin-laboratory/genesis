@@ -26,7 +26,7 @@ transport** a public node needs — the "rewrite for adversarial conditions," no
 | Difficulty | fixed genesis (easy) | **retarget** — mine at the target, **reject** wrong‑nBits blocks on the direct path *and* authoritatively **on connect** (covers the orphan path); optional **`--min-difficulty` floor** for real work above the easy genesis ([`difficulty.py`](difficulty.py)) |
 | Validation | PoW only | **beyond PoW** — structure/merkle/difficulty ([`fullnode.py`](fullnode.py)) + a **validated UTXO chainstate** that is the **sole authority** for serving/mining — no double‑spends / bad scripts / inflation / immature‑coinbase / over‑claimed coinbase / wrong‑difficulty, reorg‑safe with abort‑on‑invalid ([`chainstate.py`](chainstate.py)) |
 | Transactions | — | a validating **mempool** ([`mempool.py`](mempool.py)) — `tx` messages validated, pooled, and **relayed** (`inv`→`getdata`→`tx`), with an **orphan buffer** (retried when the parent arrives) and **fee‑rate eviction** when full; the miner assembles pooled txs after the coinbase (claiming subsidy + fees) and drops them once mined |
-| Wallet | — | a persistent **wallet** ([`nodewallet.py`](nodewallet.py), on the faithful v0.1 wallet MODEL) — a mining node **earns its coinbase** to it, and it **builds + signs payments** (SelectCoins / CreateTransaction), plus a localhost **control interface** ([`rpc.py`](rpc.py)) — `getinfo` / `getnewaddress` / `getbalance` / `send` via `python -m netnode ctl` |
+| Wallet | — | a persistent **wallet** ([`nodewallet.py`](nodewallet.py), on the faithful v0.1 wallet MODEL) — a mining node **earns its coinbase** to it, and it **builds + signs payments** (SelectCoins / CreateTransaction), plus a localhost **control interface** ([`rpc.py`](rpc.py)) — `getinfo` / `getnewaddress` / `getprimaryaddress` / `getbalance` / `send` / `sendtoscript` / `sendrawtransaction` via `python -m netnode ctl` |
 | Speed | pure‑Python verify | an **optional libsecp256k1 verifier** ([`fastverify.py`](fastverify.py)) on the hot path — ~7× per signature, **faithful** to the origin's lenient (high-S) OpenSSL acceptance on the tested canonical-DER paths (differential‑tested), with automatic fallback |
 | Discovery | manual only | **`addr` gossip + auto‑connect** — one seed address meshes you in |
 | Run it | a pytest scenario | a **CLI** anyone can run (`python -m netnode`) |
@@ -70,9 +70,13 @@ python -m netnode ctl --rpc 18332 getinfo
 python -m netnode ctl --rpc 18332 getnewaddress          # a fresh receive address (a pubkey)
 python -m netnode ctl --rpc 18332 getbalance             # spendable (mature) balance
 python -m netnode ctl --rpc 18332 send <ADDRESS> <AMOUNT> [FEE]
+python -m netnode ctl --rpc 18332 sendtoscript '<JSON_SCRIPT>' <AMOUNT> [FEE]   # fund ANY scriptPubKey
+python -m netnode ctl --rpc 18332 sendrawtransaction <SIGNED_TX_HEX>            # broadcast any signed tx
 ```
 
-The wallet earns each block's coinbase; a coinbase is spendable after maturity. **Not money** — the
+The wallet earns each block's coinbase; a coinbase is spendable after maturity. `send` pays P2PK/P2PKH;
+`sendtoscript` + `sendrawtransaction` reach the full opcode vocabulary (escrow, hash‑lock, HTLC‑style
+refund, assurance) — see [`PARTICIPATE.md`](PARTICIPATE.md). **Not money** — the
 wallet stores experimental testnet keys for a valueless chain.
 
 ## Performance — where validation time goes ([`bench.py`](bench.py))

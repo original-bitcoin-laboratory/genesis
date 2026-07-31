@@ -104,11 +104,20 @@ python -m netnode ctl --rpc 18332 getnewaddress          # mint + return a fresh
 python -m netnode ctl --rpc 18332 getprimaryaddress      # your EXISTING key: {pubkey, '1...' address} — mints nothing
 python -m netnode ctl --rpc 18332 getbalance             # spendable (mature) balance
 python -m netnode ctl --rpc 18332 send <ADDRESS> <AMOUNT> [FEE]   # build + sign + broadcast; prints the txid
+python -m netnode ctl --rpc 18332 sendtoscript '<JSON_SCRIPT>' <AMOUNT> [FEE]   # fund ANY scriptPubKey; prints the txid
+python -m netnode ctl --rpc 18332 sendrawtransaction <SIGNED_TX_HEX>            # validate + broadcast any signed raw tx
 ```
 
 `send <ADDRESS>` accepts **either** a `1...` Base58 address (paid as P2PKH) **or** a raw SEC pubkey
 hex (paid as bare P2PK) — both are v0.1 payment forms. Amounts are in **base units** (1 coin = 1e8 on
 JAN09-X, 1e6 on NOV08-X); `getbalance` reports the same units.
+
+For anything beyond a plain payment, **`sendtoscript`** funds an arbitrary `scriptPubKey` from your wallet
+— pass a JSON array of `OP_` names and hex data literals, e.g. a hash-lock
+`'["OP_HASH256","<sha256d-hex>","OP_EQUALVERIFY","<pubkey-hex>","OP_CHECKSIG"]'` — and **`sendrawtransaction`**
+validates and broadcasts a fully signed raw transaction (the same submit path a peer's tx takes). Between
+them the whole opcode vocabulary is reachable from the control interface, not only P2PK/P2PKH. See
+[`PARTICIPATE.md`](PARTICIPATE.md) for the contract forms and a worked create-then-spend example.
 
 Your **coinbase pays a bare public key** (P2PK, exactly as v0.1 pays its coinbase). For receiving
 from someone, you can share either that **pubkey** or your **`1...` P2PKH address** (`getprimaryaddress`

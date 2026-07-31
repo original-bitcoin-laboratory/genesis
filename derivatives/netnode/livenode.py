@@ -184,6 +184,14 @@ class Node:
         Returns the accepted `mempool.Entry`; raises `MempoolReject` if it fails validation."""
         return self.mempool.accept(raw, self.state.utxo, self.state.height)
 
+    async def accept_and_broadcast(self, raw: bytes):
+        """Validate a raw transaction into the mempool and relay it to peers (inv → getdata → tx) —
+        the exact submit path a peer's transaction takes. Used by the wallet's payment builder and by
+        the `sendrawtransaction` RPC. Returns the accepted `mempool.Entry`; raises on invalid tx."""
+        entry = self.submit_tx(raw)
+        await self._announce([(MSG_TX, entry.txid)])
+        return entry
+
     # -- wallet (present only when the node is started with a wallet) -----------
     def wallet_new_address(self) -> bytes:
         return self.wallet.new_address()
@@ -205,9 +213,7 @@ class Node:
         validated UTXO, submit it to the mempool, and broadcast it. Returns the `mempool.Entry`."""
         raw = self.wallet.create_payment_to_script(self.state.utxo, self.state.height,
                                                    self.state.maturity, recipient_spk, amount, fee)
-        entry = self.submit_tx(raw)
-        await self._announce([(MSG_TX, entry.txid)])
-        return entry
+        return await self.accept_and_broadcast(raw)
 
     # -- lifecycle -------------------------------------------------------------
     async def start(self, connect=()):

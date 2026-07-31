@@ -48,6 +48,21 @@ def _mine_to_wallet(node, n):
         node.state.activate_best()
 
 
+def _mine_pending(node):
+    """Mine one block that includes every pooled transaction (coinbase pays the node's wallet)."""
+    from difficulty import expected_bits
+    selected = node.mempool.select(node.state.utxo)
+    nbits = expected_bits(node.chain, node.tip, node.cfg.rules)
+    subsidy = node.cfg.rules.get_block_value(node.height)
+    blk = mine_block(node.tip, node.height + 1, nbits, node.chain.check_block,
+                     subsidy + sum(x.fee for x in selected), [x.tx for x in selected],
+                     b"", node.wallet.receive_script())
+    assert node.chain.process_block(blk)[0] == "accepted"
+    node.store.append(blk)
+    node.state.activate_best()
+    node.mempool.reconcile(node.state.utxo, node.state.height)
+
+
 # ---- wallet ------------------------------------------------------------------
 
 def test_wallet_persists_its_keys_across_restart(tmp_path):
@@ -225,3 +240,62 @@ def test_send_to_a_p2pkh_address_is_owned_by_the_recipient(tmp_path):
     # the recipient owns the P2PKH output — IsMine resolves it via the hash160 -> pubkey map
     assert recipient.balance(a.state.utxo, a.state.height, a.state.maturity) == amount
     a.store.close()
+
+
+# ---- richer scripts over the RPC: sendtoscript (create) + sendrawtransaction (spend) --------
+
+def test_rpc_contract_lifecycle_via_sendtoscript_and_sendrawtransaction(tmp_path):
+    """The full 'put a contract on-chain from the RPC' path: fund a hash-lock output with
+    `sendtoscript`, then spend it with a raw transaction submitted via `sendrawtransaction` — no
+    in-process Python beyond building the spend, which any external tool could do."""
+    import cscript
+    from spend import sign
+    from tx_sighash import Tx, TxIn, TxOut, dsha256, new_key, serialize as ser_tx
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "CL"), wallet=True, maturity=1)
+    _mine_to_wallet(n, 2)                                          # a matured coinbase to spend
+
+    secret = b"correct horse battery staple"
+    H = dsha256(secret)
+    priv, pub = new_key()
+    hl = ["OP_HASH256", H, "OP_EQUALVERIFY", pub, "OP_CHECKSIG"]   # internal (bytes) token form
+    wire = ["OP_HASH256", H.hex(), "OP_EQUALVERIFY", pub.hex(), "OP_CHECKSIG"]  # JSON (hex) form
+    amount = n.wallet_balance() // 2
+
+    # 1) create the hash-lock output straight from the wallet
+    (r1,) = _run(_rpc_session(n, [("sendtoscript", (json.dumps(wire), amount, 0))]))
+    assert "result" in r1, r1
+    assert len(bytes.fromhex(r1["result"])) == 32                 # a txid
+    assert len(n.mempool) == 1
+    _mine_pending(n)
+    expected = cscript.assemble(hl)                               # the UTXO stores spk as tokens; compare bytes
+    outpoint = next((k for k, c in n.state.utxo.items()
+                     if cscript.assemble(c.spk) == expected), None)
+    assert outpoint is not None, "sendtoscript did not fund the exact hash-lock scriptPubKey"
+
+    # 2) spend it with a raw tx submitted via sendrawtransaction (preimage + signature)
+    prev_txid, vout = outpoint
+    spend = Tx(1, [TxIn(prev_txid, vout, b"", 0xFFFFFFFF)], [TxOut(amount - 1000, b"\x51")], 0)
+    spend.vin[0].script = cscript.assemble([sign(priv, hl, spend, 0), secret])
+    raw = ser_tx(spend)
+    (r2,) = _run(_rpc_session(n, [("sendrawtransaction", (raw.hex(),))]))
+    assert r2.get("result") == dsha256(raw)[::-1].hex()           # returns the submitted tx's id
+    assert len(n.mempool) == 1
+    _mine_pending(n)
+    assert outpoint not in n.state.utxo                           # the hash-lock was consumed
+    n.store.close()
+
+
+def test_rpc_new_methods_reject_bad_input(tmp_path):
+    cfg = CHAINS["jan09x"]
+    n = Node(cfg, str(tmp_path / "BAD"), wallet=True, maturity=1)
+    _mine_to_wallet(n, 1)
+    not_hex, bad_tx, bad_tok = _run(_rpc_session(n, [
+        ("sendrawtransaction", ("zzzz",)),                        # not hex
+        ("sendrawtransaction", ("00",)),                          # valid hex, not a valid tx
+        ("sendtoscript", (json.dumps(["OP_NOPE", "zz"]), 1000, 0)),  # unknown token / bad hex
+    ]))
+    assert "error" in not_hex and "hex" in not_hex["error"].lower()
+    assert "error" in bad_tx                                      # parse / mempool rejects it
+    assert "error" in bad_tok and "OP_NOPE" in bad_tok["error"]
+    n.store.close()

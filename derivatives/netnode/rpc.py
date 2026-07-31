@@ -13,6 +13,14 @@ reply is one line `{"result": ...}` or `{"error": ...}`.
 - `getbalance` → spendable balance (mature, owned)                        [needs --wallet]
 - `getrecentblocks [count]` → the last N validated blocks (height/hash/time/ntx) — status/explorer
 - `send [to, amount, fee?]` → pay a '1...' address (P2PKH) or a pubkey hex (P2PK); returns txid  [--wallet]
+- `sendtoscript [script, amount, fee?]` → fund an ARBITRARY scriptPubKey from the wallet; `script`
+  is a JSON array of `OP_` names and hex data literals (e.g. a hash-lock or escrow output). returns
+  txid  [--wallet]
+- `sendrawtransaction [hexstring]` → validate + broadcast a fully signed raw transaction (any script);
+  the same submit path a peer's tx takes. returns txid  [no wallet needed]
+
+Together `sendtoscript` (create a contract output from the wallet) and `sendrawtransaction` (submit any
+signed spend) let a participant put the full opcode vocabulary on-chain, not only P2PK/P2PKH `send`.
 
 Evidence: MODEL / NEW-EXP.
 """
@@ -37,6 +45,33 @@ def _resolve_recipient(to: str) -> list:
     if len(pub) not in (33, 65):
         raise ValueError("pubkey must be 33 (compressed) or 65 (uncompressed) bytes")
     return [bytes(pub), "OP_CHECKSIG"]
+
+
+def _parse_script_tokens(script) -> list:
+    """A JSON script -> the internal token list `cscript.assemble` consumes: each element is either an
+    `OP_` name (kept as a string) or a hex data literal (decoded to bytes). Accepts a real JSON array
+    or, for the CLI, a JSON-encoded string. So any scriptPubKey the interpreter accepts is expressible
+    over the wire without writing Python."""
+    if isinstance(script, str):
+        try:
+            script = json.loads(script)
+        except json.JSONDecodeError as e:
+            raise ValueError("script must be a JSON array of OP_ names and hex data literals") from e
+    if not isinstance(script, list) or not script:
+        raise ValueError("script must be a non-empty JSON array of OP_ names and hex data literals")
+    from cscript import NAME_TO_OP                        # opcode byte table (from the generated inventory)
+    out: list = []
+    for t in script:
+        if not isinstance(t, str):
+            raise ValueError(f"script token must be a string, got {type(t).__name__}")
+        if t in NAME_TO_OP:
+            out.append(t)                                 # an opcode name
+        else:
+            try:
+                out.append(bytes.fromhex(t))              # otherwise a hex data push
+            except ValueError as e:
+                raise ValueError(f"token {t!r} is neither an OP_ name nor hex data") from e
+    return out
 
 
 class RpcServer:
@@ -106,6 +141,24 @@ class RpcServer:
             fee = int(params[2]) if len(params) > 2 else 0
             spk = _resolve_recipient(str(params[0]))
             entry = await n.wallet_send_to_script(spk, int(params[1]), fee)
+            return entry.txid[::-1].hex()
+        if method == "sendtoscript":
+            self._need_wallet()
+            if len(params) < 2:
+                raise ValueError("sendtoscript needs [script, amount, fee?] — script = a JSON array "
+                                 "of OP_ names and hex data literals")
+            spk = _parse_script_tokens(params[0])
+            fee = int(params[2]) if len(params) > 2 else 0
+            entry = await n.wallet_send_to_script(spk, int(params[1]), fee)
+            return entry.txid[::-1].hex()
+        if method == "sendrawtransaction":
+            if not params:
+                raise ValueError("sendrawtransaction needs [hexstring] — a fully signed raw transaction")
+            try:
+                raw = bytes.fromhex(str(params[0]).strip())
+            except ValueError as e:
+                raise ValueError("hexstring is not valid hex") from e
+            entry = await n.accept_and_broadcast(raw)
             return entry.txid[::-1].hex()
         raise ValueError(f"unknown method: {method!r}")
 

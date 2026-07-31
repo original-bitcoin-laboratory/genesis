@@ -82,6 +82,11 @@ python -m netnode --chain jan09x --datadir ./data-jan09 --connect seed.bitcoin-l
 python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-lab.org:18008   # Nov 2008
 ```
 
+New here? [`derivatives/netnode/PARTICIPATE.md`](derivatives/netnode/PARTICIPATE.md) is the participant
+guide — generate, mine, send and receive coins, plus the full opcode vocabulary and the contract forms the
+node validates (P2PK, P2PKH, escrow, hash‑lock, HTLC‑style refund, assurance) and how to put them on‑chain.
+To operate a node or seed: [`derivatives/netnode/RUN.md`](derivatives/netnode/RUN.md).
+
 Full invitation + how to run your own node or seed: [`docs/ANNOUNCE.md`](docs/ANNOUNCE.md). For an
 independent reviewer: [`docs/AUDIT_SCOPE.md`](docs/AUDIT_SCOPE.md). **Not money.**
 
