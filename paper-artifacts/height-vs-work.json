@@ -1,0 +1,27 @@
+{
+  "not_money": true,
+  "claim": "v0.1 selects the best chain by block height, not cumulative proof-of-work",
+  "profile": "jan09-faithful",
+  "profile_hash": "28c3fdfe2c50163d701cd8caf9b08bef51b262b83db2a7c5fd256d0d429df9f3",
+  "incumbent_branch_B": {
+    "height": 122,
+    "cumulative_work": "262",
+    "difficulty_floors_seen": [
+      "0x201fffff",
+      "0x207fffff"
+    ]
+  },
+  "challenger_branch_A": {
+    "height": 125,
+    "cumulative_work": "250",
+    "difficulty_floors_seen": [
+      "0x207fffff"
+    ]
+  },
+  "challenger_has_less_work": true,
+  "selected_tip": "challenger_branch_A",
+  "selected_by": "height (nHeight > nBestHeight; never summed work)",
+  "retarget_interval_used": 60,
+  "historical_interval": 2016,
+  "source_witness": "main.cpp best-chain update; test_chainstate.py::test_height_beats_cumulative_work_the_discriminating_fork"
+}

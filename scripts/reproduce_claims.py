@@ -191,18 +191,31 @@ def main() -> int:
         claim_docs.append({"id": cid, "description": desc, "checks": checks_doc, "passed": claim_ok})
         results.append(claim_ok)
 
-    # artifact regeneration: regenerate the paper's monetary-difference artifact and confirm it is byte-stable
-    # (a real reproducibility check on a paper artifact — not the experimental X-network differential)
+    # artifact regeneration: regenerate each paper artifact and confirm it is byte-stable (a real
+    # reproducibility check on the paper's frozen numbers — not the experimental X-network differential).
     print("\n== artifact regeneration ==")
-    prof = DERIV / "profiles"
-    art = ROOT / "paper-artifacts" / "monetary-difference.json"
-    ok1, _ = run([py, "test_source_bounded_monetary.py"], prof)
-    first = art.read_bytes() if art.exists() else b""
-    ok2, _ = run([py, "test_source_bounded_monetary.py"], prof)
-    second = art.read_bytes() if art.exists() else b""
-    drift_ok = bool(ok1 and ok2 and first and first == second)
-    print(f"  [{'PASS' if drift_ok else 'FAIL'}] paper-artifacts/monetary-difference.json regenerates byte-identically")
-    results.append(drift_ok)
+    art_scripts = {
+        "monetary-difference.json": (DERIV / "profiles", "test_source_bounded_monetary.py"),
+        "height-vs-work.json": (DERIV / "netnode", "height_vs_work.py"),
+    }
+    artifact_reg = {}
+    for name, (d, script) in art_scripts.items():
+        art = ROOT / "paper-artifacts" / name
+        ok1, _ = run([py, script], d)
+        first = art.read_bytes() if art.exists() else b""
+        ok2, _ = run([py, script], d)
+        second = art.read_bytes() if art.exists() else b""
+        stable = bool(ok1 and ok2 and first and first == second)
+        print(f"  [{'PASS' if stable else 'FAIL'}] paper-artifacts/{name} regenerates byte-identically")
+        results.append(stable)
+        artifact_reg[name] = stable
+    drift_ok = all(artifact_reg.values())
+    # embed the frozen height-vs-work numbers in the manifest (not just "the test passed")
+    hvw_path = ROOT / "paper-artifacts" / "height-vs-work.json"
+    hvw = json.loads(hvw_path.read_text(encoding="utf-8")) if hvw_path.exists() else {}
+    height_vs_work = {k: hvw.get(k) for k in ("incumbent_branch_B", "challenger_branch_A",
+                     "challenger_has_less_work", "selected_tip", "selected_by",
+                     "retarget_interval_used", "historical_interval")}
 
     # requested cross-implementation backends (fail hard, never skip-pass)
     backends = {}
@@ -300,7 +313,7 @@ def main() -> int:
             "util.h": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "util.h"),
         },
         "claims": claim_docs,
-        "artifact_regeneration": {"monetary_difference_reproducible": drift_ok, "path": "paper-artifacts/monetary-difference.json"},
+        "artifact_regeneration": {"reproducible": artifact_reg, "height_vs_work": height_vs_work},
         # completeness is three-state: internal runnable checks are separate from the external
         # (author-reported) historical claim and from cross-implementation coverage.
         "all_internal_checks_passed": all_internal,

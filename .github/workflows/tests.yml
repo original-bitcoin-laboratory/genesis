@@ -59,3 +59,24 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq libssl-dev
       - name: Reproduce the findings (faithful profiles, Rust + C++/OpenSSL cross-check)
         run: python scripts/reproduce_claims.py --rust --cpp
+
+  # The same claim gate on Windows/MSYS2 — the exact environment of the frozen supplement manifest, so
+  # the C++/OpenSSL port's evidence is CI-exercised on its native toolchain, not only on Linux.
+  claims-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: "msys2 {0}"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: >-
+            mingw-w64-x86_64-gcc mingw-w64-x86_64-openssl
+            mingw-w64-x86_64-python mingw-w64-x86_64-python-pip
+            mingw-w64-x86_64-rust
+      - name: Install Python dependencies
+        run: pip install --quiet cryptography pytest
+      - name: Reproduce the findings on Windows/MSYS2 (Rust + C++/OpenSSL)
+        run: python scripts/reproduce_claims.py --rust --cpp
