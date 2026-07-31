@@ -41,7 +41,8 @@ That is all. On the next published release the `ipfs` job downloads the signed `
 
 ### Radicle (peer-to-peer git mirror) — a one-time local publish, then keep in sync
 Radicle is published from a machine running the `rad` node, once:
-1. Install: `curl -sSf https://radicle.xyz/install | sh` (adds `rad` under `~/.radicle/bin`).
+1. Install: `curl -sSfL https://radicle.xyz/install | sh` (the `-L` follows the `radicle.xyz`→`radicle.dev`
+   redirect; adds `rad` under `~/.radicle/bin`).
 2. Create the Laboratory identity: `rad auth` (choose an alias, set a passphrase). Keys are written to
    `~/.radicle/keys/`.
 3. In a clone of this repo: `rad init --public --name genesis` — this publishes the repository to Radicle
