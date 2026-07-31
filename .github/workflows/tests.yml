@@ -69,14 +69,18 @@ jobs:
         shell: "msys2 {0}"
     steps:
       - uses: actions/checkout@v4
+      # Install every dependency via pacman (the MSYS2-native path). `pip install cryptography`
+      # is NOT usable here: MINGW64 CPython has no prebuilt cryptography wheel, so pip falls back
+      # to a from-source build (maturin/Rust) that fails — and MSYS2's Python is PEP 668
+      # externally-managed anyway. The pacman `python-cryptography`/`python-pytest` packages are
+      # prebuilt against this exact MINGW64 toolchain, which is the whole point of the job.
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           install: >-
             mingw-w64-x86_64-gcc mingw-w64-x86_64-openssl
-            mingw-w64-x86_64-python mingw-w64-x86_64-python-pip
+            mingw-w64-x86_64-python
+            mingw-w64-x86_64-python-cryptography mingw-w64-x86_64-python-pytest
             mingw-w64-x86_64-rust
-      - name: Install Python dependencies
-        run: pip install --quiet cryptography pytest
       - name: Reproduce the findings on Windows/MSYS2 (Rust + C++/OpenSSL)
         run: python scripts/reproduce_claims.py --rust --cpp
