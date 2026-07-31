@@ -103,7 +103,10 @@ def load(name: str) -> Profile:
 def _inventory_disabled() -> list[str]:
     """The opcodes the reproducible inventory records as commented out in EvalScript."""
     doc = json.loads((_ROOT / "inventory" / "OPCODES.json").read_text(encoding="utf-8"))
-    return sorted(doc.get("disabled_commented_out", []))
+    # schema 2 records each disabled case as {name, file, line, source_sha256}; tolerate the older
+    # bare-string form too.
+    return sorted(e["name"] if isinstance(e, dict) else e
+                  for e in doc.get("disabled_commented_out", []))
 
 
 # The one opcode v0.1 disabled, as runnable probes: `x x OP_NOTEQUAL`.
