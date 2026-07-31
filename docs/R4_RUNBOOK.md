@@ -12,10 +12,11 @@ rebuild. Do it on a machine with spare disk (~60 GB) and CPU. All the tooling is
 ## What you need
 
 - **VirtualBox** 7.x (+ Extension Pack optional).
-- The **v0.1.0 archive** — `bitcoin.exe` + `libeay32.dll` + `mingwm10.dll`. Get it from
-  `https://cdn.nakamotoinstitute.org/code/bitcoin-0.1.0.rar` (also in this repo at
-  `artifacts/jan09/bitcoin-0.1.0.rar`). The exe **must** hash to the oracle
-  `fbcac071d92e26d82ec917214e334bd43850c0691f113bab1d4741c9bdd30d2d`.
+- The **v0.1.0 archive** — `bitcoin.exe` + `libeay32.dll` + `mingwm10.dll`. **Download it** from
+  `https://cdn.nakamotoinstitute.org/code/bitcoin-0.1.0.rar` (the archive is **gitignored**, so it is *not*
+  in a clone). The `.rar` must hash to
+  `8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56`, and after extraction the exe **must**
+  hash to the oracle `fbcac071d92e26d82ec917214e334bd43850c0691f113bab1d4741c9bdd30d2d`.
 - From this repo, copy onto each VM's `C:\obl`: `derivatives/r3/mini_ircd.py` (the discovery daemon, with
   the bare-`\r` fix) and `scripts/capture-evidence.py`.
 - On the **host** (any OS with Python 3): `derivatives/r4/verify_r4.py` (the chain/reorg verifier).
