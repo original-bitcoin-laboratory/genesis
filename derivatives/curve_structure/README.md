@@ -18,7 +18,7 @@ with pure-integer arithmetic (no libraries, no secrets), each re-evaluable ident
 (4) TWIST: small factors {3^2,13^2,3319,22639} -> ~33-bit leak vs a non-validating impl
 ```
 
-## The four facts
+## The five facts
 
 1. **The GLV endomorphism is derivable, not planted.** `a = 0 ⇒ j-invariant = 0`, which forces an
    order-3 endomorphism `[λ](x,y) = (β·x, y)`. `β` and `λ` are the two nontrivial cube roots of unity
@@ -49,6 +49,13 @@ with pure-integer arithmetic (no libraries, no secrets), each re-evaluable ident
    (~2²²⁰) is prime. libsecp256k1 validates points, so Bitcoin is unaffected — a "handle with care",
    not a free curve.
 
+5. **The field constant `977` is forced, not chosen.** `p = 2²⁵⁶−2³²−977` isn't the minimal prime
+   constant (263 is), which looked like unexplained rigidity. A self-contained CM point-count (valid
+   because `j=0`, validated by reproducing secp256k1's published order) shows `977` is the **smallest**
+   `c` for which `p` is prime, `p≡3 (mod 4)` (fast √), `p≡1 (mod 3)` (the GLV endomorphism exists), **and**
+   the curve has **prime order** (cofactor 1). 263 → composite curve order; 361 → `p≡2 mod 3`. So the
+   wrinkle inverts: `977` is transparently *forced* by the design — the opposite of a planted number.
+
 ## Why it's a MODEL
 
 Everything is pure-integer arithmetic over the published constants (`p`, `n`, `G`, `a=0`, `b=7`), so
@@ -58,16 +65,16 @@ curve's *structure*, not v0.1's runtime crypto (that is `crypto_conformance/`); 
 signature layer's behavior and the curve it runs on. No key, no secret, no chain privileged, no identity
 claim.
 
-## Tests (`test_curve_structure.py`, 6)
+## Tests (`test_curve_structure.py`, 8)
 
 The endomorphism (derived == published, `[λ]G`, `1+λ+λ²≡0`, `j=0`); the tax (2¹²⁷·⁰³, 0.79 bit, below
-P-256); textbook safety (all six pass); the generator (not a NUMS point); the 977 constant (263/361
-smaller ⇒ not minimal); the twist (`{3²,13²,3319,22639}`, ~33-bit leak, exact factorization, prime
-cofactor).
+P-256); textbook safety (all six pass); the generator (not a NUMS point); the twist (`{3²,13²,3319,22639}`,
+~33-bit leak, exact factorization, prime cofactor); the CM point-count reproducing secp256k1's published
+order; and `977` as the minimal design-satisfying constant (263 composite order, 361 wrong `p%3`).
 
 ```bash
 python curve_structure.py   # the demo above
-python -m pytest            # 6 passed
+python -m pytest            # 8 passed
 ```
 
 ## Boundary

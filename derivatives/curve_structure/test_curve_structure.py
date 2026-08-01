@@ -9,7 +9,7 @@ _HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE))
 
 from curve_structure import (                                            # noqa: E402
-    P, N, endomorphism, is_prime, provenance, safety, twist,
+    P, N, curve_order, endomorphism, field_constant_minimality, is_prime, provenance, safety, twist,
 )
 
 
@@ -66,3 +66,19 @@ def test_twist_small_factors_leak_and_factorization_is_exact():
     assert tw["big_prime"]                       # the large cofactor is prime
     assert tw["big_bits"] >= 200                 # ~2^220
     assert tw["factorization_exact"]             # small factors * big cofactor == twist order exactly
+
+
+# ---- (5) the field constant 977 is forced, not chosen ------------------------
+
+def test_cm_point_count_reproduces_secp256k1_order():
+    # the CM (j=0) point-count is validated against the published order before it's trusted elsewhere
+    assert curve_order(P) == N and is_prime(N)
+
+
+def test_977_is_the_minimal_design_satisfying_constant():
+    minimal, rows = field_constant_minimality(1000)
+    assert minimal == 977                        # smallest c meeting all four constraints
+    by_c = {c: (m4, m3, op, allfour) for (c, m4, m3, op, allfour) in rows}   # by_c[c] = (p%4, p%3, order_prime, all4)
+    assert by_c[263][1] == 1 and by_c[263][2] is False   # 263: p%3==1 but composite curve order
+    assert by_c[361][0] == 3 and by_c[361][1] == 2       # 361: p%4==3 but p%3==2 (no endomorphism)
+    assert by_c[977][2] is True and by_c[977][:2] == (3, 1)  # 977: prime order, p%4==3, p%3==1
