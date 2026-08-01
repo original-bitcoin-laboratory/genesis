@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "evidence_level": "JAN09-EXECUTED",
+  "run": "2026-08-02-reorg-partition",
+  "generated": "2026-08-02",
+  "evidence_dir": "r4-evidence/2026-08-02-reorg-partition (gitignored)",
+  "file_count": 4,
+  "note": "R4b: witnessed chain reorganisation via deliberate network partition. Fork point = height 13 (00000000464529..., carried over from R4a run-b-14). Node A mined its own height-14 block 000000000234edf2e743a6b0048b8937fe42d7583647483062cc4e1ec81188fc; node B, isolated (cable off), mined a competing height-14 (00000000c0383b...) and extended to height-15 (000000004e442b...). On reconnect node A fired *** REORGANIZE *** (nodeA_debug.log:538), orphaned 000000000234ed, and adopted B's chain. Both converged on tip 000000004e442bf67f2abcaa... at height 15. Node A blk0001.dat retains the orphan (17 blocks / 1 orphan); node B has 16 blocks / 0 orphans; the +223-byte size delta equals exactly one v0.1 block. NOT money.",
+  "files": [
+    {
+      "path": "nodeA_blk0001.dat",
+      "size": 3861,
+      "sha256": "909852b71c2ec1aa5d3ee1a11c8349196f47ddcdfb7b8c174d1c633cd4d8daf0"
+    },
+    {
+      "path": "nodeA_debug.log",
+      "size": 22016,
+      "sha256": "769e231f6184f2970c00493a507f514c491a345f06cfc119f6dec9a039eadae6"
+    },
+    {
+      "path": "nodeB_blk0001.dat",
+      "size": 3638,
+      "sha256": "48a84ce77864f1896da2f0501f18cdb482bc7bb51ac6222b809bb859560bdcd9"
+    },
+    {
+      "path": "nodeB_debug.log",
+      "size": 22898,
+      "sha256": "9104871d3630ba2857aea6afc392d1ed9629dae4ef468c7e6a37bdd992f078d3"
+    }
+  ]
+}

@@ -87,12 +87,38 @@ discovery stalls, re-check step 2 (bare-`\r`) and step 7 (flushdns). This reprod
 
 ---
 
-## Part 2 — R4b: a reorganisation (stochastic; run until it happens)
+## Part 2 — R4b: a reorganisation ✅ WITNESSED (2026-08-02, `r4-findings/2026-08-02-reorg-partition/`)
 
-The miner is peer-gated, so you can't cleanly partition two nodes and keep mining. Instead exploit relay
-latency: **run BOTH miners at once.** Under CPU saturation, relay lags mining, so the two nodes occasionally
-mine the *same height* independently → a fork → the taller branch wins → the other node **reorgs**, orphaning
-its block(s). This is a real reorg on the real binary; it's just not deep or scheduled.
+> **Done — and the deterministic 2-VM partition below is what actually worked**, not the stochastic method.
+> Node A mined its own height-14 block, node B's cable was pulled, node B mined a competing height-14 and
+> extended to height-15 (one block longer), and on reconnect node A fired `*** REORGANIZE ***`, orphaned its
+> own block, and adopted B's chain. `verify_r4.py` on node A: 17 blocks / **1 orphan** / `reorg witnessed:
+> True`, both nodes on the same tip `000000004e442b…`. Steps kept for reproduction.
+
+**The 2-VM deterministic partition (recommended — this is the one that produced the witness).** The miner is
+peer-gated, but you don't need a *live* peer to keep a mined chain: mine one block on node A, then **pull node
+B's cable** (Devices → Network → *Connect Network Adapter*, uncheck) so B is isolated **with node A's earlier
+connection still counting as its peer** — B keeps mining in isolation and runs *ahead*. Let B get **one block
+taller** than A, then **reconnect the cable**: A learns B's longer chain and **reorgs**, orphaning its own
+block. Deterministic, needs only the two R4 VMs (no 4-VM setup), and gives a clean depth-1 reorg.
+
+1. From the agreed tip (end of R4a), turn **Generate Coins ON on node A** briefly so A mines **one** block of
+   its own on top of the shared tip; note A's height. Turn A's miner **off**.
+2. **Partition:** on node B, Devices → Network → **uncheck** *Connect Network Adapter*. With **Generate Coins
+   ON on node B**, B mines in isolation. Wait until **node B's block count is ≥1 higher** than node A's
+   (e.g. A at "15 blocks", wait for B to show "16 blocks").
+3. **Reconnect:** re-check node B's *Connect Network Adapter*. Within seconds node A pulls B's chain.
+4. On node A, `Select-String REORGANIZE C:\obl\debug.log` → expect `*** REORGANIZE ***`. Turn both miners off.
+5. Capture both `blk0001.dat` + `debug.log`.
+6. Verify (below): node A shows ≥1 orphan and both nodes share the taller tip.
+
+<details><summary>Alternative (stochastic; kept for reference)</summary>
+
+Exploit relay latency instead: **run BOTH miners at once.** Under CPU saturation relay lags mining, so the two
+nodes occasionally mine the *same height* independently → a fork → the taller branch wins → the other node
+**reorgs**. This is a real reorg on the real binary; it's just not deep or scheduled — and in practice a fast
+2-node net produced **0 reorgs** across a 14-block run (R4a run-b), which is why the deterministic partition
+above is preferred.
 
 1. Note the current agreed tip/height (end of R4a).
 2. Turn **Generate Coins ON on BOTH** node A and node B. Let them run.
@@ -110,6 +136,8 @@ its block(s). This is a real reorg on the real binary; it's just not deep or sch
 mining in isolation so each has a peer, build a short branch on one pair and a taller branch on the other,
 then bridge A↔B and watch the shorter side reorg. Needs 4 VMs; only do this if the stochastic reorg won't
 converge for you.)*
+
+</details>
 
 ---
 
@@ -130,7 +158,11 @@ the tx-relay cell witnessed on the real binary.
 
 ## Evidence capture & write-up
 
-- Mirror the R3 layout. Create `r4-findings/<YYYY-MM-DD>-sustained-and-reorg/` for the committed write-up +
+> **R4a and R4b are done** — see `r4-findings/README.md`, `r4-findings/2026-08-01-sustained-relay/`, and
+> `r4-findings/2026-08-02-reorg-partition/`; `docs/STATUS.md` records both as witnessed. The notes below
+> are the general recipe (use them for R4c, or to reproduce).
+
+- Mirror the R3 layout. Create `r4-findings/<YYYY-MM-DD>-<milestone>/` for the committed write-up +
   hashed manifest, and keep raw bytes under the gitignored `r4-evidence/<same>/`.
 - Run `python scripts/capture-evidence.py --run <YYYY-MM-DD>-sustained-and-reorg` (same tool as R3) to hash
   everything into `EVIDENCE_MANIFEST.json`.

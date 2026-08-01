@@ -3,6 +3,10 @@
 height-based best chain (v0.1 selects by height, not chainwork), verify every block's
 proof-of-work and prev-linkage, and report sustained-mining depth + any reorg (orphans).
 
+This is the R4b copy: it additionally NAMES each off-best (orphaned) block — the block that
+was mined but replaced by a longer competing chain — and the height it forked off the best
+chain, so a witnessed reorganisation is legible directly from the raw bytes.
+
 Usage:
     python verify_r4.py nodeA/blk0001.dat [nodeB/blk0001.dat]
     python verify_r4.py --b64 nodeA.b64 nodeB.b64        # base64-encoded blk files

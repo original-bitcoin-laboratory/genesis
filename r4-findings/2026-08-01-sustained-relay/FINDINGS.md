@@ -121,5 +121,7 @@ At **JAN09-EXECUTED** level this run lifts **sustained multi-block mining and re
 **three** valid difficulty-1 blocks in succession on top of the real genesis, and a second unmodified
 node received, validated, and accepted **every** one, both ending on the identical four-block chain —
 verified from the raw block bytes, not just the GUI. Together with R3 (single-block production + relay)
-this closes **R4a**. Still deferred: **R4b** a reorganisation, and **R4c** a relayed spend (needs a
-matured coinbase, ~101 blocks). **NOT money** — isolated network, real genesis, valueless by design.
+this closes **R4a**. **R4b** (a reorganisation) was subsequently witnessed the next day — see
+`r4-findings/2026-08-02-reorg-partition/`, which realises the deliberate-partition mechanism this section
+predicts. Still deferred: **R4c** a relayed spend (needs a matured coinbase, ~101 blocks). **NOT money** —
+isolated network, real genesis, valueless by design.

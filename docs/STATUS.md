@@ -228,7 +228,17 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     **Follow-up (run B):** with **both** nodes generating, the chain reached **7 blocks bidirectionally**
     (node A mined 2 + accepted B's 4; node B mined 4 + accepted A's 2), both still byte-identical
     (`c8ff1c6c…`, 0 orphans, same tip) — production **and** relay now witnessed **A↔B**, and the chain
-    **persisted across an unplanned guest reboot**. No reorg yet (R4b still open).
-  - Still to capture: **a reorganisation** (R4b) and a **relayed spend** (R4c, needs a matured coinbase
-    ~101 blocks) between the two nodes — both already covered headlessly by `derivatives/node` +
-    `derivatives/p2p`.
+    **persisted across an unplanned guest reboot**. (Extended run reached 14 blocks, 0 reorgs.)
+  - [x] **Chain reorganisation — witnessed (2026-08-02, `r4-findings/2026-08-02-reorg-partition/`; R4b).**
+    Carrying the same two VMs on from the height-13 tip `00000000464529…`, node A mined its **own** height-14
+    block `000000000234edf2…c81188fc`; the two nodes were then **partitioned** (node B's cable pulled) and
+    node B mined a competing height-14 (`00000000c0383b…`) and extended to height-15 (`000000004e442b…`) —
+    one block longer. On **reconnect** node A's binary fired **`*** REORGANIZE ***`**, orphaned its own
+    `000000000234ed`, and adopted B's chain; both converged on tip `000000004e442b…` at height 15.
+    `verify_r4.py` reads it straight from the bytes: node A = 17 blocks / **1 orphan** / `reorg witnessed: True`,
+    node B = 16 blocks / 0 orphans, **same best tip**. An independent on-disk tell corroborates it: node A's
+    `blk0001.dat` is exactly **+223 bytes** (one v0.1 block) larger than node B's — the retained orphan. This
+    lifts a **reorganisation** for the released binary from MODEL to **JAN09-EXECUTED**. Findings + hashed
+    manifest committed (raw bytes gitignored).
+  - Still to capture: a **relayed spend** (R4c, needs a matured coinbase ~101 blocks) between the two nodes —
+    already covered headlessly by `derivatives/node` + `derivatives/p2p`.

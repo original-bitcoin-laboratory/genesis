@@ -55,7 +55,12 @@ reconstructions — the **historical** genesis is reconstructed from source by t
 reproduced by the unmodified 2009 binary (`r3-findings/run1/`, level `JAN09-EXECUTED`). Two such binaries,
 air‑gapped in isolated VMs, then **produced and relayed a block**: one mined block 1 at real difficulty 1 on
 that genesis and the other received and accepted it, both `blk0001.dat` byte‑identical — verified from the raw
-block bytes (`r3-findings/2026-07-31-twonode-mined-block/`, level `JAN09-EXECUTED`). The Python and Rust
+block bytes (`r3-findings/2026-07-31-twonode-mined-block/`, level `JAN09-EXECUTED`). The same two binaries went
+on to **sustained bidirectional mining and relay** (a 14‑block chain, both nodes byte‑identical) and then a
+**chain reorganisation** — partitioned until their equal‑difficulty chains diverged by one block, the shorter
+node fired Satoshi's `*** REORGANIZE ***`, orphaned its own valid block, and adopted the longer chain, both
+converging on one tip (`r4-findings/2026-08-01-sustained-relay/` and `r4-findings/2026-08-02-reorg-partition/`,
+level `JAN09-EXECUTED`). The Python and Rust
 nodes regenerate the *experimental-network* genesis blocks, which they check differ from the historical
 hash. Findings, the honest claim, and scope live in the umbrella:
 [`common/README.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/README.md) · [`common/CLAIMS.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/CLAIMS.md).
