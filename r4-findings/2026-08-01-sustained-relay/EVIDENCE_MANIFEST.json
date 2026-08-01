@@ -4,7 +4,8 @@
   "run": "2026-08-01-sustained-relay",
   "generated": "2026-08-01",
   "evidence_dir": "r4-evidence/2026-08-01-sustained-relay (gitignored)",
-  "file_count": 6,
+  "file_count": 12,
+  "note": "run-a = R4a one-way B->A (3 blocks); run-b = bidirectional A<->B (7 blocks, after a VM reboot; chain persisted).",
   "files": [
     {
       "path": "nodeA/blk0001.dat",
@@ -35,6 +36,36 @@
       "path": "nodeB/debug.log",
       "size": 6982,
       "sha256": "ee9522f33b372b07d67d5eb33f306647b2851c5d78ec4535b583143614adb722"
+    },
+    {
+      "path": "run-b/nodeA/blk0001.dat",
+      "size": 1631,
+      "sha256": "c8ff1c6cabf6897bff13eca7a2096a77592f31a3491674dca7f5cd32cfb113ea"
+    },
+    {
+      "path": "run-b/nodeA/debug-excerpt.txt",
+      "size": 2281,
+      "sha256": "8122c0fe9803c2ea2cba807bfd79539148f87d7d4a0202d05cd537d0c446f70b"
+    },
+    {
+      "path": "run-b/nodeA/debug.log",
+      "size": 9456,
+      "sha256": "b83674d21d1c742703703f2936df5c94d4cd0898978175e91807d395bf4f72b6"
+    },
+    {
+      "path": "run-b/nodeB/blk0001.dat",
+      "size": 1631,
+      "sha256": "c8ff1c6cabf6897bff13eca7a2096a77592f31a3491674dca7f5cd32cfb113ea"
+    },
+    {
+      "path": "run-b/nodeB/debug-excerpt.txt",
+      "size": 2022,
+      "sha256": "c4aeacc1aacffe9cf49602e2516b603105a21b003a2621f3fd5f6ad48eb0ecf5"
+    },
+    {
+      "path": "run-b/nodeB/debug.log",
+      "size": 10248,
+      "sha256": "2c47e722b25787fce8f76c2f63a587d0e3b8d2ca445e7be7a50d3baa216fc107"
     }
   ]
 }

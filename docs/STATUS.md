@@ -225,6 +225,10 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     `blk0001.dat` are **byte-identical** (`aaf08aa3…`) and `verify_r4.py` confirms 0 orphans, all-valid PoW,
     and both nodes on the **same tip** — lifting sustained mining + relay for the released binary from
     MODEL to **JAN09-EXECUTED**. Findings + hashed manifest committed (raw bytes gitignored).
+    **Follow-up (run B):** with **both** nodes generating, the chain reached **7 blocks bidirectionally**
+    (node A mined 2 + accepted B's 4; node B mined 4 + accepted A's 2), both still byte-identical
+    (`c8ff1c6c…`, 0 orphans, same tip) — production **and** relay now witnessed **A↔B**, and the chain
+    **persisted across an unplanned guest reboot**. No reorg yet (R4b still open).
   - Still to capture: **a reorganisation** (R4b) and a **relayed spend** (R4c, needs a matured coinbase
     ~101 blocks) between the two nodes — both already covered headlessly by `derivatives/node` +
     `derivatives/p2p`.

@@ -87,6 +87,25 @@ Preserved and hashed in `EVIDENCE_MANIFEST.json` (bytes gitignored under `r4-evi
 `debug-excerpt.txt` (the discovery, mining, and relay lines). Both nodes' `blk0001.dat` re-parse to the
 same height-3 chain and the same tip under `verify_r4.py`.
 
+## Follow-up (run B, 1 Aug 2026): bidirectional production + relay, across a reboot
+
+A second capture (`r4-evidence/.../run-b/`) strengthens R4a from one-directional to **bidirectional**.
+With **both** nodes generating, the chain grew to **7 blocks (height 6)** and the two nodes still hold a
+**byte-identical** `blk0001.dat` (sha256 `c8ff1c6cabf6897bff13eca7a2096a77592f31a3491674dca7f5cd32cfb113ea`),
+same tip `000000001fad15d9…`, **0 orphans** (`verify_r4.py`). From the logs:
+
+| node | mined (`proof-of-work found`) | received from peer | accepted (`ProcessBlock: ACCEPTED`) |
+|---|:--:|:--:|:--:|
+| A | **2** | 4 | 6 |
+| B | **4** | 2 | 6 |
+
+So each node both **produced** blocks and **validated and accepted the other's** — bidirectional
+production and relay, converging on one chain (R4a only showed B→A). Two incidental robustness facts:
+the extended chain shares R4a's `h1`/`h2` (`000000005df5e9…`/`00000000092b53…`), and it **survived an
+unplanned guest reboot** — on restart both `bitcoin.exe` reloaded the persisted `blk0001.dat`,
+re-discovered over IRC, and resumed on the same chain. No reorg occurred (0 `REORGANIZE`), consistent
+with fast relay on a 2-node net; R4b remains open.
+
 ## Conclusion
 
 At **JAN09-EXECUTED** level this run lifts **sustained multi-block mining and relay** from MODEL
