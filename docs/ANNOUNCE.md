@@ -47,7 +47,7 @@ hashing, sighash, and value rules are pinned down.
 ## How to take part
 
 1. **Verify the genesis yourself** — the durable, permanent artifact. `scripts/verify_genesis.py`
-   re‑derives both genesis blocks from source; `scripts/reproduce.py` runs the whole lab (24/24). No
+   re‑derives both genesis blocks from source; `scripts/reproduce.py` runs the whole lab (25/25). No
    node required, no way to be misled. This is the part that lasts forever.
 2. **Run a node** — one command with the prebuilt image
    (`docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode`), or from source

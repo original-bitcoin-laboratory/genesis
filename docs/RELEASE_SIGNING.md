@@ -20,7 +20,7 @@ checkout:
 
 ```bash
 python scripts/verify_genesis.py          # both genesis blocks re-derive from source
-python scripts/reproduce.py               # the whole lab — expect: ALL PASSED, 24/24 steps green
+python scripts/reproduce.py               # the whole lab — expect: ALL PASSED, 25/25 steps green
 cd derivatives/validator-rs && cargo test # the Rust node — expect: 30 passed
 ```
 
@@ -83,7 +83,7 @@ gpg --verify SHA256SUMS.asc SHA256SUMS && sha256sum -c SHA256SUMS
 
 # 3. verify the content itself — the part that truly matters
 python scripts/verify_genesis.py      # re-derive the genesis from source
-python scripts/reproduce.py           # 24/24
+python scripts/reproduce.py           # 25/25
 cd derivatives/validator-rs && cargo test   # 30 passed
 ```
 

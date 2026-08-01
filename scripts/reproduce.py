@@ -33,6 +33,7 @@ SUITES = [
     ("conformance(6-chain matrix, every column execution-checked)", DERIV / "conformance"),
     ("crypto     (v0.1 ECDSA vs real libsecp256k1 — Thread A)",     DERIV / "crypto_conformance"),
     ("curve      (secp256k1 endomorphism / generator provenance / twist)", DERIV / "curve_structure"),
+    ("hash       (SHA-256 NUMS constants / merkle 64-byte / RIPEMD margin)", DERIV / "hash_structure"),
     ("overflow   (v0.1 CheckTransaction vs the Aug-2010 MoneyRange fix)", DERIV / "overflow"),
     ("script_lim (v0.1 EvalScript has no element/op/stack ceilings)", DERIV / "script_limits"),
     ("retarget   (v0.1 GetNextWorkRequired fencepost + timewarp boundary)", DERIV / "retarget"),

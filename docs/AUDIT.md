@@ -76,7 +76,7 @@ plaintext wallet, loopback‑only unauthenticated RPC) stand as documented — c
 ## Reproduce
 
 ```bash
-python scripts/reproduce.py            # full lab, 24/24 steps (both node suites, incl. the DoS-survival test)
+python scripts/reproduce.py            # full lab, 25/25 steps (both node suites, incl. the DoS-survival test)
 cd derivatives/validator-rs && cargo test    # Rust node, 30 tests (incl. both malformed-block and malformed-tx floods)
 python -m pytest derivatives/p2p/test_p2p.py -q          # parser CompactSize + huge-count bounds
 ```
