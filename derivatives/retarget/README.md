@@ -56,16 +56,27 @@ the fixed point and the boundary behaviour from the real constants. The lab's li
 short experimental retarget interval for the X-chains, so this module is where the *mainnet* 2016-block
 fencepost is made explicit.
 
-## Tests (`test_retarget.py`, 8)
+## Difficulty-1 target exactness + the nBits codec (section C)
+
+The demo also nails the difficulty-1 target and its encoding: `SetCompact(0x1d00ffff)` decodes to
+`0xFFFF·2²⁰⁸` (round-trips canonically), and the **expected hashes per block** is
+`2²⁵⁶/(target+1) = 4,295,032,833` — **not** the round `2³²`. The gap is exactly `65536/65535`, the
+well-known **pdiff-vs-bdiff** discrepancy (pool difficulty uses `2²⁴`, Bitcoin difficulty uses the real
+`0xFFFF·2²⁰⁸`). The `nBits` codec's edges are shown too: the mantissa's `0x00800000` sign bit marks a
+**negative** (invalid) target, and an over-large exponent **overflows**. (`set_compact`, `get_compact`,
+`expected_hashes`.)
+
+## Tests (`test_retarget.py`, 11)
 
 The finding (2015 measured intervals; equilibrium 600.30 s, slower than 600); the mechanism (naive
 600 s is not the fixed point and goes harder; 600.2978 s is exactly stable); the clamp (`×¼`/`×4`);
 the timewarp (one forged boundary forces `×4`, iterated it collapses ~1000× while the honest chain is
-unchanged); the pow-limit floor; and the constants match `main.cpp`.
+unchanged); the pow-limit floor; the constants match `main.cpp`; and the difficulty-1 target / nBits
+round-trip, the exact `4,295,032,833` expected hashes (pdiff-vs-bdiff), and the sign-bit/overflow edges.
 
 ```bash
 python retarget.py     # the demo above
-python -m pytest       # 8 passed
+python -m pytest       # 11 passed
 ```
 
 ## Boundary

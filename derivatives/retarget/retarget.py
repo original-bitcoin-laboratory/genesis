@@ -32,6 +32,27 @@ N_INTERVAL = N_TARGET_TIMESPAN // N_TARGET_SPACING  # 2016
 
 # bnProofOfWorkLimit, compact 0x1d00ffff = 0xFFFF * 2^(8*(0x1d-3)) = 0xFFFF << 208 (difficulty 1)
 POW_LIMIT = 0xFFFF << 208
+D1_BITS = 0x1d00ffff
+
+# ---- the difficulty-1 target: nBits codec + the exact (pdiff-vs-bdiff) expected work --------
+def set_compact(c):
+    """Bitcoin SetCompact -> (target, negative, overflow)."""
+    size = c >> 24; word = c & 0x007fffff
+    val = word >> (8*(3-size)) if size <= 3 else word << (8*(size-3))
+    negative = word != 0 and (c & 0x00800000) != 0
+    overflow = word != 0 and (size > 34 or (word > 0xff and size > 33) or (word > 0xffff and size > 32))
+    return val, negative, overflow
+
+def get_compact(value):
+    """Bitcoin GetCompact -> canonical nBits for a positive target."""
+    size = (value.bit_length() + 7) // 8
+    compact = (value << (8*(3-size))) if size <= 3 else (value >> (8*(size-3)))
+    if compact & 0x00800000: compact >>= 8; size += 1
+    return compact | (size << 24)
+
+def expected_hashes(target):
+    """Expected hashes to find a block at this target = 2^256 / (target+1)."""
+    return (1 << 256) // (target + 1)
 
 
 def intervals_measured() -> int:
@@ -108,6 +129,15 @@ def demo() -> None:
         print(f"               timewarp target {attack:>66}")
     print(f"    -> after 5 periods the attacker's target is ~{attack // max(honest, 1)}x easier "
           f"(difficulty collapsed by the max 4x/period)")
+
+    print("(C) difficulty-1 target exactness + the nBits codec")
+    val, neg, ovf = set_compact(D1_BITS)
+    print(f"    SetCompact(0x1d00ffff) == 0xFFFF<<208 : {val == POW_LIMIT}  (round-trip {get_compact(val) == D1_BITS};"
+          f" negative={neg} overflow={ovf})")
+    e = expected_hashes(POW_LIMIT)
+    print(f"    expected hashes/block = 2^256/(target+1) = {e:,}  = 2^32 * 65536/65535")
+    print(f"    (NOT the round 2^32 = {1<<32:,}; that gap 65536/65535 is the pdiff-vs-bdiff discrepancy)")
+    print(f"    sign-bit edge: SetCompact(0x1d80ffff) negative = {set_compact(0x1d80ffff)[1]} (invalid target)")
 
 
 if __name__ == "__main__":

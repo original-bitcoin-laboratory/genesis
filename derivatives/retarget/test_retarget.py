@@ -10,8 +10,9 @@ _HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE))
 
 from retarget import (                                                    # noqa: E402
-    N_INTERVAL, N_TARGET_SPACING, N_TARGET_TIMESPAN, POW_LIMIT,
-    equilibrium_spacing, get_next_work_required, intervals_measured, window_at_spacing,
+    D1_BITS, N_INTERVAL, N_TARGET_SPACING, N_TARGET_TIMESPAN, POW_LIMIT,
+    equilibrium_spacing, expected_hashes, get_compact, get_next_work_required,
+    intervals_measured, set_compact, window_at_spacing,
 )
 
 
@@ -88,3 +89,23 @@ def test_constants_match_main_cpp():
     assert N_TARGET_SPACING == 10 * 60                   # main.cpp:688
     assert N_INTERVAL == 2016                            # main.cpp:689
     assert POW_LIMIT == 0xFFFF << 208                    # bnProofOfWorkLimit, compact 0x1d00ffff
+
+
+# ---- difficulty-1 target exactness + the nBits codec ------------------------
+
+def test_difficulty_one_target_and_nbits_roundtrip():
+    val, neg, ovf = set_compact(D1_BITS)
+    assert val == POW_LIMIT and not neg and not ovf
+    assert get_compact(val) == D1_BITS             # canonical round-trip
+
+
+def test_expected_hashes_is_2p32_times_65536_over_65535():
+    e = expected_hashes(POW_LIMIT)
+    assert e == 4_295_032_833                       # exact; NOT the round 2^32
+    assert e != (1 << 32)
+    assert abs(e / (1 << 32) - 65536 / 65535) < 1e-12   # the pdiff-vs-bdiff gap
+
+
+def test_nbits_sign_bit_and_overflow_edges():
+    assert set_compact(0x1d80ffff)[1] is True       # sign bit set -> negative target (invalid)
+    assert set_compact(0xff123456)[2] is True       # exponent too large -> overflow (invalid)
