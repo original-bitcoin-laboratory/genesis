@@ -12,7 +12,7 @@ Three independent roots, so no single one is load-bearing:
 | Layer | What it preserves | Status |
 |---|---|---|
 | **Software Heritage** | full history of all four OBL repositories, in the universal source-code archive | **live** — [`.github/workflows/preserve.yml`](../.github/workflows/preserve.yml) requests archival daily and on every release, no credentials required |
-| **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — pins each release's signed assets; verified against v0.4.0, e.g. `obl-genesis-0.4.0.tar.gz` → `QmYCW5TQffpasTKJbBAh7hppcmgkTVPXuS736d36ZXpxhE` (retrievable by CID from any gateway) |
+| **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — pins each release's signed assets; latest v0.5.0: `obl-genesis-0.5.0.tar.gz` → `QmVSNMtK2yKSSyqgTQrig1zSf6qP62QuCiaMRTppQbo7BZ` (retrievable by CID from any gateway, cross-checkable against `SHA256SUMS`) |
 | **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **published** as `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`); durable public seeding pending |
 
 Everything preserved is **hash-anchored**, which is what makes redundancy safe: a mirror cannot silently
