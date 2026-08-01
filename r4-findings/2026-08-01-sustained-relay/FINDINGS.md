@@ -87,24 +87,32 @@ Preserved and hashed in `EVIDENCE_MANIFEST.json` (bytes gitignored under `r4-evi
 `debug-excerpt.txt` (the discovery, mining, and relay lines). Both nodes' `blk0001.dat` re-parse to the
 same height-3 chain and the same tip under `verify_r4.py`.
 
-## Follow-up (run B, 1 Aug 2026): bidirectional production + relay, across a reboot
+## Follow-up (run B, 1 Aug 2026): bidirectional production + relay, extended to 14 blocks, across a reboot
 
-A second capture (`r4-evidence/.../run-b/`) strengthens R4a from one-directional to **bidirectional**.
-With **both** nodes generating, the chain grew to **7 blocks (height 6)** and the two nodes still hold a
-**byte-identical** `blk0001.dat` (sha256 `c8ff1c6cabf6897bff13eca7a2096a77592f31a3491674dca7f5cd32cfb113ea`),
-same tip `000000001fad15d9…`, **0 orphans** (`verify_r4.py`). From the logs:
+A second capture (`r4-evidence/.../run-b-14/`) strengthens R4a from one-directional to **bidirectional**
+and was carried to a **14-block chain (height 13)**. With **both** nodes generating, the two nodes hold a
+**byte-identical** `blk0001.dat` (sha256 `d674d3f6e11dbe81425a9221fcb381e6bafc5589eddca7758efe0d91e24e723e`),
+same tip `00000000464529357196408a…`, height 13, **0 orphans / 0 reorgs** (`verify_r4.py`, both files
+independently). From the logs:
 
 | node | mined (`proof-of-work found`) | received from peer | accepted (`ProcessBlock: ACCEPTED`) |
 |---|:--:|:--:|:--:|
-| A | **2** | 4 | 6 |
-| B | **4** | 2 | 6 |
+| A | **4** | 9 | 13 |
+| B | **9** | 4 | 13 |
 
-So each node both **produced** blocks and **validated and accepted the other's** — bidirectional
-production and relay, converging on one chain (R4a only showed B→A). Two incidental robustness facts:
-the extended chain shares R4a's `h1`/`h2` (`000000005df5e9…`/`00000000092b53…`), and it **survived an
-unplanned guest reboot** — on restart both `bitcoin.exe` reloaded the persisted `blk0001.dat`,
-re-discovered over IRC, and resumed on the same chain. No reorg occurred (0 `REORGANIZE`), consistent
-with fast relay on a 2-node net; R4b remains open.
+So each node both **produced** blocks and **validated and accepted the other's** — full bidirectional
+production and relay, the 13 mined blocks split **4 / 9**, both nodes accepting all 13 non-genesis blocks
+and converging on one chain (R4a only showed B→A). Two incidental robustness facts: the extended chain
+shares R4a's `h1`/`h2` (`000000005df5e9…`/`00000000092b53…`), and it **survived an unplanned guest
+reboot** — on restart both `bitcoin.exe` reloaded the persisted `blk0001.dat`, re-discovered over IRC,
+and resumed on the same chain. (An earlier snapshot of this same run at height 6, tip `000000001fad15d9…`,
+is superseded by this height-13 capture.)
+
+**No reorg occurred (0 `REORGANIZE`)** even with both nodes mining — consistent with fast relay on a
+2-node net: each block propagates before the next is found, so no competing fork forms. A reorg on this
+topology therefore requires a **deliberate network partition** (isolate a node, let the chains diverge
+by unequal depth, reconnect) — so **R4b remains open** and is not producible by simply running both
+miners.
 
 ## Conclusion
 

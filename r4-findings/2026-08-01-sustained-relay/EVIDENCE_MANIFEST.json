@@ -4,8 +4,8 @@
   "run": "2026-08-01-sustained-relay",
   "generated": "2026-08-01",
   "evidence_dir": "r4-evidence/2026-08-01-sustained-relay (gitignored)",
-  "file_count": 12,
-  "note": "run-a = R4a one-way B->A (3 blocks); run-b = bidirectional A<->B (7 blocks, after a VM reboot; chain persisted).",
+  "file_count": 16,
+  "note": "run-a = R4a one-way B->A (3 blocks); run-b = bidirectional A<->B (7 blocks, after a VM reboot; chain persisted); run-b-14 = the same bidirectional run carried to 14 blocks (height 13), both nodes byte-identical, tip 00000000464529..., A mined 4 / B mined 9, 0 reorgs.",
   "files": [
     {
       "path": "nodeA/blk0001.dat",
@@ -66,6 +66,26 @@
       "path": "run-b/nodeB/debug.log",
       "size": 10248,
       "sha256": "2c47e722b25787fce8f76c2f63a587d0e3b8d2ca445e7be7a50d3baa216fc107"
+    },
+    {
+      "path": "run-b-14/nodeA_blk0001.dat",
+      "size": 3192,
+      "sha256": "d674d3f6e11dbe81425a9221fcb381e6bafc5589eddca7758efe0d91e24e723e"
+    },
+    {
+      "path": "run-b-14/nodeA_debug.log",
+      "size": 18299,
+      "sha256": "03b5f9a118b8e56db166539394fc8dab64cbcf65ce3fc893fa8ca515b85563b1"
+    },
+    {
+      "path": "run-b-14/nodeB_blk0001.dat",
+      "size": 3192,
+      "sha256": "d674d3f6e11dbe81425a9221fcb381e6bafc5589eddca7758efe0d91e24e723e"
+    },
+    {
+      "path": "run-b-14/nodeB_debug.log",
+      "size": 19412,
+      "sha256": "83e8d49203ec5fb5bc5bc8cefb5b0ba4127a739a212993bf1ae74d4edbc7c023"
     }
   ]
 }
