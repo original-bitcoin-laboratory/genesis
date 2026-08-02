@@ -36,15 +36,12 @@ ROOT = Path(__file__).resolve().parent.parent            # genesis/
 DERIV = ROOT / "derivatives"
 
 # claim id -> (description, [(label, dir, pytest args)]). The paper's findings rest on the faithful profiles
-# (jan09-faithful, nov08-source-bounded); the one experimental-genesis check under C1 is a determinism-only
-# sub-check (the isolated blocks reproduce and differ from the historical hash) and is explicitly NOT evidence
-# for the historical-genesis claim, which the C++/OpenSSL port (--cpp) and the deposited binary carry.
+# (jan09-faithful, nov08-source-bounded). The experimental-genesis determinism check is NOT a paper claim --
+# it is recorded separately under `auxiliary_checks` (a lab sanity check that the isolated NOV08-X/JAN09-X
+# blocks reproduce and differ from the historical hash). The historical-binary results (C1d-C1g) are EXTERNAL,
+# author-reported and carried by the deposited legacy-toolchain source build + the unmodified 2009 binary --
+# NOT by the modern differential C++/OpenSSL port (--cpp), which never executes the historical build.
 CLAIMS = {
-    "C1a-experimental-genesis-determinism": (
-        "The two experimental-network genesis blocks (NOV08-X, JAN09-X) re-derive deterministically from "
-        "source and differ from the historical hash -- explicitly NOT the historical block",
-        [("experimental-network genesis determinism (verify_genesis.py)", ROOT / "scripts", None)],
-    ),
     "C1b-consensus-core-cross-implemented": (
         "The consensus core (sighash, CHECKSIG/CHECKMULTISIG, Script) is cross-implemented and agrees -- "
         "Python here, Rust via --rust, C++/OpenSSL via --cpp",
@@ -56,11 +53,36 @@ CLAIMS = {
         "reorg to an invalid branch, restoring the prior tip",
         [("reorg-safety", DERIV / "netnode", ["-k", "reorg or disconnect"])],
     ),
-    "C1d-historical-genesis-reconstruction": (
-        "The HISTORICAL January genesis (000000000019d668...) is re-derived by the C++/OpenSSL period build "
-        "and the unmodified 2009 binary (the historical-binary witness, deposited separately; DOI in the "
-        "paper). EXTERNAL to this reproducer -- author-reported and hash-manifested, not executed here",
-        "EXTERNAL",
+    # Each external claim carries its OWN carrier note: C1d (genesis) is the legacy source build + the
+    # binary; C1e-C1g are the unmodified-binary two-node RUN and its archived artifacts, NOT the source build.
+    "C1d-historical-genesis": (
+        "The HISTORICAL January genesis (000000000019d668...) is re-derived by a legacy-toolchain source "
+        "build and the unmodified 2009 binary (the historical-binary witness). EXTERNAL -- author-reported "
+        "and hash-manifested, archival deposit pending; not executed here",
+        ("EXTERNAL", "carried by a legacy-toolchain source build AND the unmodified 2009 binary (deposited "
+                     "separately), not by the differential C++/OpenSSL port; author-reported, archival deposit pending"),
+    ),
+    "C1e-historical-block-production-and-relay": (
+        "Two unmodified 2009 binaries mine at difficulty-1 on the real genesis and relay blocks peer-to-peer "
+        "(discovery via a local IRC daemon reproducing the client's hard-coded path); the receiver accepts "
+        "each, leaving byte-identical block files (blk0001.dat). EXTERNAL -- author-reported, archival deposit pending",
+        ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
+                     "evidence manifest (not the legacy source build); author-reported, archival deposit pending"),
+    ),
+    "C1f-historical-bidirectional-chain-growth": (
+        "Both unmodified binaries mine and validate/accept each other's blocks, growing a 14-block chain "
+        "bidirectionally -- byte-identical block files on both and persisting across an unplanned restart. "
+        "EXTERNAL -- author-reported, archival deposit pending",
+        ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
+                     "evidence manifest (not the legacy source build); author-reported, archival deposit pending"),
+    ),
+    "C1g-historical-reorganisation": (
+        "Deliberately partitioned, the two binaries build divergent valid branches; on reconnection the "
+        "shorter node executes the client's REORGANIZE path, orphans its own valid block, and both converge "
+        "on the longer branch (the retained orphan a one-block on-disk difference). EXTERNAL -- "
+        "author-reported, archival deposit pending",
+        ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
+                     "evidence manifest (not the legacy source build); author-reported, archival deposit pending"),
     ),
     "C2-broad-interpreter": (
         "A broad spending-predicate interpreter: opcode vocabulary + escrow/hash-lock/assurance + a marketplace source component",
@@ -136,6 +158,31 @@ def _profiles_block():
     return block
 
 
+def _external_evidence(path: Path) -> dict:
+    """Derive external-claim (C1d-C1g) completeness from a frozen deposit descriptor rather than a hand-set
+    boolean. Complete iff the file exists and carries a DOI, an archive sha256, an evidence-manifest sha256,
+    and a claim map covering every external claim C1d-C1g. Absent -> incomplete (the correct pre-deposit
+    state). This keeps `external_claims_complete` machine-verifiable: the author drops in the descriptor at
+    deposit; nobody flips the flag by hand."""
+    required = {"C1d", "C1e", "C1f", "C1g"}
+    doc = None
+    if path.exists():
+        try:
+            doc = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            doc = None
+    if not doc:
+        return {"complete": False, "source": None, "reason": "no historical-evidence.json (pre-deposit state)"}
+    mapped = {str(c).split("-")[0] for c in (doc.get("claim_map") or {})}
+    complete = bool(doc.get("doi") and doc.get("archive_sha256")
+                    and doc.get("evidence_manifest_sha256") and required <= mapped)
+    return {"complete": complete, "source": str(path), "doi": doc.get("doi"),
+            "archive_sha256": doc.get("archive_sha256"),
+            "evidence_manifest_sha256": doc.get("evidence_manifest_sha256"),
+            "claims_mapped": sorted(mapped),
+            "reason": None if complete else "descriptor present but missing DOI / archive hash / manifest hash / full C1d-C1g map"}
+
+
 def _environment() -> dict:
     env = {"python": sys.version.split()[0], "platform": platform.platform()}
     try:
@@ -161,6 +208,11 @@ def main() -> int:
     ap.add_argument("--rust", action="store_true", help="also run the Rust node's shared-vector suite (needs cargo)")
     ap.add_argument("--cpp", action="store_true", help="also run the C++/OpenSSL port differential (needs g++)")
     ap.add_argument("--manifest", type=Path, default=ROOT / "reproduce-claims-manifest.json")
+    ap.add_argument("--historical-evidence", type=Path,
+                    default=ROOT / "paper-artifacts" / "historical-evidence.json",
+                    help="frozen external-evidence descriptor (DOI + archive/evidence-manifest sha256 + a "
+                         "C1d-C1g claim map); its presence and validity DERIVE external_claims_complete -- "
+                         "never set that boolean by hand. Absent (pre-deposit) -> external stays incomplete")
     args = ap.parse_args()
     py = sys.executable
     results, skipped_requested = [], 0
@@ -169,13 +221,15 @@ def main() -> int:
     claim_docs = []
     for cid, (desc, checks) in CLAIMS.items():
         print(f"\n{cid}: {desc}")
-        if checks == "EXTERNAL":
+        is_external = checks == "EXTERNAL" or (isinstance(checks, tuple) and checks and checks[0] == "EXTERNAL")
+        if is_external:
             # A claim whose evidence lives outside this reproducer (the deposited historical-binary
-            # witness). Recorded with its own state -- author-reported -- and NOT folded into all_passed.
+            # witness). Recorded with its own per-claim carrier note -- author-reported -- and NOT folded
+            # into all_passed. C1d is the legacy source build + binary; C1e-C1g the unmodified-binary run.
+            note = checks[1] if isinstance(checks, tuple) else ("author-reported and hash-manifested; "
+                   "carried by the deposited historical-binary evidence (see the archival deposit)")
             print("  [EXTERNAL] author-reported (historical-binary witness); not executed by this reproducer")
-            claim_docs.append({"id": cid, "description": desc, "external": True, "passed": None,
-                               "note": "author-reported and hash-manifested; carried by the C++/OpenSSL "
-                                       "period build and the deposited 2009 binary (see the archival deposit)"})
+            claim_docs.append({"id": cid, "description": desc, "external": True, "passed": None, "note": note})
             continue
         checks_doc, claim_ok = [], True
         for label, d, extra in checks:
@@ -191,6 +245,18 @@ def main() -> int:
         claim_docs.append({"id": cid, "description": desc, "checks": checks_doc, "passed": claim_ok})
         results.append(claim_ok)
 
+    # auxiliary (non-claim) lab sanity check: experimental-network genesis determinism. This is explicitly
+    # NOT evidence for any paper finding (the isolated NOV08-X/JAN09-X blocks reproduce and differ from the
+    # historical hash) — it lives outside the claim set so the claim map contains only paper claims.
+    print("\n== auxiliary check (not a paper claim) ==")
+    aux_ok, aux_tail = run([py, "verify_genesis.py"], ROOT / "scripts")
+    print(f"  [{'PASS' if aux_ok else 'FAIL'}] experimental-genesis determinism (verify_genesis.py) {aux_tail}")
+    results.append(aux_ok)
+    auxiliary_checks = {"experimental_genesis_determinism": {
+        "description": "NOV08-X/JAN09-X genesis blocks re-derive deterministically and differ from the "
+                       "historical hash -- a lab sanity check, NOT evidence for any paper claim",
+        "check": "verify_genesis.py", "passed": aux_ok}}
+
     # artifact regeneration: regenerate each paper artifact and confirm it is byte-stable (a real
     # reproducibility check on the paper's frozen numbers — not the experimental X-network differential).
     print("\n== artifact regeneration ==")
@@ -198,7 +264,7 @@ def main() -> int:
         "monetary-difference.json": (DERIV / "profiles", "test_source_bounded_monetary.py"),
         "height-vs-work.json": (DERIV / "netnode", "height_vs_work.py"),
     }
-    artifact_reg = {}
+    artifact_reg, artifact_sha = {}, {}
     for name, (d, script) in art_scripts.items():
         art = ROOT / "paper-artifacts" / name
         ok1, _ = run([py, script], d)
@@ -209,6 +275,7 @@ def main() -> int:
         print(f"  [{'PASS' if stable else 'FAIL'}] paper-artifacts/{name} regenerates byte-identically")
         results.append(stable)
         artifact_reg[name] = stable
+        artifact_sha[name] = hashlib.sha256(second).hexdigest() if second else None  # freeze expected output hash
     drift_ok = all(artifact_reg.values())
     # embed the frozen height-vs-work numbers in the manifest (not just "the test passed")
     hvw_path = ROOT / "paper-artifacts" / "height-vs-work.json"
@@ -290,11 +357,15 @@ def main() -> int:
     all_internal = (all(c.get("passed") is True for c in internal)
                     and drift_ok and backends_ok and skipped_requested == 0)
     cross_impl_complete = bool(args.rust and args.cpp and rust_ok and cpp_ok)
-    external_complete = False   # C1d depends on the PUBLIC archival deposit (author-gated); flip at deposit
+    # external completeness is DERIVED from a frozen deposit descriptor, never a hand-set boolean: at deposit
+    # the author adds historical-evidence.json (DOI + archive/evidence-manifest hashes + a C1d-C1g claim map)
+    # and this computes True; absent or incomplete (the pre-deposit state) it stays False.
+    external_evidence = _external_evidence(args.historical_evidence)
+    external_complete = external_evidence["complete"]
     submission_complete = bool(all_internal and cross_impl_complete and external_complete)
 
     manifest = {
-        "schema": 2,   # 2: three-state completeness; C1b bound to backends; external C1d excluded
+        "schema": 3,   # 3: C1a->auxiliary_checks; historical-binary split into external C1d-C1g
         "kind": "claim-scoped reconstruction reproduction",
         "generated": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
         "commit": commit if ok_git else None,
@@ -313,12 +384,15 @@ def main() -> int:
             "util.h": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "util.h"),
         },
         "claims": claim_docs,
-        "artifact_regeneration": {"reproducible": artifact_reg, "height_vs_work": height_vs_work},
+        "auxiliary_checks": auxiliary_checks,
+        "artifact_regeneration": {"reproducible": artifact_reg, "sha256": artifact_sha,
+                                  "height_vs_work": height_vs_work},
         # completeness is three-state: internal runnable checks are separate from the external
         # (author-reported) historical claim and from cross-implementation coverage.
         "all_internal_checks_passed": all_internal,
         "cross_implementation_complete": cross_impl_complete,
         "external_claims_complete": external_complete,
+        "external_evidence": external_evidence,   # derived, not hand-set (see historical-evidence.json)
         "submission_evidence_complete": submission_complete,
     }
     args.manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
