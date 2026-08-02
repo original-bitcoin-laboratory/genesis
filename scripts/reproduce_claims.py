@@ -16,7 +16,7 @@ wallet, persistence, marketplace/UI tools, the neutral descendant tracker/matrix
 
 Completeness is reported in three states, not one boolean: `all_internal_checks_passed` (the runnable
 checks), `cross_implementation_complete` (C1b's Python+Rust+C++ agreement — needs `--rust --cpp`), and
-`external_claims_complete` (the author-reported historical claim C1d, false until its archival deposit is
+`external_claims_complete` (the author-reported historical claims C1d–C1g, false until their archival deposit is
 public). Exit code 0 iff every internal runnable check passed; the external claim never flips it.
 """
 from __future__ import annotations
@@ -39,8 +39,8 @@ DERIV = ROOT / "derivatives"
 # (jan09-faithful, nov08-source-bounded). The experimental-genesis determinism check is NOT a paper claim --
 # it is recorded separately under `auxiliary_checks` (a lab sanity check that the isolated NOV08-X/JAN09-X
 # blocks reproduce and differ from the historical hash). The historical-binary results (C1d-C1g) are EXTERNAL,
-# author-reported and carried by the deposited legacy-toolchain source build + the unmodified 2009 binary --
-# NOT by the modern differential C++/OpenSSL port (--cpp), which never executes the historical build.
+# author-reported: C1d = the unmodified 2009 binary (block 0 of its blk0001.dat); C1e-C1g = the two-node
+# binary run and its archived logs/block files -- NOT the modern differential C++/OpenSSL port (--cpp).
 CLAIMS = {
     "C1b-consensus-core-cross-implemented": (
         "The consensus core (sighash, CHECKSIG/CHECKMULTISIG, Script) is cross-implemented and agrees -- "
@@ -71,7 +71,8 @@ CLAIMS = {
     ),
     "C1f-historical-bidirectional-chain-growth": (
         "Both unmodified binaries mine and validate/accept each other's blocks, growing a 14-block chain "
-        "bidirectionally -- byte-identical block files on both and persisting across an unplanned restart. "
+        "including genesis (best-chain height 13) bidirectionally -- byte-identical block files on both and "
+        "persisting across an unplanned restart. "
         "EXTERNAL -- author-reported, archival deposit pending",
         ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
                      "evidence manifest (not the legacy source build); author-reported, archival deposit pending"),
@@ -226,7 +227,7 @@ def main() -> int:
         if is_external:
             # A claim whose evidence lives outside this reproducer (the deposited historical-binary
             # witness). Recorded with its own per-claim carrier note -- author-reported -- and NOT folded
-            # into all_passed. C1d is the legacy source build + binary; C1e-C1g the unmodified-binary run.
+            # into all_passed. C1d = the unmodified 2009 binary (block 0 of blk0001.dat); C1e-C1g the two-node run.
             note = checks[1] if isinstance(checks, tuple) else ("author-reported and hash-manifested; "
                    "carried by the deposited historical-binary evidence (see the archival deposit)")
             print("  [EXTERNAL] author-reported (historical-binary witness); not executed by this reproducer")
