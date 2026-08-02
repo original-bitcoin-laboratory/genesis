@@ -15,6 +15,11 @@ See `docs/R4_RUNBOOK.md` for the procedure and `../r3-findings/` for the single-
 **Still deferred:** **R4c** — a relayed spend of a matured coinbase (needs block ~101, ~a day of
 difficulty-1 mining). Already covered headlessly by `derivatives/node` + `derivatives/p2p`.
 
+**Operator's-eye view:** [`screenshots/`](screenshots/INDEX.md) is a 75-frame desktop-capture gallery of the
+whole run (31 Jul bring-up → 2 Aug reorg → the run climbing toward maturity at 26 blocks), hashed in its own
+`SHA256SUMS` and captioned in `INDEX.md`. It corroborates the byte-level findings above; the raw block bytes
+those findings are derived from remain gitignored under `r4-evidence/`.
+
 ## Verifying
 
 ```bash

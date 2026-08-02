@@ -87,6 +87,10 @@ Preserved and hashed in `EVIDENCE_MANIFEST.json` (bytes gitignored under `r4-evi
 `debug-excerpt.txt` (the discovery, mining, and relay lines). Both nodes' `blk0001.dat` re-parse to the
 same height-3 chain and the same tip under `verify_r4.py`.
 
+The operator's-eye view of this run is in the desktop-capture gallery [`../screenshots/`](../screenshots/INDEX.md)
+— e.g. `2026-08-01_034539` shows both nodes' `Get-FileHash blk0001.dat` returning the identical
+`AAF08AA3…6DBEBC4C`, the byte-identical result verified above.
+
 ## Follow-up (run B, 1 Aug 2026): bidirectional production + relay, extended to 14 blocks, across a reboot
 
 A second capture (`r4-evidence/.../run-b-14/`) strengthens R4a from one-directional to **bidirectional**

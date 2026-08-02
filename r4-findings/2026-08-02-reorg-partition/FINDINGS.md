@@ -120,6 +120,11 @@ Preserved and hashed in `EVIDENCE_MANIFEST.json` (bytes gitignored under `r4-evi
 under `verify_r4.py`: node A → 17 blocks, 1 orphan, reorg = True; node B → 16 blocks, 0 orphans; both →
 the same height-15 tip `000000004e442b…`.
 
+The reorg is also visible in the desktop-capture gallery [`../screenshots/`](../screenshots/INDEX.md): the
+orphaned `Generated (not accepted)` wallet entry (`2026-08-02_044409`), the `*** REORGANIZE ***` log line
+(`2026-08-02_044538`), and the post-reorg divergence where the two nodes' `blk0001.dat` hash differently
+(`2026-08-02_044616`, `909852B7…` vs `48A84CE7…`).
+
 ## Conclusion
 
 At **JAN09-EXECUTED** level this run lifts a **chain reorganisation** from MODEL
