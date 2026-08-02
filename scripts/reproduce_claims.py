@@ -56,11 +56,11 @@ CLAIMS = {
     # Each external claim carries its OWN carrier note: C1d (genesis) is the legacy source build + the
     # binary; C1e-C1g are the unmodified-binary two-node RUN and its archived artifacts, NOT the source build.
     "C1d-historical-genesis": (
-        "The HISTORICAL January genesis (000000000019d668...) is re-derived by a legacy-toolchain source "
-        "build and the unmodified 2009 binary (the historical-binary witness). EXTERNAL -- author-reported "
-        "and hash-manifested, archival deposit pending; not executed here",
-        ("EXTERNAL", "carried by a legacy-toolchain source build AND the unmodified 2009 binary (deposited "
-                     "separately), not by the differential C++/OpenSSL port; author-reported, archival deposit pending"),
+        "The HISTORICAL January genesis (000000000019d668...) is re-derived by the unmodified 2009 binary "
+        "(the historical-binary witness) -- block 0 of its blk0001.dat. EXTERNAL -- author-reported and "
+        "hash-manifested, archival deposit pending; not executed here",
+        ("EXTERNAL", "carried by the unmodified 2009 binary (deposited separately) -- block 0 of blk0001.dat; "
+                     "not by the differential C++/OpenSSL port; author-reported, archival deposit pending"),
     ),
     "C1e-historical-block-production-and-relay": (
         "Two unmodified 2009 binaries mine at difficulty-1 on the real genesis and relay blocks peer-to-peer "
@@ -174,13 +174,14 @@ def _external_evidence(path: Path) -> dict:
     if not doc:
         return {"complete": False, "source": None, "reason": "no historical-evidence.json (pre-deposit state)"}
     mapped = {str(c).split("-")[0] for c in (doc.get("claim_map") or {})}
+    # top_level_manifest_sha256 = sha256 of the deposit's top-level SHA256SUMS (the manifest-of-manifests)
     complete = bool(doc.get("doi") and doc.get("archive_sha256")
-                    and doc.get("evidence_manifest_sha256") and required <= mapped)
+                    and doc.get("top_level_manifest_sha256") and required <= mapped)
     return {"complete": complete, "source": str(path), "doi": doc.get("doi"),
             "archive_sha256": doc.get("archive_sha256"),
-            "evidence_manifest_sha256": doc.get("evidence_manifest_sha256"),
+            "top_level_manifest_sha256": doc.get("top_level_manifest_sha256"),
             "claims_mapped": sorted(mapped),
-            "reason": None if complete else "descriptor present but missing DOI / archive hash / manifest hash / full C1d-C1g map"}
+            "reason": None if complete else "descriptor present but missing DOI / archive hash / top-level-manifest hash / full C1d-C1g map"}
 
 
 def _environment() -> dict:
@@ -210,8 +211,8 @@ def main() -> int:
     ap.add_argument("--manifest", type=Path, default=ROOT / "reproduce-claims-manifest.json")
     ap.add_argument("--historical-evidence", type=Path,
                     default=ROOT / "paper-artifacts" / "historical-evidence.json",
-                    help="frozen external-evidence descriptor (DOI + archive/evidence-manifest sha256 + a "
-                         "C1d-C1g claim map); its presence and validity DERIVE external_claims_complete -- "
+                    help="frozen external-evidence descriptor (DOI + archive_sha256 + top_level_manifest_sha256 "
+                         "+ a C1d-C1g claim map); its presence and validity DERIVE external_claims_complete -- "
                          "never set that boolean by hand. Absent (pre-deposit) -> external stays incomplete")
     args = ap.parse_args()
     py = sys.executable
@@ -397,7 +398,7 @@ def main() -> int:
     }
     args.manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     if all_internal and not external_complete:
-        print("\nAll internally runnable claims passed; one external historical claim (C1d) remains "
+        print("\nAll internally runnable claims passed; the external historical claims (C1d–C1g) remain "
               "author-reported pending archival deposit — submission evidence is NOT yet complete.")
     elif all_internal:
         print("\nAll internal claims passed and external claims complete.")
