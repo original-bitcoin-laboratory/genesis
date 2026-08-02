@@ -1,0 +1,13 @@
+{
+  "_comment": "TEMPLATE. Copy to historical-evidence.json (same directory) and set \"doi\" at deposit. reproduce_claims.py validates this file (doi + archive_sha256 + evidence_manifest_sha256 + a claim_map covering C1d-C1g) to DERIVE external_claims_complete -- it is never set by hand. Absent -> external stays incomplete (the correct pre-deposit state). The two hashes below match the frozen deposit archive; if you re-create the archive, recompute them.",
+  "doi": "",
+  "archive_name": "obl-historical-binary-evidence.zip",
+  "archive_sha256": "367217b0c04d9907754b2845fcd1d6c0eaadeb2c9829e35b58260d80923624a6",
+  "evidence_manifest_sha256": "621f11b8ad7df8c704b7676233bea627789bb3c4b1951021657344e3035e1b39",
+  "claim_map": {
+    "C1d-historical-genesis": "r3-findings/run1 + r3-evidence (real genesis, block 0)",
+    "C1e-historical-block-production-and-relay": "r3-findings/2026-07-31-twonode-mined-block + r4-findings/2026-08-01-sustained-relay",
+    "C1f-historical-bidirectional-chain-growth": "r4-findings/2026-08-01-sustained-relay (run-b, run-b-14)",
+    "C1g-historical-reorganisation": "r4-findings/2026-08-02-reorg-partition"
+  }
+}
