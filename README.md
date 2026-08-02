@@ -51,7 +51,8 @@ python scripts/verify_genesis.py   # both experimental genesis blocks re-derive 
 ```
 
 The unmodified 2009 `bitcoin.exe` was also run and hash‑verified against these
-reconstructions — the **historical** genesis is reconstructed from source by the C++/OpenSSL port and
+reconstructions — the **historical** genesis is reconstructed from source by a **legacy‑toolchain source
+build** (distinct from the modern differential C++/OpenSSL port, which corroborates the consensus core) and
 reproduced by the unmodified 2009 binary (`r3-findings/run1/`, level `JAN09-EXECUTED`). Two such binaries,
 air‑gapped in isolated VMs, then **produced and relayed a block**: one mined block 1 at real difficulty 1 on
 that genesis and the other received and accepted it, both `blk0001.dat` byte‑identical — verified from the raw
