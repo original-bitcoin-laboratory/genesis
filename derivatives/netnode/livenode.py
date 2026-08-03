@@ -218,13 +218,19 @@ class Node:
     # -- lifecycle -------------------------------------------------------------
     async def start(self, connect=()):
         if self.listen:
-            self._server = await asyncio.start_server(self._inbound, self.listen[0], self.listen[1])
+            # `::` (from --listen [::]:PORT) binds every interface in both families -- asyncio opens
+            # one socket per family, so the node is reachable over IPv4 and IPv6 at once. `0.0.0.0`
+            # stays IPv4-only, so existing deployments are unchanged unless they ask for dual-stack.
+            bind = self.listen[0]
+            dual = bind in ("::", "*")
+            self._server = await asyncio.start_server(
+                self._inbound, None if dual else bind, self.listen[1])
             self.port = self._server.sockets[0].getsockname()[1]
-            host = self.advertise_host or (self.listen[0]
-                                           if self.listen[0] not in ("0.0.0.0", "") else None)
+            host = self.advertise_host or (bind if bind not in ("0.0.0.0", "::", "*", "") else None)
             if host:
                 self.advertise = (host, self.port)
-            self._log(f"listening on {self.listen[0]}:{self.port}")
+            fams = {s.family.name for s in self._server.sockets}
+            self._log(f"listening on {bind}:{self.port}" + (f" ({'+'.join(sorted(fams))})" if dual else ""))
         for host, port in connect:
             self._dial(host, port)
         for host, port in self.peers.sample(self.max_peers, exclude=set(connect),

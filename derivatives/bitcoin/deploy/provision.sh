@@ -68,7 +68,7 @@ Type=simple
 WorkingDirectory=${DERIV}
 Environment=ADVERTISE_IP=${ADVERTISE_IP}
 ExecStart=/usr/bin/python3 -m netnode --chain bitcoin --datadir /var/lib/bitcoin-node \\
-          --listen 0.0.0.0:${PORT} --advertise \${ADVERTISE_IP}
+          --listen [::]:${PORT} --advertise \${ADVERTISE_IP}
 Restart=on-failure
 RestartSec=5
 DynamicUser=yes

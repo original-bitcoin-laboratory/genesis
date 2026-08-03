@@ -24,6 +24,13 @@ from version import __version__    # noqa: E402
 
 
 def _hostport(s: str, default_host: str) -> tuple[str, int]:
+    """HOST:PORT, PORT, or an IPv6 form: [::]:PORT / [2001:db8::1]:PORT.
+    Brackets are stripped, so `[::]` arrives as `::` -- the dual-stack wildcard."""
+    if s.startswith("["):                                   # bracketed IPv6 literal
+        host, _, port = s.partition("]")
+        return (host[1:] or default_host, int(port.lstrip(":")))
+    if s.count(":") > 1:                                    # bare IPv6 literal, no port
+        return (s, 0)
     if ":" in s:
         host, port = s.rsplit(":", 1)
         return (host or default_host, int(port))
