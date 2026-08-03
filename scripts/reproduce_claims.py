@@ -53,8 +53,8 @@ CLAIMS = {
         "reorg to an invalid branch, restoring the prior tip",
         [("reorg-safety", DERIV / "netnode", ["-k", "reorg or disconnect"])],
     ),
-    # Each external claim carries its OWN carrier note: C1d (genesis) is the legacy source build + the
-    # binary; C1e-C1g are the unmodified-binary two-node RUN and its archived artifacts, NOT the source build.
+    # Each external claim carries its OWN carrier note: C1d (genesis) is the unmodified 2009 binary (block 0
+    # of blk0001.dat); C1e-C1g are the unmodified-binary two-node RUN and its archived logs/block files.
     "C1d-historical-genesis": (
         "The HISTORICAL January genesis (000000000019d668...) is re-derived by the unmodified 2009 binary "
         "(the historical-binary witness) -- block 0 of its blk0001.dat. EXTERNAL -- author-reported and "
@@ -67,7 +67,7 @@ CLAIMS = {
         "(discovery via a local IRC daemon reproducing the client's hard-coded path); the receiver accepts "
         "each, leaving byte-identical block files (blk0001.dat). EXTERNAL -- author-reported, archival deposit pending",
         ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
-                     "evidence manifest (not the legacy source build); author-reported, archival deposit pending"),
+                     "evidence manifest (not the differential C++/OpenSSL port); author-reported, archival deposit pending"),
     ),
     "C1f-historical-bidirectional-chain-growth": (
         "Both unmodified binaries mine and validate/accept each other's blocks, growing a 14-block chain "
@@ -75,7 +75,7 @@ CLAIMS = {
         "persisting across an unplanned restart. "
         "EXTERNAL -- author-reported, archival deposit pending",
         ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
-                     "evidence manifest (not the legacy source build); author-reported, archival deposit pending"),
+                     "evidence manifest (not the differential C++/OpenSSL port); author-reported, archival deposit pending"),
     ),
     "C1g-historical-reorganisation": (
         "Deliberately partitioned, the two binaries build divergent valid branches; on reconnection the "
@@ -83,7 +83,7 @@ CLAIMS = {
         "on the longer branch (the retained orphan a one-block on-disk difference). EXTERNAL -- "
         "author-reported, archival deposit pending",
         ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
-                     "evidence manifest (not the legacy source build); author-reported, archival deposit pending"),
+                     "evidence manifest (not the differential C++/OpenSSL port); author-reported, archival deposit pending"),
     ),
     "C2-broad-interpreter": (
         "A broad spending-predicate interpreter: opcode vocabulary + escrow/hash-lock/assurance + a marketplace source component",
@@ -384,6 +384,7 @@ def main() -> int:
             "main.cpp": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "main.cpp"),
             "main.h": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "main.h"),
             "util.h": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "util.h"),
+            "net.cpp": _sha256(ROOT / "extracted" / "bitcoin" / "src" / "net.cpp"),  # hash-anchors the net.cpp:94 (GetMyExternalIP host) cite
         },
         "claims": claim_docs,
         "auxiliary_checks": auxiliary_checks,
