@@ -16,7 +16,7 @@ for _p in (_HERE.parent / "model", _HERE.parent / "p2p", _HERE.parent / "nov08x"
 
 from wire import MAX_MESSAGE_SIZE, WireError, frame, read_message   # noqa: E402
 from store import BlockStore                                        # noqa: E402
-from livenode import Node                                           # noqa: E402
+from livenode import (Node, decode_addrs_v01, encode_addrs, encode_addrs_v01)  # noqa: E402
 from chains import CHAINS, mine_next                                # noqa: E402
 from difficulty import (NET_RETARGET_INTERVAL, NET_TARGET_SPACING,  # noqa: E402
                         _retarget, check_difficulty, expected_bits, target_to_compact)
@@ -96,6 +96,37 @@ def test_v01_and_hardened_framings_do_not_interoperate():
                            TESTMAGIC)          # reader expects a checksum; sender sent none
     with pytest.raises(WireError):
         _run(go())
+
+
+def test_addr_v01_matches_CAddress_byte_for_byte():
+    """v0.1 `addr` = compact_size vector<CAddress>, each record
+    nServices[8 LE] | pchReserved[12] | ip[4] | port[2 BE] = 26 bytes."""
+    got = encode_addrs_v01([("1.2.3.4", 18026)])
+    expected = (b"\x01"                                   # compact_size: 1 record
+                + (1).to_bytes(8, "little")               # nServices = NODE_NETWORK
+                + b"\x00" * 10 + b"\xff\xff"              # pchIPv4, as every constructor sets it
+                + bytes([1, 2, 3, 4])                     # ip, dotted-quad order on the wire
+                + (18026).to_bytes(2, "big"))             # port, network byte order
+    assert got == expected
+    assert len(got) == 1 + 26
+    assert decode_addrs_v01(got) == [("1.2.3.4", 18026)]
+
+
+def test_addr_v01_cannot_carry_ipv6_and_says_so_in_the_count():
+    """CAddress has a 32-bit ip field, so v0.1 simply cannot express an IPv6 peer. v6 addresses
+    are dropped, and the count must reflect what was actually emitted (or the peer misparses)."""
+    got = encode_addrs_v01([("2001:db8::1", 18026), ("1.2.3.4", 18026), ("::1", 18026)])
+    assert got[0] == 1                                    # one record, not three
+    assert len(got) == 1 + 26
+    assert decode_addrs_v01(got) == [("1.2.3.4", 18026)]
+
+
+def test_addr_formats_are_per_chain_and_distinct():
+    assert CHAINS["bitcoin"].addr_v01 is True             # speaks 2009's addr
+    assert CHAINS["jan09x"].addr_v01 is False             # keeps netnode's own form
+    assert CHAINS["nov08x"].addr_v01 is False
+    sample = [("1.2.3.4", 18026)]
+    assert encode_addrs_v01(sample) != encode_addrs(sample)
 
 
 def test_wire_rejects_bad_magic():

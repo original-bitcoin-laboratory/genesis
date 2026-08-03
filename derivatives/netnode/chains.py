@@ -41,7 +41,7 @@ _BC = _load("obl_bitcoin_net", "bitcoin/net.py")     # independent chain: fixed 
 
 class ChainConfig:
     def __init__(self, key, magic, port, new_chain, mint_genesis, genesis_msg, rules,
-                 wire_checksum=True):
+                 wire_checksum=True, addr_v01=False):
         self.key = key
         self.magic = magic
         self.port = port
@@ -53,6 +53,9 @@ class ChainConfig:
         # False = v0.1's original 20-byte CMessageHeader, no checksum — wire-compatible with the
         #         January 2009 binary, which is the point for a chain running that binary.
         self.wire_checksum = wire_checksum
+        # True = `addr` carries v0.1's compact_size vector<CAddress> (IPv4-only, as 2009 was).
+        # False = netnode's own ascii host form, which the X-chains already speak.
+        self.addr_v01 = addr_v01
 
     def new_chain(self):
         return self._new_chain()
@@ -72,7 +75,7 @@ CHAINS: dict[str, ChainConfig] = {
     # difficulty-1, so blocks on it cost real work (see RUN notes on mining).
     "bitcoin": ChainConfig("bitcoin", _BC.BITCOIN_MAGIC, _BC.BITCOIN_PORT,
                            _BC.new_chain, _BC.mint_genesis, _BC.BITCOIN_GENESIS_MESSAGE,
-                           Rules.load("jan09"), wire_checksum=False),
+                           Rules.load("jan09"), wire_checksum=False, addr_v01=True),
 }
 
 _tag = [0]

@@ -40,7 +40,8 @@ sys.path.insert(0, str(_HERE))
 
 from chainsync import block_hash, locator_payload, nbits_of, parse_getblocks  # noqa: E402
 from p2p import MSG_BLOCK, MSG_TX, inv_payload, parse_inv, version_payload    # noqa: E402
-from tx_sighash import dsha256                         # noqa: E402
+from chainsync import read_compact                     # noqa: E402
+from tx_sighash import compact_size, dsha256, _le      # noqa: E402
 
 from chains import ChainConfig, mine_block             # noqa: E402
 from chainstate import COINBASE_MATURITY, ChainState  # noqa: E402
@@ -76,6 +77,47 @@ def encode_addrs(addrs) -> bytes:
     for host, port in addrs:
         hb = host.encode("ascii", "ignore")[:255]
         out += bytes([len(hb)]) + hb + int(port).to_bytes(2, "little")
+    return out
+
+
+CADDRESS_LEN = 26                        # nServices8 + pchReserved12 + ip4 + port2
+_PCH_IPV4 = b"\x00" * 10 + b"\xff\xff"   # what every v0.1 CAddress constructor memcpy's in
+
+
+def _is_ipv4(host: str) -> bool:
+    parts = host.split(".")
+    return len(parts) == 4 and all(p.isdigit() and 0 <= int(p) <= 255 for p in parts)
+
+
+def encode_addrs_v01(addrs) -> bytes:
+    """v0.1's `addr` body: a compact_size-prefixed vector<CAddress>.
+
+    CAddress (net.h): `uint64 nServices | uchar pchReserved[12] | uint ip | ushort port`.
+    Bitcoin writes integers little-endian, but `ip` and `port` already hold NETWORK byte order
+    (they come from inet_addr/htons), so writing that value little-endian puts the dotted quad
+    back on the wire in order and the port big-endian.
+
+    `ip` is 32 bits, so **v0.1 cannot express an IPv6 peer at all** -- v6 addresses are dropped
+    rather than encoded, and the count reflects what is actually emitted."""
+    v4 = [(h, p) for h, p in addrs if _is_ipv4(h)]
+    out = compact_size(len(v4))
+    for host, port in v4:
+        out += (_le(1, 8) + _PCH_IPV4 + socket.inet_aton(host)
+                + int(port).to_bytes(2, "big"))
+    return out
+
+
+def decode_addrs_v01(payload: bytes):
+    n, i = read_compact(payload, 0)
+    out = []
+    for _ in range(min(n, 1000)):
+        if i + CADDRESS_LEN > len(payload):
+            break
+        host = socket.inet_ntoa(payload[i + 20:i + 24])
+        port = int.from_bytes(payload[i + 24:i + 26], "big")
+        i += CADDRESS_LEN
+        if 0 < port < 65536:
+            out.append((host, port))
     return out
 
 
@@ -319,6 +361,13 @@ class Node:
         finally:
             self._dialing.discard((host, int(port)))
 
+    def _enc_addrs(self, addrs):
+        """v0.1's vector<CAddress> for the Bitcoin chain, netnode's own form for the X-chains."""
+        return (encode_addrs_v01 if self.cfg.addr_v01 else encode_addrs)(addrs)
+
+    def _dec_addrs(self, payload):
+        return (decode_addrs_v01 if self.cfg.addr_v01 else decode_addrs)(payload)
+
     async def _send(self, writer, command, payload):
         writer.write(frame(command, payload, self.cfg.magic, checksum=self.cfg.wire_checksum))
         await writer.drain()
@@ -400,10 +449,10 @@ class Node:
                                          locator_payload(self.state.get_locator()))
                     sample = self._addr_sample()
                     if sample:
-                        await self._send(writer, "addr", encode_addrs(sample))
+                        await self._send(writer, "addr", self._enc_addrs(sample))
                 elif command == "addr":
                     fresh = []
-                    for host, port in decode_addrs(payload):
+                    for host, port in self._dec_addrs(payload):
                         if self._learn_addr((host, port)):   # bounded peer table
                             fresh.append((host, port))
                         self._dial(host, port)       # auto-connect (capped, dedup, non-self)
@@ -412,7 +461,7 @@ class Node:
                             if w is writer:
                                 continue
                             try:
-                                await self._send(w, "addr", encode_addrs(fresh))
+                                await self._send(w, "addr", self._enc_addrs(fresh))
                             except (WireError, ConnectionError, OSError):
                                 pass
                 elif command == "getblocks":
