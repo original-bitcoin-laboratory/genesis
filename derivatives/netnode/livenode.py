@@ -291,7 +291,7 @@ class Node:
             self._dialing.discard((host, int(port)))
 
     async def _send(self, writer, command, payload):
-        writer.write(frame(command, payload, self.cfg.magic))
+        writer.write(frame(command, payload, self.cfg.magic, checksum=self.cfg.wire_checksum))
         await writer.drain()
 
     async def _announce(self, items, exclude=None):
@@ -357,7 +357,8 @@ class Node:
         try:
             await self._send(writer, "version", version_payload())
             while not self._closing:
-                command, payload = await read_message(reader, self.cfg.magic)
+                command, payload = await read_message(reader, self.cfg.magic,
+                                                      checksum=self.cfg.wire_checksum)
                 now = loop.time()                        # per-peer message rate limit (flood)
                 if now - window_start >= MSG_RATE_WINDOW:
                     window_start, msgs = now, 0

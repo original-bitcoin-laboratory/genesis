@@ -63,6 +63,41 @@ def test_wire_rejects_bad_checksum():
         _run(go())
 
 
+def test_v01_framing_matches_CMessageHeader():
+    """The Bitcoin chain runs the January 2009 binary, whose CMessageHeader is
+    magic[4] + command[12] + size[4] -- 20 bytes, NO checksum. Frames must match it exactly or the
+    original client cannot read them."""
+    m = frame("version", b"\x01\x02\x03", TESTMAGIC, checksum=False)
+    assert len(m) == 20 + 3                        # header is 20, not 24
+    assert m[0:4] == TESTMAGIC
+    assert m[4:16] == b"version".ljust(12, b"\x00")
+    assert m[16:20] == (3).to_bytes(4, "little")
+    assert m[20:] == b"\x01\x02\x03"               # payload begins at 20: no checksum field
+
+    async def go():
+        return await read_message(await _fed(m), TESTMAGIC, checksum=False)
+    assert _run(go()) == ("version", b"\x01\x02\x03")
+
+
+def test_v01_framing_is_opt_in_per_chain():
+    """The X-chains keep the hardened 24-byte frame; only the Bitcoin chain drops the checksum."""
+    assert CHAINS["bitcoin"].wire_checksum is False
+    assert CHAINS["jan09x"].wire_checksum is True
+    assert CHAINS["nov08x"].wire_checksum is True
+    assert len(frame("ping", b"", CHAINS["bitcoin"].magic, checksum=False)) == 20
+    assert len(frame("ping", b"", CHAINS["jan09x"].magic)) == 24
+
+
+def test_v01_and_hardened_framings_do_not_interoperate():
+    """A 20-byte-framed message must not be readable as a 24-byte one (and vice versa) -- this is
+    exactly why the original binary and a checksummed node cannot talk."""
+    async def go():
+        await read_message(await _fed(frame("ping", b"hello", TESTMAGIC, checksum=False)),
+                           TESTMAGIC)          # reader expects a checksum; sender sent none
+    with pytest.raises(WireError):
+        _run(go())
+
+
 def test_wire_rejects_bad_magic():
     async def go():
         await read_message(await _fed(frame("ping", b"x", b"OTHR")), TESTMAGIC)

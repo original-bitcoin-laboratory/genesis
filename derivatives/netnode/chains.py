@@ -40,7 +40,8 @@ _BC = _load("obl_bitcoin_net", "bitcoin/net.py")     # independent chain: fixed 
 
 
 class ChainConfig:
-    def __init__(self, key, magic, port, new_chain, mint_genesis, genesis_msg, rules):
+    def __init__(self, key, magic, port, new_chain, mint_genesis, genesis_msg, rules,
+                 wire_checksum=True):
         self.key = key
         self.magic = magic
         self.port = port
@@ -48,6 +49,10 @@ class ChainConfig:
         self._mint = mint_genesis
         self.genesis_msg = genesis_msg
         self.rules = rules                    # consensus.Rules — for the difficulty retarget math
+        # True  = the hardened 24-byte frame (magic|command|size|checksum) the X-chains use.
+        # False = v0.1's original 20-byte CMessageHeader, no checksum — wire-compatible with the
+        #         January 2009 binary, which is the point for a chain running that binary.
+        self.wire_checksum = wire_checksum
 
     def new_chain(self):
         return self._new_chain()
@@ -67,7 +72,7 @@ CHAINS: dict[str, ChainConfig] = {
     # difficulty-1, so blocks on it cost real work (see RUN notes on mining).
     "bitcoin": ChainConfig("bitcoin", _BC.BITCOIN_MAGIC, _BC.BITCOIN_PORT,
                            _BC.new_chain, _BC.mint_genesis, _BC.BITCOIN_GENESIS_MESSAGE,
-                           Rules.load("jan09")),
+                           Rules.load("jan09"), wire_checksum=False),
 }
 
 _tag = [0]

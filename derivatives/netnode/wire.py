@@ -17,6 +17,7 @@ import hashlib
 
 MAX_MESSAGE_SIZE = 4 * 1024 * 1024          # 4 MiB hard cap (DoS resistance)
 HEADER = 24                                  # magic4 + command12 + length4 + checksum4
+HEADER_NO_CHECKSUM = 20                      # v0.1's CMessageHeader: magic4 + command12 + length4
 READ_TIMEOUT = 120.0                         # drop a peer that stalls mid-message
 
 
@@ -28,18 +29,25 @@ def dsha256(b: bytes) -> bytes:
     return hashlib.sha256(hashlib.sha256(b).digest()).digest()
 
 
-def frame(command: str, payload: bytes, magic: bytes) -> bytes:
+def frame(command: str, payload: bytes, magic: bytes, *, checksum: bool = True) -> bytes:
+    """Frame a message. `checksum=False` emits v0.1's original 20-byte header
+    (magic|command|size, no checksum field) -- the exact framing CMessageHeader in the January 2009
+    client reads, so a node in that mode is wire-compatible with the original binary."""
     if len(payload) > MAX_MESSAGE_SIZE:
         raise WireError(f"outgoing payload too large: {len(payload)}")
     cmd = command.encode("ascii").ljust(12, b"\x00")
-    return magic + cmd + len(payload).to_bytes(4, "little") + dsha256(payload)[:4] + payload
+    head = magic + cmd + len(payload).to_bytes(4, "little")
+    return head + (dsha256(payload)[:4] if checksum else b"") + payload
 
 
 async def read_message(reader: asyncio.StreamReader, magic: bytes,
-                       *, timeout: float = READ_TIMEOUT):
-    """Read one framed message or raise WireError. Verifies magic, size cap, and checksum."""
+                       *, timeout: float = READ_TIMEOUT, checksum: bool = True):
+    """Read one framed message or raise WireError. Verifies magic, size cap, and (when the chain
+    uses it) the checksum. With `checksum=False` the header is v0.1's 20 bytes; the size cap and
+    timeouts still apply, so oversize and stalled peers are still rejected."""
+    hdr_len = HEADER if checksum else HEADER_NO_CHECKSUM
     try:
-        hdr = await asyncio.wait_for(reader.readexactly(HEADER), timeout)
+        hdr = await asyncio.wait_for(reader.readexactly(hdr_len), timeout)
     except asyncio.IncompleteReadError as e:
         raise WireError("connection closed") from e
     except (asyncio.TimeoutError, TimeoutError) as e:
@@ -48,7 +56,7 @@ async def read_message(reader: asyncio.StreamReader, magic: bytes,
         raise WireError("bad magic")
     command = hdr[4:16].rstrip(b"\x00").decode("ascii", "replace")
     length = int.from_bytes(hdr[16:20], "little")
-    checksum = hdr[20:24]
+    want = hdr[20:24] if checksum else None
     if length > MAX_MESSAGE_SIZE:
         raise WireError(f"declared size too large: {length}")
     try:
@@ -57,6 +65,6 @@ async def read_message(reader: asyncio.StreamReader, magic: bytes,
         raise WireError("payload truncated") from e
     except (asyncio.TimeoutError, TimeoutError) as e:
         raise WireError("payload read timeout") from e
-    if dsha256(payload)[:4] != checksum:
+    if want is not None and dsha256(payload)[:4] != want:
         raise WireError("bad checksum")
     return command, payload
