@@ -1,0 +1,280 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The two-node witness — Original Bitcoin Laboratory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Two unmodified 3 Jan 2009 v0.1.0 bitcoin.exe binaries, in network-isolated VMs, re-derive the historical genesis and then produce, relay, sustain, and reorganise blocks — each result verifiable from the raw block bytes. Not money.">
+<style>
+  :root{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
+    --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44;
+    --brass:#c9a75f; --brass-ink:#0e1316; --fill:#4c7186; --focus:#7fb2c8;
+    --good:#6fae82; --wait:#c9a75f;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:light){:root{
+    --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6;
+    --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+    --line:#e0e5e0; --line-strong:#cfd6d0; --brass:#9a7726; --brass-ink:#fffdf7; --fill:#5a8298; --focus:#2f6b85;
+    --good:#3f7d54; --wait:#9a7726; }}
+  :root[data-theme="dark"]{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c; --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44; --brass:#c9a75f; --brass-ink:#0e1316; --fill:#4c7186; --focus:#7fb2c8;
+    --good:#6fae82; --wait:#c9a75f; }
+  :root[data-theme="light"]{
+    --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6; --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+    --line:#e0e5e0; --line-strong:#cfd6d0; --brass:#9a7726; --brass-ink:#fffdf7; --fill:#5a8298; --focus:#2f6b85;
+    --good:#3f7d54; --wait:#9a7726; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:clamp(28px,6vw,68px) clamp(16px,4vw,28px) 40px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:0 0 16px}
+  .eyebrow a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  .eyebrow a:hover{color:var(--brass)}
+  h1{font-family:var(--mono);font-weight:700;font-size:clamp(27px,5.4vw,44px);line-height:1.06;letter-spacing:-.01em;margin:0 0 16px;text-wrap:balance}
+  .lede{font-size:clamp(15px,2.4vw,18px);color:var(--ink-dim);max-width:66ch;margin:0}
+  .lede b{color:var(--ink);font-weight:600}
+  .bind{margin-top:18px;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:13px 16px;
+    font-family:var(--mono);font-size:12.5px;color:var(--ink-dim);line-height:1.7;overflow-x:auto;word-break:break-word}
+  .bind b{color:var(--brass);font-weight:600}
+  .bind .h{color:var(--ink)}
+
+  h2.sec{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);
+    margin:44px 0 4px;font-weight:700}
+
+  /* timeline of milestones */
+  .rail{margin-top:22px;display:flex;flex-direction:column;gap:14px}
+  .step{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px 16px 20px}
+  .step.wait{border-style:dashed;border-color:var(--line-strong)}
+  .step .top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .step .id{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass)}
+  .step h3{font-family:var(--mono);font-size:16.5px;font-weight:700;color:var(--ink);margin:0;letter-spacing:.01em}
+  .pill{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    padding:3px 9px;border-radius:999px;border:1px solid;white-space:nowrap}
+  .pill.done{color:var(--good);border-color:color-mix(in srgb,var(--good) 55%,transparent)}
+  .pill.live{color:var(--wait);border-color:color-mix(in srgb,var(--wait) 55%,transparent)}
+  .step p{margin:11px 0 0;font-size:14px;color:var(--ink-dim);line-height:1.62}
+  .step p b{color:var(--ink);font-weight:600}
+  .step .kv{margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-family:var(--mono);font-size:12px;color:var(--ink-dim)}
+  .step .kv .k{color:var(--ink-faint);white-space:nowrap}
+  .step .kv .v{color:var(--ink-dim);word-break:break-all}
+  .step .kv .v b{color:var(--brass);font-weight:600}
+
+  .facts{margin-top:16px;width:100%;border-collapse:collapse;font-size:13.5px}
+  .facts th,.facts td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  .facts th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;white-space:nowrap}
+  .facts td{color:var(--ink-dim)}
+  .facts code{font-family:var(--mono);font-size:12px;color:var(--ink);word-break:break-all}
+  .facts-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:16px;background:var(--panel)}
+  .facts th,.facts td{border-bottom:1px solid var(--line)}
+  .facts tr:last-child td{border-bottom:0}
+
+  pre.cmd{margin-top:16px;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;
+    padding:15px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:var(--ink-dim)}
+  pre.cmd .c{color:var(--ink-faint)}
+  pre.cmd b{color:var(--focus);font-weight:400}
+
+  .links{margin-top:22px;display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:620px){.links{grid-template-columns:1fr 1fr}}
+  a.card{display:block;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:15px 16px;transition:border-color .16s,transform .16s}
+  a.card:hover{border-color:var(--brass);transform:translateY(-2px)}
+  a.card .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+  a.card .t{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--ink);margin:6px 0 0}
+  a.card:hover .t{color:var(--brass)}
+
+  .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:70ch;line-height:1.65}
+  .note b{color:var(--ink-dim)}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow"><a href="./">◆ Original Bitcoin Laboratory</a> &nbsp;·&nbsp; Evidence · JAN09-EXECUTED · not money</p>
+  <h1>The two-node witness</h1>
+  <p class="lede">Two <b>unmodified 3 Jan 2009 <code style="font-family:var(--mono)">v0.1.0</code> bitcoin.exe</b>
+    binaries — in network-isolated Windows VMs, discovering each other over the client's own hard-coded IRC
+    path — re-derive the <b>historical genesis</b> and then <b>produce, relay, sustain, and reorganise</b>
+    real blocks. Every result below is verifiable straight from the raw <code style="font-family:var(--mono)">blk0001.dat</code>
+    block bytes. <b>Not <i>the</i> Bitcoin. Not money.</b></p>
+
+  <div class="bind">
+    Both nodes ran the <span class="h">same</span> historical binary —
+    <b>bitcoin.exe</b> <span class="h">fbcac071d92e26d8…bdd30d2d</span>
+    (+ shipped <span class="h">libeay32.dll</span>, <span class="h">mingwm10.dll</span>) — over a
+    <b>VirtualBox Internal Network</b> <span class="h">172.20.0.0/24</span> with no gateway and no DNS.
+    Peer discovery reproduces the client's own IRC path against a minimal in-network daemon; it never
+    contacts the historical Freenode.
+  </div>
+
+  <h2 class="sec">The milestones, in order</h2>
+  <div class="rail">
+
+    <div class="step">
+      <div class="top">
+        <span class="id">R3 · 30–31 Jul 2026</span>
+        <h3>First block, mined and relayed</h3>
+        <span class="pill done">witnessed</span>
+      </div>
+      <p>Both nodes recognise the <b>historical genesis</b>. Node&nbsp;B — the released miner is peer-gated
+        (<code style="font-family:var(--mono)">while(vNodes.empty())</code>), so it can only start once it
+        has a peer — mines <b>block&nbsp;1 at real difficulty&nbsp;1</b>; node&nbsp;A receives it over the
+        P2P link and accepts it. Both end holding the <b>byte-identical</b> two-block chain.</p>
+      <div class="kv">
+        <span class="k">genesis</span><span class="v"><b>000000000019d668…0a8ce26f</b> · Chancellor coinbase</span>
+        <span class="k">both blk0001.dat</span><span class="v"><b>899c94d2…78c04c2</b> (identical)</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="top">
+        <span class="id">R4a · 1 Aug 2026</span>
+        <h3>Sustained relay, then bidirectional growth</h3>
+        <span class="pill done">witnessed</span>
+      </div>
+      <p>Node&nbsp;B mines <b>three blocks in succession</b> and node&nbsp;A validates and accepts every one,
+        climbing 1→2→3 in lockstep — a byte-identical four-block chain. A follow-on run had <b>both</b> nodes
+        mining and accepting each other's blocks to a <b>14-block chain including genesis (best-chain
+        height&nbsp;13)</b>, byte-identical on both, which <b>persisted across a guest restart</b> with zero
+        orphans.</p>
+      <div class="kv">
+        <span class="k">3-in-a-row chain</span><span class="v"><b>aaf08aa3…6dbebc4c</b> (identical both nodes)</span>
+        <span class="k">bidirectional tip</span><span class="v">height <b>13</b> · <b>00000000464529…</b> · 0 orphans</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="top">
+        <span class="id">R4b · 2 Aug 2026</span>
+        <h3>A real chain reorganisation</h3>
+        <span class="pill done">witnessed</span>
+      </div>
+      <p>From the shared height-13 tip, node&nbsp;A mines its own block&nbsp;14. The network is then
+        <b>partitioned</b> (node&nbsp;B's virtual cable pulled); in isolation node&nbsp;B mines a
+        <b>competing</b> block&nbsp;14 and extends to <b>15</b> — one block longer. On reconnect node&nbsp;A's
+        binary fires <b><code style="font-family:var(--mono)">*** REORGANIZE ***</code></b>, orphans its own
+        block, and adopts node&nbsp;B's longer chain. Both converge on one tip; node&nbsp;A <b>retains the
+        valid orphan</b> (lost only on height) — an exact <b>+223-byte</b> on-disk delta, one v0.1 block.</p>
+      <div class="kv">
+        <span class="k">A's orphaned block</span><span class="v"><b>000000000234ed…c81188fc</b> (valid PoW, off-best)</span>
+        <span class="k">converged tip</span><span class="v">height <b>15</b> · <b>000000004e442b…</b></span>
+      </div>
+    </div>
+
+    <div class="step wait">
+      <div class="top">
+        <span class="id">R4c · in progress</span>
+        <h3>A relayed spend of a matured coinbase</h3>
+        <span class="pill live">running now</span>
+      </div>
+      <p>The nodes are live and mining toward coinbase maturity (~block&nbsp;101). Once a coinbase matures,
+        one node will <b>spend it in a transaction</b> and the other will relay, validate, and confirm the
+        spend — closing the last behaviour (value transfer, not just block production) on the unmodified
+        2009 client. <b>This section will be filled in from the raw transaction and block bytes when the
+        capture completes.</b></p>
+    </div>
+
+  </div>
+
+  <h2 class="sec">Anchor facts</h2>
+  <div class="facts-wrap">
+    <table class="facts">
+      <tr><th>Genesis</th><td><code>000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f</code><br>
+        the real 3 Jan 2009 block 0 — <i>The Times</i> Chancellor coinbase — re-derived by the unmodified binary.</td></tr>
+      <tr><th>Binary</th><td><code>bitcoin.exe</code> sha256 <code>fbcac071d92e26d82ec917214e334bd43850c0691f113bab1d4741c9bdd30d2d</code><br>
+        the released v0.1.0 executable; retrievable from <code>cdn.nakamotoinstitute.org/code/bitcoin-0.1.0.rar</code>. Same on both nodes.</td></tr>
+      <tr><th>Network</th><td>VirtualBox <b>Internal Network</b> <code>172.20.0.0/24</code>, no gateway, no DNS, firewall off. Node A <code>172.20.0.1</code>, node B <code>172.20.0.2</code>.</td></tr>
+      <tr><th>Discovery</th><td>the client's own hard-coded IRC path, reproduced against a minimal in-network daemon (<code>hosts</code> override) — never the historical Freenode.</td></tr>
+      <tr><th>Status</th><td>Isolated network · the real historical genesis · <b>no value assigned by design</b>. A <i>Bitcoin</i>, not <i>the</i> Bitcoin.</td></tr>
+    </table>
+  </div>
+
+  <h2 class="sec">Verify it yourself</h2>
+  <p class="lede" style="font-size:14px;max-width:70ch">Each verifier re-derives its result <b>from the raw block bytes</b> — it reads the
+    <code style="font-family:var(--mono)">blk0001.dat</code> files named on its command line, checks the genesis, proof-of-work,
+    linkage, best chain, and (for the reorg) the retained orphan. Get the block files + verifiers from the archival deposit
+    (or the findings folders in the repo):</p>
+  <pre class="cmd"><span class="c"># every file in the deposit</span>
+sha256sum -c SHA256SUMS
+
+<span class="c"># R3 — genesis + first mined/relayed block</span>
+python 2026-07-31-twonode-mined-block/<b>verify_r3.py</b> \
+    2026-07-31-twonode-mined-block/nodeA/blk0001.dat \
+    2026-07-31-twonode-mined-block/nodeB/blk0001.dat
+
+<span class="c"># R4a — sustained 14-block chain incl. genesis, byte-identical both nodes</span>
+python 2026-08-01-sustained-relay/<b>verify_r4.py</b> \
+    2026-08-01-sustained-relay/run-b-14/nodeA_blk0001.dat \
+    2026-08-01-sustained-relay/run-b-14/nodeB_blk0001.dat
+
+<span class="c"># R4b — reorganisation: node A 1 orphan, both converge on one tip</span>
+python 2026-08-02-reorg-partition/<b>verify_r4.py</b> \
+    2026-08-02-reorg-partition/nodeA_blk0001.dat \
+    2026-08-02-reorg-partition/nodeB_blk0001.dat</pre>
+
+  <h2 class="sec">The evidence &amp; the recipe</h2>
+  <div class="links">
+    <a class="card" href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/r3-findings/2026-07-31-twonode-mined-block">
+      <div class="k">R3 · findings</div><div class="t">First mined &amp; relayed block →</div></a>
+    <a class="card" href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/r4-findings/2026-08-01-sustained-relay">
+      <div class="k">R4a · findings</div><div class="t">Sustained &amp; bidirectional relay →</div></a>
+    <a class="card" href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/r4-findings/2026-08-02-reorg-partition">
+      <div class="k">R4b · findings</div><div class="t">The reorganisation →</div></a>
+    <a class="card" href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/R4_RUNBOOK.md">
+      <div class="k">Reproduce · runbook</div><div class="t">Run the two-node witness yourself →</div></a>
+    <a class="card" href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/r4-findings/screenshots">
+      <div class="k">Corroboration · gallery</div><div class="t">Operator screenshot gallery →</div></a>
+    <a class="card" href="./status.html">
+      <div class="k">Live · proof of life</div><div class="t">Network status &amp; explorer →</div></a>
+  </div>
+
+  <p class="note"><b>What this establishes, honestly.</b> These runs are <b>author-reported</b> and made
+    inspectable by publishing the raw block files, the node logs, and re-derivation scripts — anyone can
+    re-run the verifiers on the bytes, and reproduce the runs from the released binary and the runbook. What
+    they show is behaviour: an <i>unmodified</i> 2009 client still boots on its real genesis and does the
+    full job of a node — mine, relay, sustain a chain, and reorganise. They do not, and cannot, decide which
+    live network today "is" Bitcoin — that is convention, not fact, and this lab privileges none. The archival
+    deposit (with DOI) makes the evidence citable; it is <b>not money</b> — isolated networks, no premine, no
+    value assigned.</p>
+</div>
+
+<!-- shared provenance footer (SNI "established block" + bitaddress "verify" idioms) -->
+<script data-goatcounter="https://parthod0x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<footer class="lab-footer" aria-label="provenance and license">
+  <div class="lf-brand"><a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none;border:0">◆ Original Bitcoin Laboratory</a></div>
+  <p class="lf-anchor">Anchored to block <b>0</b> · 3 January 2009 ·
+    <span class="lf-h">000000000019d668…0a8ce26f</span><span class="lf-tips" hidden> ·
+    live lab chains: <span class="lf-h" id="lf-jan">jan09x&nbsp;—</span> ·
+    <span class="lf-h" id="lf-nov">nov08x&nbsp;—</span></span></p>
+  <p class="lf-links">
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.5.0-experimental">v0.5.0-experimental</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md">source · verify</a> ·
+    <a href="parthod0x-signing-key.asc" title="ed25519 release-signing key">key B128&nbsp;526A…B78C&nbsp;F1DA</a>
+  </p>
+  <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
+    · faithful reconstructions — <b>NOT money</b> · no warranty</p>
+</footer>
+<style>
+  .lab-footer{max-width:860px;margin:56px auto 40px;padding:20px clamp(16px,4vw,28px) 0;
+    border-top:1px solid var(--line,#2a2a2a);font-family:var(--mono,ui-monospace,monospace);
+    font-size:12px;line-height:1.75;color:var(--ink-faint,#8a8a8a);text-align:center}
+  .lab-footer .lf-brand{letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim,#b0b0b0);
+    font-size:11px;margin-bottom:10px}
+  .lab-footer p{margin:3px 0}
+  .lab-footer .lf-h{color:var(--ink-dim,#b0b0b0)}
+  .lab-footer b{color:var(--brass,#c79a3a);font-weight:600}
+  .lab-footer a{color:var(--ink-faint,#8a8a8a);text-decoration:none;
+    border-bottom:1px solid var(--line-strong,#3a3a3a)}
+  .lab-footer a:hover{color:var(--ink,#e8e8e8);border-color:var(--brass,#c79a3a)}
+</style>
+<script>
+  (function () {
+    var S = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
+    fetch(S, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.chains) return;
+      var j = d.chains.jan09x, n = d.chains.nov08x, any = false;
+      if (j && typeof j.height === "number") { document.getElementById("lf-jan").textContent = "jan09x #" + j.height.toLocaleString(); any = true; }
+      if (n && typeof n.height === "number") { document.getElementById("lf-nov").textContent = "nov08x #" + n.height.toLocaleString(); any = true; }
+      if (any) { var t = document.querySelector(".lab-footer .lf-tips"); if (t) t.hidden = false; }
+    }).catch(function () {});
+  })();
+</script>
