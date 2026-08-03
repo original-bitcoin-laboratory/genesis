@@ -36,7 +36,7 @@ async def _run(cfg, zone, seeds, listen, interval):
         print(f"[dnsseed:{cfg.key}] {m}", flush=True)
 
     crawler = Crawler(cfg.magic, cfg.port, seeds)
-    transport = await serve(listen[0], listen[1], zone, crawler.healthy_ips, log=log)
+    transport = await serve(listen[0], listen[1], zone, crawler.healthy_hosts, log=log)
     bound = transport.get_extra_info("sockname")
     log(f"authoritative for {zone!r} on {bound[0]}:{bound[1]} — NOT money")
 
@@ -59,7 +59,7 @@ async def _run(cfg, zone, seeds, listen, interval):
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="dnsseed", description="Experimental X-chain DNS seed (NOT money).")
     ap.add_argument("--chain", required=True, choices=list(CHAINS))
-    ap.add_argument("--zone", required=True, help="the seed hostname we answer A queries for")
+    ap.add_argument("--zone", required=True, help="the seed hostname we answer A/AAAA queries for")
     ap.add_argument("--seed", action="append", default=[], required=True,
                     help="host:port of a known node to crawl from (repeatable)")
     ap.add_argument("--listen", default="0.0.0.0:5354", help="UDP host:port to bind the DNS server")

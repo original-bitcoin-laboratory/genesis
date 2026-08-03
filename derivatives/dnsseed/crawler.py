@@ -101,6 +101,16 @@ class Crawler:
                 ips.append(host)
         return ips
 
+    def healthy_hosts(self):
+        """Distinct hosts of healthy nodes, both families -- the server splits them by query type
+        so `A` gets the IPv4 peers and `AAAA` gets the IPv6 ones."""
+        seen, out = set(), []
+        for host, _port in sorted(self.healthy):
+            if host not in seen and (_looks_ipv4(host) or ":" in host):
+                seen.add(host)
+                out.append(host)
+        return out
+
 
 def _looks_ipv4(host: str) -> bool:
     parts = host.split(".")

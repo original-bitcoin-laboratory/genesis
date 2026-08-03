@@ -14,7 +14,9 @@ import socket
 import struct
 
 TYPE_A = 1
+TYPE_AAAA = 28
 CLASS_IN = 1
+_RDLEN = {TYPE_A: 4, TYPE_AAAA: 16}
 _QR_AA = 0x8400          # response, authoritative, no error
 _RCODE_NAME_ERROR = 0x8403
 _RCODE_NOT_IMPL = 0x8404
@@ -49,21 +51,45 @@ def _question_bytes(qname: str, qtype: int) -> bytes:
     return out + b"\x00" + struct.pack(">HH", qtype, CLASS_IN)
 
 
-def build_response(txid: int, qname: str, ips, ttl: int = 60) -> bytes:
-    """An authoritative A response for `qname` with the given IPv4 `ips` (dotted strings)."""
-    q = _question_bytes(qname, TYPE_A)
+def build_response(txid: int, qname: str, ips, ttl: int = 60, qtype: int = TYPE_A) -> bytes:
+    """An authoritative A (IPv4) or AAAA (IPv6) response for `qname` with the given addresses.
+
+    An empty `ips` is a valid answer: NOERROR with zero records means "the name exists, but it has
+    no record of this type" -- which is exactly right when the seed knows no peer of that family,
+    and is what lets a dual-stack resolver fall back to the other family instead of giving up."""
+    q = _question_bytes(qname, qtype)
     header = struct.pack(">HHHHHH", txid, _QR_AA, 1, len(ips), 0, 0)
+    rdlen = _RDLEN[qtype]
+    fam = socket.AF_INET6 if qtype == TYPE_AAAA else socket.AF_INET
     body = q
     for ip in ips:
         body += b"\xc0\x0c"                                 # NAME -> pointer to the question at offset 12
-        body += struct.pack(">HHIH", TYPE_A, CLASS_IN, ttl, 4)
-        body += socket.inet_aton(ip)
+        body += struct.pack(">HHIH", qtype, CLASS_IN, ttl, rdlen)
+        body += socket.inet_pton(fam, ip)
     return header + body
 
 
 def build_error(txid: int, qname: str, qtype: int, rcode: int = _RCODE_NAME_ERROR) -> bytes:
     """An empty (no-answer) response — used for names/types we are not authoritative for."""
     return struct.pack(">HHHHHH", txid, rcode, 1, 0, 0, 0) + _question_bytes(qname, qtype)
+
+
+def parse_records(response: bytes, qtype: int = TYPE_A):
+    """Test/utility helper: pull the A or AAAA addresses out of a response we built."""
+    _txid, _flags, qd, an, _ns, _ar = struct.unpack(">HHHHHH", response[:12])
+    i = 12
+    for _ in range(qd):                                     # skip the question
+        while response[i] != 0:
+            i += 1 + response[i]
+        i += 1 + 4
+    out, want, fam = [], _RDLEN[qtype], socket.AF_INET6 if qtype == TYPE_AAAA else socket.AF_INET
+    for _ in range(an):
+        i += 2                                              # NAME pointer
+        rtype, _cls, _ttl, rdlen = struct.unpack(">HHIH", response[i:i + 10]); i += 10
+        if rtype == qtype and rdlen == want:
+            out.append(socket.inet_ntop(fam, response[i:i + rdlen]))
+        i += rdlen
+    return out
 
 
 def parse_a_records(response: bytes):

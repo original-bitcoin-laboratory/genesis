@@ -30,6 +30,7 @@ from __future__ import annotations
 import asyncio
 import pathlib
 import random
+import socket
 import sys
 
 _HERE = pathlib.Path(__file__).resolve().parent
@@ -119,6 +120,7 @@ class Node:
         self._inbound_count = 0
         self.port = None
         self.advertise = None                        # our own dialable (host, port), if listening
+        self._self_ids: set[tuple[str, int]] = set()  # every (addr, port) form that is us
         self.peers = PeerDB(max_addrs=max_known_addrs)   # persisted, diversity-aware peer table
         self._peers_path = self.datadir / "peers.json"
         self.peers.load(self._peers_path)            # remember peers across restarts
@@ -229,6 +231,17 @@ class Node:
             host = self.advertise_host or (bind if bind not in ("0.0.0.0", "::", "*", "") else None)
             if host:
                 self.advertise = (host, self.port)
+                # Peers gossip us by whatever form they dialled -- a hostname as readily as an IP.
+                # Comparing only the advertised string lets `seed.example:PORT` past the self-check
+                # and the node dials itself, burning an outbound slot. Resolve once and remember
+                # every form that is us.
+                self._self_ids = {self.advertise}
+                try:
+                    for info in await asyncio.get_running_loop().getaddrinfo(
+                            host, self.port, type=socket.SOCK_STREAM):
+                        self._self_ids.add((info[4][0], self.port))
+                except OSError:
+                    pass
             fams = {s.family.name for s in self._server.sockets}
             self._log(f"listening on {bind}:{self.port}" + (f" ({'+'.join(sorted(fams))})" if dual else ""))
         for host, port in connect:
@@ -274,8 +287,24 @@ class Node:
         finally:
             self._inbound_count -= 1
 
+    async def _is_self(self, host, port) -> bool:
+        """True if (host, port) resolves to us -- catches the hostname form of our own address."""
+        if not self._self_ids:
+            return False
+        if (host, int(port)) in self._self_ids:
+            return True
+        try:
+            infos = await asyncio.get_running_loop().getaddrinfo(
+                host, int(port), type=socket.SOCK_STREAM)
+        except OSError:
+            return False
+        return any((i[4][0], int(port)) in self._self_ids for i in infos)
+
     async def _outbound(self, host, port):
         try:
+            if await self._is_self(host, port):
+                self._log(f"not dialling {host}:{port} — that is us")
+                return
             while not self._closing:
                 try:
                     reader, writer = await asyncio.open_connection(host, port)
