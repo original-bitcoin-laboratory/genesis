@@ -41,8 +41,8 @@ else
     git clone --quiet --depth 1 --branch "$BRANCH" "$REPO" "$PREFIX"
 fi
 
-# the derivatives tree is what the node runs
-DERIV="$PREFIX/lab/genesis/derivatives"
+# the derivatives tree is what the node runs (the repo root IS lab/genesis)
+DERIV="$PREFIX/derivatives"
 [[ -d "$DERIV/bitcoin" ]] || { echo "ERROR: $DERIV/bitcoin missing -- is the chain pushed to $BRANCH?" >&2; exit 1; }
 
 echo "==> verifying the genesis this node will serve"
