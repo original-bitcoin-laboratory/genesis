@@ -3,7 +3,11 @@
 # it is what makes the delta from January 2009 auditable at a glance.
 src/
 
-# build products
+# build products -- the client is rebuilt from source by
+# build-reconstruction/full_build_wsl.sh with SRC=derivatives/bitcoin/src
+build/
 mine_genesis
 mine_genesis.exe
 *.o
+*.exe
+dist/

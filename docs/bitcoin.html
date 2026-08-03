@@ -37,6 +37,19 @@
   a.paper .t{font-family:var(--mono);font-size:14.5px;color:var(--ink);text-align:left;line-height:1.4}
   a.paper .t small{display:block;color:var(--ink-faint);font-size:12px;margin-top:2px}
 
+  .chain{width:100%;max-width:640px;text-align:left;border:1px solid var(--line);border-radius:14px;
+    background:var(--panel);padding:22px clamp(16px,4vw,26px)}
+  .chain h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--brass);margin:0 0 14px;font-weight:600}
+  .chain dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-family:var(--mono);font-size:12.5px}
+  .chain dt{color:var(--ink-faint)}
+  .chain dd{margin:0;color:var(--ink-dim);overflow-wrap:anywhere}
+  .chain pre{margin:16px 0 0;padding:12px 14px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:8px;font-family:var(--mono);font-size:12px;color:var(--ink-dim);overflow-x:auto}
+  .chain .lnk{margin:14px 0 0;font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+  .chain .lnk a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  .chain .lnk a:hover{color:var(--brass);border-color:var(--brass)}
+
   blockquote{margin:0;max-width:60ch}
   blockquote p{font-size:clamp(18px,3.4vw,26px);line-height:1.5;color:var(--ink);font-weight:500;margin:0;text-wrap:balance}
   blockquote cite{display:block;margin-top:16px;font-family:var(--mono);font-size:13px;font-style:normal;color:var(--ink-faint);letter-spacing:.02em}
@@ -56,6 +69,27 @@
     <p>“If you don't believe me or don't get it, I don't have the time to convince you, sorry.”</p>
     <cite>— <a href="https://bitcointalk.org/index.php?topic=532.msg6306#msg6306">satoshi</a></cite>
   </blockquote>
+
+  <section class="chain">
+    <h2>Genesis</h2>
+    <dl>
+      <dt>hash</dt>     <dd>00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a</dd>
+      <dt>coinbase</dt> <dd>The Times 03/Aug/2026 Toll of schooling 'straitjacket'</dd>
+      <dt>output</dt>   <dd>50.00000000 → P2PK 04c0414c… <span style="opacity:.7">(no value assigned)</span></dd>
+      <dt>nTime</dt>    <dd>1785781375 — 2026-08-03 18:22:55 UTC</dd>
+      <dt>nBits</dt>    <dd>0x1d00ffff</dd>
+      <dt>nNonce</dt>   <dd>33394338</dd>
+      <dt>magic</dt>    <dd>f00ba726</dd>
+      <dt>port</dt>     <dd>18026</dd>
+    </dl>
+    <pre>python3 -m netnode --chain bitcoin --datadir ./data \
+        --connect bitcoin.bitcoin-lab.org:18026</pre>
+    <p class="lnk">
+      <a href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/derivatives/bitcoin">source</a> ·
+      <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/derivatives/bitcoin/bitcoin-v0.1.0.patch">the delta from January 2009</a> ·
+      <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/derivatives/bitcoin/make_chain.py">rebuild it</a>
+    </p>
+  </section>
 </div>
 
 <!-- shared provenance footer -->
