@@ -19,7 +19,9 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SRC="$HERE/../../extracted/bitcoin/src"
+# Defaults to the R0-verified January 2009 tree. Override SRC to build a derived chain from the
+# same period toolchain (e.g. derivatives/bitcoin/src, produced by bitcoin/make_chain.py).
+SRC="${SRC:-$HERE/../../extracted/bitcoin/src}"
 W="${WORK:-$HOME/obl-period}"; mkdir -p "$W"
 X=i686-w64-mingw32; GXX="$X-g++"; NP="$(nproc)"
 command -v "$GXX" >/dev/null || { echo "!! install: sudo apt-get install -y gcc-mingw-w64-i686 g++-mingw-w64-i686"; exit 2; }

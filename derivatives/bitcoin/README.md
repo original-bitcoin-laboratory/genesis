@@ -70,6 +70,17 @@ A public node in one command: [`deploy/provision.sh`](deploy/provision.sh) (Ubun
 This chain is **independent** of the lab's NOV08-X and JAN09-X — separate genesis, separate magic,
 separate port, separate seed. The three do not interoperate and are not meant to.
 
+## The chain at this release
+
+One block: the genesis. Nobody has mined block 1 yet, and **anyone may** — that is what this
+release is for. Satoshi's genesis was timestamped 3 January 2009 and block 1 was not mined until the
+9th; for six days his chain was exactly this. A release is of the software and its genesis; the
+chain is whatever the people who run it make of it.
+
+Blocks cost the original difficulty-1 work (~2³² hashes), so the client's own `BitcoinMiner` takes
+minutes per block rather than instants — the pacing v0.1.0 had. There is nothing to buy, nothing to
+claim, and nothing owed to whoever mines first.
+
 ## Not money
 
 No premine of value, no token, no sale, no market, no promises. The 50-coin genesis output is the

@@ -49,6 +49,16 @@ Network
   magic     f00ba726          port 18026
   seed      bitcoin.bitcoin-lab.org:18026
 
+The chain at this release
+-------------------------
+One block: the genesis. Nobody has mined block 1 yet, and anyone may -- that is what this
+release is for. Satoshi's genesis was timestamped 3 January 2009 and block 1 was not mined
+until the 9th; for six days his chain was exactly this. A release is of the software and its
+genesis; the chain is what people who run it make of it.
+
+Point a node at the seed above and mine, and you are as much a part of this chain's history
+as anyone. There is nothing to buy, nothing to claim, and nothing owed to whoever mined first.
+
 What differs from January 2009
 ------------------------------
 Ten lines, in src/ -- see bitcoin-v0.1.0.patch in the repository:
