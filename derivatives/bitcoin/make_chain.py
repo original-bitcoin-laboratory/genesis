@@ -1,30 +1,17 @@
 #!/usr/bin/env python3
 """
-make_chain.py -- derive the Bitcoin v0.1.0 (Aug 2026) client from the verified January 2009 tree.
+make_chain.py -- compose this chain's client source.
 
-This chain runs the ORIGINAL v0.1.0 code. It is not a reimplementation and not a fork of a later
-Bitcoin: it starts from the archive Hal Finney sent mrb (bitcoin-0.1.0.rar, SHA256
-8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56 -> zorinaq -> SNI), which this
-lab already verified and built (`manifests/EXPECTED_CHECKSUMS.json`, `docs/R2_BUILD_RECONSTRUCTION.md`).
+Two inputs: the v0.1.0 source tree (SHA256
+8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56, verified in
+`manifests/EXPECTED_CHECKSUMS.json`) and the nine substitutions below -- this chain's genesis, its
+network magic and port, and its bootstrap channel.
 
-It applies exactly NINE changes, listed below, and refuses to run if any of them fails to match
-exactly once -- so it cannot silently drift from the 2009 source.
+Each substitution must match exactly once or this refuses to run, so the source either composes
+reproducibly or fails loudly. Everything not listed is the tree as it stands.
 
-  the chain          the genesis block is this chain's own: a coinbase carrying The Times of the day
-                     it was mined, 50 coins to a key generated and held by its author, mined at the
-                     original difficulty-1. Same three fields Satoshi's differed in from any other
-                     chain's: message, key, time.
-  the network        distinct magic + port, so this network is separate from Bitcoin's and from this
-                     lab's NOV08-X / JAN09-X. Running the original's f9beb4d9/8333/#bitcoin would put
-                     these nodes into the real network's traffic and peer discovery -- separate magic
-                     is what makes a separate network separate, and it is what every distinct network
-                     since 2011 has done.
-
-Everything else -- consensus rules, serialization, difficulty, script, the wire protocol, the wallet,
-the UI -- is untouched 2009 code.
-
-  python make_chain.py            # write the patch + the patched tree
-  python make_chain.py --check    # verify only: source matches, all 9 substitutions locate
+  python make_chain.py            # write the patch + the composed tree
+  python make_chain.py --check    # verify only: inputs match, all 9 substitutions locate
 
 Not money. Experimental.
 """
@@ -36,7 +23,7 @@ except Exception:
     pass
 
 HERE = Path(__file__).resolve().parent
-SRC  = HERE.parent.parent / "extracted" / "bitcoin" / "src"     # the verified 2009 tree (never written to)
+SRC  = HERE.parent.parent / "extracted" / "bitcoin" / "src"     # the verified source tree (never written to)
 OUT  = HERE / "src"                                              # the derived tree
 PATCH= HERE / "bitcoin-v0.1.0.patch"
 
@@ -45,10 +32,9 @@ GENESIS_HASH = "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
 MERKLE_ROOT  = "aaa5bdfd6c4075a646db9975aab8515781c67fdd73b02df1773a4e1e21a38085"
 HEADLINE     = "The Times 03/Aug/2026 Toll of schooling 'straitjacket'"
 NTIME        = 1785781375          # 2026-08-03 18:22:55 UTC -- the day the headline was published
-NNONCE       = 33394338            # found at real difficulty-1 (nBits 0x1d00ffff), lowest such nonce
+NNONCE       = 33394338            # found at difficulty-1 (nBits 0x1d00ffff); lowest such nonce
 # the coinbase output key, byte-reversed: CBigNum parses big-endian and pushes little-endian, so the
-# literal below is the pubkey 04c0414c...f834 reversed -- exactly as Satoshi's 04678afd...11d5f appears
-# in the original as 5F1DF16B...6704
+# literal below is the pubkey 04c0414c...f834 with its bytes reversed.
 PUBKEY_CBIGNUM = "34F8A2CE5FD92F8E7E829BA92A219268222F0C3CE59731BAD727852E60A04C79BA5E814A595E045786F9DD45FA1FDC7035A0436EB0438570309800CCFD4C41C004"
 MAGIC        = "{ 0xf0, 0x0b, 0xa7, 0x26 }"   # NOV08-X f00ba708, JAN09-X f00ba709, this f00ba726 (2026)
 PORT         = 18026
@@ -94,7 +80,7 @@ def sha256(p): return hashlib.sha256(p.read_bytes()).hexdigest()
 
 def main(check_only):
     if not SRC.is_dir():
-        sys.exit(f"the verified 2009 tree is missing: {SRC}")
+        sys.exit(f"the verified source tree is missing: {SRC}")
 
     originals, patched, diffs = {}, {}, []
     for name in sorted({f for f, _, _ in EDITS}):
@@ -133,7 +119,7 @@ def main(check_only):
     PATCH.write_text("".join(diffs), encoding="utf-8")
 
     print(f"\nwrote {OUT}  (the derived tree -- build this)")
-    print(f"wrote {PATCH.name}  ({len(diffs)} diff lines -- the entire delta from January 2009)")
+    print(f"wrote {PATCH.name}  ({len(diffs)} diff lines -- the entire delta)")
     print(f"\nchain identity: genesis {GENESIS_HASH}")
     print(f"                magic {MAGIC.strip('{} ').replace('0x','').replace(', ','')}   port {PORT}")
     return 0

@@ -1,20 +1,14 @@
-"""Bitcoin (Aug 2026) — network identity + the fixed genesis, for the hardened netnode transport.
+"""Bitcoin — network identity and genesis, for the netnode transport.
 
-This chain is NOT one of the lab's X-chains. NOV08-X / JAN09-X *mint* a fresh regtest-easy genesis
-on demand so demos mine instantly; this one has a single, already-mined genesis at the ORIGINAL
-difficulty-1 (nBits 0x1d00ffff), hardcoded here exactly the way a real client hardcodes block 0.
-It is the same genesis the patched v0.1.0 client asserts on startup (`make_chain.py`), so the 2009
-binary and this node agree on block 0 byte-for-byte or neither starts.
+The genesis is fixed: mined once at difficulty-1 (nBits 0x1d00ffff) and hardcoded here, as a
+client hardcodes block 0. The client asserts this same hash on startup, so the two agree on
+block 0 byte-for-byte or neither runs.
 
   genesis   00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
   coinbase  The Times 03/Aug/2026 Toll of schooling 'straitjacket'
-            -- the front page of the day it was mined: a proof of time, the same function Satoshi's
-               headline served for his, rather than a copy of his words
-  output    50 -> P2PK 04c0414c…  (the author's key; no value assigned)
+  output    50 -> P2PK 04c0414c…  (no value assigned)
   nTime     1785781375 = 2026-08-03 18:22:55 UTC        nNonce 33394338
-
-Network identity is the ONLY thing separating this from mainnet's wire: distinct magic and port, as
-NOV08-X (f00ba708/18008) and JAN09-X (f00ba709/18009) do. Consensus is untouched v0.1.0.
+  magic     f00ba726          port 18026
 
 Not money. Experimental.
 """
@@ -41,7 +35,7 @@ BITCOIN_GENESIS_MESSAGE = b"The Times 03/Aug/2026 Toll of schooling 'straitjacke
 BITCOIN_GENESIS_HASH = "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a"
 BITCOIN_GENESIS_TIME = 1785781375
 BITCOIN_GENESIS_NONCE = 33394338
-BITCOIN_GENESIS_BITS = 0x1D00FFFF          # real difficulty-1, as Satoshi's was
+BITCOIN_GENESIS_BITS = 0x1D00FFFF          # difficulty-1
 BITCOIN_PUBKEY = ("04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba7"
                   "94ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834")
 
@@ -67,8 +61,8 @@ def _dsha(b: bytes) -> bytes:
 
 
 def mint_genesis() -> bytes:
-    """The genesis block. Not mined on demand -- it was mined once, at real difficulty-1, and is
-    fixed. Re-verified here on every call so a corrupted constant can never reach the network."""
+    """The genesis block. Not mined on demand -- it was mined once, at difficulty-1, and is
+    fixed. Re-verified on every call so a corrupted constant can never reach the network."""
     h = _dsha(GENESIS_RAW[:80])[::-1].hex()
     if h != BITCOIN_GENESIS_HASH:
         raise SystemExit(f"genesis constant corrupted: hashes to {h}")
@@ -88,7 +82,7 @@ if __name__ == "__main__":
     except Exception:
         pass
     g = mint_genesis()
-    print(f"chain    : Bitcoin (Aug 2026)")
+    print("chain    : Bitcoin")
     print(f"genesis  : {BITCOIN_GENESIS_HASH}  ✓ verified, meets difficulty-1")
     print(f"coinbase : {BITCOIN_GENESIS_MESSAGE.decode()}")
     print(f"magic    : {BITCOIN_MAGIC.hex()}   port {BITCOIN_PORT}   block {len(g)} bytes")

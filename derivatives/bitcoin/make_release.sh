@@ -1,19 +1,12 @@
 #!/usr/bin/env bash
-# make_release.sh -- assemble bitcoin-0.1.0.tar.gz, mirroring the January 2009 release archive.
+# make_release.sh -- assemble bitcoin-0.1.0.tar.gz: the client binary, license.txt, readme.txt,
+# src/, and RELEASE.txt. The binary is statically linked, so it ships no DLLs.
 #
-# The original was distributed as bitcoin-0.1.0.rar / bitcoin-0.1.0.tgz (same source tree): the client
-# binary, its runtime DLLs, license.txt, readme.txt, and src/. This mirrors that layout so the release
-# is recognisably the same kind of artifact -- with two honest differences noted in RELEASE.txt:
-#
-#   * no DLLs. The original shipped libeay32.dll + mingwm10.dll alongside bitcoin.exe; this build is
-#     statically linked, so the binary is self-contained. Fewer files, same code.
-#   * src/ is the derived tree (bitcoin-v0.1.0.patch applied), not the 2009 tree verbatim.
-#
-# Run:  bash make_release.sh          (after make_chain.py and the period build)
+# Run:  bash make_release.sh          (after make_chain.py and the build)
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ORIG="$HERE/../../extracted/bitcoin"          # the verified 2009 archive (for license.txt / readme.txt)
+ORIG="$HERE/../../extracted/bitcoin"          # the verified source tree (for license.txt / readme.txt)
 SRC="$HERE/src"                                # derived tree from make_chain.py
 EXE="$HERE/build/bitcoin-0.1.0-reconstructed.exe"
 OUT="$HERE/dist"
@@ -24,16 +17,13 @@ NAME="bitcoin-0.1.0"
 
 rm -rf "$OUT/$NAME"; mkdir -p "$OUT/$NAME"
 cp -r "$SRC"                  "$OUT/$NAME/src"
-cp    "$ORIG/license.txt"     "$OUT/$NAME/license.txt"      # MIT, unchanged from 2009
-cp    "$ORIG/readme.txt"      "$OUT/$NAME/readme.txt"       # Satoshi's, unchanged from 2009
-cp    "$EXE"                  "$OUT/$NAME/bitcoin.exe"      # named as the original shipped it
+cp    "$ORIG/license.txt"     "$OUT/$NAME/license.txt"      # MIT, unmodified
+cp    "$ORIG/readme.txt"      "$OUT/$NAME/readme.txt"       # unmodified
+cp    "$EXE"                  "$OUT/$NAME/bitcoin.exe"
 
 cat > "$OUT/$NAME/RELEASE.txt" <<'TXT'
-Bitcoin v0.1.0 (August 2026)
-============================
-
-This is the January 2009 Bitcoin client -- Satoshi Nakamoto's released v0.1.0 source, built with
-period libraries -- running a new chain. readme.txt and license.txt are his, unchanged.
+Bitcoin v0.1.0
+==============
 
 Genesis
 -------
@@ -41,7 +31,7 @@ Genesis
   coinbase  The Times 03/Aug/2026 Toll of schooling 'straitjacket'
   output    50.00000000 -> P2PK 04c0414c...  (no value assigned)
   nTime     1785781375 = 2026-08-03 18:22:55 UTC
-  nBits     0x1d00ffff   (the original difficulty-1)
+  nBits     0x1d00ffff
   nNonce    33394338
 
 Network
@@ -49,40 +39,34 @@ Network
   magic     f00ba726          port 18026
   seed      bitcoin.bitcoin-lab.org:18026
 
-The chain at this release
--------------------------
-One block: the genesis. Nobody has mined block 1 yet, and anyone may -- that is what this
-release is for. Satoshi's genesis was timestamped 3 January 2009 and block 1 was not mined
-until the 9th; for six days his chain was exactly this. A release is of the software and its
-genesis; the chain is what people who run it make of it.
+Mining
+------
+The chain is at its genesis. Block 1 is unmined and anyone may take it. Blocks cost difficulty-1
+work -- about 2^32 hashes -- so the client's own miner takes minutes per block. There is nothing
+to buy, nothing to claim, and nothing owed to whoever mines first.
 
-Point a node at the seed above and mine, and you are as much a part of this chain's history
-as anyone. There is nothing to buy, nothing to claim, and nothing owed to whoever mined first.
+Build
+-----
+src/ is composed by make_chain.py from two inputs: the v0.1.0 source tree, SHA256
+8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56, and bitcoin-v0.1.0.patch --
+this chain's genesis, network magic and port, and bootstrap channel. Ten lines, in main.cpp,
+net.h and irc.cpp.
 
-What differs from January 2009
-------------------------------
-Ten lines, in src/ -- see bitcoin-v0.1.0.patch in the repository:
-
-  main.cpp (6)  the genesis: headline, output key, nTime, nNonce, merkle assert, genesis hash
-  net.h    (2)  network magic, default port
-  irc.cpp  (2)  bootstrap channel
-
-The coinbase headline is the front page of the day this genesis was mined, not a copy of his --
-his headline was a proof of time, and only a current one performs that function. The output key is
-the author's, because a chain whose genesis key you do not hold is not yours. The magic and port
-differ because running f9beb4d9/8333 would put these nodes into the real Bitcoin network's traffic.
-
-Consensus rules, script, difficulty, serialization, wallet and UI are untouched 2009 code, including
-the origin's absent guardrails (no MoneyRange, no size cap, unbounded script arithmetic). Those are
-safe here for one reason only: there is nothing to steal.
+Consensus rules, script, difficulty, serialization, wallet and UI carry no guardrails: no
+MoneyRange, no block-size cap, no script limits. Safe here for one reason only -- there is
+nothing to steal.
 
 Verify
 ------
-  python make_chain.py --check     # proves src/ is the 2009 tree plus exactly nine substitutions
-  python net.py                    # re-derives the genesis hash and checks it meets difficulty-1
+  python make_chain.py --check     # src/ is those two inputs and nothing else
+  python net.py                    # re-derives the genesis hash; checks it meets difficulty-1
+
+The client asserts the genesis hash on startup, so a wrong build does not run.
+
+readme.txt and license.txt are the source tree's own, unmodified.
 
 NOT MONEY. No premine of value, no token, no sale, no market. Experimental research artifact.
-Run the client only in an isolated VM: it is a live 2009 node.
+Run the client only in an isolated VM: it is a live node.
 TXT
 
 cd "$OUT"
