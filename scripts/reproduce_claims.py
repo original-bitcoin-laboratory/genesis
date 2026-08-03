@@ -175,14 +175,19 @@ def _external_evidence(path: Path) -> dict:
     if not doc:
         return {"complete": False, "source": None, "reason": "no historical-evidence.json (pre-deposit state)"}
     mapped = {str(c).split("-")[0] for c in (doc.get("claim_map") or {})}
-    # top_level_manifest_sha256 = sha256 of the deposit's top-level SHA256SUMS (the manifest-of-manifests)
-    complete = bool(doc.get("doi") and doc.get("archive_sha256")
-                    and doc.get("top_level_manifest_sha256") and required <= mapped)
+    # top_level_manifest_sha256 = sha256 of the deposit's top-level SHA256SUMS (the manifest-of-manifests).
+    # `verified: true` is written ONLY by finalize_deposit.py after it re-extracts the archive, re-checks every
+    # SHA256SUMS entry, confirms the C1d-C1g folders exist, and re-runs the three verifiers -> so external
+    # completeness is backed by an actual machine verification of the deposit, not just descriptor fields.
+    complete = bool(doc.get("doi") and doc.get("archive_sha256") and doc.get("top_level_manifest_sha256")
+                    and doc.get("verified") is True and required <= mapped)
     return {"complete": complete, "source": str(path), "doi": doc.get("doi"),
             "archive_sha256": doc.get("archive_sha256"),
             "top_level_manifest_sha256": doc.get("top_level_manifest_sha256"),
+            "verified": doc.get("verified") is True,
+            "finalization_log_sha256": doc.get("finalization_log_sha256"),
             "claims_mapped": sorted(mapped),
-            "reason": None if complete else "descriptor present but missing DOI / archive hash / top-level-manifest hash / full C1d-C1g map"}
+            "reason": None if complete else "descriptor incomplete: needs DOI + archive/top-level-manifest hash + verified:true (set by finalize_deposit.py) + full C1d-C1g map"}
 
 
 def _environment() -> dict:

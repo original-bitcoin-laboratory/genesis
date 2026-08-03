@@ -24,7 +24,7 @@ mines, and the other receives and accepts the block.
 
 ## What executed (JAN09-EXECUTED)
 
-Two unmodified 2009 `bitcoin.exe` nodes, air-gapped, discovered each other via the original IRC path
+Two unmodified 2009 `bitcoin.exe` nodes, network-isolated, discovered each other via the original IRC path
 (a bare-`\r`-terminated line handshake against a minimal in-network IRC daemon — see *Divergences*),
 formed a P2P connection on port 8333, and:
 
@@ -49,7 +49,7 @@ formed a P2P connection on port 8333, and:
   **valid proof-of-work below the difficulty-1 target**. This hash matches node B's `getdata for: block
   000000005bdcfb` and node A's received block.
 
-Both nodes' 516-byte `blk0001.dat` hash identically (`899c94d2…`), so the two independent nodes agree, byte
+Both nodes' 516-byte `blk0001.dat` hash identically (`899c94d2…`), so the two separate node instances agree, byte
 for byte, that node B produced this block and node A accepted it.
 
 ## Divergences / surprises

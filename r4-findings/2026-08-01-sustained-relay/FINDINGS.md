@@ -24,7 +24,7 @@ spend) remain deferred.
 
 ## What executed (JAN09-EXECUTED)
 
-Two unmodified 2009 `bitcoin.exe` nodes, air-gapped, discovered each other over the original IRC path,
+Two unmodified 2009 `bitcoin.exe` nodes, network-isolated, discovered each other over the original IRC path,
 connected on port 8333, and — with **only node B mining** (node A a pure receiver, so relay isn't
 starved by CPU contention):
 
@@ -65,7 +65,7 @@ The four blocks, from the raw bytes:
 
 All three mined blocks are at real **difficulty 1** (`nBits=1d00ffff`), properly chained (each
 `hashPrevBlock` = the previous block), each a valid PoW below `00000000ffff0000…`, all 50-coin coinbases.
-The two independent nodes' 962-byte `blk0001.dat` hash identically (`aaf08aa3…`), so they agree byte for
+The two separate node instances' 962-byte `blk0001.dat` hash identically (`aaf08aa3…`), so they agree byte for
 byte that node B produced this run and node A accepted all of it.
 
 ## Divergences / surprises

@@ -54,7 +54,7 @@ The unmodified 2009 `bitcoin.exe` was also run and hash‑verified against these
 reconstructions — the **historical** genesis is reproduced by the unmodified 2009 binary (block 0 of its
 `blk0001.dat`; `r3-findings/run1/`, level `JAN09-EXECUTED`); the headless consensus port (`derivatives/node`)
 independently reconstructs the same genesis from source. Two such binaries,
-air‑gapped in isolated VMs, then **produced and relayed a block**: one mined block 1 at real difficulty 1 on
+network‑isolated in VirtualBox Internal Network VMs, then **produced and relayed a block**: one mined block 1 at real difficulty 1 on
 that genesis and the other received and accepted it, both `blk0001.dat` byte‑identical — verified from the raw
 block bytes (`r3-findings/2026-07-31-twonode-mined-block/`, level `JAN09-EXECUTED`). The same two binaries went
 on to **sustained bidirectional mining and relay** (a 14‑block chain including genesis, best‑chain height 13,

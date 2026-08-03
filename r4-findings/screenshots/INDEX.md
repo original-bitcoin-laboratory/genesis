@@ -10,7 +10,7 @@ these images corroborate that record and show the operator's-eye view (both VMs'
 [`SHA256SUMS`](SHA256SUMS). **NOT money** — isolated network, real genesis, valueless by design.
 
 Both nodes are unmodified 2009 `bitcoin.exe` (sha256 `fbcac071…`) in Oracle VirtualBox VMs
-(`obl-r4-node-a` left, `obl-r4-node-b` right) on the air-gapped Internal Network `172.20.0.0/24`.
+(`obl-r4-node-a` left, `obl-r4-node-b` right) on the network-isolated Internal Network `172.20.0.0/24`.
 
 ## Reading the timestamps
 
@@ -27,7 +27,7 @@ These frames were read directly and tie to specific facts in the findings:
 | Screenshot | Host time | What it shows |
 |---|---|---|
 | [`2026-07-31/2026-07-31_223114`](2026-07-31/2026-07-31_223114.png) | 31 Jul 22:31 | **Setup / connectivity** — each VM `ping`s the other across `172.20.0.0/24` (A↔B, 0% loss) before any node starts |
-| [`2026-08-01/2026-08-01_034539`](2026-08-01/2026-08-01_034539.png) | 1 Aug 03:45 | **R4a byte-identical result** — both nodes' `Get-FileHash blk0001.dat` = `AAF08AA3…6DBEBC4C` (the `aaf08aa3…` in the R4a manifest): the two independent nodes agree on the chain byte for byte |
+| [`2026-08-01/2026-08-01_034539`](2026-08-01/2026-08-01_034539.png) | 1 Aug 03:45 | **R4a byte-identical result** — both nodes' `Get-FileHash blk0001.dat` = `AAF08AA3…6DBEBC4C` (the `aaf08aa3…` in the R4a manifest): the two separate node instances agree on the chain byte for byte |
 | [`2026-08-02/2026-08-02_044409`](2026-08-02/2026-08-02_044409.png) | 2 Aug 04:44 | **R4b reorg, as the wallet shows it** — node A's top transaction is `0/unconfirmed — Generated (not accepted)` (its orphaned, self-mined block), both nodes at 16 blocks (height 15) |
 | [`2026-08-02/2026-08-02_044538`](2026-08-02/2026-08-02_044538.png) | 2 Aug 04:45 | **R4b `REORGANIZE` confirmed** — `Select-String REORGANIZE C:\obl\debug.log` on node A returns `debug.log:542:*** REORGANIZE ***`, alongside the orphaned-block wallet entry |
 | [`2026-08-02/2026-08-02_044616`](2026-08-02/2026-08-02_044616.png) | 2 Aug 04:46 | **R4b on-disk divergence** — post-reorg `Get-FileHash` shows the two nodes' `blk0001.dat` now **differ** (`909852B7…D8DAF0` on A vs `48A84CE7…60BDCD9` on B, the exact values in the R4b manifest): A carries the retained orphan (+223 B = one block) |
@@ -60,6 +60,6 @@ maturity, reaching 26 blocks (height 25) at the latest capture.
 These are unretouched desktop captures, hashed in `SHA256SUMS`. The **raw** evidence they depict — both
 nodes' `blk0001.dat` and `debug.log` — stays under the gitignored `r4-evidence/` and is what `verify_r4.py`
 actually re-derives the results from; the screenshots are corroborating documentation, not the primary
-record, and (like the raw bytes) are part of the archival deposit. A screenshot is a *witness of what the
+record, and remain public corroborating documentation in this repository, but are excluded from the privacy-sanitized Zenodo dataset. A screenshot is a *witness of what the
 operator saw*, never an authority (`common/AUTHORITY.md`); where a screenshot and the verified bytes could
 ever disagree, the bytes win.
