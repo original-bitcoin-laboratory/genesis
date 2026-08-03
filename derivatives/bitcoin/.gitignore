@@ -1,0 +1,9 @@
+# The derived 2009 tree is generated output, not source: `python make_chain.py` rebuilds it from the
+# verified extracted/bitcoin/src plus bitcoin-v0.1.0.patch. The patch is the canonical artifact --
+# it is what makes the delta from January 2009 auditable at a glance.
+src/
+
+# build products
+mine_genesis
+mine_genesis.exe
+*.o

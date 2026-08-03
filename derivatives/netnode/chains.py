@@ -36,6 +36,7 @@ def _load(name: str, relpath: str):
 
 _NX = _load("obl_nov08x_net", "nov08x/net.py")
 _JX = _load("obl_jan09x_net", "jan09x/net.py")
+_BC = _load("obl_bitcoin_net", "bitcoin/net.py")     # independent chain: fixed real-difficulty-1 genesis
 
 
 class ChainConfig:
@@ -62,6 +63,11 @@ CHAINS: dict[str, ChainConfig] = {
     "jan09x": ChainConfig("jan09x", _JX.JAN09X_MAGIC, _JX.JAN09X_PORT,
                           _JX.new_chain, _JX.mint_genesis, _JX.JAN09X_GENESIS_MESSAGE,
                           Rules.load("jan09")),
+    # An independent chain, not an X-chain: its genesis is fixed and was mined at the ORIGINAL
+    # difficulty-1, so blocks on it cost real work (see RUN notes on mining).
+    "bitcoin": ChainConfig("bitcoin", _BC.BITCOIN_MAGIC, _BC.BITCOIN_PORT,
+                           _BC.new_chain, _BC.mint_genesis, _BC.BITCOIN_GENESIS_MESSAGE,
+                           Rules.load("jan09")),
 }
 
 _tag = [0]

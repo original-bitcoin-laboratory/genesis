@@ -1,0 +1,79 @@
+--- a/src/irc.cpp
++++ b/src/irc.cpp
+@@ -176,8 +176,8 @@
+         }
+         Sleep(500);
+ 
+-        Send(hSocket, "JOIN #bitcoin\r");
+-        Send(hSocket, "WHO #bitcoin\r");
++        Send(hSocket, "JOIN #bitcoin26\r");
++        Send(hSocket, "WHO #bitcoin26\r");
+ 
+         while (!fRestartIRCSeed)
+         {
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -21,7 +21,7 @@
+ map<COutPoint, CInPoint> mapNextTx;
+ 
+ map<uint256, CBlockIndex*> mapBlockIndex;
+-const uint256 hashGenesisBlock("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
++const uint256 hashGenesisBlock("0x00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a");
+ CBlockIndex* pindexGenesisBlock = NULL;
+ int nBestHeight = -1;
+ uint256 hashBestChain = 0;
+@@ -1453,21 +1453,21 @@
+         //   vMerkleTree: 4a5e1e
+ 
+         // Genesis block
+-        char* pszTimestamp = "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks";
++        char* pszTimestamp = "The Times 03/Aug/2026 Toll of schooling 'straitjacket'";
+         CTransaction txNew;
+         txNew.vin.resize(1);
+         txNew.vout.resize(1);
+         txNew.vin[0].scriptSig     = CScript() << 486604799 << CBigNum(4) << vector<unsigned char>((unsigned char*)pszTimestamp, (unsigned char*)pszTimestamp + strlen(pszTimestamp));
+         txNew.vout[0].nValue       = 50 * COIN;
+-        txNew.vout[0].scriptPubKey = CScript() << CBigNum("0x5F1DF16B2B704C8A578D0BBAF74D385CDE12C11EE50455F3C438EF4C3FBCF649B6DE611FEAE06279A60939E028A8D65C10B73071A6F16719274855FEB0FD8A6704") << OP_CHECKSIG;
++        txNew.vout[0].scriptPubKey = CScript() << CBigNum("0x34F8A2CE5FD92F8E7E829BA92A219268222F0C3CE59731BAD727852E60A04C79BA5E814A595E045786F9DD45FA1FDC7035A0436EB0438570309800CCFD4C41C004") << OP_CHECKSIG;
+         CBlock block;
+         block.vtx.push_back(txNew);
+         block.hashPrevBlock = 0;
+         block.hashMerkleRoot = block.BuildMerkleTree();
+         block.nVersion = 1;
+-        block.nTime    = 1231006505;
++        block.nTime    = 1785781375;
+         block.nBits    = 0x1d00ffff;
+-        block.nNonce   = 2083236893;
++        block.nNonce   = 33394338;
+ 
+             //// debug print, delete this later
+             printf("%s\n", block.GetHash().ToString().c_str());
+@@ -1475,7 +1475,7 @@
+             printf("%s\n", hashGenesisBlock.ToString().c_str());
+             txNew.vout[0].scriptPubKey.print();
+             block.print();
+-            assert(block.hashMerkleRoot == uint256("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
++            assert(block.hashMerkleRoot == uint256("0xaaa5bdfd6c4075a646db9975aab8515781c67fdd73b02df1773a4e1e21a38085"));
+ 
+         assert(block.GetHash() == hashGenesisBlock);
+ 
+--- a/src/net.h
++++ b/src/net.h
+@@ -10,7 +10,7 @@
+ 
+ 
+ 
+-static const unsigned short DEFAULT_PORT = htons(8333);
++static const unsigned short DEFAULT_PORT = htons(18026);
+ static const unsigned int PUBLISH_HOPS = 5;
+ enum
+ {
+@@ -51,7 +51,7 @@
+ // The message start string is designed to be unlikely to occur in normal data.
+ // The characters are rarely used upper ascii, not valid as UTF-8, and produce
+ // a large 4-byte int at any alignment.
+-static const char pchMessageStart[4] = { 0xf9, 0xbe, 0xb4, 0xd9 };
++static const char pchMessageStart[4] = { 0xf0, 0x0b, 0xa7, 0x26 };
+ 
+ class CMessageHeader
+ {
