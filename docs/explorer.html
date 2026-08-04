@@ -63,7 +63,7 @@
 
 <script>
 const SRC = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
-const LABEL = {jan09x:"JAN09-X", nov08x:"NOV08-X"};
+const LABEL = {jan09x:"JAN09-X", nov08x:"NOV08-X", bitcoin:"Bitcoin"};
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const short = h => h ? esc(h.slice(0,10) + "…" + h.slice(-8)) : "—";
 function ago(iso){ const s=Math.max(0,(Date.now()-Date.parse(iso))/1000);
@@ -89,7 +89,8 @@ function section(name, c){
 fetch(SRC, {cache:"no-store"}).then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
   .then(d => {
     document.getElementById("updated").textContent = "updated " + ago(d.updated) + " · " + d.updated;
-    const order = ["jan09x","nov08x"].filter(n => d.chains[n]);
+    const order = ["jan09x","nov08x"].filter(n => d.chains[n])
+      .concat(Object.keys(d.chains).filter(n => !["jan09x","nov08x"].includes(n)));
     document.getElementById("chains").innerHTML = order.map(n => section(n, d.chains[n])).join("");
   })
   .catch(e => {

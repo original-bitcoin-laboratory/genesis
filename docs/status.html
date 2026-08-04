@@ -67,7 +67,8 @@
 
 <script>
 const SRC = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
-const LABEL = {jan09x:"JAN09-X · Jan 2009 v0.1.0", nov08x:"NOV08-X · Nov 2008 pre-release"};
+const LABEL = {jan09x:"JAN09-X · Jan 2009 v0.1.0", nov08x:"NOV08-X · Nov 2008 pre-release",
+               bitcoin:"Bitcoin · its own chain"};
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const short = h => h ? esc(h.slice(0,12) + "…" + h.slice(-8)) : "—";
 function ago(iso){ const s = Math.max(0,(Date.now()-Date.parse(iso))/1000);
