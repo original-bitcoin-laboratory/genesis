@@ -89,6 +89,14 @@ python -m netnode --chain jan09x --datadir ./data-jan09 --connect seed.bitcoin-l
 python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-lab.org:18008   # Nov 2008
 ```
 
+A third chain lives here too, and is **not** one of the reconstructions: **Bitcoin**
+([`derivatives/bitcoin/`](derivatives/bitcoin/)) — its own genesis, its own network, its own signed
+release. It runs the v0.1.0 client and does not interoperate with the two above.
+
+```bash
+python -m netnode --chain bitcoin --datadir ./data-bitcoin --connect bitcoin.bitcoin-lab.org:18026
+```
+
 New here? [`derivatives/netnode/PARTICIPATE.md`](derivatives/netnode/PARTICIPATE.md) is the participant
 guide — generate, mine, send and receive coins, plus the full opcode vocabulary and the contract forms the
 node validates (P2PK, P2PKH, escrow, hash‑lock, HTLC‑style refund, assurance) and how to put them on‑chain.
@@ -129,6 +137,7 @@ profiles/     frozen OBL-JAN09 profile
 scripts/      acquisition / verification / inventory tooling
 artifacts/    acquired archive bytes (gitignored)
 derivatives/  all modified / instrumented / modernized code
+  bitcoin/    the Bitcoin chain: its genesis, the ten-line patch, deploy
 ```
 
 ## Boundaries
