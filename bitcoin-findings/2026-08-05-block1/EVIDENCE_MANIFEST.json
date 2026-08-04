@@ -1,10 +1,14 @@
 {
  "run": "2026-08-05-block1",
  "chain": "bitcoin",
- "genesis": "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a",
- "block1": "000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c",
  "level": "BITCOIN-EXECUTED",
  "not_money": true,
+ "genesis": "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a",
+ "block1": "000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c",
+ "block1_ntime_utc": "2026-08-04T22:36:53+00:00",
+ "binary": "cfb59606c032faa933d5007e85d36f4cfd02737fc4bc485ec2d8699aeacba5ac",
+ "screenshots_are_full_desktop": true,
+ "note": "Screenshots are uncropped 1920x1080 desktop captures and must be reviewed and cropped before any publication.",
  "files": [
   {
    "path": "EXECUTED_BINARY_BINDING_bitcoin-node-1_post.json",
@@ -25,6 +29,179 @@
    "path": "blk0001.dat",
    "bytes": 501,
    "sha256": "601b4f8db80942f1e43842482db4ea43ef76c205158ff2dd7a3ded536157b90e"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 024331.png",
+   "bytes": 157734,
+   "sha256": "f04a1439a1863a0821ab4895289007b38d3528b2850e57ab27c08f90bec85903",
+   "captured_utc": "2026-08-04T21:13:31+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 025804.png",
+   "bytes": 153056,
+   "sha256": "d0d9750144b011728d8f6ee8dde4e8a5a9d48c135c9b7cb82c712c4c9bca742a",
+   "captured_utc": "2026-08-04T21:28:04+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 025810.png",
+   "bytes": 164296,
+   "sha256": "43f0ec989c44549075700a119fbb6bc748fcb477f47f8f1b9786fe5d3916b1d1",
+   "captured_utc": "2026-08-04T21:28:10+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 030911.png",
+   "bytes": 154271,
+   "sha256": "e2fe0dae0e18b4aa99d50baae1ce0e881cc7df2a942d5db02420127cd7bde9f1",
+   "captured_utc": "2026-08-04T21:39:11+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 030950.png",
+   "bytes": 154310,
+   "sha256": "e624aec30e01e401dbf6f94f64b48f0710db33c6cd507fa5562d343342d7a306",
+   "captured_utc": "2026-08-04T21:39:50+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031310.png",
+   "bytes": 154312,
+   "sha256": "887647e57c5b043a0a74e402c641ab066f2b773a811ef476cdfde5830fe42e0f",
+   "captured_utc": "2026-08-04T21:43:10+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031320.png",
+   "bytes": 132517,
+   "sha256": "073d9450ba42cec11ea9ac92d4bd47de88b33f899270e479257cbe54b9abdaa7",
+   "captured_utc": "2026-08-04T21:43:20+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031409.png",
+   "bytes": 270037,
+   "sha256": "203ca570281b1b7f34277a7e293daea3d344d4d8cbc2c3965e36fe98f291f999",
+   "captured_utc": "2026-08-04T21:44:09+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031414.png",
+   "bytes": 268608,
+   "sha256": "5c290d69b37117f481b064ccf920287f0b5d94796250cc2428847dfbea469f99",
+   "captured_utc": "2026-08-04T21:44:14+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031417.png",
+   "bytes": 268515,
+   "sha256": "74b4e7437223835bc5692631c6100aee78b77d0d2927d3e659c2a3d4e4768ddc",
+   "captured_utc": "2026-08-04T21:44:17+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031423.png",
+   "bytes": 162521,
+   "sha256": "b36039f2fdb0831d9e92e36a6b6542b092ed3734399ef97d40d2dad265e16393",
+   "captured_utc": "2026-08-04T21:44:23+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031435.png",
+   "bytes": 166885,
+   "sha256": "a50bc89343755a30915844438a9760b65715ff4c19055bb333aaeacc05877354",
+   "captured_utc": "2026-08-04T21:44:35+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031448.png",
+   "bytes": 167332,
+   "sha256": "9693e1aebda802b2b25006443c16b15a8e2ea4c319f408064667419e94ca3ecf",
+   "captured_utc": "2026-08-04T21:44:48+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031457.png",
+   "bytes": 160361,
+   "sha256": "cac659085069aeea23bae98907b8d01626631d7ca02b20d31144b71f86115e44",
+   "captured_utc": "2026-08-04T21:44:57+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031504.png",
+   "bytes": 157684,
+   "sha256": "03655cbcd77ade375914f4fb90ba8501df4d74d3e52d242d589bee6c4bee970b",
+   "captured_utc": "2026-08-04T21:45:04+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 031509.png",
+   "bytes": 268585,
+   "sha256": "69e5fa1bdb1ce12cee86f85e371d4028392b158649a55780e9d2e6bd46a5a2a0",
+   "captured_utc": "2026-08-04T21:45:09+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 032253.png",
+   "bytes": 140166,
+   "sha256": "eca33a22287b1781b729bb7443549a999b2ded3f73a04d30470132dae348461d",
+   "captured_utc": "2026-08-04T21:52:53+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 032307.png",
+   "bytes": 268780,
+   "sha256": "fb5587660c49385b21a52e2cfdfc739961d820af7ef6892f3ac0b47bf5acb327",
+   "captured_utc": "2026-08-04T21:53:07+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 032416.png",
+   "bytes": 268771,
+   "sha256": "24e4339d9dd240237c72b735a53ee8b16b8305ba3e18e4b26f5e6aa923d1f9bb",
+   "captured_utc": "2026-08-04T21:54:16+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 041259.png",
+   "bytes": 270235,
+   "sha256": "a80aa5fd1dc68c560f160d7fd299679b14933bf8ea5ee1912d27e4398791afb6",
+   "captured_utc": "2026-08-04T22:42:59+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 041315.png",
+   "bytes": 162758,
+   "sha256": "ffa03442e5cf6d4209c7fd7bdb43216b09e7de9dee945861808f30f041d3116d",
+   "captured_utc": "2026-08-04T22:43:15+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 041408.png",
+   "bytes": 270325,
+   "sha256": "9d85782dcfdc81d76af76b7bce92f292ea595f3caa6d65f38fcc34e1950f70fa",
+   "captured_utc": "2026-08-04T22:44:08+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 041420.png",
+   "bytes": 273494,
+   "sha256": "53f617b63c513c65d9f822dfbf2f18d20a85c9261d2e3704db8d9fed05282f7d",
+   "captured_utc": "2026-08-04T22:44:20+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 041425.png",
+   "bytes": 279440,
+   "sha256": "3d6d52594c1f69a7d92707c6073cbe14314064f28cdf7a3867af1b6f17021a58",
+   "captured_utc": "2026-08-04T22:44:25+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 041435.png",
+   "bytes": 289393,
+   "sha256": "e1d052a8a5adfb329359959645e2350b6d96f096aea8ac230fb81ab8914c3158",
+   "captured_utc": "2026-08-04T22:44:35+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 041448.png",
+   "bytes": 276274,
+   "sha256": "a50c6c22e70318614e0eacab71d69dcb41bfc9cbc9d8aea1e6f935b69aac66e9",
+   "captured_utc": "2026-08-04T22:44:48+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 041522.png",
+   "bytes": 272564,
+   "sha256": "e23ca0649e6c49447d45b759580a8a132ec0cc0fab237373d99ed172edd1314b",
+   "captured_utc": "2026-08-04T22:45:22+00:00"
+  },
+  {
+   "path": "screenshots/Screenshot 2026-08-05 041627.png",
+   "bytes": 111886,
+   "sha256": "09177b350a4d3b3059be38a5555003114d6934a904b3a80988686b8ad9bda14c",
+   "captured_utc": "2026-08-04T22:46:27+00:00"
+  },
+  {
+   "path": "screenshots/WHAT_TO_CAPTURE.md",
+   "bytes": 1468,
+   "sha256": "6baa279bd9fa67a6494e270608917092cebb2bbe6fc6164314f5e38e8df9a7c4"
   }
  ]
 }

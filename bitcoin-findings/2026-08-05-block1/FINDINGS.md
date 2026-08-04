@@ -72,6 +72,31 @@ Raw bytes in `bitcoin-evidence/2026-08-05-block1/` (gitignored). Hashes in `SHA2
 | `EXECUTED_BINARY_BINDING_bitcoin-node-1_post.json` | same PID after — the pair brackets one process |
 | `addr.txt` | the 16 bytes that were the only possible route to a peer |
 
+### Screenshots
+
+28 desktop captures span the whole session, `21:13Z` to `22:46Z` — 19 before block 1 and 9 after.
+Their filenames carry local time (UTC+05:30); the manifest records each one's UTC instant, so the
+sequence is legible without knowing the operator's timezone. They corroborate the binding records
+from a second, independent direction:
+
+```
+21:13:31Z   first capture
+21:27:37Z   ── client process started (PID 2240), from the binding record
+21:28:04Z   two captures seconds later — the startup failures
+21:36:06Z   ── pre binding captured
+21:39–21:54 the client running: Generating · 1 connections · 1 blocks
+22:36:53Z   ── BLOCK 1, from the block header itself
+22:42–22:46 nine captures after
+```
+
+Nothing in that ordering was arranged; three independent sources — process metadata, screenshot
+timestamps, and the block's own `nTime` — agree.
+
+**These are uncropped 1920×1080 desktop captures** and are not publishable as they stand: they show
+host chrome and unrelated windows. They are raw evidence, hashed into the manifest, and must be
+cropped to the relevant window and reviewed before appearing anywhere, exactly as R3's were before
+their sanitised deposit.
+
 The wallet holding block 1's coinbase key is **not** here. It is in
 `OBL-BACKUP/01-keys-SECRET/bitcoin-chain-wallets/`, with the genesis key, and is never published.
 
