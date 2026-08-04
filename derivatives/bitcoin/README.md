@@ -55,7 +55,8 @@ The client asserts the genesis hash on startup, so a wrong build does not run.
 ## Not money
 
 No premine of value, no token, no sale, no market, no promises. The 50-coin genesis output has no
-value assigned. The consensus rules carry no `MoneyRange`, no block-size cap and no script limits —
+value assigned. The consensus rules carry no `MoneyRange` and no script limits, and no 1 MB block cap — that
+arrives in July 2010; here the only ceiling is `MAX_SIZE`, 32 MiB, which `CheckBlock` does enforce —
 safe here only because there is nothing to steal. Run the client in a VM.
 
 MIT. `license.txt` in the release is the source's own and is unmodified.

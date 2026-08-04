@@ -72,8 +72,9 @@ The binary is cross-compiled by full_build_wsl.sh against the period libraries (
 wxWidgets 2.8.12, Berkeley DB 4.8, Boost 1.42), statically linked, so it ships no DLLs.
 
 Consensus rules, script, difficulty, serialization, wallet and UI carry no guardrails: no
-MoneyRange, no block-size cap, no script limits. Safe here for one reason only -- there is
-nothing to steal.
+MoneyRange, no script limits, and no 1 MB block cap -- that arrives in July 2010. The one ceiling
+that does exist is MAX_SIZE, 32 MiB, enforced by CheckBlock. Safe here for one reason only --
+there is nothing to steal.
 
 Verify
 ------
