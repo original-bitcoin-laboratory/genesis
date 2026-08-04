@@ -25,17 +25,22 @@ A public node in one command: [`deploy/provision.sh`](deploy/provision.sh) (Ubun
 
 ## Mine
 
-The chain is at its genesis. Block 1 is unmined and anyone may take it.
+    height 0  00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a   3 Aug 2026
+    height 1  000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c   4 Aug 2026
 
-Blocks cost difficulty-1 work — about 2³² hashes — so the client's own miner takes minutes per
-block. There is nothing to buy, nothing to claim, and nothing owed to whoever mines first.
+Block 1 was mined by the released client itself and relayed to the seed, which validated and stored
+it with a different implementation. Block 2 onward are unmined and anyone may take them.
+
+Blocks cost difficulty-1 work — about 2³² hashes — so the client's own miner takes roughly an hour
+per block on one core. There is nothing to buy, nothing to claim, and nothing owed to whoever mines
+next.
 
 ## Build
 
 ```bash
 python make_chain.py                      # derive the client source
 SRC=$PWD/src bash ../build-reconstruction/full_build_wsl.sh
-bash make_release.sh                      # -> dist/bitcoin-0.1.1.tar.gz
+bash make_release.sh                      # -> dist/bitcoin-0.1.2.tar.gz
 ```
 
 `make_chain.py` composes the client source from two inputs: the v0.1.0 source tree, SHA256
