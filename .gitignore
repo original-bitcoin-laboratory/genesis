@@ -13,6 +13,8 @@
 /r3-evidence/
 /r4-stage/
 /r4-evidence/
+# Bitcoin chain: same rule -- raw captured bytes never enter the repo, only their hashes
+/bitcoin-evidence/
 
 # Redundant local bootstrap archive (scaffold is now materialized in-tree)
 /original-bitcoin-laboratory-bootstrap.zip
