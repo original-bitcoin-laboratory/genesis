@@ -2,6 +2,7 @@
 
 ```
 genesis   00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
+author    Satoshi Nakamoto   (holds the output key below)
 coinbase  The Times 03/Aug/2026 Toll of schooling 'straitjacket'
 output    50.00000000 -> P2PK 04c0414c…   (no value assigned)
 nTime     1785781375 = 2026-08-03 18:22:55 UTC
