@@ -143,11 +143,15 @@ converge for you.)*
 
 ## Part 3 — R4c: a relayed spend (OPTIONAL, overnight)
 
-Hard constraint: coinbase outputs are spendable only after **100 confirmations**, and there's no premine, so
-the first spendable coin appears at **block ~101** ≈ ~a day of difficulty-1 mining. Only do this if you want
-the tx-relay cell witnessed on the real binary.
+Hard constraint: coinbase outputs are spendable only after **120 confirmations — not 100.** `main.h` sets
+`COINBASE_MATURITY = 100`, but `main.cpp:544` returns `max(0, (COINBASE_MATURITY+20) - GetDepthInMainChain())`,
+so the wallet withholds a generated coin for twenty blocks beyond the constant. The GUI states it plainly —
+a coin 58 blocks deep reads *"matures in 62 blocks"*. There is no premine, so **the first spendable coin
+appears once the chain reaches ~height 120**, which at observed difficulty-1 rates (~50–90 min/block in a
+2-vCPU guest) is **two to three days of continuous mining**, not one. Only do this if you want the tx-relay
+cell witnessed on the real binary.
 
-1. On node B, mine **≥101 blocks** (leave it running overnight; node A receiver).
+1. On node B, mine until the chain is **≥120 blocks** (leave it running for days; node A receiver).
 2. Once block 1's coinbase has matured, on node B: **Send Coins** → pay node A (v0.1 supports pay-to-IP
    `172.20.0.1`, or send to a node-A address).
 3. Confirm the tx **relays** (`nodeA\debug.log`: `received tx …`) and is **mined into a block** (appears in a
