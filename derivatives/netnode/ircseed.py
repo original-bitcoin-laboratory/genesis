@@ -108,6 +108,14 @@ def run(host: str, port: int, channel: str, nick: str, once: bool = False) -> No
         try:
             print(f"-- connecting {host}:{port} as {nick}", flush=True)
             s = socket.create_connection((host, port), timeout=60)
+            # An IRC link is idle almost all of the time -- the server speaks when it PINGs, every
+            # couple of minutes, and otherwise says nothing for as long as nothing happens. A short
+            # read timeout therefore kills healthy connections on a timer: this ran on 60s and
+            # dropped every 60s, reconnected into its own not-yet-expired ghost, read that as
+            # "address already published" and gave up, 11 times in 20 minutes. Presence that is
+            # only sometimes present is worse than none, because the client that misses the window
+            # concludes the network is empty. Read timeout is generous; liveness comes from PING.
+            s.settimeout(600)
             f = s.makefile("rwb", buffering=0)
 
             def send(line: str) -> None:
@@ -152,12 +160,15 @@ def run(host: str, port: int, channel: str, nick: str, once: bool = False) -> No
                     s.close()
                     return
                 elif code in ("433", "436"):          # nick in use / collision
-                    # Another node is already advertising this exact address, which is harmless
-                    # but means our presence adds nothing. Say so rather than looping silently.
-                    print(f"!! {nick} already in the channel -- this address is already published",
+                    # Nearly always our own previous session, which the server has not yet reaped.
+                    # The nickname IS the address here, so taking a different one would publish
+                    # nothing -- the only correct move is to wait for the ghost to expire and come
+                    # back as ourselves.
+                    print(f"!! {nick} still held (ghost of a previous session); retrying in 90s",
                           flush=True)
                     s.close()
-                    return
+                    time.sleep(90)
+                    break
                 elif code in ("465", "464"):
                     print(f"!! refused by server: {line}", flush=True)
                     s.close()
