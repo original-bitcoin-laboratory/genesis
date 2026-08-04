@@ -4,8 +4,10 @@ Self-contained reconstruction of the **January 2009 Bitcoin v0.1.0** release —
 first publicly announced Bitcoin implementation (node + wallet + miner + validator
 + Script interpreter + P2P networking + database + a commerce/market subsystem). This is the
 principal **behavioral oracle** for "original Bitcoin", and its runnable `derivatives/`
-contain **both** reconstructions — the January 2009 `JAN09-X` and the 15 November 2008
-pre-release `NOV08-X`. (The sibling `pre-genesis` repo holds the November 2008 source
+contain both reconstructions — the January 2009 `JAN09-X` and the 15 November 2008
+pre-release `NOV08-X` — and, separately, the **Bitcoin** chain
+([`derivatives/bitcoin/`](derivatives/bitcoin/)), which runs this same client on a genesis of its
+own and is **not** a reconstruction. (The sibling `pre-genesis` repo holds the November 2008 source
 edition and its differential.)
 
 ## Quick start
