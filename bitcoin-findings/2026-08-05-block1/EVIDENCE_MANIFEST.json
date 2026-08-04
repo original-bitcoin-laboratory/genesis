@@ -1,0 +1,30 @@
+{
+ "run": "2026-08-05-block1",
+ "chain": "bitcoin",
+ "genesis": "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a",
+ "block1": "000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c",
+ "level": "BITCOIN-EXECUTED",
+ "not_money": true,
+ "files": [
+  {
+   "path": "EXECUTED_BINARY_BINDING_bitcoin-node-1_post.json",
+   "bytes": 987,
+   "sha256": "e5e5a96d27568763ba6d8d4f76f5a84cc8a301c45e88838589de8185d2dbd67e"
+  },
+  {
+   "path": "EXECUTED_BINARY_BINDING_bitcoin-node-1_pre.json",
+   "bytes": 986,
+   "sha256": "21dfaaeb30d25598955bb1a65f05d475327f4e4f74083bc9cae27f8464454b4c"
+  },
+  {
+   "path": "addr.txt",
+   "bytes": 16,
+   "sha256": "d3a2267dd877ab765e3418813f05d8b1cc18accc83c5ead893d7b30c27c8bae3"
+  },
+  {
+   "path": "blk0001.dat",
+   "bytes": 501,
+   "sha256": "601b4f8db80942f1e43842482db4ea43ef76c205158ff2dd7a3ded536157b90e"
+  }
+ ]
+}
