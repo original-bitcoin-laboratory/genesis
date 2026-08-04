@@ -33,7 +33,11 @@
     color:var(--brass);margin:44px 0 0;font-weight:600;display:flex;flex-wrap:wrap;align-items:baseline;gap:10px}
   .sec span{letter-spacing:0;text-transform:none;color:var(--ink-faint);font-size:12.5px;font-weight:400}
   .grid{margin-top:14px;display:grid;grid-template-columns:1fr;gap:14px}
-  @media(min-width:620px){.grid{grid-template-columns:1fr 1fr}}
+  @media(min-width:620px){
+    .grid{grid-template-columns:1fr 1fr}
+    /* an odd group leaves its last card stranded on a half-width row; let it span instead */
+    .grid > a.card:last-child:nth-child(odd){grid-column:1 / -1}
+  }
   a.card{display:block;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:14px;
     padding:20px 20px 18px;transition:border-color .16s,transform .16s}
   a.card:hover{border-color:var(--brass);transform:translateY(-2px)}
