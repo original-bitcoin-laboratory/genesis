@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# make_release.sh -- assemble bitcoin-0.1.1.tar.gz: the client binary, license.txt, readme.txt,
+# make_release.sh -- assemble bitcoin-0.1.2.tar.gz: the client binary, license.txt, readme.txt,
 # src/, and RELEASE.txt. The binary is statically linked, so it ships no DLLs.
 #
 # Run:  bash make_release.sh          (after make_chain.py and the build)
@@ -10,7 +10,7 @@ ORIG="$HERE/../../extracted/bitcoin"          # the verified source tree (for li
 SRC="$HERE/src"                                # derived tree from make_chain.py
 EXE="$HERE/build/bitcoin-0.1.0-reconstructed.exe"
 OUT="$HERE/dist"
-NAME="bitcoin-0.1.1"
+NAME="bitcoin-0.1.2"
 
 [ -d "$SRC" ]  || { echo "!! run: python make_chain.py"; exit 2; }
 [ -f "$EXE" ]  || { echo "!! build first: SRC=$SRC bash ../build-reconstruction/full_build_wsl.sh"; exit 2; }
@@ -22,24 +22,61 @@ cp    "$ORIG/readme.txt"      "$OUT/$NAME/readme.txt"       # unmodified
 cp    "$EXE"                  "$OUT/$NAME/bitcoin.exe"
 
 cat > "$OUT/$NAME/RELEASE.txt" <<'TXT'
-Bitcoin v0.1.1
+Bitcoin v0.1.2
 ==============
 
 The client, the chain and the protocol are unchanged from v0.1.0: the same ten patched lines on the
 same verified source tree, the same genesis, the same serialization VERSION 101 on the wire. A node
-built from either release speaks to a node built from the other. This is a build-level release.
+built from any of the three releases speaks to a node built from either other. This is a build-level
+release, the second one.
 
 What changed
 ------------
-v0.1.0's binary was compiled with absolute source paths, so it carried the builder's home directory
-in its .rodata -- every assert() and BOOST_ASSERT bakes __FILE__ in as a string literal. Satoshi's
-own bitcoin.exe carries none: he compiled `-c $<`, a relative filename, from inside src/, with his
-dependencies at short rooted paths. This build reproduces both properties, so the binary quotes its
-headers the way his does (/boost/boost/array.hpp) and says nothing about the machine that made it.
-full_build_wsl.sh now refuses to link if any build-machine path survives.
+The client was executed for the first time on 4 August 2026, to mine block 1. It mined it. It also
+showed two things three days of hashing and string-scanning had not: it wrote no debug.log, and
+wxWidgets logged "Can't load bitmap 'send20' from resources!" at startup.
 
-v0.1.0 remains published and its signature remains valid. Nothing about the chain is affected by
-this; if you are already running v0.1.0 you are on the same network and need not do anything.
+Both are divergences in how we built it, not in what it does. This release removes them.
+
+  * __WXDEBUG__ is now defined, and wxWidgets is rebuilt --enable-debug to match. The whole body of
+    OutputDebugStringF sits inside #ifdef __WXDEBUG__, so without it the client emits no diagnostic
+    output at all -- not to file, not to OutputDebugString. It now writes debug.log as the 2009
+    client does.
+
+  * windres ui.rc now runs, producing the .rsrc section with the eleven bitmaps and icons. Our
+    binary had no resource directory at all; the missing toolbar images were the visible symptom.
+
+  * -mthreads is set, as makefile:28 sets it. On MinGW it selects thread-safe C++ exception handling
+    and the _beginthreadex runtime. This client runs five threads.
+
+  * sha.cpp is compiled -O3, overriding the -O0 every other unit gets, exactly as his makefile does.
+    It is the mining inner loop.
+
+Reading the makefile is not what settled this. It takes BUILD=debug|release and defaults to debug,
+but `make BUILD=release` is an equally legal build of the same tree, so the default is suggestive
+and nothing more. What settled it was measuring the released 2009 binary, sha256 fbcac071...:
+
+    "debug.log"                     7 occurrences   (and that literal occurs in exactly one place
+                                                     in the whole source: util.h:236, inside the
+                                                     #ifdef -- there is no other way in)
+    'assert "%s" failed'            1
+    ../../include/wx/*.h paths     24 distinct      (__FILE__ expansions from wxASSERT in wx inline
+                                                     headers; they vanish without __WXDEBUG__)
+    .rsrc PE section                present
+
+Our v0.1.1 binary had none of the first three and no .rsrc. His client is a debug build; ours was
+not. Full working: docs/BUILD_FIDELITY.md.
+
+One divergence is left in place and disclosed rather than fixed. He linked OpenSSL and the MinGW
+runtime dynamically and shipped libeay32.dll and mingwm10.dll beside the executable; this binary is
+static and ships neither. DLLs we shipped could not be his -- ours come from a modern mingw-w64 --
+so matching the shape would buy a resemblance while adding two files that must survive intact for
+the client to start. One self-contained executable is the more durable form, and no peer can
+observe the difference.
+
+v0.1.0 and v0.1.1 remain published and their signatures remain valid. Nothing about the chain is
+affected: consensus, the wire format and the genesis are untouched, and block 1 was mined and
+relayed by the v0.1.1 binary. If you are running either, you are on the same network.
 
 Genesis
 -------
@@ -57,9 +94,15 @@ Network
 
 Mining
 ------
-The chain is at its genesis. Block 1 is unmined and anyone may take it. Blocks cost difficulty-1
-work -- about 2^32 hashes -- so the client's own miner takes minutes per block. There is nothing
-to buy, nothing to claim, and nothing owed to whoever mines first.
+  height 0  00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a   3 Aug 2026
+  height 1  000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c   4 Aug 2026
+
+Block 1 was mined by the v0.1.1 client, from this distribution, and relayed to the seed, which
+validated and stored it with a different implementation. Block 2 onward are unmined and anyone may
+take them. Blocks cost difficulty-1 work -- about 2^32 hashes -- so the client's own miner takes
+roughly an hour per block on one core. There is nothing to buy, nothing to claim, and nothing owed
+to whoever mines next.
+
 
 Build
 -----

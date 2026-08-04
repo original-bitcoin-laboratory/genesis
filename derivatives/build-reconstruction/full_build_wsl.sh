@@ -24,6 +24,26 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="${SRC:-$HERE/../../extracted/bitcoin/src}"
 W="${WORK:-$HOME/obl-period}"; mkdir -p "$W"
 X=i686-w64-mingw32; GXX="$X-g++"; NP="$(nproc)"
+
+# Satoshi's src/makefile takes BUILD=debug|release and DEFAULTS TO DEBUG:
+#   ifneq "$(BUILD)" "debug" / ifneq "$(BUILD)" "release" / BUILD=debug
+#   ifeq "$(BUILD)" "debug"  ->  D=d ; DEBUGFLAGS=-g -D__WXDEBUG__
+# We take the same variable with the same default, because the released bitcoin.exe
+# (fbcac071...) is demonstrably a DEBUG build. Three markers, measured from his binary
+# against ours:
+#   * "debug.log"                  7 occurrences vs 0 -- and that literal exists in exactly
+#                                  one place in the whole source, util.h:236, inside #ifdef __WXDEBUG__
+#   * 'assert "%s" failed'         1 vs 0
+#   * ../../include/wx/*.h paths   24 distinct vs 0 -- __FILE__ expansions from wxASSERT in
+#                                  wx inline headers, which vanish unless __WXDEBUG__ is set
+# Reading the makefile alone would suggest the opposite conclusion is arguable, since
+# `make BUILD=release` is a legal build of the same tree. It is not arguable: the shipped
+# artifact settles it. A release build here is a divergence, not a tidier binary.
+BUILD="${BUILD:-debug}"
+case "$BUILD" in debug|release) ;; *) BUILD=debug ;; esac
+if [ "$BUILD" = debug ]; then DEBUGFLAGS="-g -D__WXDEBUG__"; WXDBG="--enable-debug"
+else DEBUGFLAGS=""; WXDBG="--disable-debug"; fi
+echo "== BUILD=$BUILD (DEBUGFLAGS='${DEBUGFLAGS:-none}') =="
 command -v "$GXX" >/dev/null || { echo "!! install: sudo apt-get install -y gcc-mingw-w64-i686 g++-mingw-w64-i686"; exit 2; }
 [ -d "$SRC" ] || { echo "!! extract the R0-verified bitcoin-0.1.0 archive at extracted/ first"; exit 2; }
 
@@ -48,11 +68,16 @@ get "https://github.com/wxWidgets/wxWidgets/releases/download/v2.8.12/wxWidgets-
     wxWidgets-2.8.12.tar.gz 197c94f7d46269a7fc261a3c8c943f03a9807acf65381944489a538fd8b5dd21
 WX="$W/wxWidgets-2.8.12"; [ -d "$WX" ] || tar xzf "$W/wxWidgets-2.8.12.tar.gz" -C "$W"
 grep -q obl-direct-fix "$WX/include/wx/filefn.h" || sed -i "1i // obl-direct-fix\n#include <direct.h>" "$WX/include/wx/filefn.h"
-if [ ! -f "$WX/lib/libwx_base-2.8-$X.a" ]; then ( cd "$WX"
-  ./configure --host=$X --build=x86_64-pc-linux-gnu --disable-shared --disable-unicode \
-    --without-opengl --disable-mediactrl CXXFLAGS="-std=gnu++98 -include direct.h -w" CFLAGS="-std=gnu89 -w" >/dev/null 2>&1
+# __WXDEBUG__ cannot be set on the application alone: wx 2.8 inline code compiled into our
+# translation units must agree with the library it links, or the two disagree about asserts
+# and layout. Each BUILD therefore gets its own wx, built out-of-tree side by side -- which is
+# also what Satoshi linked: -I"/wxWidgets/lib/vc_lib/mswd" is the DEBUG setup directory, and
+# his LIBS read -l wxmsw28$(D)_core with D=d.
+WXB="$WX/bld-$BUILD"
+if [ ! -f "$WXB/lib/libwx_base-2.8-$X.a" ]; then mkdir -p "$WXB"; ( cd "$WXB"
+  ../configure --host=$X --build=x86_64-pc-linux-gnu --disable-shared --disable-unicode $WXDBG     --without-opengl --disable-mediactrl CXXFLAGS="-std=gnu++98 -include direct.h -w" CFLAGS="-std=gnu89 -w" >/dev/null 2>&1
   make -j"$NP" >/dev/null 2>&1 ); fi
-echo "   $(ls "$WX"/lib/libwx*.a | wc -l) wx libs OK"
+echo "   $(ls "$WXB"/lib/libwx*.a 2>/dev/null | wc -l) wx libs OK ($BUILD)"
 
 echo "-- [3/5] Berkeley DB 4.8.30.NC (4.7-API-compatible; modern-gcc atomic patches) --"
 get "https://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz" db-4.8.30.NC.tar.gz \
@@ -100,16 +125,43 @@ MAP="$MAP -ffile-prefix-map=$OSSL=/OpenSSL"
 MAP="$MAP -ffile-prefix-map=$WX=/wxWidgets"
 MAP="$MAP -ffile-prefix-map=$BOOST=/boost"
 
-INC="$($WX/wx-config --cxxflags) -I$OSSL/include -I$BDB/build_unix -I$BOOST -I."
+# Satoshi's CFLAGS, verbatim from src/makefile line 28:
+#   CFLAGS=-mthreads -O0 -w -Wno-invalid-offsetof -Wformat $(DEBUGFLAGS) $(WXDEFS) $(INCLUDEPATHS)
+# -mthreads is not cosmetic on MinGW -- it selects thread-safe C++ exception handling and the
+# _beginthreadex-based runtime, and this client runs five threads (socket handler, IRC seed,
+# message handler, miner, UI). Building a threaded app without it is a real divergence.
+WXDEFS="-DWIN32 -D__WXMSW__ -D_WINDOWS -DNOPCH"
+CFLAGS="-mthreads -O0 -w -Wno-invalid-offsetof -Wformat $DEBUGFLAGS $WXDEFS"
+INC="$($WXB/wx-config --cxxflags) -I$OSSL/include -I$BDB/build_unix -I$BOOST -I."
 ( cd "$SRC"
-  for f in sha util script net irc db market main uibase ui; do
-    $CXX $MAP $INC -c "$f.cpp" -o "$OB/$f.o"; echo "   compiled $f.cpp"
-  done )
+  for f in util script net irc db market main uibase ui; do
+    $CXX $CFLAGS $MAP $INC -c "$f.cpp" -o "$OB/$f.o"; echo "   compiled $f.cpp"
+  done
+  # sha.cpp alone is compiled -O3 in his makefile, overriding the -O0 that applies to every
+  # other unit. It is the mining inner loop; leaving it at -O0 would be faithful to the flag
+  # list and unfaithful to the artifact.
+  $CXX $CFLAGS -O3 $MAP $INC -c sha.cpp -o "$OB/sha.o"; echo "   compiled sha.cpp (-O3)"
+  # obj/ui_res.o: windres ui.rc -- the toolbar bitmaps, the icons, the cursor. Omitting this
+  # is why the client logged "Can't load bitmap 'send20' from resources" on first execution
+  # and why our binary had no .rsrc section at all where his has one.
+  $X-windres $WXDEFS $($WXB/wx-config --cxxflags) -I. -o "$OB/ui_res.o" -i ui.rc
+  echo "   windres ui.rc -> ui_res.o" )
 cd "$OB"
 OUT="${OUTDIR:-$OB}"
-$GXX -std=gnu++98 *.o $($WX/wx-config --libs) -L"$OSSL" -lcrypto -L"$BDB/build_unix" -ldb_cxx-4.8 \
-  -lws2_32 -lmswsock -lole32 -loleaut32 -luuid -static -static-libgcc -static-libstdc++ \
-  -o "$OUT/bitcoin-0.1.0-reconstructed.exe"
+# His link line: g++ $(CFLAGS) -mwindows -Wl,--subsystem,windows -o $@ $(LIBPATHS) $(OBJS) $(LIBS)
+# The GUI subsystem was already correct here -- wx-config --libs supplies -mwindows, and both
+# binaries measure subsystem=2 -- but it is now stated rather than inherited, and -mthreads is
+# carried to the link as his CFLAGS do.
+#
+# -static is a DELIBERATE and DISCLOSED divergence. He linked OpenSSL and the MinGW runtime
+# dynamically and shipped libeay32.dll + mingwm10.dll beside the exe; we link everything in.
+# Not corrected, for a reason about the artifact outliving us: DLLs we ship could not be his
+# DLLs anyway -- ours would come from Ubuntu's mingw-w64, not his MinGW -- so matching the
+# structure buys a resemblance while adding two more files that must survive intact for the
+# client to start at all. One self-contained executable is the more durable form and changes
+# nothing a peer can observe. Recorded in RELEASE.txt, and it is why capture_binding.ps1
+# reports libeay32.dll / mingwm10.dll as "absent - statically linked build".
+$GXX -std=gnu++98 -mthreads -mwindows -Wl,--subsystem,windows *.o $($WXB/wx-config --libs) -L"$OSSL" -lcrypto -L"$BDB/build_unix" -ldb_cxx-4.8 -lws2_32 -lmswsock -lole32 -loleaut32 -luuid -static -static-libgcc -static-libstdc++ -o "$OUT/bitcoin-0.1.0-reconstructed.exe"
 echo
 echo "BUILT: $OUT/bitcoin-0.1.0-reconstructed.exe ($(stat -c%s "$OUT/bitcoin-0.1.0-reconstructed.exe") bytes)"
 # Hard gate: the shipped binary must carry no trace of the machine that built it. Satoshi's
