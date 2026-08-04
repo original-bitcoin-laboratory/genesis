@@ -116,12 +116,34 @@ ever moves, the name follows it — so prefer the name, and the reproducible rec
 first, because it behaves like software from 2009, which is the point.
 
 It has **no `-connect` and no `-addnode`**. Reading `mapArgs` in `ui.cpp`, the switches it honours are
-`/datadir /proxy /debug /dropmessages /loadblockindextest /printblockindex /gen /randsendtest`, and it
-learns peer addresses from only three places: `addr.dat` from a previous run, `addr` messages from a
-peer it already has, and **IRC**. On a fresh install all three collapse to the last one.
+`/datadir /proxy /debug /dropmessages /loadblockindextest /printblockindex /gen /randsendtest`. But it
+learns peer addresses from **four** places, not three, and the fourth is the one that matters if you
+are reading this long after 2026:
+
+| source | `main.cpp` / `db.cpp` | works on a fresh install? |
+|---|---|---|
+| `addr.txt` — a plain text file you write | `CAddrDB::LoadAddresses`, "Load user provided addresses" | **yes** |
+| IRC channel names | `irc.cpp:225` | yes |
+| `addr` messages from a peer you already have | `main.cpp:1759` | no |
+| `addr.dat` from a previous run | `db.cpp:419` | no |
 
 So on startup it resolves `chat.freenode.net`, joins `#bitcoin26`, and reads the channel for names it
-can decode into addresses — which is how it finds our seed, and how any other node finds you.
+can decode into addresses — which is how it finds our seed by default, and how any other node finds
+you.
+
+**If IRC is unavailable — blocked, or Freenode simply gone — put a file called `addr.txt` next to
+`bitcoin.exe`** containing one address per line:
+
+```
+168.144.27.117
+```
+
+`CAddrDB::LoadAddresses` reads it before anything else, and `CAddress`'s string constructor defaults
+the port to `DEFAULT_PORT`, which this build has already patched to 18026 — so the bare IP is enough.
+No switch, no eleventh line, no dependency on a third party outliving the chain.
+
+*(Source-derived, not yet executed: read from `db.cpp` and `net.h`. It will be exercised and the
+result recorded when block 1 is mined.)*
 
 **It announces itself the same way.** Its nickname is `EncodeAddress(addrLocalHost)`: your own routable
 address, base58‑encoded, published into a public channel on infrastructure nobody here operates, where
