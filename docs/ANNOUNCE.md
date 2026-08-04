@@ -142,8 +142,12 @@ you.
 the port to `DEFAULT_PORT`, which this build has already patched to 18026 — so the bare IP is enough.
 No switch, no eleventh line, no dependency on a third party outliving the chain.
 
-*(Source-derived, not yet executed: read from `db.cpp` and `net.h`. It will be exercised and the
-result recorded when block 1 is mined.)*
+*(**Executed 5 August 2026.** A fresh Windows guest was firewalled to allow outbound TCP to the seed
+and nothing else — `Test-NetConnection 1.1.1.1 -Port 53` failed, so `chat.freenode.net` was
+unreachable by construction and no IRC bootstrap was possible. With a 16-byte `addr.txt` containing
+the bare address beside `bitcoin.exe`, the client opened and held a session to the seed, observed
+from the seed side as an established connection to `168.144.27.117:18026`. `addr.txt` is therefore
+the only path by which it could have learned that address.)*
 
 **It announces itself the same way.** Its nickname is `EncodeAddress(addrLocalHost)`: your own routable
 address, base58‑encoded, published into a public channel on infrastructure nobody here operates, where
