@@ -82,7 +82,7 @@ seed.bitcoin-lab.org:18008      NOV08‑X  (15 Nov 2008 pre‑release · magic f
 bitcoin.bitcoin-lab.org:18026   Bitcoin  (its own genesis 00000000ad12f3ec… · magic f00ba726 · difficulty‑1)
 ```
 
-Both experimental, both **NOT money**. Join in **one command** with the prebuilt image — or clone and
+All three experimental, all **NOT money**. Join in **one command** with the prebuilt image — or clone and
 run from source:
 
 ```bash
@@ -109,6 +109,31 @@ This anchor is a **convenience, not an authority**: it can disappear tomorrow an
 the genesis is reproducible forever from `scripts/verify_genesis.py`, and any node you run is an equal
 peer. The name `seed.bitcoin-lab.org` resolves to the anchor (`143.110.255.205` today); if the anchor
 ever moves, the name follows it — so prefer the name, and the reproducible recipe over both. **Not money.**
+
+### Or join Bitcoin with the released 2009 client
+
+`bitcoin-0.1.1.tar.gz` ships the actual client, and it will find the network on its own — but read this
+first, because it behaves like software from 2009, which is the point.
+
+It has **no `-connect` and no `-addnode`**. Reading `mapArgs` in `ui.cpp`, the switches it honours are
+`/datadir /proxy /debug /dropmessages /loadblockindextest /printblockindex /gen /randsendtest`, and it
+learns peer addresses from only three places: `addr.dat` from a previous run, `addr` messages from a
+peer it already has, and **IRC**. On a fresh install all three collapse to the last one.
+
+So on startup it resolves `chat.freenode.net`, joins `#bitcoin26`, and reads the channel for names it
+can decode into addresses — which is how it finds our seed, and how any other node finds you.
+
+**It announces itself the same way.** Its nickname is `EncodeAddress(addrLocalHost)`: your own routable
+address, base58‑encoded, published into a public channel on infrastructure nobody here operates, where
+anyone present can read it and the servers keep logs. `ThreadIRCSeed` starts unconditionally and there
+is no `-noirc`; the only lever is the client's own `/proxy`, which leaves the local address unroutable
+so the nickname falls back to a random value. There is no transport encryption, no authentication, and
+`wallet.dat` is written in the clear. **Run it in an isolated VM.**
+
+```
+verify first:  sha256  135134d63e7980c5496d6d9dad22c0a9d8c2c021a3708fec5004ca20eea8885e
+then:          bitcoin.exe          # add /gen to mine
+```
 
 ## The one rule that makes all of this safe
 

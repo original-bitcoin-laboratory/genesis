@@ -61,7 +61,19 @@
   .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
   a{color:var(--focus)}
   @media(max-width:520px){.row{grid-template-columns:1fr;gap:2px}}
-</style>
+
+  .lab-footer{max-width:860px;margin:56px auto 40px;padding:20px clamp(16px,4vw,28px) 0;
+    border-top:1px solid var(--line,#2a2a2a);font-family:var(--mono,ui-monospace,monospace);
+    font-size:12px;line-height:1.75;color:var(--ink-faint,#8a8a8a);text-align:center}
+  .lab-footer .lf-brand{letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim,#b0b0b0);
+    font-size:11px;margin-bottom:10px}
+  .lab-footer p{margin:3px 0}
+  .lab-footer .lf-h{color:var(--ink-dim,#b0b0b0)}
+  .lab-footer b{color:var(--brass,#c79a3a);font-weight:600}
+  .lab-footer a{color:var(--ink-faint,#8a8a8a);text-decoration:none;
+    border-bottom:1px solid var(--line-strong,#3a3a3a)}
+  .lab-footer a:hover{color:var(--ink,#e8e8e8);border-color:var(--brass,#c79a3a)}
+  </style>
 
 <div class="wrap">
   <p class="eyebrow">Original Bitcoin Laboratory</p>
@@ -113,13 +125,23 @@
 </div>
 
 <script data-goatcounter="https://parthod0x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-<footer style="max-width:820px;margin:44px auto 40px;padding:18px clamp(15px,4vw,26px) 0;border-top:1px solid var(--line);
-  font-family:var(--mono);font-size:12px;line-height:1.75;color:var(--ink-faint);text-align:center">
-  <div style="letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);font-size:11px;margin-bottom:8px">
-    <a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none">◆ Original Bitcoin Laboratory</a></div>
-  <div>Genesis <span style="color:var(--ink-dim)">000000000019d668…0a8ce26f</span> · 3 January 2009</div>
-  <div><a href="https://github.com/original-bitcoin-laboratory/genesis" style="color:var(--ink-faint)">source</a> ·
-    faithful reconstruction — <b style="color:var(--brass)">NOT money</b> · no warranty</div>
+<footer class="lab-footer" aria-label="provenance and license">
+  <div class="lf-brand"><a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none;border:0">◆ Original Bitcoin Laboratory</a></div>
+  <p class="lf-anchor">Anchored to block <b>0</b> · 3 January 2009 ·
+    <span class="lf-h">000000000019d668…0a8ce26f</span><span class="lf-tips" hidden> ·
+    live lab chains: <span class="lf-h" id="lf-jan">jan09x&nbsp;—</span> ·
+    <span class="lf-h" id="lf-nov">nov08x&nbsp;—</span> ·
+    <span class="lf-h" id="lf-btc">bitcoin&nbsp;—</span></span></p>
+  <p class="lf-links">
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.5.0-experimental">v0.5.0-experimental</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.1">Bitcoin-v0.1.1</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md">source · verify</a> ·
+    <a href="parthod0x-signing-key.asc" title="ed25519 release-signing key">key B128&nbsp;526A…B78C&nbsp;F1DA</a>
+    <a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA"
+       title="the same key from a keyserver, so the key and the release do not come from one host">keyserver</a>
+  </p>
+  <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
+    · reconstructions + Bitcoin — <b>NOT money</b> · no warranty</p>
 </footer>
 
 <script>
@@ -235,4 +257,17 @@ Object.keys(GENESES).forEach(k=>{
 });
 document.getElementById('headline').addEventListener('input',run);
 paint();
+</script>
+<script>
+  (function () {
+    var S = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
+    fetch(S, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.chains) return;
+      var j = d.chains.jan09x, n = d.chains.nov08x, b = d.chains.bitcoin, any = false;
+      if (j && typeof j.height === "number") { document.getElementById("lf-jan").textContent = "jan09x #" + j.height.toLocaleString(); any = true; }
+      if (n && typeof n.height === "number") { document.getElementById("lf-nov").textContent = "nov08x #" + n.height.toLocaleString(); any = true; }
+      if (b && typeof b.height === "number") { var e = document.getElementById("lf-btc"); if (e) e.textContent = "bitcoin #" + b.height.toLocaleString(); any = true; }
+      if (any) { var t = document.querySelector(".lab-footer .lf-tips"); if (t) t.hidden = false; }
+    }).catch(function () {});
+  })();
 </script>
