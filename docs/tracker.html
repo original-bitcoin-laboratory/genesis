@@ -349,7 +349,8 @@ render();
   <p class="lf-anchor">Anchored to block <b>0</b> · 3 January 2009 ·
     <span class="lf-h">000000000019d668…0a8ce26f</span><span class="lf-tips" hidden> ·
     live lab chains: <span class="lf-h" id="lf-jan">jan09x&nbsp;—</span> ·
-    <span class="lf-h" id="lf-nov">nov08x&nbsp;—</span></span></p>
+    <span class="lf-h" id="lf-nov">nov08x&nbsp;—</span> ·
+    <span class="lf-h" id="lf-btc">bitcoin&nbsp;—</span></span></p>
   <p class="lf-links">
     <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.5.0-experimental">v0.5.0-experimental</a> ·
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md">source · verify</a> ·
@@ -376,9 +377,10 @@ render();
     var S = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
     fetch(S, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       if (!d || !d.chains) return;
-      var j = d.chains.jan09x, n = d.chains.nov08x, any = false;
+      var j = d.chains.jan09x, n = d.chains.nov08x, b = d.chains.bitcoin, any = false;
       if (j && typeof j.height === "number") { document.getElementById("lf-jan").textContent = "jan09x #" + j.height.toLocaleString(); any = true; }
       if (n && typeof n.height === "number") { document.getElementById("lf-nov").textContent = "nov08x #" + n.height.toLocaleString(); any = true; }
+      if (b && typeof b.height === "number") { var e = document.getElementById("lf-btc"); if (e) e.textContent = "bitcoin #" + b.height.toLocaleString(); any = true; }
       if (any) { var t = document.querySelector(".lab-footer .lf-tips"); if (t) t.hidden = false; }
     }).catch(function () {});
   })();
