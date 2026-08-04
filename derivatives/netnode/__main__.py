@@ -120,7 +120,9 @@ def main(argv=None):
     ap.add_argument("--connect", action="append", default=[],
                     help="host:port of a peer to connect to (repeatable)")
     ap.add_argument("--advertise", default=None,
-                    help="this node's reachable host, gossiped to peers (default: the listen host)")
+                    help="this node's reachable host(s), gossiped to peers; comma-separate to "
+                         "advertise more than one family, e.g. 1.2.3.4,2001:db8::1 "
+                         "(default: the listen host)")
     ap.add_argument("--mine", action="store_true", help="mine blocks")
     ap.add_argument("--mine-interval", type=float, default=2.0)
     ap.add_argument("--min-difficulty", default=None, metavar="NBITS",

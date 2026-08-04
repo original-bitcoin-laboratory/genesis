@@ -161,7 +161,8 @@ class Node:
         self._closing = False
         self._inbound_count = 0
         self.port = None
-        self.advertise = None                        # our own dialable (host, port), if listening
+        self.advertise = None                        # primary dialable (host, port), if listening
+        self.advertise_addrs: list[tuple[str, int]] = []   # every family we are reachable on
         self._self_ids: set[tuple[str, int]] = set()  # every (addr, port) form that is us
         self.peers = PeerDB(max_addrs=max_known_addrs)   # persisted, diversity-aware peer table
         self._peers_path = self.datadir / "peers.json"
@@ -180,7 +181,7 @@ class Node:
 
     def _learn_addr(self, addr) -> bool:
         """Record a gossiped peer, bounded per-/16 and in total (anti-eclipse). Returns True if new."""
-        if addr == self.advertise:
+        if addr in self._self_ids:
             return False
         return self.peers.add(addr)
 
@@ -270,18 +271,25 @@ class Node:
             self._server = await asyncio.start_server(
                 self._inbound, None if dual else bind, self.listen[1])
             self.port = self._server.sockets[0].getsockname()[1]
-            host = self.advertise_host or (bind if bind not in ("0.0.0.0", "::", "*", "") else None)
-            if host:
-                self.advertise = (host, self.port)
+            hosts = [h.strip() for h in (self.advertise_host or "").split(",") if h.strip()]
+            if not hosts and bind not in ("0.0.0.0", "::", "*", ""):
+                hosts = [bind]
+            # A dual-stack node is reachable on more than one address; gossip every one, so an
+            # IPv6-only peer learns a route it can actually use. Chains whose addr format cannot
+            # express a family simply drop those entries when encoding.
+            self.advertise_addrs = [(h, self.port) for h in hosts]
+            if hosts:
+                self.advertise = (hosts[0], self.port)
                 # Peers gossip us by whatever form they dialled -- a hostname as readily as an IP.
                 # Comparing only the advertised string lets `seed.example:PORT` past the self-check
                 # and the node dials itself, burning an outbound slot. Resolve once and remember
                 # every form that is us.
-                self._self_ids = {self.advertise}
+                self._self_ids = set(self.advertise_addrs)
                 try:
-                    for info in await asyncio.get_running_loop().getaddrinfo(
-                            host, self.port, type=socket.SOCK_STREAM):
-                        self._self_ids.add((info[4][0], self.port))
+                    for h in hosts:
+                        for info in await asyncio.get_running_loop().getaddrinfo(
+                                h, self.port, type=socket.SOCK_STREAM):
+                            self._self_ids.add((info[4][0], self.port))
                 except OSError:
                     pass
             fams = {s.family.name for s in self._server.sockets}
@@ -310,7 +318,7 @@ class Node:
     # -- connections -----------------------------------------------------------
     def _dial(self, host, port):
         addr = (host, int(port))
-        if addr == self.advertise or addr in self._dialing or len(self._dialing) >= self.max_peers:
+        if addr in self._self_ids or addr in self._dialing or len(self._dialing) >= self.max_peers:
             return
         if not (host == "localhost" or host.startswith("127.") or host == "::1"):
             g = group_of(host)                       # anti-eclipse: cap outbound per /16 (routable only)
@@ -382,7 +390,7 @@ class Node:
                 pass
 
     def _addr_sample(self):
-        addrs = [self.advertise] if self.advertise else []
+        addrs = list(self.advertise_addrs)
         addrs += self.peers.sample(MAX_ADDRS_PER_MSG - len(addrs), exclude=addrs,
                                    per_group=max(2, MAX_ADDRS_PER_MSG // 4))
         return addrs[:MAX_ADDRS_PER_MSG]

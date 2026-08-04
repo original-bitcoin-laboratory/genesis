@@ -129,6 +129,24 @@ def test_addr_formats_are_per_chain_and_distinct():
     assert encode_addrs_v01(sample) != encode_addrs(sample)
 
 
+def test_advertise_carries_every_family():
+    """A dual-stack node gossips each address it is reachable on, so an IPv6-only peer learns a
+    route it can use. The v0.1 addr encoding drops what it cannot express -- see WIRE_SURFACE."""
+    import livenode
+    n = Node.__new__(Node)
+    n.port = 18009
+    n.advertise_addrs = [("1.2.3.4", 18009), ("2001:db8::1", 18009)]
+    n.peers = type("P", (), {"sample": lambda *a, **k: []})()
+    assert n._addr_sample() == [("1.2.3.4", 18009), ("2001:db8::1", 18009)]
+
+    both = livenode.encode_addrs(n.advertise_addrs)            # the X-chains' ascii form
+    assert livenode.decode_addrs(both) == n.advertise_addrs    # carries IPv6 fine
+
+    v01 = livenode.encode_addrs_v01(n.advertise_addrs)         # v0.1 CAddress: IPv4 only
+    assert v01[0] == 1
+    assert livenode.decode_addrs_v01(v01) == [("1.2.3.4", 18009)]
+
+
 def test_wire_rejects_bad_magic():
     async def go():
         await read_message(await _fed(frame("ping", b"x", b"OTHR")), TESTMAGIC)

@@ -36,9 +36,15 @@ async def _run(cfg, zone, seeds, listen, interval):
         print(f"[dnsseed:{cfg.key}] {m}", flush=True)
 
     crawler = Crawler(cfg.magic, cfg.port, seeds)
-    transport = await serve(listen[0], listen[1], zone, crawler.healthy_hosts, log=log)
-    bound = transport.get_extra_info("sockname")
-    log(f"authoritative for {zone!r} on {bound[0]}:{bound[1]} — NOT money")
+    # Bind each requested address. A dual-stack seed needs one endpoint per family: binding
+    # `::` would also claim IPv4 on this host and collide with systemd-resolved's 127.0.0.53.
+    transports = []
+    for host in listen[0]:
+        transports.append(await serve(host, listen[1], zone, crawler.healthy_hosts, log=log))
+    transport = transports[0]
+    where = ", ".join(f"{t.get_extra_info('sockname')[0]}:{t.get_extra_info('sockname')[1]}"
+                      for t in transports)
+    log(f"authoritative for {zone!r} on {where} — NOT money")
 
     async def crawl_loop():
         while True:
@@ -62,14 +68,16 @@ def main(argv=None):
     ap.add_argument("--zone", required=True, help="the seed hostname we answer A/AAAA queries for")
     ap.add_argument("--seed", action="append", default=[], required=True,
                     help="host:port of a known node to crawl from (repeatable)")
-    ap.add_argument("--listen", default="0.0.0.0:5354", help="UDP host:port to bind the DNS server")
+    ap.add_argument("--listen", default="0.0.0.0:5354",
+                    help="UDP host:port to bind; comma-separate hosts to serve both families, "
+                         "e.g. 203.0.113.9,2001:db8::9:53")
     ap.add_argument("--interval", type=float, default=60.0, help="seconds between crawls")
     args = ap.parse_args(argv)
 
     cfg = CHAINS[args.chain]
     seeds = [_hostport(s, "127.0.0.1", cfg.port) for s in args.seed]
     lh, lp = args.listen.rsplit(":", 1)
-    listen = (lh or "0.0.0.0", int(lp))
+    listen = ([h.strip() for h in lh.split(",") if h.strip()] or ["0.0.0.0"], int(lp))
 
     if sys.platform.startswith("win"):
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
