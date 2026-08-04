@@ -92,10 +92,21 @@ from a second, independent direction:
 Nothing in that ordering was arranged; three independent sources — process metadata, screenshot
 timestamps, and the block's own `nTime` — agree.
 
-**These are uncropped 1920×1080 desktop captures** and are not publishable as they stand: they show
-host chrome and unrelated windows. They are raw evidence, hashed into the manifest, and must be
-cropped to the relevant window and reviewed before appearing anywhere, exactly as R3's were before
-their sanitised deposit.
+**Twenty-eight of the twenty-nine are 1920×1080 host-desktop captures** showing host chrome and
+unrelated windows. The twenty-ninth (`Annotation … 041506.png`, 1024×768) is the guest's own screen
+and shows only the VM.
+
+**Policy: screenshots are local evidence and are excluded from published deposits.** Not cropped —
+excluded. That is what was actually done for R3: its sanitised deposit,
+`obl-historical-binary-evidence.zip`, contains 47 entries and **zero images**. Two reasons it is the
+right rule rather than a lazy one. Cropping is a judgment about what a picture contains, and a
+mistake is unrecoverable once published; exclusion has no such failure mode. And the screenshots are
+corroborative, not load-bearing — the proof is in `blk0001.dat`, the binding pair and the seed's
+independent copy, none of which can carry incidental content.
+
+They remain hashed in the manifest, so their integrity is fixed and their existence is on the record.
+For future runs, capture from **inside** the guest (VirtualBox *View → Take Screenshot*), which
+yields guest-only images publishable by construction — as the 1024×768 one already is.
 
 The wallet holding block 1's coinbase key is **not** here. It is in
 `OBL-BACKUP/01-keys-SECRET/bitcoin-chain-wallets/`, with the genesis key, and is never published.
