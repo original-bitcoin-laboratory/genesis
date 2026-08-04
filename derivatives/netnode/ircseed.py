@@ -133,13 +133,24 @@ def run(host: str, port: int, channel: str, nick: str, once: bool = False) -> No
 
                 if code == "004" and not joined:      # registration complete
                     send(f"JOIN {channel}")
-                    joined = True
-                    print(f"-- joined {channel}", flush=True)
+                    joined = True                     # sent, NOT confirmed -- see below
+                elif code == "366":
+                    # End of /NAMES: the only reply that means we are actually in the channel.
+                    # Logging success at the point of *sending* JOIN is how this hid a failure
+                    # once already: the unit read `active`, the log read "joined", and the channel
+                    # was empty. A send is not an outcome.
+                    print(f"-- in {channel}; a v0.1.0 client's WHO will now see {nick}", flush=True)
                     backoff = 10
                     if once:
-                        print("-- --once given; presence established, exiting", flush=True)
+                        print("-- --once given; presence confirmed, exiting", flush=True)
                         s.close()
                         return
+                elif code in ("473", "475", "477", "471", "479", "520"):
+                    # +i, +k, +l, +r, bad name, SSL-only: JOIN was refused and no amount of
+                    # reconnecting will change it.
+                    print(f"!! cannot join {channel}: {line}", flush=True)
+                    s.close()
+                    return
                 elif code in ("433", "436"):          # nick in use / collision
                     # Another node is already advertising this exact address, which is harmless
                     # but means our presence adds nothing. Say so rather than looping silently.
