@@ -13,6 +13,7 @@ authorship and integrity; it says nothing about value. NOT money.**
 | **Long key id** | `B0145F74B78CF1DA` |
 | **Algorithm** | Ed25519 (EdDSA), sign+certify |
 | **Public key** | [`parthod0x-signing-key.asc`](parthod0x-signing-key.asc) (also attached to each GitHub release) |
+| **Independently** | `gpg --keyserver hkps://keys.openpgp.org --recv-keys B128526AF85AE4A8F22B949FB0145F74B78CF1DA` |
 
 **Always compare the fingerprint above against a second source** (the repo, the release page, this
 site) before trusting a signature — a key you fetch and its own claimed identity are not
@@ -22,6 +23,10 @@ independent.
 
 ```bash
 # from the repo/site:
+# Prefer the keyserver: it is not us, so the key and the artifact no longer come from one place.
+gpg --keyserver hkps://keys.openpgp.org --recv-keys B128526AF85AE4A8F22B949FB0145F74B78CF1DA
+
+# Or from the site (same key; a fetch from here is only as trustworthy as this site):
 curl -fsSL https://bitcoin-lab.org/parthod0x-signing-key.asc | gpg --import
 # or from a release asset:
 gpg --import parthod0x-signing-key.asc
@@ -30,6 +35,14 @@ gpg --import parthod0x-signing-key.asc
 gpg --fingerprint B0145F74B78CF1DA
 # -> B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA
 ```
+
+
+**Why the keyserver line is first.** Fetching the key and the release from the same host means
+trusting that host twice — if it can serve you a bad tarball it can serve you the key that matches
+it. keys.openpgp.org is a different party, and it publishes a user ID only after the holder proves
+control of that mailbox, so the copy you get there carries one attestation that does not originate
+here. It is a distribution point, not an authority: what settles it is that the fingerprint agrees
+with the one in this repo's `LICENSE`, on the release pages, and on bitcoin-lab.org. Compare it.
 
 ## Verify a download
 

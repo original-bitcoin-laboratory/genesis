@@ -12,7 +12,7 @@ Three independent roots, so no single one is load-bearing:
 | Layer | What it preserves | Status |
 |---|---|---|
 | **Software Heritage** | full history of all four OBL repositories, in the universal source-code archive | **live** — [`.github/workflows/preserve.yml`](../.github/workflows/preserve.yml) requests archival daily and on every release, no credentials required |
-| **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — pins each release's signed assets; latest v0.5.0: `obl-genesis-0.5.0.tar.gz` → `QmVSNMtK2yKSSyqgTQrig1zSf6qP62QuCiaMRTppQbo7BZ` (retrievable by CID from any gateway, cross-checkable against `SHA256SUMS`) |
+| **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — pins each release's signed assets; latest `Bitcoin-v0.1.1`: `bitcoin-0.1.1.tar.gz` → `QmUrSdkk7fzWJtKsSzKxLCt9gXDCd4iSWDw9hRu1p1e6Kd`, `.asc` → `QmTQRrGbexanc14C7ygRQeCGXwXnCW55wYjLNXEmy3EWS9`, `SHA256SUMS` → `QmS7cgPswk63jYJtZYbewvVwTXEMx44WciAjqEV3pzBfT4`, `SHA256SUMS.asc` → `QmQ53LWCPWwzyJmEq44pHerv2wuAA5gTfu3ofCFbWubpbF`; `v0.5.0-experimental`: `obl-genesis-0.5.0.tar.gz` → `QmVSNMtK2yKSSyqgTQrig1zSf6qP62QuCiaMRTppQbo7BZ` (retrievable by CID from any gateway, cross-checkable against `SHA256SUMS`) |
 | **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **published** as `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`); durable public seeding pending |
 
 Everything preserved is **hash-anchored**, which is what makes redundancy safe: a mirror cannot silently
@@ -38,6 +38,22 @@ token, no market — a valueless research instrument, preserved.
 That is all. On the next published release the `ipfs` job downloads the signed `*.tar.gz`, `SHA256SUMS`, and
 `*.asc`, pins each to IPFS, and logs the CIDs — retrievable from any gateway and cross-checkable against
 `SHA256SUMS`.
+
+### The signing key itself
+
+Every mirror above carries the release *and* the key that signs it, which makes the check circular:
+a reader who fetches both from the same place is trusting that place twice. The key is therefore
+also published to **keys.openpgp.org**, fetchable by fingerprint independently of this repository:
+
+```
+gpg --keyserver hkps://keys.openpgp.org --recv-keys B128526AF85AE4A8F22B949FB0145F74B78CF1DA
+```
+
+A keyserver is a distribution point, not an authority — anyone can upload anything to most of them.
+What keys.openpgp.org adds is narrower and worth stating precisely: it publishes a user ID only
+after the holder proves control of that mailbox, so a key served *with* its UID carries one
+independent attestation beyond this repo's say-so. That is all it carries. The fingerprint in
+LICENSE, in this repo, and on bitcoin-lab.org remains the thing to compare against.
 
 ### Radicle (peer-to-peer git mirror) — a one-time local publish, then keep in sync
 Radicle is published from a machine running the `rad` node, once:
