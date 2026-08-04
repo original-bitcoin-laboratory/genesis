@@ -254,9 +254,11 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     two must bracket **one uninterrupted process** — restarting `bitcoin.exe` between them voids the pair
     and a fresh `pre` is required.
   - Two things fall out of those records that are worth stating. **The bound processes started
-    `2026-08-01T01:32:00Z` and `…:32:20Z`** — twenty seconds apart, and *before* R4a was witnessed. If they
-    have run uninterrupted since, this binding covers **R4a and R4b as well as the pending spend**, not the
-    spend alone. And **both guests report the same `vm_hostname` and `data_dir`** (they were cloned from one
+    `2026-08-01T01:32:00Z` and `…:32:20Z`**, twenty seconds apart, and have run since — and **R4b and R4c
+    are one continuous run** (R4a was a separate, earlier run). So this binding covers the **already-witnessed
+    reorg as well as the pending spend**: the R4b artifacts are retroactively bound to a live process running
+    `fbcac071…`, which they were not before. It does **not** reach R4a, which ran under different processes.
+    And **both guests report the same `vm_hostname` and `data_dir`** (they were cloned from one
     image), so nothing *measured* in these files distinguishes node A's machine from node B's — the `-Node`
     label is operator-supplied. That is not a flaw in the binding, whose job is process→binary; two-node
     separation is established by the two distinct `blk0001.dat` files and the peer connections in the logs.
