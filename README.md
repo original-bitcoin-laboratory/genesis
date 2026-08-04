@@ -129,6 +129,14 @@ ECDSA) by running the node's own Rust validator compiled to **WebAssembly**, ent
 is preserved on independent, content-addressed roots — Software Heritage, IPFS, and Radicle
 ([`docs/PRESERVATION.md`](docs/PRESERVATION.md)) — so it stays retrievable even if a host disappears.
 
+The same treatment is applied to what came *after* the first release.
+[`docs/V010_TO_V013.md`](docs/V010_TO_V013.md) diffs v0.1.0 against **v0.1.3** of 13 January 2009 —
+the next codebase that survives — file by file, with the archive's provenance traced to two
+independent mirrors and a SHA256 recorded for it that neither publishes. Of 26 source files, 8
+changed and 18 are byte-identical; **no consensus rule moved**, and `serialize.h` changed only its
+protocol version, 101 to 103. Four days after publishing, the work was keeping nodes connected
+rather than changing what a node believes.
+
 ## Layout
 
 ```text
