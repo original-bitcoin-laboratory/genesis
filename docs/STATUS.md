@@ -240,5 +240,16 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     `blk0001.dat` is exactly **+223 bytes** (one v0.1 block) larger than node B's — the retained orphan. This
     lifts a **reorganisation** for the released binary from MODEL to **JAN09-EXECUTED**. Findings + hashed
     manifest committed (raw bytes gitignored).
-  - Still to capture: a **relayed spend** (R4c, needs a matured coinbase ~101 blocks) between the two nodes —
-    already covered headlessly by `derivatives/node` + `derivatives/p2p`.
+  - Still to capture: a **relayed spend** (R4c) between the two nodes — already covered headlessly by
+    `derivatives/node` + `derivatives/p2p`. **In flight as of 2026-08-04.** A coinbase matures at **120
+    confirmations, not 100**: `main.h` sets `COINBASE_MATURITY = 100` but `main.cpp:544` returns
+    `max(0, (COINBASE_MATURITY+20) - depth)`, and the running wallets agree — a coin 58 blocks deep reads
+    *"matures in 62 blocks"*. So the chain must reach **~height 120**; it stood at 68 when this was written,
+    i.e. two to three more days at the observed 50–90 min/block.
+  - **Executed-binary binding captured `pre` in both guests (2026-08-04)**, ahead of the spend, so the
+    artifacts it produces are bound to a live process rather than to a binary that merely exists:
+    both nodes report `bitcoin.exe` = `fbcac071d92e26d82ec917214e334bd43850c0691f113bab1d4741c9bdd30d2d`,
+    **matching the oracle**, with `libeay32.dll` `d108cdff…c77a182` and `mingwm10.dll` `1badf397…2d7708f`
+    identical across both and distinct PIDs (5212 / 4196). The `post` pair is taken after the spend; the
+    two must bracket **one uninterrupted process** — restarting `bitcoin.exe` between them voids the pair
+    and a fresh `pre` is required.
