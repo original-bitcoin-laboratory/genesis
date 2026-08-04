@@ -60,7 +60,7 @@ hashing, sighash, and value rules are pinned down.
    can offer that; we can't manufacture it.
 
 **Watch it live:** the [status page](https://bitcoin-lab.org/status.html) and
-[block explorer](https://bitcoin-lab.org/explorer.html) show both chains' tip heights, anchor uptime,
+[block explorer](https://bitcoin-lab.org/explorer.html) show each chain's tip height, anchor uptime,
 and recent blocks. **Verify what you run:** every release is GPG‑signed — check it against the
 [published key](https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md).
 

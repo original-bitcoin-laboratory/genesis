@@ -30,6 +30,7 @@ jobs:
         run: |
           python derivatives/netnode/status_probe.py --out /tmp/status.json \
             --chain jan09x:18009 --chain nov08x:18008 \
+            --chain bitcoin:18026@168.144.27.117 \
             --anchor 143.110.255.205 --anchor 178.62.236.102 \
             --recent 15 --timeout 8
 

@@ -28,16 +28,16 @@ from p2p import MSG_BLOCK, inv_payload, parse_inv, version_payload    # noqa: E4
 from wire import frame, read_message                                  # noqa: E402
 
 
-async def _read_until(reader, magic, want_command, timeout, tries=12):
+async def _read_until(reader, magic, want_command, timeout, tries=12, ck=True):
     """Read framed messages until one matches `want_command` (skipping version/addr/tx/…)."""
     for _ in range(tries):
-        command, payload = await asyncio.wait_for(read_message(reader, magic), timeout)
+        command, payload = await asyncio.wait_for(read_message(reader, magic, checksum=ck), timeout)
         if command == want_command:
             return payload
     return None
 
 
-async def _walk_height(reader, writer, magic, genesis, timeout):
+async def _walk_height(reader, writer, magic, genesis, timeout, ck=True):
     """getblocks-walk from genesis to the tip; return the ordered block hashes after genesis.
     The node answers a getblocks with an `inv` only when it has blocks to offer, so 'no inv' (a
     timeout) means we've reached the tip — not a failure."""
@@ -45,10 +45,10 @@ async def _walk_height(reader, writer, magic, genesis, timeout):
     seen: set = set()
     locator = [genesis]
     for _ in range(200):                                     # safety bound
-        writer.write(frame("getblocks", locator_payload(locator), magic))
+        writer.write(frame("getblocks", locator_payload(locator), magic, checksum=ck))
         await writer.drain()
         try:
-            payload = await _read_until(reader, magic, "inv", timeout)
+            payload = await _read_until(reader, magic, "inv", timeout, ck=ck)
         except asyncio.TimeoutError:
             break                                            # no more blocks -> reached the tip
         page = [h for (t, h) in parse_inv(payload or b"") if t == MSG_BLOCK and h not in seen]
@@ -60,16 +60,16 @@ async def _walk_height(reader, writer, magic, genesis, timeout):
     return hashes
 
 
-async def _recent(reader, writer, magic, want, tip_height, timeout):
+async def _recent(reader, writer, magic, want, tip_height, timeout, ck=True):
     """getdata the last blocks and summarise them (height/hash/time/ntx), newest first."""
     if not want:
         return []
-    writer.write(frame("getdata", inv_payload([(MSG_BLOCK, h) for h in want]), magic))
+    writer.write(frame("getdata", inv_payload([(MSG_BLOCK, h) for h in want]), magic, checksum=ck))
     await writer.drain()
     got: dict = {}
     for _ in range(len(want) * 2 + 8):
         try:
-            command, payload = await asyncio.wait_for(read_message(reader, magic), timeout)
+            command, payload = await asyncio.wait_for(read_message(reader, magic, checksum=ck), timeout)
         except asyncio.TimeoutError:
             break
         if command == "block":
@@ -91,19 +91,19 @@ async def _recent(reader, writer, magic, want, tip_height, timeout):
     return out
 
 
-async def _probe_anchor(host, port, magic, genesis, recent_n, timeout):
+async def _probe_anchor(host, port, magic, genesis, recent_n, timeout, ck=True):
     """Handshake + height-walk + recent blocks from one anchor. Returns (hashes, recent) or None."""
     try:
         reader, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout)
     except (OSError, asyncio.TimeoutError):
         return None
     try:
-        writer.write(frame("version", version_payload(), magic))
+        writer.write(frame("version", version_payload(), magic, checksum=ck))
         await writer.drain()
-        if await _read_until(reader, magic, "version", timeout) is None:
+        if await _read_until(reader, magic, "version", timeout, ck=ck) is None:
             return None                                      # wrong chain / not a node
-        hashes = await _walk_height(reader, writer, magic, genesis, timeout)
-        recent = await _recent(reader, writer, magic, hashes[-recent_n:], len(hashes), timeout)
+        hashes = await _walk_height(reader, writer, magic, genesis, timeout, ck=ck)
+        recent = await _recent(reader, writer, magic, hashes[-recent_n:], len(hashes), timeout, ck=ck)
         return hashes, recent
     except (OSError, asyncio.TimeoutError, ValueError, ConnectionError):
         return None
@@ -119,7 +119,8 @@ async def probe_chain(name, port, anchors, recent_n, timeout):
     genesis = block_hash(cfg.mint_genesis())
     entry = {"chain": name, "p2p_port": port, "genesis": genesis[::-1].hex(),
              "anchors": [], "online": False, "money": False}
-    results = await asyncio.gather(*(_probe_anchor(a, port, cfg.magic, genesis, recent_n, timeout)
+    ck = getattr(cfg, "wire_checksum", True)      # a v0.1-framed chain has no checksum field
+    results = await asyncio.gather(*(_probe_anchor(a, port, cfg.magic, genesis, recent_n, timeout, ck=ck)
                                      for a in anchors))
     best = None
     for a, res in zip(anchors, results):
@@ -137,21 +138,29 @@ async def probe_chain(name, port, anchors, recent_n, timeout):
 
 async def _run(chains, anchors, recent_n, timeout):
     out = {}
-    for name, port in chains:
-        out[name] = await probe_chain(name, port, anchors, recent_n, timeout)
+    for name, port, pinned in chains:
+        out[name] = await probe_chain(name, port, pinned or anchors, recent_n, timeout)
     return out
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="probe X-chain anchors, emit status.json (NOT money)")
     ap.add_argument("--out", required=True)
-    ap.add_argument("--chain", action="append", required=True, metavar="name:p2pport",
-                    help="e.g. jan09x:18009 (repeatable)")
+    ap.add_argument("--chain", action="append", required=True, metavar="name:p2pport[@ip,ip]",
+                    help="e.g. jan09x:18009, or bitcoin:18026@168.144.27.117 to probe a chain only "
+                         "on its own anchors (repeatable)")
     ap.add_argument("--anchor", action="append", required=True, help="anchor IP (repeatable)")
     ap.add_argument("--recent", type=int, default=15)
     ap.add_argument("--timeout", type=float, default=10.0)
     a = ap.parse_args(argv)
-    chains = [(c.split(":")[0], int(c.split(":")[1])) for c in a.chain]
+    # A chain may pin its own anchors with @ip[,ip]. Without it, the chain is probed on every
+    # --anchor. Chains that do not share hosts (an independent chain on its own seed) must pin
+    # theirs, or every other anchor reports it unreachable and the page shows a false outage.
+    chains = []
+    for c in a.chain:
+        spec, _, pinned = c.partition("@")
+        name, port = spec.split(":")
+        chains.append((name, int(port), [x for x in pinned.split(",") if x] or None))
 
     if sys.platform.startswith("win"):
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

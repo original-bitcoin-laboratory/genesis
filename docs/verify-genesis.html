@@ -48,6 +48,11 @@
   input.hl:focus{outline:none;border-color:var(--focus)}
   .mono-out{font-family:var(--mono);font-size:12px;word-break:break-all;line-height:1.6}
   .ok-h{color:var(--pass)} .no-h{color:var(--fail)}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 4px}
+  .chip{font-family:var(--mono);font-size:12px;padding:7px 12px;border-radius:999px;cursor:pointer;
+    background:transparent;color:var(--ink-dim);border:1px solid var(--line-strong)}
+  .chip:hover{border-color:var(--brass);color:var(--ink)}
+  .chip.on{background:var(--brass);color:var(--brass-ink);border-color:var(--brass)}
   .hint{margin-top:10px;font-size:12.5px;color:var(--ink-faint);line-height:1.6}
   .hint b{color:var(--ink-dim)}
   .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:70ch;line-height:1.65}
@@ -72,14 +77,21 @@
   </div>
 
   <div class="card">
+    <h2>Which genesis</h2>
+    <div class="presets" id="chainsel"></div>
+    <p class="hint">Same derivation either way — only the ingredients differ. That is the point: the
+      shape belongs to the protocol, not to either chain.</p>
+  </div>
+
+  <div class="card">
     <h2>Source ingredients</h2>
     <div class="row"><div class="k">Coinbase message</div><div class="v"><input class="hl" id="headline" spellcheck="false"></div></div>
     <div class="row"><div class="k">Block reward</div><div class="v dim">50 coins &nbsp;=&nbsp; 5,000,000,000 base units (10⁻⁸)</div></div>
-    <div class="row"><div class="k">Reward pubkey</div><div class="v dim">04678afdb0fe5548…2b6bf11d5f &nbsp;+ OP_CHECKSIG</div></div>
+    <div class="row"><div class="k">Reward pubkey</div><div class="v dim"><span id="i-pub"></span> &nbsp;+ OP_CHECKSIG</div></div>
     <div class="row"><div class="k">Version</div><div class="v dim">1</div></div>
-    <div class="row"><div class="k">Timestamp</div><div class="v dim">1231006505 &nbsp;(2009-01-03 18:15:05 UTC)</div></div>
+    <div class="row"><div class="k">Timestamp</div><div class="v dim" id="i-ntime"></div></div>
     <div class="row"><div class="k">Difficulty bits</div><div class="v dim">0x1d00ffff</div></div>
-    <div class="row"><div class="k">Nonce</div><div class="v dim">2083236893</div></div>
+    <div class="row"><div class="k">Nonce</div><div class="v dim" id="i-nonce"></div></div>
   </div>
 
   <div class="card">
@@ -140,19 +152,37 @@ const rev=b=>new Uint8Array([...b].reverse());
 function le(n,size){let v=BigInt(n);const a=new Uint8Array(size);for(let i=0;i<size;i++){a[i]=Number(v&0xffn);v>>=8n;}return a;}
 const beBig=b=>{let v=0n;for(const x of b)v=(v<<8n)|BigInt(x);return v;};
 
-const REAL="The Times 03/Jan/2009 Chancellor on brink of second bailout for banks";
-const CANON="000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
-const PUB="04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f";
+
+// Two genesis blocks, same structure. Selecting one swaps only its parameters -- the derivation
+// below is identical for both, which is the point: the shape is the protocol's, not either chain's.
+const GENESES = {
+  "2009": {
+    label:"Bitcoin · 3 Jan 2009",
+    headline:"The Times 03/Jan/2009 Chancellor on brink of second bailout for banks",
+    pub:"04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f",
+    ntime:1231006505, ntimeStr:"1231006505  (2009-01-03 18:15:05 UTC)", nonce:2083236893,
+    canon:"000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
+  },
+  "2026": {
+    label:"Bitcoin · 3 Aug 2026",
+    headline:"The Times 03/Aug/2026 Toll of schooling 'straitjacket'",
+    pub:"04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba794ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834",
+    ntime:1785781375, ntimeStr:"1785781375  (2026-08-03 18:22:55 UTC)", nonce:33394338,
+    canon:"00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a"
+  }
+};
+let SEL = "2009";
+const G = () => GENESES[SEL];
 
 function derive(headline){
   const hb=enc(headline);
   const scriptSig=cat(hx("04ffff001d0104"),new Uint8Array([hb.length&0xff]),hb); // note: >252 bytes would need a varint; the real headline is 69
-  const spk=cat(new Uint8Array([0x41]),hx(PUB),new Uint8Array([0xac]));
+  const spk=cat(new Uint8Array([0x41]),hx(G().pub),new Uint8Array([0xac]));
   const cb=cat(le(1,4),new Uint8Array([1]),new Uint8Array(32),hx("ffffffff"),
     varint(scriptSig.length),scriptSig,hx("ffffffff"),
     new Uint8Array([1]),le(5000000000n,8),varint(spk.length),spk,le(0,4));
   const merkle=dsha(cb);
-  const hdr=cat(le(1,4),new Uint8Array(32),merkle,le(1231006505,4),le(0x1d00ffff,4),le(2083236893,4));
+  const hdr=cat(le(1,4),new Uint8Array(32),merkle,le(G().ntime,4),le(0x1d00ffff,4),le(G().nonce,4));
   const bh=dsha(hdr);
   const bits=0x1d00ffff, target=(BigInt(bits&0xffffff))*(1n<<BigInt(8*((bits>>24)-3)));
   return {merkle:toHex(rev(merkle)), header:toHex(hdr), hash:toHex(rev(bh)),
@@ -167,7 +197,7 @@ function powInt(hashHexBE){ // little-endian integer of the block hash = big-end
 function run(){
   const hl=document.getElementById('headline').value;
   const d=derive(hl);
-  const ok = d.hash===CANON;
+  const ok = d.hash===G().canon;
   document.getElementById('o-merkle').textContent=d.merkle;
   document.getElementById('o-header').textContent=d.header;
   const hEl=document.getElementById('o-hash'); hEl.textContent=d.hash; hEl.className='mono-out '+(ok?'ok-h':'no-h');
@@ -176,15 +206,31 @@ function run(){
   document.getElementById('o-pow').textContent = powok ? 'valid — hash is below the difficulty-1 target' : 'not below target';
   const v=document.getElementById('verdict');
   v.className='verdict '+(ok?'ok':'no');
-  document.getElementById('vtitle').textContent = ok ? 'This IS Satoshi’s genesis block.' : 'This is NOT the genesis block.';
+  document.getElementById('vtitle').textContent = ok ? 'This IS the genesis block.' : 'This is NOT the genesis block.';
   document.getElementById('vsub').textContent = ok
-    ? 'Re-derived from source on your device — matches 000000000019d668…0a8ce26f.'
+    ? 'Re-derived from source on your device — matches ' + G().canon.slice(0,16) + '…' + G().canon.slice(-8) + '.'
     : 'You changed the coinbase, so the hash changed — proving this is derived live, not looked up.';
   document.getElementById('hint').innerHTML = ok
-    ? '<b>Verified.</b> Restore nothing — this is the exact block from 3 January 2009. Compare the hash above with any block explorer.'
-    : '<b>Tampered.</b> The message no longer matches the original, so the block hash differs. Reset it to the <i>Times</i> headline to see it snap back to the real genesis.';
+    ? '<b>Verified.</b> Re-derived here, from these ingredients — not looked up. Compare the hash above with any independent source.'
+    : '<b>Changed.</b> The coinbase no longer matches, so the block hash differs. Restore the headline to see it snap back.';
 }
-document.getElementById('headline').value=REAL;
+function paint(){
+  const g=G();
+  document.getElementById('i-pub').textContent   = g.pub.slice(0,16)+'…'+g.pub.slice(-10);
+  document.getElementById('i-ntime').innerHTML   = g.ntimeStr;
+  document.getElementById('i-nonce').textContent = g.nonce;
+  document.getElementById('headline').value      = g.headline;
+  [...document.querySelectorAll('#chainsel .chip')].forEach(c =>
+    c.classList.toggle('on', c.dataset.k===SEL));
+  run();
+}
+const sel=document.getElementById('chainsel');
+Object.keys(GENESES).forEach(k=>{
+  const c=document.createElement('button');
+  c.className='chip'; c.dataset.k=k; c.textContent=GENESES[k].label;
+  c.addEventListener('click',()=>{ SEL=k; paint(); });
+  sel.appendChild(c);
+});
 document.getElementById('headline').addEventListener('input',run);
-run();
+paint();
 </script>
