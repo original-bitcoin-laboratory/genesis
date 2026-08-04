@@ -1,4 +1,4 @@
-# NOV08‑X and JAN09‑X — an invitation to run the earliest Bitcoin, faithfully
+# An invitation to run the earliest Bitcoin — and the chain built from it
 
 **Experimental. Educational. Not money.** This is an invitation to *operators*, not an offering. There
 is nothing here to buy, sell, or hold, and there never will be. Read [why](#the-one-rule-that-makes-all-of-this-safe) before deciding it's worth your time.
@@ -14,8 +14,15 @@ is nothing here to buy, sell, or hold, and there never will be. Read [why](#the-
   it differs from January (a 100‑coin subsidy, `COIN = 1e6`, ~15‑minute blocks, a leading‑zero‑bits
   proof‑of‑work).
 
-They are released as **candidates** — *a* Bitcoin, not *the* Bitcoin. That distinction is the whole
-point, and it is made carefully in [`../../common/WHAT_IS_BITCOIN.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/WHAT_IS_BITCOIN.md)
+A third chain runs alongside them and is **not** a reconstruction:
+
+- **Bitcoin** — the same v0.1.0 client on a genesis of its own, mined at the original difficulty‑1,
+  its coinbase carrying the front page of the day it was mined. Its own network, its own signed
+  release (`Bitcoin-v0.1.0`). It does **not** interoperate with the two above, and it has its own
+  seed rather than sharing the crawler.
+
+The reconstructions are released as **candidates** — *a* Bitcoin, not *the* Bitcoin. That
+distinction is the whole point, and it is made carefully in [`../../common/WHAT_IS_BITCOIN.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/WHAT_IS_BITCOIN.md)
 and [`../../common/RELEASE_AS_CANDIDATES.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/RELEASE_AS_CANDIDATES.md).
 
 ## The honest claim (and the honest non‑claim)
@@ -66,11 +73,13 @@ and recent blocks. **Verify what you run:** every release is GPG‑signed — ch
 
 ## Join the live network — peers you can connect to today
 
-**Two** live, always‑on anchors run the two reconstructions side by side:
+**Two** live, always‑on anchors run the two reconstructions side by side, and a third node serves
+the Bitcoin chain:
 
 ```
-seed.bitcoin-lab.org:18009    JAN09‑X  (Jan 2009 v0.1.0 genesis client · magic f00ba709)
-seed.bitcoin-lab.org:18008    NOV08‑X  (15 Nov 2008 pre‑release · magic f00ba708 · leading‑zero‑bits PoW)
+seed.bitcoin-lab.org:18009      JAN09‑X  (Jan 2009 v0.1.0 genesis client · magic f00ba709)
+seed.bitcoin-lab.org:18008      NOV08‑X  (15 Nov 2008 pre‑release · magic f00ba708 · leading‑zero‑bits PoW)
+bitcoin.bitcoin-lab.org:18026   Bitcoin  (its own genesis 00000000ad12f3ec… · magic f00ba726 · difficulty‑1)
 ```
 
 Both experimental, both **NOT money**. Join in **one command** with the prebuilt image — or clone and
@@ -87,6 +96,7 @@ docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode \
 git clone https://github.com/original-bitcoin-laboratory/genesis
 cd genesis/derivatives
 python -m netnode --chain jan09x --datadir ./data-jan09 --connect seed.bitcoin-lab.org:18009
+python -m netnode --chain bitcoin --datadir ./data-bitcoin --connect bitcoin.bitcoin-lab.org:18026
 python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-lab.org:18008
 ```
 
