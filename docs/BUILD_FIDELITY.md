@@ -95,6 +95,38 @@ Four things follow that were previously absent:
 - **`sha.cpp` at `-O3`**, overriding the `-O0` every other unit gets. It is the mining inner loop, and
   his makefile singles it out.
 
+## Where the makefile and the artifact contradict each other
+
+`DEBUGFLAGS` is two flags, `-g -D__WXDEBUG__`, and only one of them survived into what he shipped.
+
+Building with both produced a **54.8 MB** binary carrying eight `.debug_*` sections. His is
+**6.4 MB** with **none**:
+
+| binary | size | debug sections | `.rsrc` |
+|---|---|---|---|
+| Satoshi's `fbcac071…` | 6,440,960 | **0** | present |
+| our v0.1.1 `cfb59606…` | 14,801,846 | 8 | absent |
+| our v0.1.2 with `-g` | 54,860,743 | 8 | present |
+
+So the flag list says one thing and the artifact says another. The artifact wins: it is the thing
+being reconstructed, and gcc 3.x-era `-g` plainly did not survive into what he published. Carrying
+DWARF we can measure his binary does not have would be matching the flag and missing the artifact.
+
+`__WXDEBUG__` is kept because it is the half with observable behaviour — `debug.log`, `wxASSERT`,
+the resource-loading diagnostics. `-g` is dropped because it has none.
+
+Two things fall out of this that were not visible before running it:
+
+**The path-leak gate earned its place.** With `-g` on, the build refused to link: `/home/xyoga`
+was embedded. DWARF is where absolute build paths live, and `-ffile-prefix-map` did not reach the
+copies arriving from wxWidgets' own `--enable-debug` compilation. The gate was written for the
+v0.1.0→v0.1.1 path fix and caught an unrelated regression a release later, before it shipped.
+
+**v0.1.1 diverges here too, and did so silently.** It shipped eight `.debug_*` sections without
+anyone asking for `-g` — OpenSSL, Berkeley DB and wxWidgets all default their `configure` to
+`-g`, and static linking carried their DWARF in. The link step now strips debug sections, which
+matches his section list exactly: `.text .data .rdata .bss .idata .rsrc`.
+
 ## The divergence that was not corrected
 
 Satoshi linked OpenSSL and the MinGW runtime **dynamically** and shipped `libeay32.dll` and
@@ -106,6 +138,29 @@ ours would come from Ubuntu's mingw-w64, not his MinGW — so matching the struc
 while adding two more files that must survive intact for the client to start at all. A single
 self-contained executable is the more durable form, and nothing a peer can observe changes. It is
 also why `capture_binding.ps1` reports both DLLs as *"absent — statically linked build"*.
+
+## Result
+
+`bitcoin-0.1.2.tar.gz`, sha256 `099c011d…`, shipping `bitcoin.exe` sha256 `d148996b…`. Every marker
+that separated our binary from his now agrees:
+
+| marker | Satoshi's `fbcac071…` | v0.1.1 `cfb59606…` | v0.1.2 `d148996b…` |
+|---|---|---|---|
+| `debug.log` | 7 | 0 | **7** |
+| `assert "%s" failed` | 1 | 0 | **1** |
+| distinct `include/wx/*.h` paths | 24 | 0 | **24** |
+| `/wxWidgets/`, `/boost/` | 5, 1 | — | **5, 1** |
+| `.rsrc` section | present | absent | **present** |
+| `.debug_*` sections | 0 | 8 | **0** |
+| build-machine paths | 0 | 0 | **0** |
+
+The wx path *lists* are identical file-for-file. They differ by one directory level — his read
+`../../include/wx/arrstr.h`, ours `../include/wx/arrstr.h` — because `__FILE__` records the path as
+the compiler received it, and his wx build sat one directory deeper (`lib/vc_lib/mswd`) than ours
+(`bld-debug`). Nothing about the code differs; the string records where the header was.
+
+What remains is size: 15.5 MB against his 6.4 MB, which is the static linking described above and
+nothing else.
 
 ## Method
 

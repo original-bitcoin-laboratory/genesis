@@ -41,7 +41,15 @@ X=i686-w64-mingw32; GXX="$X-g++"; NP="$(nproc)"
 # artifact settles it. A release build here is a divergence, not a tidier binary.
 BUILD="${BUILD:-debug}"
 case "$BUILD" in debug|release) ;; *) BUILD=debug ;; esac
-if [ "$BUILD" = debug ]; then DEBUGFLAGS="-g -D__WXDEBUG__"; WXDBG="--enable-debug"
+# NOTE on -g. His DEBUGFLAGS are "-g -D__WXDEBUG__" and we take only the second, because on this
+# point the makefile and the shipped artifact disagree and the artifact is what we reconstruct:
+#   his bitcoin.exe   6,440,960 bytes   sections .text .data .rdata .bss .idata .rsrc   0 debug
+#   with -g here     54,860,743 bytes   + 8 .debug_* sections
+# gcc 3.x-era -g did not survive into what he published. Carrying DWARF we know his binary does
+# not have would be matching the flag and missing the artifact -- and DWARF is precisely where
+# absolute build paths live, which is why the leak gate below fires on /home/xyoga when -g is on.
+# __WXDEBUG__ is kept: it is the half that has observable behaviour (debug.log, wxASSERT).
+if [ "$BUILD" = debug ]; then DEBUGFLAGS="-D__WXDEBUG__"; WXDBG="--enable-debug"
 else DEBUGFLAGS=""; WXDBG="--disable-debug"; fi
 echo "== BUILD=$BUILD (DEBUGFLAGS='${DEBUGFLAGS:-none}') =="
 command -v "$GXX" >/dev/null || { echo "!! install: sudo apt-get install -y gcc-mingw-w64-i686 g++-mingw-w64-i686"; exit 2; }
@@ -144,10 +152,15 @@ INC="$($WXB/wx-config --cxxflags) -I$OSSL/include -I$BDB/build_unix -I$BOOST -I.
   # obj/ui_res.o: windres ui.rc -- the toolbar bitmaps, the icons, the cursor. Omitting this
   # is why the client logged "Can't load bitmap 'send20' from resources" on first execution
   # and why our binary had no .rsrc section at all where his has one.
-  $X-windres $WXDEFS $($WXB/wx-config --cxxflags) -I. -o "$OB/ui_res.o" -i ui.rc
+  # windres takes preprocessor options only. His rule passes exactly $(WXDEFS) $(INCLUDEPATHS)
+  # -- defines and include paths, nothing else -- so wx-config --cxxflags cannot be handed over
+  # whole: it also emits -mthreads, and windres exits 1 with "invalid option -- 'm'".
+  WXRC=""
+  for t in $($WXB/wx-config --cxxflags); do case "$t" in -I*|-D*) WXRC="$WXRC $t";; esac; done
+  $X-windres $WXDEFS $WXRC -I. -o "$OB/ui_res.o" -i ui.rc
   echo "   windres ui.rc -> ui_res.o" )
 cd "$OB"
-OUT="${OUTDIR:-$OB}"
+OUT="${OUTDIR:-$OB}"; mkdir -p "$OUT"   # OUTDIR is caller-supplied; ld will not create it
 # His link line: g++ $(CFLAGS) -mwindows -Wl,--subsystem,windows -o $@ $(LIBPATHS) $(OBJS) $(LIBS)
 # The GUI subsystem was already correct here -- wx-config --libs supplies -mwindows, and both
 # binaries measure subsystem=2 -- but it is now stated rather than inherited, and -mthreads is
@@ -161,7 +174,11 @@ OUT="${OUTDIR:-$OB}"
 # client to start at all. One self-contained executable is the more durable form and changes
 # nothing a peer can observe. Recorded in RELEASE.txt, and it is why capture_binding.ps1
 # reports libeay32.dll / mingwm10.dll as "absent - statically linked build".
-$GXX -std=gnu++98 -mthreads -mwindows -Wl,--subsystem,windows *.o $($WXB/wx-config --libs) -L"$OSSL" -lcrypto -L"$BDB/build_unix" -ldb_cxx-4.8 -lws2_32 -lmswsock -lole32 -loleaut32 -luuid -static -static-libgcc -static-libstdc++ -o "$OUT/bitcoin-0.1.0-reconstructed.exe"
+# --strip-debug: OpenSSL/BDB/wx configure scripts default to -g, so their DWARF rides in through
+# static linking even when we compile without it -- our v0.1.1 shipped 8 .debug_* sections for
+# exactly that reason. His binary has none. Stripping them matches his section list and removes
+# the only place an absolute build path can survive.
+$GXX -std=gnu++98 -mthreads -mwindows -Wl,--subsystem,windows *.o $($WXB/wx-config --libs) -L"$OSSL" -lcrypto -L"$BDB/build_unix" -ldb_cxx-4.8 -lws2_32 -lmswsock -lole32 -loleaut32 -luuid -static -static-libgcc -static-libstdc++ -o "$OUT/bitcoin-0.1.0-reconstructed.exe" -Wl,--strip-debug
 echo
 echo "BUILT: $OUT/bitcoin-0.1.0-reconstructed.exe ($(stat -c%s "$OUT/bitcoin-0.1.0-reconstructed.exe") bytes)"
 # Hard gate: the shipped binary must carry no trace of the machine that built it. Satoshi's

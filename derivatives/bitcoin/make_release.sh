@@ -8,7 +8,10 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ORIG="$HERE/../../extracted/bitcoin"          # the verified source tree (for license.txt / readme.txt)
 SRC="$HERE/src"                                # derived tree from make_chain.py
-EXE="$HERE/build/bitcoin-0.1.0-reconstructed.exe"
+# EXE is overridable so a new release can be cut without overwriting the binary of the previous
+# one. That matters here: build/ holds cfb59606..., the v0.1.1 exe that mined block 1, and it
+# has to stay exactly where the evidence records say it is.
+EXE="${EXE:-$HERE/build/bitcoin-0.1.0-reconstructed.exe}"
 OUT="$HERE/dist"
 NAME="bitcoin-0.1.2"
 
