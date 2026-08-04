@@ -254,10 +254,14 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     two must bracket **one uninterrupted process** — restarting `bitcoin.exe` between them voids the pair
     and a fresh `pre` is required.
   - Two things fall out of those records that are worth stating. **The bound processes started
-    `2026-08-01T01:32:00Z` and `…:32:20Z`**, twenty seconds apart, and have run since — and **R4b and R4c
-    are one continuous run** (R4a was a separate, earlier run). So this binding covers the **already-witnessed
-    reorg as well as the pending spend**: the R4b artifacts are retroactively bound to a live process running
-    `fbcac071…`, which they were not before. It does **not** reach R4a, which ran under different processes.
+    `2026-08-01T01:32:00Z` and `…:32:20Z`**, twenty seconds apart, and have run continuously since —
+    **R4a, R4b and R4c are one single run**, not three. That is not recalled, it is measured: R4a's
+    `debug.log` is a **byte-exact prefix** of R4b's on *both* nodes (nodeA 6,248 → 22,016 bytes; nodeB
+    6,982 → 22,898), so the same file was appended to and `bitcoin.exe` never restarted between them.
+    (v0.1.0 writes no timestamps into `debug.log` — that arrives in v0.1.3's `util.cpp` — so the prefix
+    test is the available proof, and it is a stronger one.) The binding therefore reaches **backwards over
+    the whole R4 series**: the already-witnessed sustained relay and reorganisation are retroactively bound
+    to a live process running `fbcac071…`, which they were not when they were written up.
     And **both guests report the same `vm_hostname` and `data_dir`** (they were cloned from one
     image), so nothing *measured* in these files distinguishes node A's machine from node B's — the `-Node`
     label is operator-supplied. That is not a flaw in the binding, whose job is process→binary; two-node
