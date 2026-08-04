@@ -36,8 +36,8 @@ sudo service docker start
 ### 2. Get the verified source into WSL
 Copy the extracted, hash‑verified tree out of the repo (it's gitignored, stays local):
 ```bash
-# adjust the Windows path; /mnt/c is your C: drive inside WSL
-cp -r "/mnt/c/Users/<you>/Desktop/workspace/vscode_workspace_bitcoin-proton/original-bitcoin-laboratory/lab/genesis/extracted/bitcoin/src" ~/btc01-src
+# adjust for wherever you cloned it; /mnt/c is your C: drive inside WSL
+cp -r "/mnt/c/<path-to-your-clone>/lab/genesis/extracted/bitcoin/src" ~/btc01-src
 ```
 
 ### 3. A period build container (`Dockerfile`)

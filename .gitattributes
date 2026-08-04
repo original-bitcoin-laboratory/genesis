@@ -1,0 +1,12 @@
+# Shell scripts here are run by bash (WSL / Linux droplets). A CRLF checkout breaks them in ways
+# that are hard to read -- an unterminated heredoc reports only 'unexpected end of file' -- so
+# pin them to LF regardless of the cloning platform's core.autocrlf.
+*.sh   text eol=lf
+*.py   text eol=lf
+
+# Binaries and evidence must never be line-ending translated: their hashes are the whole point.
+*.exe  binary
+*.pdf  binary
+*.gz   binary
+*.dat  binary
+*.asc  binary

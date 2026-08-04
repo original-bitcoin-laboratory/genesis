@@ -24,9 +24,11 @@ never the real Bitcoin ledger.
 ## Option 1 — Quickest: run it on your own PC, offline (~15 minutes)
 
 ### Step 1 — Check the file is genuine (optional but nice)
-Open **PowerShell** (Start → type "PowerShell" → Enter) and paste:
+Open **PowerShell** (Start → type "PowerShell" → Enter), go to the folder holding the file, and
+paste:
 ```powershell
-Get-FileHash "C:\Users\Yoga\Desktop\workspace\vscode_workspace_bitcoin-proton\original-bitcoin-laboratory\lab\genesis\r3-stage\bitcoin.exe" -Algorithm SHA256
+cd "<the folder with bitcoin.exe in it>"
+Get-FileHash .\bitcoin.exe -Algorithm SHA256
 ```
 The `Hash` it prints must start with **`FBCAC071`**. If it does, the file is the real,
 untampered 2009 binary.

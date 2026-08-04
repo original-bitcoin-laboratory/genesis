@@ -18,7 +18,7 @@ A third chain runs alongside them and is **not** a reconstruction:
 
 - **Bitcoin** — the same v0.1.0 client on a genesis of its own, mined at the original difficulty‑1,
   its coinbase carrying the front page of the day it was mined. Its own network, its own signed
-  release (`Bitcoin-v0.1.0`). It does **not** interoperate with the two above, and it has its own
+  release (`Bitcoin-v0.1.1`). It does **not** interoperate with the two above, and it has its own
   seed rather than sharing the crawler.
 
 The reconstructions are released as **candidates** — *a* Bitcoin, not *the* Bitcoin. That

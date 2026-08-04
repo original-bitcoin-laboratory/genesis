@@ -62,7 +62,7 @@
 
   <a class="paper" href="bitcoin.pdf">
     <span class="ic">PDF</span>
-    <span class="t">Bitcoin: A Peer-to-Peer Electronic Cash System<small>Satoshi Nakamoto</small></span>
+    <span class="t">Bitcoin: A Peer-to-Peer Electronic Cash System<small>Satoshi Nakamoto · 2008 · sha256 b1674191&hairsp;…&hairsp;f4f553</small></span>
   </a>
 
   <blockquote>
@@ -79,7 +79,9 @@
 
       <dt>output key</dt>
       <dd style="word-break:break-all">04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba794ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834<br>
-        <span style="opacity:.7">address 1N6X4uVvB82vcMXrCFpn3qMQjTp51AbCci — this key is in the genesis coinbase; you can read it out of the block yourself.</span></dd>
+        <span style="opacity:.7">address 1N6X4uVvB82vcMXrCFpn3qMQjTp51AbCci — the same key in address form, so you can match it
+        by eye; read it out of the block yourself. An identifier, not a destination: this chain assigns it no value,
+        and nothing sent to it anywhere else forms part of this chain.</span></dd>
       <dt>nTime</dt>    <dd>1785781375 — 2026-08-03 18:22:55 UTC</dd>
       <dt>nBits</dt>    <dd>0x1d00ffff</dd>
       <dt>nNonce</dt>   <dd>33394338</dd>
@@ -96,31 +98,57 @@
   </section>
 
   <section class="chain">
-    <h2>Bitcoin v0.1.0</h2>
+    <h2>Bitcoin v0.1.1</h2>
     <dl>
       <dt>Date</dt>
-      <dd>3 August 2026</dd>
+      <dd>4 August 2026</dd>
 
       <dt>Download</dt>
       <dd>
-        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.0/bitcoin-0.1.0.tar.gz">bitcoin-0.1.0.tar.gz</a><br>
-        <span style="opacity:.75">SHA256: 7da79f8e3f79aeca8405cfc4cc375f0356ff8eb73ab2ab41664e90aa4a7ab0e9</span><br>
-        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.0/bitcoin-0.1.0.tar.gz.asc">bitcoin-0.1.0.tar.gz.asc</a> ·
-        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.0/SHA256SUMS">SHA256SUMS</a> ·
-        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.0/SHA256SUMS.asc">SHA256SUMS.asc</a>
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.1/bitcoin-0.1.1.tar.gz">bitcoin-0.1.1.tar.gz</a><br>
+        <span style="opacity:.75">SHA256: 135134d63e7980c5496d6d9dad22c0a9d8c2c021a3708fec5004ca20eea8885e</span><br>
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.1/bitcoin-0.1.1.tar.gz.asc">bitcoin-0.1.1.tar.gz.asc</a> ·
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.1/SHA256SUMS">SHA256SUMS</a> ·
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.1/SHA256SUMS.asc">SHA256SUMS.asc</a>
       </dd>
 
       <dt>bitcoin.exe</dt>
-      <dd><span style="opacity:.75">SHA256: 9480c33d05d412a27750feb917f1436d879be32a37ed493b5b03b41c0b99db06</span></dd>
+      <dd><span style="opacity:.75">SHA256: cfb59606c032faa933d5007e85d36f4cfd02737fc4bc485ec2d8699aeacba5ac</span></dd>
 
       <dt>Signed by</dt>
       <dd>B128 526A F85A E4A8 F22B&nbsp; 949F B014 5F74 B78C F1DA
-        &nbsp;<a href="parthod0x-signing-key.asc">key</a></dd>
+        &nbsp;<a href="parthod0x-signing-key.asc">key</a>
+        &nbsp;<a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA">keyserver</a></dd>
 
       <dt>Source</dt>
-      <dd><a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.0">github.com/original-bitcoin-laboratory/genesis</a></dd>
+      <dd><a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.1">github.com/original-bitcoin-laboratory/genesis</a></dd>
+
+      <dt>Supersedes</dt>
+      <dd><a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.0">v0.1.0</a>, still published and still valid —
+        same source, same ten lines, same genesis, same VERSION 101 on the wire, so the two
+        interoperate. Its binary was compiled with absolute source paths and so carried the
+        builder's directories in its <span class="mono">.rodata</span>; this one is compiled the way
+        Satoshi compiled his, from inside <span class="mono">src/</span> with relative filenames, and
+        the build now refuses to link if any build-machine path survives.</dd>
     </dl>
     <pre>gpg --verify SHA256SUMS.asc SHA256SUMS &amp;&amp; sha256sum -c SHA256SUMS</pre>
+  </section>
+
+  <section class="chain">
+    <h2>What running it discloses</h2>
+    <p>The 2009 client bootstraps over IRC, and this one still does — unchanged but for the channel
+    name. On startup it resolves <span class="mono">chat.freenode.net</span>, connects on 6667, and
+    joins <span class="mono">#bitcoin26</span> with its nickname set to a base58 encoding of its own
+    routable address. <b>Your public IP is published, decodably, into a public channel on
+    infrastructure nobody here operates</b>, where anyone present can read it and the servers keep
+    logs.</p>
+    <p>That is what his client did, and it is left alone for the same reason everything else is:
+    changing it would make this a different program. <span class="mono">ThreadIRCSeed</span> starts
+    unconditionally, so v0.1.0 has no <span class="mono">-noirc</span>; the only lever is the
+    client's own <span class="mono">/proxy</span> option, which leaves the local address unroutable
+    and falls back to a random nickname. The rest is equally period-accurate: no encryption, no
+    authentication, and a <span class="mono">wallet.dat</span> written in the clear. Run it in an
+    isolated VM.</p>
   </section>
 </div>
 

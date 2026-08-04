@@ -34,7 +34,7 @@ block. There is nothing to buy, nothing to claim, and nothing owed to whoever mi
 ```bash
 python make_chain.py                      # derive the client source
 SRC=$PWD/src bash ../build-reconstruction/full_build_wsl.sh
-bash make_release.sh                      # -> dist/bitcoin-0.1.0.tar.gz
+bash make_release.sh                      # -> dist/bitcoin-0.1.1.tar.gz
 ```
 
 `make_chain.py` composes the client source from two inputs: the v0.1.0 source tree, SHA256

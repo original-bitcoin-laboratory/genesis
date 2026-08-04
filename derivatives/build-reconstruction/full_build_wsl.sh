@@ -73,18 +73,57 @@ BOOST="$W/boost_1_42_0"; [ -d "$BOOST/boost" ] || tar xzf "$W/boost_1_42_0.tar.g
 echo "   boost headers OK"
 
 echo "-- [5/5] compile ALL original units + link bitcoin.exe --"
-OB="$W/bitcoin-build"; mkdir -p "$OB"; cd "$OB"
+OB="$W/bitcoin-build"; mkdir -p "$OB"
 CXX="$GXX -std=gnu++98 -w -fpermissive"
-INC="$($WX/wx-config --cxxflags) -I$OSSL/include -I$BDB/build_unix -I$BOOST -I$SRC"
-for f in sha util script net irc db market main uibase ui; do
-  $CXX $INC -c "$SRC/$f.cpp" -o "$f.o"; echo "   compiled $f.cpp"
-done
+
+# Satoshi's makefile compiles `g++ -c $(CFLAGS) -o $@ $<` from inside src/ -- a RELATIVE filename --
+# with its dependencies at short root paths (-I"/boost" -I"/OpenSSL/include" ...). That is why his
+# bitcoin.exe embeds no build-machine paths at all: every path assert() and BOOST_ASSERT bake into
+# .rodata via __FILE__ is either a bare filename or a rooted one. Compiling an ABSOLUTE source path
+# instead writes the builder's home directory into the shipped binary.
+#
+# We reproduce both properties. Sources are compiled by relative name from within $SRC, and every
+# dependency root is rewritten to the name his makefile used, so __FILE__ resolves the period way
+# regardless of where this actually builds. -ffile-prefix-map implies -fmacro-prefix-map, which is
+# what rewrites the __FILE__ string literals.
+#
+# Order matters and is the opposite of the intuition: when several maps match a path gcc applies the
+# LAST one given, so these run least-specific -> most-specific. The two catch-alls come first purely
+# as a backstop; the named roots that follow are what actually land, and they are deliberately the
+# same names Satoshi's makefile used (-I"/boost" -I"/OpenSSL/include" -I"/wxWidgets/include" ...),
+# so the rebuilt binary quotes its headers exactly as his does: /boost/boost/array.hpp.
+MAP="-ffile-prefix-map=$HOME=/obl-home"
+MAP="$MAP -ffile-prefix-map=$W=/obl"
+MAP="$MAP -ffile-prefix-map=$SRC=/bitcoin/src"
+MAP="$MAP -ffile-prefix-map=$BDB=/DB"
+MAP="$MAP -ffile-prefix-map=$OSSL=/OpenSSL"
+MAP="$MAP -ffile-prefix-map=$WX=/wxWidgets"
+MAP="$MAP -ffile-prefix-map=$BOOST=/boost"
+
+INC="$($WX/wx-config --cxxflags) -I$OSSL/include -I$BDB/build_unix -I$BOOST -I."
+( cd "$SRC"
+  for f in sha util script net irc db market main uibase ui; do
+    $CXX $MAP $INC -c "$f.cpp" -o "$OB/$f.o"; echo "   compiled $f.cpp"
+  done )
+cd "$OB"
 OUT="${OUTDIR:-$OB}"
 $GXX -std=gnu++98 *.o $($WX/wx-config --libs) -L"$OSSL" -lcrypto -L"$BDB/build_unix" -ldb_cxx-4.8 \
   -lws2_32 -lmswsock -lole32 -loleaut32 -luuid -static -static-libgcc -static-libstdc++ \
   -o "$OUT/bitcoin-0.1.0-reconstructed.exe"
 echo
 echo "BUILT: $OUT/bitcoin-0.1.0-reconstructed.exe ($(stat -c%s "$OUT/bitcoin-0.1.0-reconstructed.exe") bytes)"
+# Hard gate: the shipped binary must carry no trace of the machine that built it. Satoshi's
+# bitcoin.exe (fbcac071...) contains zero absolute paths -- only relative ones like
+# ../../include/wx/arrstr.h -- so a build that leaks the builder's home directory is a divergence
+# from the artifact we are reconstructing, not merely an untidy one. Fail loudly rather than ship.
+LEAKS="$(grep -aoE '(/home/[A-Za-z0-9_.-]+|/mnt/[a-z]/[A-Za-z0-9_.-]+|[A-Za-z]:\+Users)' \
+        "$OUT/bitcoin-0.1.0-reconstructed.exe" | sort -u || true)"
+if [ -n "$LEAKS" ]; then
+  echo "!! build-machine paths embedded in the binary -- refusing to ship:"; echo "$LEAKS" | sed 's/^/     /'
+  exit 1
+fi
+echo "paths: no build-machine paths embedded (matches the original's property)."
+
 $X-objdump -p "$OUT/bitcoin-0.1.0-reconstructed.exe" | grep -q "DLL Name" && \
   echo "imports: system DLLs only (statically linked wx/openssl/bdb) -- a self-contained GUI client."
 echo "Run it ONLY in an isolated VM (see docs/R3_*): it is a live 2009 node (creates a wallet,"
