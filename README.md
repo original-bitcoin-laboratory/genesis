@@ -129,6 +129,15 @@ ECDSA) by running the node's own Rust validator compiled to **WebAssembly**, ent
 is preserved on independent, content-addressed roots — Software Heritage, IPFS, and Radicle
 ([`docs/PRESERVATION.md`](docs/PRESERVATION.md)) — so it stays retrievable even if a host disappears.
 
+The same treatment is applied to the genesis block *before* it.
+[`docs/NOV08_GENESIS.md`](docs/NOV08_GENESIS.md) reads the block hardcoded into the 15 November 2008
+pre-release field by field, and re-derives its hash — `000006b1…` — from a **76-byte** header, four
+bytes shorter than January's, because `GetHash()` there runs `Hash(BEGIN(hashPrevBlock), END(nNonce))`
+and `nVersion` is excluded from the preimage. The finding is that November's coinbase is the bare
+integer `247422313`: **no headline, no proof of time**, stamped 10 September 2008 — seven weeks before
+the whitepaper was public — on roughly 1/14,700th of January's work. The evidentiary constitution,
+like the monetary one, is January-born.
+
 The same treatment is applied to what came *after* the first release.
 [`docs/V010_TO_V013.md`](docs/V010_TO_V013.md) diffs v0.1.0 against **v0.1.3** of 13 January 2009 —
 the next codebase that survives — file by file, with the archive's provenance traced to two
