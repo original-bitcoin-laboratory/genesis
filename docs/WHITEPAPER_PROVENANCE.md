@@ -23,7 +23,7 @@ sha256        b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553
 |---|---|
 | `bitcoin.org/bitcoin.pdf` today | download it, `sha256sum` |
 | `cdn.nakamotoinstitute.org/docs/bitcoin.pdf` | same |
-| **SourceForge, 2009-11-29** — earliest verified capture | `web.archive.org/web/20091129014142if_/http://sourceforge.net:80/projects/bitcoin/files/Research%20Paper/bitcoin.pdf/` shows **184.3 KB, dated 2009-03-24**. SourceForge used decimal KB, so 184.3 KB = 184,292 bytes — this file. COPA's expert verified a 28 Nov 2009 SourceForge capture as hash-identical to the control copy |
+| **SourceForge mirror, 2009-11-28** — earliest archived **bytes** | `web.archive.org/web/20091128185352if_/http://voxel.dl.sourceforge.net:80/project/bitcoin/Research%20Paper/bitcoin.pdf/bitcoin.pdf` — an actual archived PDF, not a listing. Download it and it hashes to `b1674191…f4f553`, **byte-identical to this file**. This is the capture COPA's expert verified as hash-identical to the control copy |
 | Internet Archive, **2010-07-04 21:36:49** | `web.archive.org/web/20100704213649if_/http://www.bitcoin.org:80/bitcoin.pdf` |
 | Internet Archive, a later capture | same method |
 | this repository | `docs/bitcoin.pdf` |
@@ -468,8 +468,13 @@ records:
 ~Dec 2008    "nakamoto2 added the bitcoin.pdf file"          project activity feed, 2009-01-06 capture
 2009-01-06   listing shows release date "October 31, 2008"    AUTHOR-ENTERED, not a server value
 2009-03-24   "File released: /Research Paper/bitcoin.pdf"     activity feed, 2009-09-16 capture
-2009-11-29   listing shows 184.3 KB dated 2009-03-24          = 184,292 bytes, the canonical
+2009-11-28   the mirror's actual PDF bytes, archived           = the canonical, hash-verified
+2009-11-29   listing shows 184.3 KB dated 2009-03-24           consistent
 ```
+
+**And the 2009-11-28 capture confirms the December file is gone rather than recovering it**: the
+bytes sitting at the `Research Paper/bitcoin.pdf` path by then are the March 2009 revision, not
+whatever was uploaded on 8/9 December 2008.
 
 The 2009-09-16 capture states the release as *"176 days ago"* — a figure SourceForge computed from
 its own database. **176 days before 2009-09-16 is 2009-03-24**, the exact day of the canonical PDF's
