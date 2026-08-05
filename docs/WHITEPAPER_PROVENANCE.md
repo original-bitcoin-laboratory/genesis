@@ -250,7 +250,45 @@ proposal, so the dating is unaffected — but the two statements are not identic
   dated 3 October and its content is pre-9-November; whether the announcement linked *this* file is
   consistent with the record but not demonstrated by it.
 
-## The file served on 31 October 2008 is not identified
+## The court's agreed chronology
+
+¶23 of the judgment sets out an **agreed** timeline for the period the pseudonym was in use. Three
+lines bear directly on this note, and one of them supplies a date no public record gave us:
+
+```
+23.1  In August 2008, Satoshi acquired the bitcoin.org domain name
+23.3  On 5 October 2008, Satoshi registered an account (the nakamoto2 Account) at SourceForge
+23.4  On 31 October 2008, Satoshi released the White Paper by posting a link to it
+23.5  On 8/9 DECEMBER 2008, Satoshi uploaded the White Paper to the SourceForge Bitcoin Project
+23.9  On 24 March 2009, Satoshi uploaded a further version of the White Paper
+```
+
+¶23.9 confirms the replacement date derived above from SourceForge's own activity feed, and ¶23.5
+dates the first SourceForge upload — which the feed could only place as *"1 month ago"* relative to a
+January 2009 capture.
+
+## The file served on 31 October 2008
+
+**Not proved, and constrained tightly.** The record now says:
+
+```
+2008-10-03   the surviving draft's internal CreationDate
+2008-10-31   the announcement links bitcoin.org/bitcoin.pdf and quotes an abstract
+             — and that abstract matches the surviving draft word for word
+2008-11-02   a list member downloads bitcoin.org/bitcoin.pdf and keeps it
+             — the file he kept has internal CreationDate 2008-10-03
+```
+
+For the 31 October file to have been a *different* document, Satoshi would have had to serve some
+file on 31 October and then, within two days, replace it with one whose creation date is **earlier**.
+The simpler reading accounts for every observation: one file, created 3 October, served from the
+announcement through early November.
+
+**What would settle it outright:** a capture, download or published hash of `bitcoin.org/bitcoin.pdf`
+dated 31 October or 1 November 2008. None exists — the Internet Archive's first capture of that URL
+is 2010-07-04, and Common Crawl's 2008–2009 crawl never visited the domain.
+
+## What was searched and is genuinely not there
 
 Searched, and recorded so nobody repeats it:
 
