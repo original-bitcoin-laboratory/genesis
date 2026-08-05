@@ -20,6 +20,9 @@ The January 8, 2009 announcement identifies `bitcoin-0.1.0.rar`, says the open-s
 - Local captured copy: `bitcoin-whitepaper.pdf`, sha256
   `b1674191a88ec5cdd733e4240a818031e83a5da0328e9cc0b2683bda8f0a1a4c`
 
+Full working, with the archive-dated evidence that the text was revised between 31 Jan and
+3 Mar 2009: [`docs/WHITEPAPER_PROVENANCE.md`](../docs/WHITEPAPER_PROVENANCE.md).
+
 **Which whitepaper this is.** The paper was announced on 31 October 2008. **This file was created on
 24 March 2009** — its `/Info` dictionary reads `/CreationDate D:20090324113315-06'00'`,
 `/Producer OpenOffice.org 2.4`. It is a later revision, not the file behind the October 2008 link.
