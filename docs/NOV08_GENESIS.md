@@ -100,18 +100,73 @@ The same fields under a January-style 80-byte header — `nVersion=1` prepended 
 `a9a05946db04bfc4283e0864…`, which matches nothing. The header shape is a real structural
 difference, not a formatting detail, and this is the check that proves it.
 
-### What could not be re-derived, and why that matters
+### The merkle root, and what re-deriving it recovered
 
-**The merkle root cannot be recomputed from this archive**, and the reason is the point of the
-document. A single-transaction block's merkle root is the transaction hash, which needs the
-coinbase serialized — which needs the numeric values of `OP_CODESEPARATOR` and `OP_CHECKSIG`. Those
-values are not in the archive.
+An earlier version of this document said the merkle root **could not** be recomputed from this
+archive, and stopped there. That was too cautious, and the caution hid a result.
 
-They could be taken from January. They are not taken from January here, because that would be
-assuming a later artifact's constants hold in an earlier one — the same class of error as assuming
-v0.1.0 has a `verack` because later Bitcoin does. It does not; `grep -rn verack` over the v0.1.0
-tree returns nothing. An unverified merkle root is a smaller loss than a verified-looking one built
-on an imported assumption.
+The reasoning was sound as far as it went. A single-transaction block's merkle root is the
+transaction hash, which needs the coinbase serialized, which needs the numeric values of
+`OP_CODESEPARATOR` and `OP_CHECKSIG`. **`script.h` is not in this archive** — it is a four-file
+fragment — so those values cannot be read. Importing January's values and declaring a match would
+have been the error this lab keeps naming: assuming a later artifact's constants hold in an earlier
+one.
+
+But there is a difference between *assuming* a constant and *solving* for it. The root is a 256-bit
+commitment published by the author. Everything else in the preimage comes from `main.h`, which **is**
+in the archive:
+
+```
+vin   count 1, prevout null (32 zero bytes + 0xFFFFFFFF), scriptSig = 04 695dbf0e
+vout  count 1, nValue 10000, nSequence 0xFFFFFFFF  <- on CTxOut in November, not CTxIn
+      scriptPubKey = [OP_CODESEPARATOR] [0x41] [65-byte pubkey] [OP_CHECKSIG]
+nLockTime 0        nVersion excluded (SER_GETHASH)     posNext excluded (SER_DISK only)
+```
+
+That leaves exactly two unknown bytes. There are 65,536 possibilities. **Exactly one reproduces
+`769a5e93…`:**
+
+| | November 2008 | January 2009 (`script.h`) |
+|---|---|---|
+| `OP_CODESEPARATOR` | **0xa9** | 0xab |
+| `OP_CHECKSIG` | **0xaa** | 0xac |
+
+A chance match is on the order of 65,536 / 2²⁵⁶. This is not an inference.
+
+### What the shift means: no OP_HASH160 in November
+
+January's opcode enum is sequential through this range:
+
+```
+OP_RIPEMD160 0xa6   OP_SHA1 0xa7   OP_SHA256 0xa8
+OP_HASH160   0xa9   OP_HASH256 0xaa
+OP_CODESEPARATOR 0xab   OP_CHECKSIG 0xac
+```
+
+November's `CODESEPARATOR`/`CHECKSIG` sit **exactly two slots lower** — precisely the two positions
+January gives to `OP_HASH160` and `OP_HASH256`. Two opcodes were inserted between the versions, and
+they are those two.
+
+**`OP_HASH160` is the opcode that makes a Bitcoin address possible.** Pay-to-public-key-hash is
+`OP_DUP OP_HASH160 <20-byte hash> OP_EQUALVERIFY OP_CHECKSIG`; without `OP_HASH160` there is no way
+to pay to the *hash* of a key, only to a key itself — which is what both genesis blocks in fact do.
+
+The lab had already concluded from the source diff that P2PKH and the address format are
+January-born. This establishes the same thing by a different and stronger route: a cryptographic
+commitment made by the author in September 2008, which can only be satisfied by an opcode table that
+has no `OP_HASH160` in it.
+
+### It also validates the whole reconstruction at once
+
+The two unknowns were solved against everything else being right. Had `nSequence` been on `CTxIn`
+rather than `CTxOut`, or `nVersion` been included under `SER_GETHASH`, or `posNext` been in the hash
+preimage, or the `CBigNum` pubkey literal not been byte-reversed — **no** pair of bytes in 65,536
+would have matched. One did. Every structural claim in the table below is therefore confirmed by the
+same 256-bit check, not asserted alongside it.
+
+An independent corroboration, from Satoshi's own debug line: it prints
+`scriptPubKey=51b0`, which is bytes **4 and 5** of the script. Under this reconstruction those bytes
+are the third and fourth of the reversed pubkey — `04 d4 51 b0 …`. They match.
 
 ## November against January
 
