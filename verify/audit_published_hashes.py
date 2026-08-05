@@ -15,6 +15,14 @@ What it does:
 Usage:  python audit_published_hashes.py <doc-dir> [<doc-dir> ...] --artifacts <dir> [<dir> ...]
 Exit code 1 if any near-miss is found.
 """
+
+# KNOWN LOOK-ALIKE (added 2026-08-06). A 2024 re-save of the 3 October 2008 draft circulates on
+# GitHub (2ndEntropy/BitcoinWP-Steganalysis) under a 2008 filename. It keeps the original
+# /CreationDate, so it reads as a 2008 file, but carries /ModDate D:20240330175340+10'00' and an
+# unequal /ID pair. Publishing its hash as "the October 2008 draft" would be wrong.
+#     188,867 bytes  sha256 f5aa8f4b8ea559d4e37052ee6c5b398bc9e1fff86f99ad1d9e3e0a6f64b63c96
+#     the genuine draft: 183,697 bytes  sha256 427c63b364c6db914cf23072a09ffd53ee078397b7c6ab2d604e12865a982faa
+
 import hashlib, os, re, sys
 
 sys.stdout.reconfigure(encoding="utf-8")
