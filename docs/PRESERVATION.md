@@ -7,7 +7,7 @@ bytes, offline, on any device). A recipe is only as durable as its availability.
 side quest here — it *is* the mission: keep the source of truth **retrievable, content-addressed, and
 self-verifying**, so it survives a dead link, a lost account, or a host that disappears.
 
-Four independent roots, so no single one is load-bearing:
+Five independent roots, so no single one is load-bearing:
 
 | Layer | What it preserves | Status |
 |---|---|---|
@@ -15,6 +15,27 @@ Four independent roots, so no single one is load-bearing:
 | **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — every release's signed assets are pinned. CIDs are listed per release in the table below; retrievable from any gateway and cross-checkable against `SHA256SUMS`, so a gateway copy either matches or does not. |
 | **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **live.** `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`), synced by hand at each release and replicated by **8 public seeds** at the 5 Aug 2026 sync. Synced manually rather than from CI, deliberately: the identity key is unencrypted and stays off GitHub. |
 
+
+## OpenTimestamps — a date nobody here can move
+
+Every `Bitcoin-v0.1.3` asset carries a `.ots` proof, submitted to four independent calendars
+(`a.pool`/`b.pool.opentimestamps.org`, `a.pool.eternitywall.com`, `ots.btc.catallaxy.com`). Once the
+calendars fold them into a Bitcoin block, the proof shows the file existed before that block — and
+that is attested by Bitcoin's own proof-of-work rather than by us, a host, or a certificate
+authority.
+
+```
+ots verify bitcoin-0.1.3.tar.gz.ots     # needs the tarball beside it
+ots upgrade bitcoin-0.1.3.tar.gz.ots    # fetch the completed proof once a block confirms
+```
+
+Freshly stamped proofs read *"Pending confirmation in Bitcoin blockchain"* until then; that is the
+normal state for the first few hours, not a failure.
+
+The hash stamped is **`d24469a4…`**, the reproducible release. That choice is the point: stamping a
+binary nobody else can regenerate would prove only that *we* had a file on a date. Stamping one that
+anyone can rebuild from the published 2009 archive means the date attaches to something a stranger
+can independently arrive at.
 
 ## Pinned release CIDs
 

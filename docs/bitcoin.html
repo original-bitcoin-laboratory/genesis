@@ -117,10 +117,62 @@
   </section>
 
   <section class="chain">
+    <h2>Bitcoin v0.1.3</h2>
+    <dl>
+      <dt>Date</dt>
+      <dd>5 August 2026</dd>
+
+      <dt>Download</dt>
+      <dd>
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.3/bitcoin-0.1.3.tar.gz">bitcoin-0.1.3.tar.gz</a><br>
+        <span style="opacity:.75">SHA256: d24469a4894ad40554fab111b823faf2aa57a42d901f38089a1bb87753c93c9b</span><br>
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.3/bitcoin-0.1.3.tar.gz.asc">.asc</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.3/SHA256SUMS">SHA256SUMS</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.3/SHA256SUMS.asc">SHA256SUMS.asc</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.3/bitcoin-0.1.3.tar.gz.ots">.ots</a>
+      </dd>
+
+      <dt>bitcoin.exe</dt>
+      <dd><span style="opacity:.75">SHA256: c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d</span></dd>
+
+      <dt>Signed by</dt>
+      <dd>B128 526A F85A E4A8 F22B&nbsp; 949F B014 5F74 B78C F1DA
+        &nbsp;<a href="parthod0x-signing-key.asc">key</a>
+        &nbsp;<a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA">keyserver</a></dd>
+
+      <dt>Source</dt>
+      <dd><a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.3">github.com/original-bitcoin-laboratory/genesis</a></dd>
+
+      <dt>Changes</dt>
+      <dd>The binary is reproducible. Build it yourself from the published 2009 archive and the bytes
+        hash to the same value, so the signature stops attesting that we built something and starts
+        attesting to a file anyone can regenerate. It took two flags &mdash;
+        <span class="mono">-Wl,--no-insert-timestamp</span> and
+        <span class="mono">SOURCE_DATE_EPOCH</span>, pinned to this chain&rsquo;s own genesis instant.
+        Not one instruction had ever differed between builds; two machines disagreed only about what
+        time it was.
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/BUILD_NOTES.md">Build notes</a>.</dd>
+
+      <dt>Rebuild it</dt>
+      <dd><pre style="margin-top:4px;font-size:11px;line-height:1.6">bash scripts/fetch-artifacts.sh
+tar xzf artifacts/jan09/bitcoin-0.1.0.tgz -C extracted
+python3 derivatives/bitcoin/make_chain.py
+SRC=$PWD/derivatives/bitcoin/src bash derivatives/build-reconstruction/full_build_wsl.sh</pre>
+        <span style="opacity:.7">A GitHub runner does exactly this on every change to the build
+        inputs and fails if the hash moves.</span></dd>
+    </dl>
+    <pre>gpg --verify SHA256SUMS.asc SHA256SUMS &amp;&amp; sha256sum -c SHA256SUMS</pre>
+  </section>
+
+  <section class="chain">
     <h2>Bitcoin v0.1.2</h2>
     <dl>
       <dt>Date</dt>
       <dd>5 August 2026</dd>
+
+      <dt>Status</dt>
+      <dd>Superseded by v0.1.3, still published, signature still valid. Its binary predates the
+        reproducibility flags, so it cannot be rebuilt byte-for-byte.</dd>
 
       <dt>Download</dt>
       <dd>
@@ -163,7 +215,7 @@
       <dd>4 August 2026</dd>
 
       <dt>Status</dt>
-      <dd>Superseded by v0.1.2, still published, signature still valid. This is the binary that mined
+      <dd>Superseded by v0.1.3, still published, signature still valid. This is the binary that mined
         block 1, and the evidence records for that block are bound to its hash.</dd>
 
       <dt>Download</dt>
@@ -205,7 +257,7 @@
       <dd>3 August 2026 — the first release</dd>
 
       <dt>Status</dt>
-      <dd>Superseded by v0.1.2, still published, signature still valid. Same source, same ten lines,
+      <dd>Superseded by v0.1.3, still published, signature still valid. Same source, same ten lines,
         same genesis, same <span class="mono">VERSION 101</span> on the wire — so a v0.1.0 node and a
         v0.1.1 node are on one network and neither needs replacing.</dd>
 
@@ -294,7 +346,7 @@ SHA256SUMS.asc            QmcVxjbgyQxj6KWP32MoBrYfvPfy4VRnn9ZyAeW5conQH2</pre>
     <span class="lf-h" id="lf-btc">bitcoin&nbsp;—</span></span></p>
   <p class="lf-links">
     <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.5.0-experimental">v0.5.0-experimental</a> ·
-    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.2">Bitcoin-v0.1.2</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.3">Bitcoin-v0.1.3</a> ·
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md">source · verify</a> ·
     <a href="parthod0x-signing-key.asc" title="ed25519 release-signing key">key B128&nbsp;526A…B78C&nbsp;F1DA</a>
     <a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA"

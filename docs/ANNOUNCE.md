@@ -18,7 +18,7 @@ A third chain runs alongside them and is **not** a reconstruction:
 
 - **Bitcoin** — the same v0.1.0 client on a genesis of its own, mined at the original difficulty‑1,
   its coinbase carrying the front page of the day it was mined. Its own network, its own signed
-  release (`Bitcoin-v0.1.2`). It does **not** interoperate with the two above, and it has its own
+  release (`Bitcoin-v0.1.3`). It does **not** interoperate with the two above, and it has its own
   seed rather than sharing the crawler.
 
 The reconstructions are released as **candidates** — *a* Bitcoin, not *the* Bitcoin. That
@@ -112,7 +112,7 @@ ever moves, the name follows it — so prefer the name, and the reproducible rec
 
 ### Or join Bitcoin with the released 2009 client
 
-`bitcoin-0.1.2.tar.gz` ships the actual client, and it will find the network on its own — but read this
+`bitcoin-0.1.3.tar.gz` ships the actual client, and it will find the network on its own — but read this
 first, because it behaves like software from 2009, which is the point.
 
 It has **no `-connect` and no `-addnode`**. Reading `mapArgs` in `ui.cpp`, the switches it honours are
@@ -157,7 +157,7 @@ so the nickname falls back to a random value. There is no transport encryption, 
 `wallet.dat` is written in the clear. **Run it in an isolated VM.**
 
 ```
-verify first:  sha256  099c011d058a4f4e6b04dca2c53cd79d9c6351d3409a2933f008487e2ee8d7df
+verify first:  sha256  d24469a4894ad40554fab111b823faf2aa57a42d901f38089a1bb87753c93c9b
 then:          bitcoin.exe          # add /gen to mine
 ```
 

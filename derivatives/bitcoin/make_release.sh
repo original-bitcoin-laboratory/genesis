@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# make_release.sh -- assemble bitcoin-0.1.2.tar.gz: the client binary, license.txt, readme.txt,
+# make_release.sh -- assemble bitcoin-0.1.3.tar.gz: the client binary, license.txt, readme.txt,
 # src/, and RELEASE.txt. The binary is statically linked, so it ships no DLLs.
 #
 # Run:  bash make_release.sh          (after make_chain.py and the build)
@@ -13,7 +13,7 @@ SRC="$HERE/src"                                # derived tree from make_chain.py
 # has to stay exactly where the evidence records say it is.
 EXE="${EXE:-$HERE/build/bitcoin-0.1.0-reconstructed.exe}"
 OUT="$HERE/dist"
-NAME="bitcoin-0.1.2"
+NAME="bitcoin-0.1.3"
 
 [ -d "$SRC" ]  || { echo "!! run: python make_chain.py"; exit 2; }
 [ -f "$EXE" ]  || { echo "!! build first: SRC=$SRC bash ../build-reconstruction/full_build_wsl.sh"; exit 2; }
@@ -25,48 +25,69 @@ cp    "$ORIG/readme.txt"      "$OUT/$NAME/readme.txt"       # unmodified
 cp    "$EXE"                  "$OUT/$NAME/bitcoin.exe"
 
 cat > "$OUT/$NAME/RELEASE.txt" <<'TXT'
-Bitcoin v0.1.2
+Bitcoin v0.1.3
 ==============
 
 The client, the chain and the protocol are unchanged from v0.1.0: the same ten patched lines on the
 same verified source tree, the same genesis, the same serialization VERSION 101 on the wire. A node
-built from any of the three releases speaks to a node built from either other. This is a build-level
-release, the second one.
+built from any of the four releases speaks to a node built from any other. This is a build-level
+release, the third one.
 
 What changed
 ------------
-The client was executed for the first time on 4 August 2026, to mine block 1. It mined it. It also
-showed two things three days of hashing and string-scanning had not: it wrote no debug.log, and
-wxWidgets logged "Can't load bitmap 'send20' from resources!" at startup.
+The binary is reproducible. You can rebuild it and get the same bytes.
 
-Both are divergences in how we built it, not in what it does. This release removes them.
+  bitcoin.exe  c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d
 
-  * __WXDEBUG__ is now defined, and wxWidgets is rebuilt --enable-debug to match. The whole body of
-    OutputDebugStringF sits inside #ifdef __WXDEBUG__, so without it the client emits no diagnostic
-    output at all -- not to file, not to OutputDebugString. It now writes debug.log.
+Until now the signature on a release said only that we built something. It now says something a
+stranger can check: build it yourself from the published 2009 archive, and if your bytes hash to
+that, the signed file is the file you just made. A GitHub-hosted runner does exactly this on every
+change to the build inputs and fails if the hash moves --
+.github/workflows/reproducible.yml, which starts by fetching bitcoin-0.1.0.tgz over the network
+rather than trusting anything in the repository.
 
-  * windres ui.rc now runs, producing the .rsrc section with the eleven bitmaps and icons. Our
-    binary had no resource directory at all; the missing toolbar images were the visible symptom.
+It took two flags, both found by building twice and comparing, which nobody had done before.
 
-  * -mthreads is set, as makefile:28 sets it. On MinGW it selects thread-safe C++ exception handling
-    and the _beginthreadex runtime. This client runs five threads.
+  * -Wl,--no-insert-timestamp. Two builds of identical inputs on one machine differed in 4 bytes of
+    15,529,604: two in the PE TimeDateStamp at 0x88, two in the CheckSum at 0xd8 that derives from
+    it. ld writes the build clock into the header.
 
-  * sha.cpp is compiled -O3, overriding the -O0 every other unit gets, as src/makefile specifies.
-    It is the mining inner loop.
+  * SOURCE_DATE_EPOCH. With the timestamp fixed, a second machine with an identical toolchain still
+    differed in 8 bytes. Six were in .rodata and every one was an ASCII digit -- wxWidgets stamping
+    its own build clock through wxGetLibraryVersionInfo. gcc honours SOURCE_DATE_EPOCH for __DATE__
+    and __TIME__, and the build pins it to 1785781375: 2026-08-03 18:22:55 UTC, this chain's own
+    genesis. The string inside the binary reads "Aug  3 2026" / "18:22:55".
 
-src/makefile takes BUILD=debug|release and defaults to debug; the build now takes the same variable
-with the same default, and reproduces CFLAGS from makefile:28 in full. The build notes are in
-docs/BUILD_NOTES.md.
+Not one instruction ever differed. Not a symbol, not a section, not an offset, not a byte of any of
+the four statically linked period libraries. Two machines hours apart emitted identical machine code
+and disagreed only about what time it was.
 
+What this does not buy
+----------------------
+Freedom from the toolchain. The bytes above are reproducible with gcc 13.2.0 using the *win32*
+thread model, binutils 2.41.90, mingw-w64 11.0.1, on Ubuntu 24.04. A different compiler emits
+different code. Ubuntu ships a posix thread variant alongside the win32 one; they are not
+interchangeable and do not produce the same binary. The CI job sets the alternative explicitly and
+prints the full package set on every run, so a mismatch is diagnosable rather than mysterious.
 
-One property is stated rather than changed: this binary is statically linked and ships no DLLs, so
-OpenSSL, Berkeley DB, wxWidgets and the C++ runtime are all inside the executable. That makes it one
-file that either runs or does not, with nothing beside it that has to survive intact.
+This is what reproducible building means everywhere. Bitcoin Core pins its toolchain with Guix for
+the same reason.
 
+To rebuild it yourself
+----------------------
+  git clone https://github.com/original-bitcoin-laboratory/genesis && cd genesis
+  bash scripts/fetch-artifacts.sh          # bitcoin-0.1.0.tgz, from the Nakamoto Institute
+  tar xzf artifacts/jan09/bitcoin-0.1.0.tgz -C extracted
+  python3 derivatives/bitcoin/make_chain.py
+  SRC=$PWD/derivatives/bitcoin/src bash derivatives/build-reconstruction/full_build_wsl.sh
+  sha256sum derivatives/bitcoin/build/bitcoin-0.1.0-reconstructed.exe
 
-v0.1.0 and v0.1.1 remain published and their signatures remain valid. Nothing about the chain is
-affected: consensus, the wire format and the genesis are untouched, and block 1 was mined and
-relayed by the v0.1.1 binary. If you are running either, you are on the same network.
+make_chain.py refuses unless each of the ten edits matches exactly once, so that step re-verifies
+the extracted tree as a side effect. Full working: docs/BUILD_NOTES.md.
+
+v0.1.0, v0.1.1 and v0.1.2 remain published and their signatures remain valid. Nothing about the
+chain is affected: consensus, the wire format and the genesis are untouched, and block 1 was mined
+and relayed by the v0.1.1 binary.
 
 Genesis
 -------
