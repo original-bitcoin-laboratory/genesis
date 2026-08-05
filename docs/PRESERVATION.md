@@ -12,8 +12,31 @@ Three independent roots, so no single one is load-bearing:
 | Layer | What it preserves | Status |
 |---|---|---|
 | **Software Heritage** | full history of all four OBL repositories, in the universal source-code archive | **live** — [`.github/workflows/preserve.yml`](../.github/workflows/preserve.yml) requests archival daily and on every release, no credentials required |
-| **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — pins each release's signed assets; latest `Bitcoin-v0.1.1`: `bitcoin-0.1.1.tar.gz` → `QmUrSdkk7fzWJtKsSzKxLCt9gXDCd4iSWDw9hRu1p1e6Kd`, `.asc` → `QmTQRrGbexanc14C7ygRQeCGXwXnCW55wYjLNXEmy3EWS9`, `SHA256SUMS` → `QmS7cgPswk63jYJtZYbewvVwTXEMx44WciAjqEV3pzBfT4`, `SHA256SUMS.asc` → `QmQ53LWCPWwzyJmEq44pHerv2wuAA5gTfu3ofCFbWubpbF`; `v0.5.0-experimental`: `obl-genesis-0.5.0.tar.gz` → `QmVSNMtK2yKSSyqgTQrig1zSf6qP62QuCiaMRTppQbo7BZ` (retrievable by CID from any gateway, cross-checkable against `SHA256SUMS`) |
+| **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — every release's signed assets are pinned. CIDs are listed per release in the table below; retrievable from any gateway and cross-checkable against `SHA256SUMS`, so a gateway copy either matches or does not. |
 | **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **published** as `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`); durable public seeding pending |
+
+
+## Pinned release CIDs
+
+Every signed asset of every Bitcoin release, by content hash. `ipfs get <CID>`, or any public
+gateway — then check what comes back against `SHA256SUMS` from the release itself.
+
+| release | file | CID |
+|---|---|---|
+| Bitcoin-v0.1.2 | `bitcoin-0.1.2.tar.gz` | `QmXeWBKYEJCBYJaP7N1FLjQbLxmqWtTjydyqLwBncRKUvP` |
+|  | `bitcoin-0.1.2.tar.gz.asc` | `Qmcgxva1kv9SGL6EwwEoCYN8RfbB9HBbeXyPziQpfMjeXW` |
+|  | `SHA256SUMS` | `QmU1JwBJ9Enw2VJwKoet1HLnpRiKWpT5yPsHavGJ1rTHXb` |
+|  | `SHA256SUMS.asc` | `QmcVxjbgyQxj6KWP32MoBrYfvPfy4VRnn9ZyAeW5conQH2` |
+| Bitcoin-v0.1.1 | `bitcoin-0.1.1.tar.gz` | `QmUrSdkk7fzWJtKsSzKxLCt9gXDCd4iSWDw9hRu1p1e6Kd` |
+|  | `bitcoin-0.1.1.tar.gz.asc` | `QmTQRrGbexanc14C7ygRQeCGXwXnCW55wYjLNXEmy3EWS9` |
+|  | `SHA256SUMS` | `QmS7cgPswk63jYJtZYbewvVwTXEMx44WciAjqEV3pzBfT4` |
+|  | `SHA256SUMS.asc` | `QmQ53LWCPWwzyJmEq44pHerv2wuAA5gTfu3ofCFbWubpbF` |
+| Bitcoin-v0.1.0 | `bitcoin-0.1.0.tar.gz` | `QmXGG3KsrnTqFwvbDtZgsPncoAn4hRrNxN3tGiHKiXgwsW` |
+|  | `bitcoin-0.1.0.tar.gz.asc` | `Qmf5ov9Z4PNM9bTHAhcE5YpSu6wHyApXc3ptEEzca4bjuc` |
+|  | `SHA256SUMS` | `Qmaf8bxgYaVRCKuPhjLYjNKsJo2w83ZLkYfSgYJzqhuw2z` |
+|  | `SHA256SUMS.asc` | `QmSBaJArg2Hr1u1FBCjacbhvo2WBYU3Wp4j3vmBBjoozXp` |
+
+`v0.5.0-experimental`: `obl-genesis-0.5.0.tar.gz` → `QmVSNMtK2yKSSyqgTQrig1zSf6qP62QuCiaMRTppQbo7BZ`.
 
 Everything preserved is **hash-anchored**, which is what makes redundancy safe: a mirror cannot silently
 drift, because the genesis, the release tarballs, and the evidence bundles all carry digests that a copy

@@ -228,6 +228,35 @@
   </section>
 
   <section class="chain">
+    <h2>Mirrors</h2>
+    <dl>
+      <dt>IPFS</dt>
+      <dd>v0.1.2, by content hash &mdash; retrievable from any gateway, and either it matches
+        <span class="mono">SHA256SUMS</span> or it does not:
+        <pre style="margin-top:10px">bitcoin-0.1.2.tar.gz      QmXeWBKYEJCBYJaP7N1FLjQbLxmqWtTjydyqLwBncRKUvP
+bitcoin-0.1.2.tar.gz.asc  Qmcgxva1kv9SGL6EwwEoCYN8RfbB9HBbeXyPziQpfMjeXW
+SHA256SUMS                QmU1JwBJ9Enw2VJwKoet1HLnpRiKWpT5yPsHavGJ1rTHXb
+SHA256SUMS.asc            QmcVxjbgyQxj6KWP32MoBrYfvPfy4VRnn9ZyAeW5conQH2</pre>
+        <span style="opacity:.7">Earlier releases:
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/PRESERVATION.md">PRESERVATION.md</a></span></dd>
+
+      <dt>Radicle</dt>
+      <dd><span class="mono">rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg</span>
+        <span style="opacity:.7">&mdash; published once by hand, and <b>not</b> currently kept in sync or
+        seeded, so treat it as a recorded identifier rather than a live mirror until that changes.</span></dd>
+
+      <dt>Software&nbsp;Heritage</dt>
+      <dd><a href="https://archive.softwareheritage.org/browse/origin/directory/?origin_url=https://github.com/original-bitcoin-laboratory/genesis">archived origin</a>
+        <span style="opacity:.7">&mdash; full snapshots of every commit</span></dd>
+
+      <dt>Git</dt>
+      <dd><a href="https://github.com/original-bitcoin-laboratory/genesis">github.com/original-bitcoin-laboratory/genesis</a></dd>
+    </dl>
+    <p class="lnk">Three live roots. The genesis re-derives from source with none of them
+      (<a href="verify-genesis.html">in a browser</a>), and any node you run is an equal peer.</p>
+  </section>
+
+  <section class="chain">
     <h2>What running it discloses</h2>
     <p>The client bootstraps over IRC. On startup it resolves
     <span class="mono">chat.freenode.net</span>, connects on 6667, and joins

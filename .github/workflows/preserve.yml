@@ -43,6 +43,7 @@ jobs:
           RAD_KEYPAIR: ${{ secrets.RAD_KEYPAIR }}
         run: |
           if [ -z "$RAD_KEYPAIR" ]; then
+          echo "::warning title=Radicle mirror not configured::RAD_KEYPAIR is not set, so nothing was mirrored to Radicle. This job is green because skipping is not an error - which is exactly how a dormant mirror comes to look like a working one. docs/PRESERVATION.md records Radicle as published but NOT synced or seeded; keep that accurate, or set the secret."
             echo "RAD_KEYPAIR not set — Radicle mirror skipped. See docs/PRESERVATION.md to enable."
             exit 0
           fi
