@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:files="http://sourceforge.net/api/files.rdf#" xmlns:media="http://video.search.yahoo.com/mrss/" xmlns:doap="http://usefulinc.com/ns/doap#" xmlns:sf="http://sourceforge.net/api/sfelements.rdf#" version="2.0">
+  <channel xmlns:files="http://sourceforge.net/api/files.rdf#" xmlns:media="http://video.search.yahoo.com/mrss/" xmlns:doap="http://usefulinc.com/ns/doap#" xmlns:sf="http://sourceforge.net/api/sfelements.rdf#">
+    <title><![CDATA[Bitcoin downloads]]></title>
+    <link>http://sourceforge.net/api/file/index/project-id/244765/rss</link>
+    <description><![CDATA[Files from Bitcoin. Bitcoin is a decentralized P2P electronic cash system without a central server or trusted parties. Users hold the crypto keys to their own money and transact directly with each other, with the help of the network to check for double-spending.]]></description>
+    <pubDate>Sat, 28 Nov 2009 20:30:44 +0000</pubDate>
+    <managingEditor>noreply@sourceforge.net (SourceForge.net)</managingEditor>
+    <generator>Zend_Feed</generator>
+    <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+    <item>
+      <title><![CDATA[/Bitcoin]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FBitcoin/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FBitcoin/download</guid>
+      <description><![CDATA[/Bitcoin]]></description>
+      <pubDate>Sat, 28 Nov 2009 20:30:44 +0000</pubDate>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1743384</files:sf-file-id>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="" url="http://sourceforge.net/project/bitcoin/files/Bitcoin/download" filesize=""><media:title>Research Paper</media:title><media:hash algo="md5"></media:hash></media:content>
+    </item>
+    <item>
+      <title><![CDATA[/Research Paper]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FResearch%20Paper/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FResearch%20Paper/download</guid>
+      <description><![CDATA[/Research Paper]]></description>
+      <pubDate>Sat, 28 Nov 2009 20:30:44 +0000</pubDate>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1743385</files:sf-file-id>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="" url="http://sourceforge.net/project/bitcoin/files/Research Paper/download" filesize=""><media:title>Research Paper</media:title><media:hash algo="md5"></media:hash></media:content>
+    </item>
+    <item>
+      <title><![CDATA[/Bitcoin/bitcoin-0.1.0.rar]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.0.rar/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.0.rar/download</guid>
+      <description><![CDATA[/Bitcoin/bitcoin-0.1.0.rar]]></description>
+      <pubDate>Sat, 28 Nov 2009 20:30:44 +0000</pubDate>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1743387</files:sf-file-id>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="" url="http://sourceforge.net/project/bitcoin/files/Bitcoin/bitcoin-0.1.0.rar/download" filesize=""><media:title>Research Paper</media:title><media:hash algo="md5"></media:hash></media:content>
+    </item>
+    <item>
+      <title><![CDATA[/Bitcoin/bitcoin-0.1.0.rar/bitcoin-0.1.0.rar]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.0.rar%2Fbitcoin-0.1.0.rar/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.0.rar%2Fbitcoin-0.1.0.rar/download</guid>
+      <description><![CDATA[/Bitcoin/bitcoin-0.1.0.rar/bitcoin-0.1.0.rar]]></description>
+      <pubDate>Mon, 12 Jan 2009 20:44:25 +0000</pubDate>
+      <category>Bitcoin</category>
+      <files:sf-package-id xmlns:files="http://sourceforge.net/api/files.rdf#">298441</files:sf-package-id>
+      <files:sf-release-id xmlns:files="http://sourceforge.net/api/files.rdf#">652352</files:sf-release-id>
+      <files:version xmlns:files="http://sourceforge.net/api/files.rdf#">bitcoin-0.1.0.rar</files:version>
+      <files:release-notes-url xmlns:files="http://sourceforge.net/api/files.rdf#">http://sourceforge.net/project/shownotes.php?release_id=652352</files:release-notes-url>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1555818</files:sf-file-id>
+      <files:extra-info xmlns:files="http://sourceforge.net/api/files.rdf#">RAR archive data</files:extra-info>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="application/x-rar" url="http://sourceforge.net/project/bitcoin/files/Bitcoin/bitcoin-0.1.0.rar/bitcoin-0.1.0.rar/download" filesize="2127418"><media:title>Bitcoin</media:title><media:hash algo="md5">9a73e0826d5c069091600ca295c6d224</media:hash></media:content>
+      <files:download-count xmlns:files="http://sourceforge.net/api/files.rdf#">57</files:download-count>
+    </item>
+    <item>
+      <title><![CDATA[/Bitcoin/bitcoin-0.1.2.rar]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.2.rar/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.2.rar/download</guid>
+      <description><![CDATA[/Bitcoin/bitcoin-0.1.2.rar]]></description>
+      <pubDate>Sat, 28 Nov 2009 20:30:44 +0000</pubDate>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1743386</files:sf-file-id>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="" url="http://sourceforge.net/project/bitcoin/files/Bitcoin/bitcoin-0.1.2.rar/download" filesize=""><media:title>Bitcoin</media:title><media:hash algo="md5"></media:hash></media:content>
+    </item>
+    <item>
+      <title><![CDATA[/Bitcoin/bitcoin-0.1.2.rar/bitcoin-0.1.2.rar]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.2.rar%2Fbitcoin-0.1.2.rar/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.2.rar%2Fbitcoin-0.1.2.rar/download</guid>
+      <description><![CDATA[/Bitcoin/bitcoin-0.1.2.rar/bitcoin-0.1.2.rar]]></description>
+      <pubDate>Sun, 11 Jan 2009 21:19:11 +0000</pubDate>
+      <category>Bitcoin</category>
+      <files:sf-package-id xmlns:files="http://sourceforge.net/api/files.rdf#">298441</files:sf-package-id>
+      <files:sf-release-id xmlns:files="http://sourceforge.net/api/files.rdf#">653111</files:sf-release-id>
+      <files:version xmlns:files="http://sourceforge.net/api/files.rdf#">bitcoin-0.1.2.rar</files:version>
+      <files:release-notes-url xmlns:files="http://sourceforge.net/api/files.rdf#">http://sourceforge.net/project/shownotes.php?release_id=653111</files:release-notes-url>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1555283</files:sf-file-id>
+      <files:extra-info xmlns:files="http://sourceforge.net/api/files.rdf#">RAR archive data</files:extra-info>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="application/x-rar" url="http://sourceforge.net/project/bitcoin/files/Bitcoin/bitcoin-0.1.2.rar/bitcoin-0.1.2.rar/download" filesize="2129310"><media:title>Bitcoin</media:title><media:hash algo="md5">8f1231bed01a36c0a32d8763c03224f1</media:hash></media:content>
+      <files:download-count xmlns:files="http://sourceforge.net/api/files.rdf#">26</files:download-count>
+    </item>
+    <item>
+      <title><![CDATA[/Bitcoin/bitcoin-0.1.3.rar/bitcoin-0.1.3.rar]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.3.rar%2Fbitcoin-0.1.3.rar/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.3.rar%2Fbitcoin-0.1.3.rar/download</guid>
+      <description><![CDATA[/Bitcoin/bitcoin-0.1.3.rar/bitcoin-0.1.3.rar]]></description>
+      <pubDate>Tue, 13 Jan 2009 16:58:39 +0000</pubDate>
+      <category>Bitcoin</category>
+      <files:sf-package-id xmlns:files="http://sourceforge.net/api/files.rdf#">298441</files:sf-package-id>
+      <files:sf-release-id xmlns:files="http://sourceforge.net/api/files.rdf#">653181</files:sf-release-id>
+      <files:version xmlns:files="http://sourceforge.net/api/files.rdf#">bitcoin-0.1.3.rar</files:version>
+      <files:release-notes-url xmlns:files="http://sourceforge.net/api/files.rdf#">http://sourceforge.net/project/shownotes.php?release_id=653181</files:release-notes-url>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1556368</files:sf-file-id>
+      <files:extra-info xmlns:files="http://sourceforge.net/api/files.rdf#">RAR archive data</files:extra-info>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="application/x-rar" url="http://sourceforge.net/project/bitcoin/files/Bitcoin/bitcoin-0.1.3.rar/bitcoin-0.1.3.rar/download" filesize="2127418"><media:title>Bitcoin</media:title><media:hash algo="md5">9a73e0826d5c069091600ca295c6d224</media:hash></media:content>
+      <files:download-count xmlns:files="http://sourceforge.net/api/files.rdf#">116</files:download-count>
+    </item>
+    <item>
+      <title><![CDATA[/Bitcoin/bitcoin-0.1.3.rar]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.3.rar/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.3.rar/download</guid>
+      <description><![CDATA[/Bitcoin/bitcoin-0.1.3.rar]]></description>
+      <pubDate>Sat, 28 Nov 2009 20:30:44 +0000</pubDate>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1743390</files:sf-file-id>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="" url="http://sourceforge.net/project/bitcoin/files/Bitcoin/bitcoin-0.1.3.rar/download" filesize=""><media:title>Bitcoin</media:title><media:hash algo="md5"></media:hash></media:content>
+    </item>
+    <item>
+      <title><![CDATA[/Bitcoin/bitcoin-0.1.5.rar]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.5.rar/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.5.rar/download</guid>
+      <description><![CDATA[/Bitcoin/bitcoin-0.1.5.rar]]></description>
+      <pubDate>Sat, 28 Nov 2009 20:30:44 +0000</pubDate>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1743388</files:sf-file-id>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="" url="http://sourceforge.net/project/bitcoin/files/Bitcoin/bitcoin-0.1.5.rar/download" filesize=""><media:title>Bitcoin</media:title><media:hash algo="md5"></media:hash></media:content>
+    </item>
+    <item>
+      <title><![CDATA[/Bitcoin/bitcoin-0.1.5.rar/bitcoin-0.1.5.rar]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.5.rar%2Fbitcoin-0.1.5.rar/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FBitcoin%2Fbitcoin-0.1.5.rar%2Fbitcoin-0.1.5.rar/download</guid>
+      <description><![CDATA[/Bitcoin/bitcoin-0.1.5.rar/bitcoin-0.1.5.rar]]></description>
+      <pubDate>Wed, 04 Feb 2009 17:47:07 +0000</pubDate>
+      <category>Bitcoin</category>
+      <files:sf-package-id xmlns:files="http://sourceforge.net/api/files.rdf#">298441</files:sf-package-id>
+      <files:sf-release-id xmlns:files="http://sourceforge.net/api/files.rdf#">658599</files:sf-release-id>
+      <files:version xmlns:files="http://sourceforge.net/api/files.rdf#">bitcoin-0.1.5.rar</files:version>
+      <files:release-notes-url xmlns:files="http://sourceforge.net/api/files.rdf#">http://sourceforge.net/project/shownotes.php?release_id=658599</files:release-notes-url>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1570093</files:sf-file-id>
+      <files:extra-info xmlns:files="http://sourceforge.net/api/files.rdf#">RAR archive data</files:extra-info>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="application/x-rar" url="http://sourceforge.net/project/bitcoin/files/Bitcoin/bitcoin-0.1.5.rar/bitcoin-0.1.5.rar/download" filesize="2139348"><media:title>Bitcoin</media:title><media:hash algo="md5">8d5c12b3b52eb03dbc9ebad08ab91816</media:hash></media:content>
+      <files:download-count xmlns:files="http://sourceforge.net/api/files.rdf#">424</files:download-count>
+    </item>
+    <item>
+      <title><![CDATA[/Research Paper/bitcoin.pdf/bitcoin.pdf]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FResearch%20Paper%2Fbitcoin.pdf%2Fbitcoin.pdf/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FResearch%20Paper%2Fbitcoin.pdf%2Fbitcoin.pdf/download</guid>
+      <description><![CDATA[/Research Paper/bitcoin.pdf/bitcoin.pdf]]></description>
+      <pubDate>Tue, 24 Mar 2009 17:50:18 +0000</pubDate>
+      <category>Research Paper</category>
+      <files:sf-package-id xmlns:files="http://sourceforge.net/api/files.rdf#">299212</files:sf-package-id>
+      <files:sf-release-id xmlns:files="http://sourceforge.net/api/files.rdf#">640697</files:sf-release-id>
+      <files:version xmlns:files="http://sourceforge.net/api/files.rdf#">bitcoin.pdf</files:version>
+      <files:release-notes-url xmlns:files="http://sourceforge.net/api/files.rdf#">http://sourceforge.net/project/shownotes.php?release_id=640697</files:release-notes-url>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1602398</files:sf-file-id>
+      <files:extra-info xmlns:files="http://sourceforge.net/api/files.rdf#">PDF document</files:extra-info>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="application/pdf" url="http://sourceforge.net/project/bitcoin/files/Research Paper/bitcoin.pdf/bitcoin.pdf/download" filesize="184292"><media:title>Research Paper</media:title><media:hash algo="md5">d56d71ecadf2137be09d8b1d35c6c042</media:hash></media:content>
+      <files:download-count xmlns:files="http://sourceforge.net/api/files.rdf#">83</files:download-count>
+    </item>
+    <item>
+      <title><![CDATA[/Research Paper/bitcoin.pdf]]></title>
+      <link>http://sourceforge.net/projects/bitcoin/files%2FResearch%20Paper%2Fbitcoin.pdf/download</link>
+      <guid>http://sourceforge.net/projects/bitcoin/files%2FResearch%20Paper%2Fbitcoin.pdf/download</guid>
+      <description><![CDATA[/Research Paper/bitcoin.pdf]]></description>
+      <pubDate>Sat, 28 Nov 2009 20:30:44 +0000</pubDate>
+      <files:sf-file-id xmlns:files="http://sourceforge.net/api/files.rdf#">1743389</files:sf-file-id>
+      <media:content xmlns:media="http://video.search.yahoo.com/mrss/" type="" url="http://sourceforge.net/project/bitcoin/files/Research Paper/bitcoin.pdf/download" filesize=""><media:title>Research Paper</media:title><media:hash algo="md5"></media:hash></media:content>
+    </item>
+    <doap:Project xmlns:doap="http://usefulinc.com/ns/doap#" name="Bitcoin" description="Bitcoin is a decentralized P2P electronic cash system without a central server or trusted parties. Users hold the crypto keys to their own money and transact directly with each other, with the help of the network to check for double-spending."><sf:id xmlns:sf="http://sourceforge.net/api/sfelements.rdf#">244765</sf:id></doap:Project>
+  </channel>
+</rss>
+
+ 	  	 
