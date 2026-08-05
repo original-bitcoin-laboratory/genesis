@@ -56,6 +56,36 @@ Reproduce with `verify/wayback_orig_headers.py`. *Limits: `Last-Modified` reflec
 the capture, so it dates the bytes served rather than necessarily first publication; not every host
 sends it.*
 
+### And a third class agrees: the High Court's own control copy
+
+Patrick Madden's First Expert Report, §180, publishes the hashes of the document the court used as
+its control copy of the canonical whitepaper (ID_000865):
+
+```
+MD5:    d56d71ecadf2137be09d8b1d35c6c042
+SHA256: b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553
+```
+
+**Both match this file, and match the copy recovered from the block chain**, on two independent hash
+functions. The same report quotes its metadata:
+
+```
+<< /Creator: Writer  /Producer: OpenOffice.org 2.4
+   /CreationDate(D:20090324113315-06'00') >>
+```
+
+So the canonical file's identity now rests on three independent classes agreeing on the same bytes
+and the same instant:
+
+| class | source | value |
+|---|---|---|
+| self-asserted | the PDF's own `/CreationDate` | `D:20090324113315-06'00'` |
+| server-recorded | `X-Archive-Orig-Last-Modified`, bitcoin.org | `Tue, 24 Mar 2009 17:33:15 GMT` |
+| adjudicated | Madden's report, on the court's control copy | same stamp, and the hashes above |
+
+A self-claim, a web server the author did not run, and an expert cross-examined on his work. **On the
+canonical file there is nothing further to establish.**
+
 ### It is also in the block chain — the strongest anchor it has
 
 The canonical file was embedded in mainnet transaction
@@ -297,19 +327,61 @@ and states in the body:
 
 ```
 Aug 2008     "Electronic Cash Without a Trusted Third Party"     lost
-3 Oct 2008   the draft we hold                                   held
+3 Oct 2008   the draft we hold          created 20:49:58 UTC     held
 9 Nov 2008   Satoshi proposes transaction fees on the list
-11 Nov 2008  Exhibit AR3 -- a High Court control copy            NOT HELD, contents not public
-24 Mar 2009  the canonical                                       held, chain-anchored
+11 Nov 2008  the fourth version         created 16:00:34 UTC     NOT HELD, contents not public
+24 Mar 2009  the canonical              created 17:33:15 UTC     held, chain-anchored
 ```
 
 **The November version is dated two days after the fee proposal.** Whether it contains the Section 6
 transaction-fee paragraph would date that addition to within 48 hours — and if it does not, that is
-more interesting still. The exhibit is not public and we do not hold it.
+more interesting still. The file itself is not public and we do not hold it.
 
 Rosendahl also records that all three versions he examined are alike in construction: *"All three are
 very similar in each respect, and I have reached the same conclusion about those 2008 versions for
 the same reasons as the 2009 version"* — i.e. all OpenOffice output, not LaTeX.
+
+### One file, three names — and a custodian
+
+The same document appears across the court record as Rosendahl's **Exhibit AR3**, Bohm's **Exhibit
+NB1**, and Madden's **BWP-NB1**. Its custodian is named, and his evidence is sworn.
+
+**Nicholas Bohm** was a retired solicitor who read the metzdowd cryptography list — not a private
+correspondent, an ordinary reader. His witness statement, §19:
+
+> *"I was able to locate a version (which I have then included within my zip file Exhibit NB1) which
+> according to the metadata on my system was **downloaded on 18 January 2009 at 13:27 GMT**. The
+> metadata also states that the file has a **creation date of 11 November 2008, at 08:00:34 in the
+> time zone UTC-08:00**."*
+
+Two things follow that were not previously establishable:
+
+1. **This was the version the public could obtain in January 2009** — after the 3 October draft and
+   before the canonical. Whatever SourceForge served in that window, this is what a member of the
+   public actually got.
+2. Madden analysed it at **Appendix PM3 §§41–73** and considers it *"very likely to be an authentic
+   intermediate draft between those two versions"* (Third Expert Report §167).
+
+Bohm died in January 2024, before cross-examination.
+
+### The clock across the three dated files
+
+```
+3 Oct 2008    13:49:58  UTC-07:00   ->  2008-10-03 20:49:58 UTC     (held)
+11 Nov 2008   08:00:34  UTC-08:00   ->  2008-11-11 16:00:34 UTC     (Bohm's copy, not held)
+24 Mar 2009   11:33:15  UTC-06:00   ->  2009-03-24 17:33:15 UTC     (held)
+```
+
+US daylight saving ended **2 November 2008**, so North American Pacific time was `UTC-07:00` on
+3 October and `UTC-08:00` on 11 November. **The two 2008 drafts straddle that transition exactly** —
+they are consistent with one machine whose clock simply changed between them. The March 2009 file is
+an hour off that pattern (Pacific would read `UTC-07:00` after DST resumed on 8 March 2009).
+
+**This is a coherence observation, not an identification.** A PDF's UTC offset records the machine's
+timezone setting at save time — it can be set to anything by anyone, it is not a location, and an
+ordinary change of machine or preference over five months explains the 2009 file without any
+deception. What it shows is that the two 2008 files agree with each other in a way nobody
+constructed.
 
 ## The court's agreed chronology
 
