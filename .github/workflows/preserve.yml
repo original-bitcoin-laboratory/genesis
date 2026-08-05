@@ -53,7 +53,7 @@ jobs:
 
           curl -sSfL https://radicle.xyz/install | sh -s -- --no-modify-path
           export PATH="$HOME/.radicle/bin:$PATH"
-          rad --version
+          rad --version   # 1.9.1 at time of writing
 
           # RAD_KEYPAIR is the OPENSSH private key, base64-encoded so it survives as one secret line.
           mkdir -p "$HOME/.radicle/keys"
@@ -63,15 +63,20 @@ jobs:
 
           export RAD_PASSPHRASE="${RAD_PASSPHRASE:-}"
           rad auth --stdin <<< "$RAD_PASSPHRASE" || rad auth
-          rad node start --daemon
+          rad node start   # backgrounds by default; --daemon is not a flag, --foreground is
           for i in $(seq 1 30); do rad node status >/dev/null 2>&1 && break; sleep 2; done
           rad node status || { echo "::error::radicle node did not come up"; exit 1; }
 
           # Bind this checkout to the published RID and push. `rad clone` is not used: the working copy
           # is already here, and the RID is fixed, so the remote is set directly.
-          git remote add rad "$RID" 2>/dev/null || git remote set-url rad "$RID"
-          git push rad "HEAD:refs/heads/main" --force
-          rad sync "$RID" --announce --timeout 120
+          # The URL must be rad://<RID>/<NID>, not rad:<RID>. Git parses the latter as scp-style
+          # host:path and tries to ssh to a host called "rad"; git-remote-rad is only used for a
+          # scheme:// URL. Without the node ID the push is rejected: "no public key given as a
+          # remote namespace". Both were found the hard way on 5 Aug 2026.
+          NID="$(rad self --nid)"
+          git remote add rad "rad://${RID#rad:}/$NID" 2>/dev/null || git remote set-url rad "rad://${RID#rad:}/$NID"
+          git push rad "HEAD:refs/heads/main"
+          rad sync status
 
           echo "== mirrored $(git rev-parse --short HEAD) to $RID =="
           rad seed 2>/dev/null | head -20 || true

@@ -7,13 +7,13 @@ bytes, offline, on any device). A recipe is only as durable as its availability.
 side quest here — it *is* the mission: keep the source of truth **retrievable, content-addressed, and
 self-verifying**, so it survives a dead link, a lost account, or a host that disappears.
 
-Three independent roots, so no single one is load-bearing:
+Four independent roots, so no single one is load-bearing:
 
 | Layer | What it preserves | Status |
 |---|---|---|
 | **Software Heritage** | full history of all four OBL repositories, in the universal source-code archive | **live** — [`.github/workflows/preserve.yml`](../.github/workflows/preserve.yml) requests archival daily and on every release, no credentials required |
 | **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — every release's signed assets are pinned. CIDs are listed per release in the table below; retrievable from any gateway and cross-checkable against `SHA256SUMS`, so a gateway copy either matches or does not. |
-| **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **published once, not continuously mirrored.** `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`) holds whatever was last pushed by hand. CI can now sync it, but only once `RAD_KEYPAIR` and `RAD_PASSPHRASE` are set; until then the job skips with a warning. Not counted among the live roots. |
+| **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **live.** `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`), synced by hand at each release and replicated by **8 public seeds** at the 5 Aug 2026 sync. Synced manually rather than from CI, deliberately: the identity key is unencrypted and stays off GitHub. |
 
 
 ## Pinned release CIDs
@@ -115,10 +115,31 @@ gh secret set RAD_PASSPHRASE --repo original-bitcoin-laboratory/genesis
 `RAD_KEYPAIR` is the OpenSSH private key base64-encoded onto one line; the passphrase is whatever protects it.
 Both live in the cold backup under `01-keys-SECRET/radicle/`.
 
-**What that does and does not buy.** With the secrets set, every release pushes the current commit to the RID
-and announces it to the network. Announcing is not the same as being held: Radicle replication depends on some
-seed choosing to keep a copy, and no CI job can compel that. So even when green, this is a mirror whose
-durability rests on a peer, which is why it is documented separately from the three roots that do not. *(Optional CI:* add the exported key as `RAD_KEYPAIR` and
+**Why this is not run from CI.** The Radicle identity key is **unencrypted**, and it is the sole thing
+controlling `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg`. Whoever holds it can push to that repository as `parthod0x` --
+which on a p2p mirror means publishing a tampered tree that a stranger's `rad clone` would accept. Uploading it
+to GitHub Actions secrets would put the only copy that matters onto third-party infrastructure, readable by any
+future workflow change, and would break the invariant that **no private key of this project is on GitHub**. The
+release is already signed by hand for the same reason; syncing by hand costs one command more.
+
+**What replication does and does not guarantee.** Seeds are volunteers. Eight held the current refs at the
+5 Aug sync and nine more held older ones, which is real redundancy across operators nobody here controls -- but
+none of them is obliged to keep it. That is a different kind of durability from Software Heritage, not a lesser
+one, and it is why the sync output is recorded with a date rather than described as permanent.
+
+### Syncing by hand
+
+```
+export PATH="$HOME/.radicle/bin:$PATH"
+rad node start
+git remote add rad rad://z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg/z6MkqZAx6fnZ3iosXhTk7K3GzyzcNC2pxy5peUAuvYL45kUA
+git push rad HEAD:refs/heads/main
+rad sync status                        # which seeds hold it, and at which refs
+```
+
+The remote URL is **not** `rad:<RID>`. Git parses that as scp-style `host:path` and tries to ssh to a host
+called `rad`; the `git-remote-rad` helper is only invoked for a `scheme://` URL. It also needs the node ID
+appended, or the push is rejected with *"no public key given as a remote namespace"*. *(Optional CI:* add the exported key as `RAD_KEYPAIR` and
 its passphrase as `RAD_PASSPHRASE` to let the `radicle` job attempt an automated sync — but the local
 `git push rad` above is the reliable path.)*
 
