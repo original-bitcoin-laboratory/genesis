@@ -391,14 +391,56 @@ independent discriminators, in increasing order of usefulness:
 |---|---|---|---|
 | title | *Electronic Cash Without a Trusted Third Party* | *Bitcoin: A Peer-to-Peer…* | *Bitcoin: A Peer-to-Peer…* |
 | digital signatures … | *"**offer** part of the solution"* | *"**provide** part"* | *"**provide** part"* |
+| **Hashcash reference number** | **`[5]`** | **`[6]`** | **`[6]`** |
+| **b-money citation** | **absent entirely** | `[1]` … 1998 | `[1]` … 1998 |
 | abstract wording | *"the burdens of"* | *"the burdens of"* | *"not cooperating to attack the network"* |
 | contact address on page 1 | — | `satoshi@vistomail.com` | `satoshin@gmx.com` |
-| **Section 6 transaction fees** | ? | **absent** → **before 9 Nov 2008** | present |
+| **Section 6 transaction fees** | presumably absent | **absent** → **before 9 Nov 2008** | present |
 
-The **August 2008 row is known from Satoshi's own words**: his 22 August 2008 email to Wei Dai quotes
-the pre-release's title and full abstract, and that abstract differs from the announced October one
-by exactly one word — *offer* → *provide*. The draft we hold already says *provide* and already
-carries the *Bitcoin:* title, so **both changes happened between 22 August and 3 October 2008**.
+**Every entry in the August column comes from Satoshi's own words in dated records, not from any
+file.** His 22 August email to Wei Dai quotes the pre-release's title and full abstract — differing
+from the announced October abstract by exactly one word, *offer* → *provide*.
+
+And the reference numbering comes from the COPA judgment, which quotes his email to **Adam Back on
+20 August 2008** (¶661):
+
+> *"I'm getting ready to release a paper that references your Hashcash paper… Here's what I have:
+> **[5]** A. Back, "Hashcash — a denial of service counter-measure"…"*
+
+Back replied the next day pointing him at b-money, which Satoshi had never heard of (¶665: *"I wasn't
+aware of the b-money page… I'll e-mail him to confirm the year of publication so I can credit him"*).
+
+**That generates a testable prediction:** if b-money was then inserted as `[1]`, Hashcash must shift
+from `[5]` to `[6]` in every later version. Both surviving files were checked — **Hashcash is `[6]`
+in both**. A claim derived from a court exhibit, confirmed against files obtained from an entirely
+different source.
+
+So a candidate for the lost August draft can be settled in seconds: **title *Electronic Cash Without
+a Trusted Third Party*, Hashcash at `[5]`, and no b-money citation at all.**
+
+*The file currently circulating as `ecash.pdf` fails this as well as failing on structure — it is
+PDF 1.6 and linearized, which OpenOffice 2.4 does not emit.*
+
+### The SourceForge copy, and exactly when it changed
+
+A second copy lived on SourceForge, and its life is now dated end to end from server-generated
+records:
+
+```
+~Dec 2008    "nakamoto2 added the bitcoin.pdf file"          project activity feed, 2009-01-06 capture
+2009-01-06   listing shows release date "October 31, 2008"    AUTHOR-ENTERED, not a server value
+2009-03-24   "File released: /Research Paper/bitcoin.pdf"     activity feed, 2009-09-16 capture
+2009-11-29   listing shows 184.3 KB dated 2009-03-24          = 184,292 bytes, the canonical
+```
+
+The 2009-09-16 capture states the release as *"176 days ago"* — a figure SourceForge computed from
+its own database. **176 days before 2009-09-16 is 2009-03-24**, the exact day of the canonical PDF's
+internal `CreationDate`. Two independent records agreeing on the day.
+
+**So the December 2008 file existed for about three and a half months and was replaced on
+2009-03-24.** Its size was never captured: sweeping every SourceForge capture in the window shows a
+**Wayback gap for this project from January to September 2009**, and the file-detail page — the only
+page carrying a size — was not captured in that period. That copy is not recoverable by machine.
 
 That earliest version — `ecash.pdf` — is **lost**, and searched rather than assumed:
 
