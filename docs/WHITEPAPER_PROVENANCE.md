@@ -523,6 +523,13 @@ isolated December query returns `total: 1`. Reproduce with `verify/sourceforge_d
 the API. Whether an uploader's own fetch counts is undocumented, as is bot filtering in 2008.
 Monthly buckets.*
 
+**Only the December figure is clean.** The software went up 8 January 2009, so from January the
+project total mixes paper and software and cannot be attributed to either. Over the December file's
+whole life (8/9 Dec 2008 – 24 Mar 2009) it was taken between **1** and **83** times — 83 being the
+cumulative figure the 2009-11-29 listing shows for the Research Paper package, which also counts the
+March replacement. The narrow, defensible claim is: **in December 2008, when it was the only file in
+the project, it was downloaded once.**
+
 **So the December 2008 file existed for about three and a half months and was replaced on
 2009-03-24.** Its size was never captured: sweeping every SourceForge capture in the window shows a
 **Wayback gap for this project from January to September 2009**, and the file-detail page — the only
