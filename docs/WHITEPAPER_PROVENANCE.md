@@ -14,7 +14,7 @@ Every claim below is checkable by anyone, from public sources, without trusting 
 
 ```
 bitcoin.pdf   184,292 bytes
-sha256        b1674191a88ec5cdd733e4240a818031e83a5da0328e9cc0b2683bda8f0a1a4c
+sha256        b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553
 ```
 
 **Its bytes are well established.** Five independent sources serve this file identically:
@@ -23,6 +23,7 @@ sha256        b1674191a88ec5cdd733e4240a818031e83a5da0328e9cc0b2683bda8f0a1a4c
 |---|---|
 | `bitcoin.org/bitcoin.pdf` today | download it, `sha256sum` |
 | `cdn.nakamotoinstitute.org/docs/bitcoin.pdf` | same |
+| **SourceForge, 2009-11-29** — earliest verified capture | `web.archive.org/web/20091129014142if_/http://sourceforge.net:80/projects/bitcoin/files/Research%20Paper/bitcoin.pdf/` shows **184.3 KB, dated 2009-03-24**. SourceForge used decimal KB, so 184.3 KB = 184,292 bytes — this file. COPA's expert verified a 28 Nov 2009 SourceForge capture as hash-identical to the control copy |
 | Internet Archive, **2010-07-04 21:36:49** | `web.archive.org/web/20100704213649if_/http://www.bitcoin.org:80/bitcoin.pdf` |
 | Internet Archive, a later capture | same method |
 | this repository | `docs/bitcoin.pdf` |
@@ -95,10 +96,45 @@ Strip the email's own URL line and **the draft's abstract is word-for-word the O
 abstract.** It also carries `satoshi@vistomail.com`, the address Satoshi announced *from*; the file
 we ship carries `satoshin@gmx.com`, attested only from March 2009.
 
-### It dates itself against the mail archive, not against its own metadata
+### A court has already examined this file
 
-This is the part that does not require trusting the file. **The draft contains no transaction fees.**
-The canonical paper's Section 6 fee paragraph is simply absent from it.
+The 3 October 2008 draft is not merely something that appeared on archive.org. In
+**COPA v Wright, [2024] EWHC 1198 (Ch)**, COPA's forensic document expert examined 68 whitepaper-
+related documents in disclosure and selected two as **control copies**:
+
+> *"After significant scrutiny and verification via third party sources, he identified {ID_000226}
+> and {ID_000865} as suitable **'control' copies** of versions of the Bitcoin White Paper.
+> **{ID_000226} has a creation date of 3 October 2008.** {ID_000865} bears a creation date of
+> 24 March 2009 and is **hash identical to a file 'Bitcoin.pdf' from a web archive capture dating to
+> 28 November 2009** from the sourceforge.net project."*
+
+So this version was used as a **forensic baseline in the High Court**, after verification against
+third-party sources — and the canonical was verified hash-identical to a **November 2009** SourceForge
+capture.
+
+**And the toolchain finding was agreed by both parties' experts:**
+
+> **¶303.1**, Joint Statement of the LaTeX experts, 22 January 2024:
+> *"The White Paper was **not written in LaTeX but in OpenOffice 2.4** (a finding consistent with the
+> metadata of the public Bitcoin White Paper versions)."*
+
+That is an independent confirmation of the structural analysis below, reached by different people by
+a different route.
+
+**A floor on any OpenOffice 2.4 document:** ¶271.1 records evidence from an OpenOffice.org
+contributor that **OpenOffice 2.4.0 was released on 26 March 2008**. Nothing produced with it can
+predate that.
+
+The judgment also states the forgery method plainly (¶123): a document could be made *"by downloading
+and running that software on a computer (or virtual computer) with a **backdated clock**."* Which is
+exactly why the dating below does not rely on the file's own metadata.
+
+### It dates itself against the mail record, not against its own metadata
+
+**Bracketed on both sides, by records that are not the file.**
+
+**The late bound — no transaction fees.** The canonical paper's Section 6 fee paragraph is simply
+absent from the draft.
 
 Now the independent record. On **9 November 2008**, answering an objection about inflation, Satoshi
 proposed transaction fees *on the mailing list*:
@@ -116,8 +152,32 @@ rather than from a metadata field. And it is not something a forger could recons
 abstract says nothing about fees, so there is no public source from which "remove the Section 6 fee
 paragraph" could be derived.
 
-The file's internal date of 3 October 2008 is *consistent* with that. It is corroboration, not proof —
-a creation date is writable, which is exactly how four fabricated copies were caught.
+**The early bound — a citation Satoshi did not yet have.** On 22 August 2008 he wrote to Wei Dai
+asking for the publication year of b-money, and *guessed*:
+
+> *"It'll look like: [1] W. Dai, "b-money," http://www.weidai.com/bmoney.txt, **(2006?)**."*
+
+Dai replied with the real year: **1998**. And the draft reads:
+
+```
+[1] W. Dai, "b-money," http://www.weidai.com/bmoney.txt, 1998.
+```
+
+**So the draft postdates Dai's reply** — it contains a fact its author did not have on 22 August 2008.
+
+```
+after    Wei Dai's reply to the 22 Aug 2008 email   (carries the 1998 citation Satoshi lacked)
+before   9 Nov 2008                                 (lacks the fee paragraph proposed that day)
+---
+the file's own date, 3 Oct 2008, falls inside that window and does none of the work
+```
+
+That is the point: **the date is established without trusting the artifact.** A backdated clock can
+write any `CreationDate`; it cannot put a citation into a document before its author learned it, nor
+remove a paragraph he had not yet written.
+
+The file's internal date of 3 October 2008 is *consistent* with the bracket. It is corroboration, not
+proof — a creation date is writable, which is exactly how four fabricated copies were caught.
 
 ### It is also the same toolchain and the same document lineage
 
