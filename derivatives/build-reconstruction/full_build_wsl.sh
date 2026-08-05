@@ -39,6 +39,18 @@ X=i686-w64-mingw32; GXX="$X-g++"; NP="$(nproc)"
 # Reading the makefile alone would suggest the opposite conclusion is arguable, since
 # `make BUILD=release` is a legal build of the same tree. It is not arguable: the shipped
 # artifact settles it. A release build here is a divergence, not a tidier binary.
+# SOURCE_DATE_EPOCH pins __DATE__ and __TIME__, which gcc honours from version 7 on. Without it
+# wxWidgets bakes its own build clock into .rdata via wxGetLibraryVersionInfo, and that is the
+# ONLY thing that stopped two machines agreeing: a build here and a build on a GitHub runner with
+# an identical toolchain differed in 8 bytes of 15,529,604, and every one of them was a digit in
+# '23:28:12 / Aug  4 2026' versus '01:20:56 / Aug  5 2026'. Nothing else -- not one instruction.
+#
+# The value is this chain's own genesis, 1785781375 = 2026-08-03 18:22:55 UTC. Any fixed number
+# would do; using the genesis means the build carries the same instant the chain starts from, and
+# it is a figure already published and checkable rather than an arbitrary one.
+export SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-1785781375}"
+echo "== SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH ($(date -u -d @$SOURCE_DATE_EPOCH 2>/dev/null || echo fixed)) =="
+
 BUILD="${BUILD:-debug}"
 case "$BUILD" in debug|release) ;; *) BUILD=debug ;; esac
 # NOTE on -g. His DEBUGFLAGS are "-g -D__WXDEBUG__" and we take only the second, because on this
