@@ -60,6 +60,27 @@ jobs:
           cat toolchain.txt >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Fetch the 2009 archive and verify it
+        run: |
+          # Neither extracted/ nor derivatives/bitcoin/src is in the repository -- the first is a
+          # third party's archive, the second is derived from it. So the reproduction starts where
+          # a stranger's would: at the published file, fetched over the network.
+          mkdir -p artifacts/jan09
+          curl --fail --location --proto '=https' --tlsv1.2 --retry 3 \
+            -o artifacts/jan09/bitcoin-0.1.0.tgz \
+            https://cdn.nakamotoinstitute.org/code/bitcoin-0.1.0.tgz
+          echo 'ce9da46516e3042741224a7f9061e3181a5a4d17abba72b6e82922af3753d756  artifacts/jan09/bitcoin-0.1.0.tgz' | sha256sum -c -
+          mkdir -p extracted
+          tar xzf artifacts/jan09/bitcoin-0.1.0.tgz -C extracted
+          test -f extracted/bitcoin/src/main.cpp
+
+      - name: Derive the chain source
+        run: |
+          # make_chain.py refuses unless each of the ten edits matches exactly once, so this also
+          # re-verifies that the extracted tree is the one those edits were written against.
+          python3 derivatives/bitcoin/make_chain.py
+          test -f derivatives/bitcoin/src/main.cpp
+
       - name: Build
         run: |
           cd derivatives/build-reconstruction
