@@ -190,6 +190,40 @@ number would work. Using the genesis means the binary carries the instant the ch
 it is a figure already published and independently checkable rather than one invented for the
 purpose. The string inside the binary reads `Aug  3 2026` / `18:22:55`.
 
+## What a signature proves
+
+Worth being exact about, because the signature did not change on 5 August. What it is attached to
+did.
+
+A GPG signature on a release proves two things: these bytes were not altered in transit, and the
+holder of `B0145F74B78CF1DA` signed them. That is all. **It proves nothing about the relationship
+between the binary and the source beside it.** The tarball ships `src/` and `bitcoin.exe` together,
+and until v0.1.3 nothing connected them except our word that one was compiled from the other.
+
+Follow that through: a compromised build machine could put a backdoored `bitcoin.exe` next to
+perfectly clean source, sign the tarball, and every signature check would still pass. The verifier
+would confirm authenticity and learn nothing about correctness — proving *who sent it* while unable
+to ask *what it is*. That is the general reason Bitcoin Core builds with Guix. A signature answers
+**who**, never **what**.
+
+What changed is that the binary became a deterministic function of public inputs — a third party's
+2009 archive, ten patched lines, a named toolchain — so:
+
+| | before v0.1.3 | after |
+|---|---|---|
+| what the signature says | parthod0x signed these bytes | *unchanged* |
+| does the binary match the source? | take our word for it | rebuild it and compare |
+| could a backdoor hide there? | yes, undetectably | no — the hash would differ |
+| what you must trust | the builder | the toolchain, which you also chose |
+
+The signature is now a claim you can falsify. Rebuild, and either your bytes hash to `c3f15fc5…` or
+the signed file is not what it says it is. Before, no experiment existed that could have caught a
+lie.
+
+The same reasoning decided what to stamp with OpenTimestamps. A timestamp on a binary nobody else
+can regenerate dates a private artifact — it proves someone held a file on a date. A timestamp on one
+anyone can rebuild dates a public fact.
+
 ## What reproducibility here does and does not mean
 
 **Does:** anyone with the same toolchain can rebuild the shipped bytes from the published 2009
