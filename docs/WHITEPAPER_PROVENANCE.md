@@ -91,9 +91,24 @@ CPU power is controlled by nodes that are not cooperating to attack the network*
 That is a sharpening of the central claim. It is also, arguably, the prose catching up with the
 mechanism: proof-of-work never required honesty, only that attackers fail to coordinate a majority.
 
-**We do not claim to know who made the edit.** No record attributes it. It appeared on bitcoin.org
-during a period when v0.1.1 through v0.1.5 were being released, and it reads as an author refining
-his own paper — but that is a reading, not a finding, and this note does not assert it.
+**We do not claim to know who made the edit**, and the reason is stronger than "no record
+attributes it."
+
+Who controlled `bitcoin.org` in early 2009 is **itself not anchored**. The registry holds a
+registration date and nothing else:
+
+```
+registration    2008-08-18 13:19:55.055Z
+registrant      not recorded -- no name in RDAP, and no historical registrant data
+```
+
+The domain was registered through an anonymising service. **There is no machine-verifiable link
+between bitcoin.org and Satoshi Nakamoto at any date.** The association is the conventional account,
+resting on his own statements and on later transfer accounts, not on a third-party record.
+
+So the edit appeared on a site whose operator, at that moment, is not established by any anchor
+available to us. It reads as an author refining his own paper — it improves the text technically and
+contradicts nothing — but that is a reading, and this note does not assert it.
 
 ## Consequences for how this lab cites the paper
 
