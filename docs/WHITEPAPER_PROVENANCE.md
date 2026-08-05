@@ -30,6 +30,32 @@ sha256        b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553
 
 As *"the file bitcoin.org has served since at least 2010"*, the provenance is solid.
 
+### bitcoin.org's own server confirms the file's creation time, to the second
+
+The Internet Archive replays the **original server's** response headers when a capture is fetched
+with the `id_` modifier. For the 2010-07-04 capture of `bitcoin.org/bitcoin.pdf`:
+
+```
+X-Archive-Orig-Last-Modified:   Tue, 24 Mar 2009 17:33:15 GMT
+X-Archive-Orig-Content-Length:  184292
+```
+
+`Last-Modified` on a static file is its **mtime on the serving host's filesystem** — written by
+bitcoin.org's web server, not by the author and not by the Archive.
+
+```
+the PDF's own /CreationDate   D:20090324113315-06'00'  =  2009-03-24 17:33:15 UTC
+bitcoin.org's filesystem                                  2009-03-24 17:33:15 GMT   identical
+SourceForge mirrors (x3)                                  2009-03-24 17:50:18 GMT   +17 minutes
+```
+
+**A self-asserted creation date, confirmed by a server the author did not run.** The seventeen-minute
+offset to the mirror network is what create-then-upload-then-propagate looks like.
+
+Reproduce with `verify/wayback_orig_headers.py`. *Limits: `Last-Modified` reflects the mtime as of
+the capture, so it dates the bytes served rather than necessarily first publication; not every host
+sends it.*
+
 ### It is also in the block chain — the strongest anchor it has
 
 The canonical file was embedded in mainnet transaction
