@@ -114,10 +114,64 @@
   </section>
 
   <section class="chain">
+    <h2>Bitcoin v0.1.2</h2>
+    <dl>
+      <dt>Date</dt>
+      <dd>5 August 2026</dd>
+
+      <dt>Download</dt>
+      <dd>
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.2/bitcoin-0.1.2.tar.gz">bitcoin-0.1.2.tar.gz</a><br>
+        <span style="opacity:.75">SHA256: 099c011d058a4f4e6b04dca2c53cd79d9c6351d3409a2933f008487e2ee8d7df</span><br>
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.2/bitcoin-0.1.2.tar.gz.asc">bitcoin-0.1.2.tar.gz.asc</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.2/SHA256SUMS">SHA256SUMS</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.2/SHA256SUMS.asc">SHA256SUMS.asc</a>
+      </dd>
+
+      <dt>bitcoin.exe</dt>
+      <dd><span style="opacity:.75">SHA256: d148996bb67f8bae56e2a6d2ad8ff21f46681a8d29fd94f05a13eb67d0351e39</span></dd>
+
+      <dt>Signed by</dt>
+      <dd>B128 526A F85A E4A8 F22B&nbsp; 949F B014 5F74 B78C F1DA
+        &nbsp;<a href="parthod0x-signing-key.asc">key</a>
+        &nbsp;<a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA">keyserver</a></dd>
+
+      <dt>Source</dt>
+      <dd><a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.2">github.com/original-bitcoin-laboratory/genesis</a></dd>
+
+      <dt>Changes</dt>
+      <dd>The build only. The client was run for the first time on 4 August and showed two things the
+        source audits had not: it wrote no <span class="mono">debug.log</span>, and its toolbar
+        bitmaps were missing. Both were ours.
+        <span class="mono">__WXDEBUG__</span> is now defined and wxWidgets rebuilt to match &mdash; the
+        whole body of <span class="mono">OutputDebugStringF</span> sits inside that
+        <span class="mono">#ifdef</span> &mdash; and <span class="mono">windres ui.rc</span> now runs,
+        producing the <span class="mono">.rsrc</span> section the binary had lacked entirely.
+        <span class="mono">-mthreads</span> and <span class="mono">sha.cpp -O3</span> follow the
+        original makefile.
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/BUILD_FIDELITY.md">How it was measured</a>.</dd>
+
+      <dt>Measured</dt>
+      <dd><span style="opacity:.75">against Satoshi&rsquo;s bitcoin.exe <span class="mono">fbcac071&hairsp;&hellip;</span></span>
+        <pre style="margin-top:8px">                        his   v0.1.1   v0.1.2
+debug.log               7     0        7
+assert "%s" failed      1     0        1
+include/wx/*.h paths    24    0        24
+.rsrc section           yes   no       yes
+.debug_* sections       0     8        0</pre></dd>
+    </dl>
+    <pre>gpg --verify SHA256SUMS.asc SHA256SUMS &amp;&amp; sha256sum -c SHA256SUMS</pre>
+  </section>
+
+  <section class="chain">
     <h2>Bitcoin v0.1.1</h2>
     <dl>
       <dt>Date</dt>
       <dd>4 August 2026</dd>
+
+      <dt>Status</dt>
+      <dd>Superseded by v0.1.2, still published, signature still valid. This is the binary that mined
+        block 1, and the evidence records for that block are bound to its hash.</dd>
 
       <dt>Download</dt>
       <dd>
@@ -158,7 +212,7 @@
       <dd>3 August 2026 — the first release</dd>
 
       <dt>Status</dt>
-      <dd>Superseded by v0.1.1, still published, signature still valid. Same source, same ten lines,
+      <dd>Superseded by v0.1.2, still published, signature still valid. Same source, same ten lines,
         same genesis, same <span class="mono">VERSION 101</span> on the wire — so a v0.1.0 node and a
         v0.1.1 node are on one network and neither needs replacing.</dd>
 
@@ -217,7 +271,7 @@
     <span class="lf-h" id="lf-btc">bitcoin&nbsp;—</span></span></p>
   <p class="lf-links">
     <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.5.0-experimental">v0.5.0-experimental</a> ·
-    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.1">Bitcoin-v0.1.1</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.2">Bitcoin-v0.1.2</a> ·
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md">source · verify</a> ·
     <a href="parthod0x-signing-key.asc" title="ed25519 release-signing key">key B128&nbsp;526A…B78C&nbsp;F1DA</a>
     <a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA"
