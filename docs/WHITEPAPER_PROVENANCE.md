@@ -304,9 +304,19 @@ the pre-release's title and full abstract, and that abstract differs from the an
 by exactly one word — *offer* → *provide*. The draft we hold already says *provide* and already
 carries the *Bitcoin:* title, so **both changes happened between 22 August and 3 October 2008**.
 
-That earliest version — `ecash.pdf` — is **lost**. Its download link was never archived (20 Wayback
-captures, all 404/302, earliest 2020), and the file circulating under that name is PDF v1.6 and
-linearized, which OpenOffice 2.4 does not produce; it fails on structure, not merely on its dates.
+That earliest version — `ecash.pdf` — is **lost**, and searched rather than assumed:
+
+```
+http://www.upload.ae/file/6157/ecash-pdf.html      <- the link in Satoshi's email to Wei Dai
+  20 Wayback captures under upload.ae/file/6157*
+  earliest 2020-02-11 -> 406 · 2020-2022 -> 404 x6 · 2023-2025 -> 302 x11
+  host today: upload.ae/cgi-sys/suspendedpage.cgi
+```
+
+**Not one capture with content, and the earliest is twelve years after the link was posted** — it
+was already dead when first crawled. The file circulating under that name is PDF v1.6 and
+linearized, which OpenOffice 2.4 does not produce; it fails on **structure**, not merely on its date
+fields.
 
 The third is the strongest, and it is the one that dates a file rather than merely ordering it:
 Satoshi proposed transaction fees on the mailing list on **9 November 2008**, so a copy without them
