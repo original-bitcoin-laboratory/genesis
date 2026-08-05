@@ -24,6 +24,47 @@ archive it lives in is, by Satoshi's own description, not a complete program.
 Held in `pre-genesis/artifacts/nov08/`. Everything below is reproducible from `main.cpp` and
 `main.h` in those archives, with `sha256sum`, a text editor, and about twenty lines of Python.
 
+### An external anchor for this archive
+
+The bytes above are self-describing, which is worth exactly as much as any other self-description.
+There is, however, a third-party record that dates an artifact of this description — and it is not
+cited anywhere else in this lab's material.
+
+The `cryptography@metzdowd.com` archive holds a message from Satoshi Nakamoto, timestamped by the
+list server at **Mon 17 Nov 2008 12:24:43 EST**, replying to James A. Donald
+([`014863`](https://www.metzdowd.com/pipermail/cryptography/2008-November/014863.html)):
+
+> The functional details are not covered in the paper, but the sourcecode is coming soon.
+> **I sent you the main files.** (available by request at the moment, full release soon)
+
+Set that beside the readme inside this archive:
+
+> This is a pre-release sourcecode preview.
+> **These are just the main files. The rest is coming soon.**
+
+| the email, 17 Nov 2008 | this archive's readme |
+|---|---|
+| "the sourcecode is coming soon" | "The rest is coming soon" |
+| "I sent you **the main files**" | "These are just **the main files**" |
+| "available by request at the moment" | "a pre-release sourcecode preview" |
+
+And the archive contains precisely that: `main.cpp`, `main.h`, `node.cpp`, `node.h`, and the readme.
+Nothing else.
+
+**What this establishes.** A record kept by a mailing list — not by Satoshi, not by this lab, not by
+whoever later published the file — places, on a specific dated day, a statement that a four-file
+"main files" pre-release had been sent to a named recipient, described in near-identical words to the
+readme in the artifact.
+
+**What it does not establish.** That the bytes here are the bytes he sent. No hash was published, no
+copy was attached, and the recipient's own copy has never surfaced. The anchor dates *an artifact of
+this description*; it does not authenticate *this file*.
+
+That is still a materially stronger position than the artifact had a moment ago, and it is the
+strongest available: it is the only claim about the November code that rests on something outside the
+November code. Two independent acquisition paths for the RAR agree byte-for-byte
+(`f0327ebb…`), which is corroboration of transmission, not of origin.
+
 ## What the archive actually is
 
 Five files. `main.cpp`, `main.h`, `node.cpp`, `node.h`, `readme.txt`. That is all of it, and the
