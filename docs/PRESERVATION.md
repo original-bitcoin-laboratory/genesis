@@ -13,7 +13,7 @@ Three independent roots, so no single one is load-bearing:
 |---|---|---|
 | **Software Heritage** | full history of all four OBL repositories, in the universal source-code archive | **live** — [`.github/workflows/preserve.yml`](../.github/workflows/preserve.yml) requests archival daily and on every release, no credentials required |
 | **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — every release's signed assets are pinned. CIDs are listed per release in the table below; retrievable from any gateway and cross-checkable against `SHA256SUMS`, so a gateway copy either matches or does not. |
-| **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **published** as `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`); durable public seeding pending |
+| **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **published once, not continuously mirrored.** `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`) holds whatever was last pushed by hand. CI can now sync it, but only once `RAD_KEYPAIR` and `RAD_PASSPHRASE` are set; until then the job skips with a warning. Not counted among the live roots. |
 
 
 ## Pinned release CIDs
@@ -99,7 +99,26 @@ rad clone rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg
 ```
 
 Durable public availability depends on a seed replicating the repository; keep a node online or arrange a
-seed to hold `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg`. *(Optional CI:* add the exported key as `RAD_KEYPAIR` and
+seed to hold `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg`.
+
+### Turning the CI mirror on
+
+The `radicle` job in `.github/workflows/preserve.yml` installs `rad`, imports the key, starts a node, pushes
+`HEAD` to the RID and announces it. It is **inert until two secrets exist**, and it says so in the run summary
+rather than passing quietly:
+
+```
+gh secret set RAD_KEYPAIR   --repo original-bitcoin-laboratory/genesis   --body "$(base64 -w0 ~/.radicle/keys/radicle)"
+gh secret set RAD_PASSPHRASE --repo original-bitcoin-laboratory/genesis
+```
+
+`RAD_KEYPAIR` is the OpenSSH private key base64-encoded onto one line; the passphrase is whatever protects it.
+Both live in the cold backup under `01-keys-SECRET/radicle/`.
+
+**What that does and does not buy.** With the secrets set, every release pushes the current commit to the RID
+and announces it to the network. Announcing is not the same as being held: Radicle replication depends on some
+seed choosing to keep a copy, and no CI job can compel that. So even when green, this is a mirror whose
+durability rests on a peer, which is why it is documented separately from the three roots that do not. *(Optional CI:* add the exported key as `RAD_KEYPAIR` and
 its passphrase as `RAD_PASSPHRASE` to let the `radicle` job attempt an automated sync — but the local
 `git push rad` above is the reliable path.)*
 

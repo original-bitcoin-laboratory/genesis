@@ -41,15 +41,42 @@ jobs:
       - name: Mirror to Radicle (if configured)
         env:
           RAD_KEYPAIR: ${{ secrets.RAD_KEYPAIR }}
+          RAD_PASSPHRASE: ${{ secrets.RAD_PASSPHRASE }}
+          RID: rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg
         run: |
+          set -euo pipefail
           if [ -z "$RAD_KEYPAIR" ]; then
-          echo "::warning title=Radicle mirror not configured::RAD_KEYPAIR is not set, so nothing was mirrored to Radicle. This job is green because skipping is not an error - which is exactly how a dormant mirror comes to look like a working one. docs/PRESERVATION.md records Radicle as published but NOT synced or seeded; keep that accurate, or set the secret."
-            echo "RAD_KEYPAIR not set — Radicle mirror skipped. See docs/PRESERVATION.md to enable."
+            echo "::warning title=Radicle mirror not configured::RAD_KEYPAIR is not set, so nothing was mirrored to Radicle. This job is green because skipping is not an error - which is exactly how a dormant mirror comes to look like a working one. docs/PRESERVATION.md records Radicle as published but NOT continuously mirrored; keep that accurate, or set the secret."
+            echo "RAD_KEYPAIR not set - Radicle mirror skipped. See docs/PRESERVATION.md to enable."
             exit 0
           fi
-          echo "RAD_KEYPAIR present — mirroring to the OBL Radicle identity."
-          # One-time setup (docs/PRESERVATION.md): rad auth with the imported key, then `rad init`/`rad id`
-          # bind this repo to the OBL Radicle Identifier (rid), and this step runs `rad sync --announce`.
+
+          curl -sSfL https://radicle.xyz/install | sh -s -- --no-modify-path
+          export PATH="$HOME/.radicle/bin:$PATH"
+          rad --version
+
+          # RAD_KEYPAIR is the OPENSSH private key, base64-encoded so it survives as one secret line.
+          mkdir -p "$HOME/.radicle/keys"
+          printf '%s' "$RAD_KEYPAIR" | base64 -d > "$HOME/.radicle/keys/radicle"
+          chmod 600 "$HOME/.radicle/keys/radicle"
+          ssh-keygen -y -P "${RAD_PASSPHRASE:-}" -f "$HOME/.radicle/keys/radicle" > "$HOME/.radicle/keys/radicle.pub"
+
+          export RAD_PASSPHRASE="${RAD_PASSPHRASE:-}"
+          rad auth --stdin <<< "$RAD_PASSPHRASE" || rad auth
+          rad node start --daemon
+          for i in $(seq 1 30); do rad node status >/dev/null 2>&1 && break; sleep 2; done
+          rad node status || { echo "::error::radicle node did not come up"; exit 1; }
+
+          # Bind this checkout to the published RID and push. `rad clone` is not used: the working copy
+          # is already here, and the RID is fixed, so the remote is set directly.
+          git remote add rad "$RID" 2>/dev/null || git remote set-url rad "$RID"
+          git push rad "HEAD:refs/heads/main" --force
+          rad sync "$RID" --announce --timeout 120
+
+          echo "== mirrored $(git rev-parse --short HEAD) to $RID =="
+          rad seed 2>/dev/null | head -20 || true
+          echo "::notice title=Radicle mirrored::$RID now carries $(git rev-parse --short HEAD). Public availability still depends on a seed replicating it; this job announces, it cannot compel anyone to hold a copy."
+
 
   # 3) IPFS — pin the signed reproduction bundle so it is addressable by content hash, host-independent.
   #    Enable by adding an IPFS_TOKEN secret; runs only when a release is published.
