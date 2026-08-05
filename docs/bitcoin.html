@@ -41,9 +41,12 @@
     background:var(--panel);padding:22px clamp(16px,4vw,26px)}
   .chain h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
     color:var(--brass);margin:0 0 14px;font-weight:600}
-  .chain dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-family:var(--mono);font-size:12.5px}
+  .chain dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 18px;font-family:var(--mono);font-size:12.5px}
   .chain dt{color:var(--ink-faint)}
-  .chain dd{margin:0;color:var(--ink-dim);overflow-wrap:anywhere}
+  .chain dd{margin:0;color:var(--ink-dim);overflow-wrap:anywhere;min-width:0}
+  /* min-width:0 is load-bearing: a grid item defaults to min-width:auto and refuses to shrink
+     below its content, so a long preformatted line widens the column and spills past the card
+     instead of scrolling within it. */
   .chain pre{margin:16px 0 0;padding:12px 14px;background:var(--panel-2);border:1px solid var(--line);
     border-radius:8px;font-family:var(--mono);font-size:12px;color:var(--ink-dim);overflow-x:auto}
   .chain .lnk{margin:14px 0 0;font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
@@ -233,7 +236,7 @@
       <dt>IPFS</dt>
       <dd>v0.1.2, by content hash &mdash; retrievable from any gateway, and either it matches
         <span class="mono">SHA256SUMS</span> or it does not:
-        <pre style="margin-top:10px">bitcoin-0.1.2.tar.gz      QmXeWBKYEJCBYJaP7N1FLjQbLxmqWtTjydyqLwBncRKUvP
+        <pre style="margin-top:10px;font-size:11px;line-height:1.6">bitcoin-0.1.2.tar.gz      QmXeWBKYEJCBYJaP7N1FLjQbLxmqWtTjydyqLwBncRKUvP
 bitcoin-0.1.2.tar.gz.asc  Qmcgxva1kv9SGL6EwwEoCYN8RfbB9HBbeXyPziQpfMjeXW
 SHA256SUMS                QmU1JwBJ9Enw2VJwKoet1HLnpRiKWpT5yPsHavGJ1rTHXb
 SHA256SUMS.asc            QmcVxjbgyQxj6KWP32MoBrYfvPfy4VRnn9ZyAeW5conQH2</pre>
