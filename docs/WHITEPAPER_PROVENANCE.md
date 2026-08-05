@@ -29,6 +29,32 @@ sha256        b1674191a88ec5cdd733e4240a818031e83a5da0328e9cc0b2683bda8f0a1a4c
 
 As *"the file bitcoin.org has served since at least 2010"*, the provenance is solid.
 
+### It is also in the block chain — the strongest anchor it has
+
+The canonical file was embedded in mainnet transaction
+[`54e48e5f…4186e713`](https://blockstream.info/tx/54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e713)
+as 945 bare-multisig outputs whose "public keys" are really file bytes, plus a 33-byte tail push.
+Reassemble them and the PDF comes back:
+
+```
+block   230009        2013-04-06 20:28:10 UTC
+carved  184,292 bytes  %PDF-1.4 … %%EOF
+sha256  b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553   -- matches exactly
+```
+
+Check it with `bitcoin-cli getrawtransaction`, or run `verify/whitepaper_from_chain.py`, which does it
+from a public API so no node is required.
+
+**Proof-of-work cannot be backdated.** The canonical text is therefore fixed to April 2013
+independently of bitcoin.org, of the Internet Archive, and of this lab — the only version of the
+paper with a chain anchor. It says **nothing** about October 2008 and is not offered as if it did.
+What it establishes is narrower and worth having: the file cannot have been altered since block
+230009.
+
+*Two traps if you reproduce it: keep the full 65-byte keys — the `0x04` prefixes are payload, not
+framing — and note that `vout[945]` carries the 33-byte tail while `vout[946..947]` are ordinary
+change outputs. Getting either wrong yields a corrupt file and a confident-looking wrong hash.*
+
 ## What it says about itself
 
 ```
@@ -42,7 +68,65 @@ Read it yourself: `strings bitcoin.pdf | grep CreationDate`, or open the file in
 **24 March 2009** is 144 days after the paper was announced, 80 days after the genesis block, and 74
 days after v0.1 was released. Whatever this file is, it was not created on 31 October 2008.
 
-## The October 2008 file is not preserved
+## A pre-revision draft *is* preserved — correcting this note
+
+**An earlier version of this note said the pre-revision paper survived nowhere and that "the archive
+search is exhausted." That was wrong, and it was wrong because we asserted a negative without
+searching archive.org's item catalogue.** A pre-revision copy has been public since 2020:
+
+```
+archive.org/details/bitcoin-a-peer-to-peer-electronic-cash-system
+183,697 bytes   sha256 427c63b364c6db914cf23072a09ffd53ee078397b7c6ab2d604e12865a982faa
+internal CreationDate  D:20081003134958-07'00'   (3 October 2008, UTC-7)
+```
+
+This is **not our discovery** — the 3 October 2008 draft is a documented artifact discussed publicly
+for years. We simply had not looked.
+
+**Its text is the October 2008 text, and that is machine-checkable.** Compared against the one
+October text anchored by a third party — the abstract quoted inline in the announcement email:
+
+| file | abstract similarity to the announced text |
+|---|---|
+| the draft | **0.9788** — and the only difference is the *email's* trailing "full paper at…" line |
+| `bitcoin.pdf` we ship | 0.6503 — differing at exactly the six known revision points |
+
+Strip the email's own URL line and **the draft's abstract is word-for-word the October 2008
+abstract.** It also carries `satoshi@vistomail.com`, the address Satoshi announced *from*; the file
+we ship carries `satoshin@gmx.com`, attested only from March 2009.
+
+### It dates itself against the mail archive, not against its own metadata
+
+This is the part that does not require trusting the file. **The draft contains no transaction fees.**
+The canonical paper's Section 6 fee paragraph is simply absent from it.
+
+Now the independent record. On **9 November 2008**, answering an objection about inflation, Satoshi
+proposed transaction fees *on the mailing list*:
+
+> *"If you're having trouble with the inflation issue, it's easy to tweak it for transaction fees
+> instead. It's as simple as this: let the output value from any transaction be 1 cent less than the
+> input value."*
+> — [`cryptography@metzdowd.com`, 9 Nov 2008](https://www.metzdowd.com/pipermail/cryptography/2008-November/014842.html)
+
+The next day he refers back to *"the transaction fee based incentive system I recently posted"*, and
+by 14 November states it in wording close to the published Section 6.
+
+**So the draft's content places it before 9 November 2008** — argued from a dated third-party archive
+rather than from a metadata field. And it is not something a forger could reconstruct: the archived
+abstract says nothing about fees, so there is no public source from which "remove the Section 6 fee
+paragraph" could be derived.
+
+The file's internal date of 3 October 2008 is *consistent* with that. It is corroboration, not proof —
+a creation date is writable, which is exactly how four fabricated copies were caught.
+
+### What is still not established
+
+- **No 2008 hash of any version exists.** Nothing here is cryptographically bound to 2008.
+- **The file served at the 31 October link is still not identified.** The draft is dated 3 October and
+  its content is pre-9-November. Whether the announcement linked *this* file, or something between it
+  and the March 2009 version, is unknown.
+
+## The file served on 31 October 2008 is not identified
 
 Searched, and recorded so nobody repeats it:
 
@@ -173,18 +257,28 @@ context, and its revision changes nothing about what the code does.
 
 ## What would settle it
 
-A copy fetched between **31 October 2008 and 24 March 2009** and kept since.
+A copy **fetched from `bitcoin.org/bitcoin.pdf` between 31 October 2008 and 24 March 2009 and kept
+since** — the file behind the announced link, which is the one thing still unidentified.
 
-It would be identifiable **without trusting a byte of its metadata**, by the text alone:
+Any candidate is testable **without trusting a byte of its metadata**, by content alone. Three
+independent discriminators, in increasing order of usefulness:
 
-- contains *"the burdens of"* and *"honest nodes control the most CPU power"* → **pre-revision**
-- contains *"not cooperating to attack the network"* → **March 2009 or later**
+| test | pre-revision | March 2009 |
+|---|---|---|
+| abstract wording | *"the burdens of"*, *"honest nodes control the most CPU power"*, *"broadcasted"* | *"not cooperating to attack the network"*, *"broadcast"* |
+| contact address on page 1 | `satoshi@vistomail.com` | `satoshin@gmx.com` |
+| **Section 6 transaction fees** | **absent** → also **before 9 Nov 2008** | present |
 
-That test is stronger than any timestamp such a file could carry, because text cannot be altered
-inside a document without altering the document, whereas a creation date can be altered without
-touching anything else.
+The third is the strongest, and it is the one that dates a file rather than merely ordering it:
+Satoshi proposed transaction fees on the mailing list on **9 November 2008**, so a copy without them
+predates a message a third party archived. Text cannot be altered inside a document without altering
+the document; a creation date can be altered without touching anything else.
 
-The archive search is exhausted. What remains is a person's old drive.
+**The archive search is not exhausted — that claim was wrong.** A pre-revision draft was public on
+archive.org the whole time (see above). What is still missing is narrower and more specific: the
+bytes actually served at the 31 October link. Worth asking anyone who followed that link in 2008,
+and anyone who pulled the paper off SourceForge, where `nakamoto2` uploaded a `bitcoin.pdf` around
+December 2008 that is likewise not preserved.
 
 ---
 
