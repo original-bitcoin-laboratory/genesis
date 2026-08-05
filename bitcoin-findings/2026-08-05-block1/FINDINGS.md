@@ -46,8 +46,8 @@ line of text.
 ## What is not established
 
 **No `debug.log` exists**, so this write-up is thinner than the R3/R4 findings and deliberately so.
-The whole of `OutputDebugStringF` sits inside `#ifdef __WXDEBUG__`, which Satoshi's makefile defines
-via `DEBUGFLAGS` and **our build does not**. The client therefore emits no diagnostic output at all —
+The whole of `OutputDebugStringF` sits inside `#ifdef __WXDEBUG__`, which `src/makefile` defines via
+`DEBUGFLAGS` and the v0.1.1 build did not. The client therefore emits no diagnostic output at all —
 not to file, not even to `OutputDebugString`. The moment the peer was added and the moment the block
 was found are unrecorded except in their consequences.
 
@@ -55,7 +55,8 @@ That is a defect in our build, not in the chain, and it is one of two found the 
 binary was ever executed. The other: no `windres ui.rc` step, so the toolbar bitmaps are absent and
 wxWidgets logs *"Can't load bitmap 'send20' from resources"* at startup. Neither touches consensus —
 the genesis wrote correctly, the wire handshake is exact, both implementations agree on every block —
-but both are divergences from the period build, and both are the reason for a future v0.1.2.
+but both were failures to follow `src/makefile`, and both are fixed in v0.1.2 (`docs/BUILD_NOTES.md`).
+This record is left as it was written, describing the run as it happened.
 
 Worth stating plainly: three days of hashing, string-scanning and cross-platform auditing did not
 surface either one. Running the thing surfaced both within an hour.

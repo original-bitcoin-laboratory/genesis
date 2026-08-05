@@ -147,18 +147,8 @@
         whole body of <span class="mono">OutputDebugStringF</span> sits inside that
         <span class="mono">#ifdef</span> &mdash; and <span class="mono">windres ui.rc</span> now runs,
         producing the <span class="mono">.rsrc</span> section the binary had lacked entirely.
-        <span class="mono">-mthreads</span> and <span class="mono">sha.cpp -O3</span> follow the
-        original makefile.
-        <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/BUILD_FIDELITY.md">How it was measured</a>.</dd>
-
-      <dt>Measured</dt>
-      <dd><span style="opacity:.75">against Satoshi&rsquo;s bitcoin.exe <span class="mono">fbcac071&hairsp;&hellip;</span></span>
-        <pre style="margin-top:8px">                        his   v0.1.1   v0.1.2
-debug.log               7     0        7
-assert "%s" failed      1     0        1
-include/wx/*.h paths    24    0        24
-.rsrc section           yes   no       yes
-.debug_* sections       0     8        0</pre></dd>
+        <span class="mono">-mthreads</span> and <span class="mono">sha.cpp -O3</span> follow
+        <span class="mono">src/makefile</span>, which ships in the tarball.</dd>
     </dl>
     <pre>gpg --verify SHA256SUMS.asc SHA256SUMS &amp;&amp; sha256sum -c SHA256SUMS</pre>
   </section>

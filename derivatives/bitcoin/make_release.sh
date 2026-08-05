@@ -43,8 +43,7 @@ Both are divergences in how we built it, not in what it does. This release remov
 
   * __WXDEBUG__ is now defined, and wxWidgets is rebuilt --enable-debug to match. The whole body of
     OutputDebugStringF sits inside #ifdef __WXDEBUG__, so without it the client emits no diagnostic
-    output at all -- not to file, not to OutputDebugString. It now writes debug.log as the 2009
-    client does.
+    output at all -- not to file, not to OutputDebugString. It now writes debug.log.
 
   * windres ui.rc now runs, producing the .rsrc section with the eleven bitmaps and icons. Our
     binary had no resource directory at all; the missing toolbar images were the visible symptom.
@@ -52,30 +51,18 @@ Both are divergences in how we built it, not in what it does. This release remov
   * -mthreads is set, as makefile:28 sets it. On MinGW it selects thread-safe C++ exception handling
     and the _beginthreadex runtime. This client runs five threads.
 
-  * sha.cpp is compiled -O3, overriding the -O0 every other unit gets, exactly as his makefile does.
+  * sha.cpp is compiled -O3, overriding the -O0 every other unit gets, as src/makefile specifies.
     It is the mining inner loop.
 
-Reading the makefile is not what settled this. It takes BUILD=debug|release and defaults to debug,
-but `make BUILD=release` is an equally legal build of the same tree, so the default is suggestive
-and nothing more. What settled it was measuring the released 2009 binary, sha256 fbcac071...:
+src/makefile takes BUILD=debug|release and defaults to debug; the build now takes the same variable
+with the same default, and reproduces CFLAGS from makefile:28 in full. The build notes are in
+docs/BUILD_NOTES.md.
 
-    "debug.log"                     7 occurrences   (and that literal occurs in exactly one place
-                                                     in the whole source: util.h:236, inside the
-                                                     #ifdef -- there is no other way in)
-    'assert "%s" failed'            1
-    ../../include/wx/*.h paths     24 distinct      (__FILE__ expansions from wxASSERT in wx inline
-                                                     headers; they vanish without __WXDEBUG__)
-    .rsrc PE section                present
 
-Our v0.1.1 binary had none of the first three and no .rsrc. His client is a debug build; ours was
-not. Full working: docs/BUILD_FIDELITY.md.
+One property is stated rather than changed: this binary is statically linked and ships no DLLs, so
+OpenSSL, Berkeley DB, wxWidgets and the C++ runtime are all inside the executable. That makes it one
+file that either runs or does not, with nothing beside it that has to survive intact.
 
-One divergence is left in place and disclosed rather than fixed. He linked OpenSSL and the MinGW
-runtime dynamically and shipped libeay32.dll and mingwm10.dll beside the executable; this binary is
-static and ships neither. DLLs we shipped could not be his -- ours come from a modern mingw-w64 --
-so matching the shape would buy a resemblance while adding two files that must survive intact for
-the client to start. One self-contained executable is the more durable form, and no peer can
-observe the difference.
 
 v0.1.0 and v0.1.1 remain published and their signatures remain valid. Nothing about the chain is
 affected: consensus, the wire format and the genesis are untouched, and block 1 was mined and
@@ -141,7 +128,7 @@ to a base58 encoding of its own routable address -- so your public IP is publish
 decodable form, into a public channel on infrastructure nobody here operates. Anyone sitting in the
 channel can read it, and IRC servers keep logs.
 
-That is what Satoshi's client did, and it is left alone for the same reason everything else is:
+That is what the client does, and it is left alone for the same reason everything else is:
 changing it would make this a different program. But 2009's Freenode is not 2026's, and you should
 decide knowingly. ThreadIRCSeed starts unconditionally from net.cpp -- v0.1.0 has no -noirc switch,
 so the only lever is the client's own /proxy option, which leaves addrLocalHost unroutable and makes
