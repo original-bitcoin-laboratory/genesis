@@ -480,6 +480,23 @@ The 2009-09-16 capture states the release as *"176 days ago"* — a figure Sourc
 its own database. **176 days before 2009-09-16 is 2009-03-24**, the exact day of the canonical PDF's
 internal `CreationDate`. Two independent records agreeing on the day.
 
+**And SourceForge still publishes how many people took it.** Their statistics endpoint returns
+per-month counts back to the project's registration, with no key and no login:
+
+```
+2008-11    0
+2008-12    1     <- the whitepaper was the only file in the project that month
+2009-01  141     <- v0.1 released 8 Jan 2009
+```
+
+The paper went up 8/9 December 2008 and the software on 8 January 2009 (¶23.5, ¶23.7). **So the
+December 2008 SourceForge copy was downloaded once.** Consistent across four query windows; the
+isolated December query returns `total: 1`. Reproduce with `verify/sourceforge_download_stats.py`.
+
+*Limits: a project total, not per-file — the step to "the whitepaper" comes from the chronology, not
+the API. Whether an uploader's own fetch counts is undocumented, as is bot filtering in 2008.
+Monthly buckets.*
+
 **So the December 2008 file existed for about three and a half months and was replaced on
 2009-03-24.** Its size was never captured: sweeping every SourceForge capture in the window shows a
 **Wayback gap for this project from January to September 2009**, and the file-detail page — the only
