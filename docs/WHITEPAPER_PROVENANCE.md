@@ -110,11 +110,56 @@ So the edit appeared on a site whose operator, at that moment, is not establishe
 available to us. It reads as an author refining his own paper — it improves the text technically and
 contradicts nothing — but that is a reading, and this note does not assert it.
 
+## Part of the body survives from 2008, unchanged
+
+The abstract was quoted in the announcement, so it has always been checkable. The **body** had no
+known 2008 witness at all — until the mail archive was searched for the paper's own sentences.
+
+On **8 November 2008**, answering a question about inflation, Satoshi quoted his own paper:
+
+> Increasing hardware speed is handled: *"To compensate for increasing hardware speed and varying
+> interest in running nodes over time, the proof-of-work difficulty is determined by a moving average
+> targeting an average number of blocks per hour. If they're generated too fast, the difficulty
+> increases."*
+> — [`cryptography@metzdowd.com`, message `014831`](https://www.metzdowd.com/pipermail/cryptography/2008-November/014831.html)
+
+That is **Section 4, Proof-of-Work**, 41 words, **identical** to the same passage in the PDF we ship.
+
+So one paragraph of the body is fixed to November 2008 *and* shown not to have changed across the
+window in which the abstract did change. It is one paragraph out of roughly forty — but it is the
+first piece of the body with any 2008 anchor, and it points the same way the abstract does: the
+revision was a light edit, not a rewrite.
+
+Searched systematically; this is the **only** passage of the paper quoted anywhere in the archive.
+
+## What "anchored" means here, precisely
+
+The list archive is not a timestamping service, and this note will not imply that it is.
+
+pipermail writes its mbox `From_` line **from the message's own `Date` header** — we checked all 345
+messages in the window and the delay between the two is exactly zero for every sender, which is only
+possible if one is derived from the other. A `From_` line is therefore not an independent receive
+time.
+
+What the archive *does* record independently is **arrival order**: the file is not date-sorted, and
+message numbers are assigned sequentially as messages are processed. Each of Satoshi's messages sits
+in a bracket of messages from other people, dated by their own clocks —
+
+```
+Oct 31 14:10  satoshi   arrived between  Oct 31 04:25 pgut001  and  Oct 31 17:33 bear
+```
+
+— and 17 of his 18 are consistent with their neighbours (the one exception is off by 2.4 hours, on a
+hand-moderated list). That is corroboration by many independent clocks plus server-recorded ordering.
+It is strong, and it is not the same thing as a third-party timestamp.
+
 ## Consequences for how this lab cites the paper
 
 | | status |
 |---|---|
-| the **October 2008 abstract**, ~176 words | **anchored.** Preserved by two unrelated third parties — the metzdowd list server and an Internet Archive capture of bitcoin.org — agreeing to within one word. Citable as October 2008 text. |
+| the **October 2008 abstract**, ~176 words | **anchored.** Preserved by two unrelated third parties — the metzdowd archive and an Internet Archive capture of bitcoin.org — agreeing to within one word. Citable as October 2008 text. |
+| **Section 4's difficulty paragraph**, 41 words | **anchored to 8 Nov 2008**, and identical in the shipped PDF. The only body text with a 2008 witness. |
+| the remaining ~3,200 words of body | **untested, not unchanged.** No 2008 copy exists to compare against. |
 | `bitcoin.pdf` `b1674191…` | **reference, not authority.** Solid bytes; the design as last stated by its author; canonical since 2009. **Not** a witness to 31 October 2008. |
 
 `common/AUTHORITY.md` previously listed this file alongside the two hash-verified code archives as
