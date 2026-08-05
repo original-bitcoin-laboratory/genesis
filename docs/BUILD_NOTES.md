@@ -138,3 +138,80 @@ along the way killed a false signal that pointed the other way.
 Neither defect touched consensus. The genesis wrote correctly, the wire handshake is exact, both
 implementations agree on every block, and block 1 was mined and relayed by the v0.1.1 binary that
 had them.
+
+---
+
+# Reproducible builds
+
+**5 August 2026**
+
+`bitcoin.exe` is byte-reproducible. Two machines that share a toolchain now produce the same
+15,529,604 bytes:
+
+```
+c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d
+```
+
+A GitHub-hosted runner built it from the published 2009 archive and arrived at exactly that, with
+zero differing bytes against the local build. The job is `.github/workflows/reproducible.yml`; it
+fails loudly if the hash ever moves.
+
+This was the one objection in `00-DECISIONS-AND-REASONING.md` §11 conceded without a rebuttal.
+
+## What it took: two flags
+
+Nobody had ever built this twice and compared. Doing so cost minutes and found everything.
+
+**First comparison — same machine.** Two builds of identical inputs differed in **4 bytes of
+15,529,604**: two in the PE `TimeDateStamp` at `0x88`, and two in the `CheckSum` at `0xd8` that
+derives from it. `ld` writes the build clock into the header. `-Wl,--no-insert-timestamp` zeroes it.
+
+**Second comparison — a different machine.** With an identical toolchain, the runner still differed,
+now in **8 bytes**. Six were in `.rdata` and every one was an ASCII digit. Read as a string:
+
+```
+local   '23:28:12'   'Aug  4 2026'
+CI      '01:20:56'   'Aug  5 2026'
+```
+
+wxWidgets stamping its own build clock through `wxGetLibraryVersionInfo`, plus the PE checksum
+following it. gcc honours `SOURCE_DATE_EPOCH` for `__DATE__` and `__TIME__` from version 7 on, so
+the build exports it.
+
+Worth stating plainly, because it is the substance of the finding: **not one instruction ever
+differed.** Not a symbol, not a section, not an offset, not a byte of any of the four statically
+linked period libraries. Two machines hours apart emitted identical machine code and disagreed only
+about what time it was. The build was never chaotic — it was two clocks, and nobody had looked.
+
+## The epoch
+
+`SOURCE_DATE_EPOCH=1785781375` — 2026-08-03 18:22:55 UTC, **this chain's own genesis**. Any fixed
+number would work. Using the genesis means the binary carries the instant the chain starts from, and
+it is a figure already published and independently checkable rather than one invented for the
+purpose. The string inside the binary reads `Aug  3 2026` / `18:22:55`.
+
+## What reproducibility here does and does not mean
+
+**Does:** anyone with the same toolchain can rebuild the shipped bytes from the published 2009
+archive and check them against the signature. The signature stops attesting only that *we* built
+something; it attests to a binary anyone can regenerate.
+
+**Does not:** free the result from the toolchain. gcc 13.2.0 with the **win32** thread model,
+binutils 2.41.90, mingw-w64 11.0.1, on Ubuntu 24.04. A different compiler emits different code, and
+Ubuntu ships the posix thread variant alongside the win32 one — they are not interchangeable and do
+not produce the same binary. The CI job asserts the alternative rather than hoping, and prints the
+full package set on every run.
+
+That limit is not removable by trying harder; it is what "reproducible build" means everywhere,
+including Bitcoin Core, which pins its toolchain with Guix for the same reason.
+
+## The order of operations mattered
+
+The first CI run failed, and the failure was worth more than a pass would have been. It failed
+because neither `extracted/` nor `derivatives/bitcoin/src/` is in the repository — correctly, since
+the first is a third party's archive and the second is derived from it — which meant the job had
+been about to build from files that only exist on a machine that already did the work by hand.
+
+It now starts where a stranger starts: fetch `bitcoin-0.1.0.tgz`, check it against `ce9da465…`,
+extract, run `make_chain.py` (which refuses unless each of the ten edits matches exactly once), then
+build and compare. The whole chain, on a machine nobody here controls.
