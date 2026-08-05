@@ -58,8 +58,11 @@
   blockquote cite{display:block;margin-top:10px;font-family:var(--mono);font-size:11.5px;font-style:normal;color:var(--ink-faint);letter-spacing:.02em}
   blockquote cite a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line-strong)}
   blockquote cite a:hover{color:var(--brass);border-color:var(--brass)}
-  .wp-note{max-width:70ch;margin:18px 0 0;font-size:13.5px;line-height:1.75;
+  /* .wrap centres its children; long prose needs to opt out or it reads badly. */
+  .wp-note{max-width:70ch;margin:0;font-size:13.5px;line-height:1.75;text-align:left;
     color:var(--ink-faint,#8a8a8a)}
+  .wp-note .mono{font-family:var(--mono);font-size:12.5px;color:var(--ink-dim)}
+  .wp-notes{display:flex;flex-direction:column;gap:16px;max-width:70ch;text-align:left}
   .wp-note b{color:var(--ink-dim,#b0b0b0);font-weight:600}
   .wp-note i{font-style:italic;opacity:.9}
   .wp-note a{color:var(--ink-faint,#8a8a8a);border-bottom:1px solid var(--line-strong,#3a3a3a);
@@ -70,11 +73,17 @@
 <div class="wrap">
   <h1>Bitcoin</h1>
 
+  <blockquote>
+  <p>“If you don't believe me or don't get it, I don't have the time to convince you, sorry.”</p>
+  <cite>— <a href="https://bitcointalk.org/index.php?topic=532.msg6306#msg6306">satoshi</a></cite>
+  </blockquote>
+
   <a class="paper" href="bitcoin.pdf">
     <span class="ic">PDF</span>
     <span class="t">Bitcoin: A Peer-to-Peer Electronic Cash System<small>Satoshi Nakamoto · announced 31 Oct 2008 · this file created 24 Mar 2009 · sha256 b1674191&hairsp;…&hairsp;f4f553 · <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/WHITEPAPER_PROVENANCE.md" style="color:inherit">provenance</a></small></span>
   </a>
 
+  <div class="wp-notes">
   <p class="wp-note">This file was created <b>24 March 2009</b> and carries <span class="mono">satoshin@gmx.com</span>.
     An <b>earlier draft survives</b> — <a href="https://gwern.net/doc/bitcoin/20081003-nakamoto-bitcoindraft.pdf">183,697 bytes</a>,
     served byte-identically by two unrelated hosts, carrying <span class="mono">satoshi@vistomail.com</span>
@@ -95,10 +104,13 @@
     and of us. That is the strongest anchor any version of the paper has; it still says nothing about
     2008.</p>
 
-  <blockquote>
-  <p>“If you don't believe me or don't get it, I don't have the time to convince you, sorry.”</p>
-  <cite>— <a href="https://bitcointalk.org/index.php?topic=532.msg6306#msg6306">satoshi</a></cite>
-  </blockquote>
+  <p class="wp-note"><b>Check all of this yourself.</b>
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/verify">verify/</a>
+    carves the paper out of the block chain and re-hashes it, extracts the text correctly (the file
+    uses per-font <span class="mono">ToUnicode</span> CMaps — a decoder that merges them returns a
+    substitution cipher), and searches the 2008 mail archive for the paper&rsquo;s own sentences.
+    Python 3, standard library, no API key.</p>
+  </div>
 
   <section class="chain">
     <h2>Genesis</h2>
