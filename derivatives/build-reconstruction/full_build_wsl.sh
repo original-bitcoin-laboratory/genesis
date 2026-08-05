@@ -178,7 +178,13 @@ OUT="${OUTDIR:-$OB}"; mkdir -p "$OUT"   # OUTDIR is caller-supplied; ld will not
 # static linking even when we compile without it -- our v0.1.1 shipped 8 .debug_* sections for
 # exactly that reason. His binary has none. Stripping them matches his section list and removes
 # the only place an absolute build path can survive.
-$GXX -std=gnu++98 -mthreads -mwindows -Wl,--subsystem,windows *.o $($WXB/wx-config --libs) -L"$OSSL" -lcrypto -L"$BDB/build_unix" -ldb_cxx-4.8 -lws2_32 -lmswsock -lole32 -loleaut32 -luuid -static -static-libgcc -static-libstdc++ -o "$OUT/bitcoin-0.1.0-reconstructed.exe" -Wl,--strip-debug
+# --no-insert-timestamp: without it, ld writes the build clock into the PE COFF header, and the
+# PE checksum in the optional header derives from it. Two builds of identical inputs were compared
+# byte for byte on 5 Aug 2026: they differed in exactly 4 bytes of 15,529,604 -- two in the
+# TimeDateStamp at 0x88 and two in the CheckSum at 0xd8. Nothing else. Codegen, section layout,
+# symbol and string tables and every statically linked library already matched exactly, so this one
+# flag is the whole distance between this build and a reproducible one on the same toolchain.
+$GXX -std=gnu++98 -mthreads -mwindows -Wl,--subsystem,windows -Wl,--no-insert-timestamp *.o $($WXB/wx-config --libs) -L"$OSSL" -lcrypto -L"$BDB/build_unix" -ldb_cxx-4.8 -lws2_32 -lmswsock -lole32 -loleaut32 -luuid -static -static-libgcc -static-libstdc++ -o "$OUT/bitcoin-0.1.0-reconstructed.exe" -Wl,--strip-debug
 echo
 echo "BUILT: $OUT/bitcoin-0.1.0-reconstructed.exe ($(stat -c%s "$OUT/bitcoin-0.1.0-reconstructed.exe") bytes)"
 # Hard gate: the shipped binary must carry no trace of the machine that built it. Satoshi's

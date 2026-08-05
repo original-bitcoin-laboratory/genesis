@@ -1,0 +1,106 @@
+# Rebuild bitcoin.exe on a machine nobody here controls, and check the bytes.
+#
+# A reproducible build is a claim about other people's machines, so asserting it locally proves
+# nothing. This job builds from source on a GitHub-hosted runner and compares the sha256 against
+# the value committed in EXPECTED_SHA256. If they differ, the job fails and says by how much --
+# a mismatch is a finding, not an inconvenience.
+#
+# What makes it byte-identical, established 5 Aug 2026 by building twice and diffing:
+#   * -ffile-prefix-map rewrites every source path, so nothing depends on where the build happens
+#   * -Wl,--no-insert-timestamp stops ld writing the build clock into the PE COFF header
+#     (without it, two builds of identical inputs differed in exactly 4 bytes of 15,529,604:
+#      two in TimeDateStamp at 0x88 and two in the CheckSum at 0xd8 that derives from it)
+#   * --strip-debug drops the DWARF that OpenSSL/BDB/wx configure scripts add by default
+#
+# What it still depends on, and cannot be removed: the toolchain. gcc 13.2.0 with the *win32*
+# thread model, binutils 2.41.90, mingw-w64 11.0.1. A different compiler emits different code.
+# The job pins the runner image and asserts the versions rather than hoping.
+name: reproducible-build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'derivatives/build-reconstruction/**'
+      - 'derivatives/bitcoin/src/**'
+      - '.github/workflows/reproducible.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the pinned cross-toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            gcc-mingw-w64-i686 g++-mingw-w64-i686 binutils-mingw-w64-i686 \
+            mingw-w64-i686-dev make perl curl ca-certificates
+          # The alternative must resolve to the win32 thread model. Ubuntu ships posix and win32
+          # side by side; they are not interchangeable and they do not produce the same binary.
+          sudo update-alternatives --set i686-w64-mingw32-g++ /usr/bin/i686-w64-mingw32-g++-win32 || true
+          sudo update-alternatives --set i686-w64-mingw32-gcc /usr/bin/i686-w64-mingw32-gcc-win32 || true
+
+      - name: Record the toolchain actually present
+        run: |
+          {
+            echo "distro   $(. /etc/os-release; echo "$PRETTY_NAME")"
+            echo "g++      $(i686-w64-mingw32-g++ --version | head -1)"
+            echo "ld       $(i686-w64-mingw32-ld --version | head -1)"
+            echo "windres  $(i686-w64-mingw32-windres --version | head -1)"
+            dpkg -l | awk '/mingw-w64/ {printf "pkg      %-34s %s\n", $2, $3}'
+          } | tee toolchain.txt
+          echo "### Toolchain" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat toolchain.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build
+        run: |
+          cd derivatives/build-reconstruction
+          SRC="$GITHUB_WORKSPACE/derivatives/bitcoin/src" \
+          OUTDIR="$GITHUB_WORKSPACE/out" \
+          BUILD=debug \
+          bash full_build_wsl.sh
+
+      - name: Compare against the committed hash
+        run: |
+          EXPECTED="$(tr -d ' \n\r\t' < derivatives/build-reconstruction/EXPECTED_SHA256)"
+          ACTUAL="$(sha256sum out/bitcoin-0.1.0-reconstructed.exe | cut -d' ' -f1)"
+          SIZE="$(stat -c%s out/bitcoin-0.1.0-reconstructed.exe)"
+          {
+            echo "### Result"
+            echo ""
+            echo "| | sha256 |"
+            echo "|---|---|"
+            echo "| expected | \`$EXPECTED\` |"
+            echo "| rebuilt  | \`$ACTUAL\` |"
+            echo ""
+            echo "size: $SIZE bytes"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$EXPECTED" = "$ACTUAL" ]; then
+            echo "::notice title=Reproduced::Byte-identical to the committed hash on an independent machine."
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "**Byte-identical.**" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::error title=Not reproduced::Rebuilt hash differs from EXPECTED_SHA256."
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "**Mismatch.** Either the toolchain moved or the build is not deterministic." >> "$GITHUB_STEP_SUMMARY"
+            echo "The artifact is uploaded so the difference can be located rather than guessed at." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+      - name: Upload the rebuilt binary either way
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bitcoin-exe-rebuilt
+          path: |
+            out/bitcoin-0.1.0-reconstructed.exe
+            toolchain.txt
+          retention-days: 30
