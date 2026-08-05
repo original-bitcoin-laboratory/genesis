@@ -119,6 +119,42 @@ paragraph" could be derived.
 The file's internal date of 3 October 2008 is *consistent* with that. It is corroboration, not proof —
 a creation date is writable, which is exactly how four fabricated copies were caught.
 
+### It is also the same toolchain and the same document lineage
+
+The dating above argues from content. This argues from construction, and it is the part that cannot
+be produced by editing a file. Run `verify/pdf_structure.py` on both:
+
+| | canonical 2009-03-24 | **draft 2008-10-03** |
+|---|---|---|
+| PDF version | `%PDF-1.4` | **`%PDF-1.4`** |
+| linearized | no | **no** |
+| object streams `/ObjStm` (PDF 1.5+) | 0 | **0** |
+| xref streams `/XRef` (PDF 1.5+) | 0 | **0** |
+| `/ID[0] == /ID[1]` | **yes — never re-saved** | **yes — never re-saved** |
+| XMP metadata | no | **no** |
+| embedded subset fonts | 7 | **7** |
+| pages | 9 | **8** |
+
+And the fonts are not merely the same set — they are the **same seven faces, with the same six-letter
+subset prefixes, in the same embedding order**:
+
+```
+BAAAAA+CenturySchoolbook-Bold     EAAAAA+ArialMT      GAAAAA+OpenSymbol
+HAAAAA+CourierNewPSMT             CAAAAA+TimesNewRomanPSMT
+FAAAAA+TimesNewRomanPS-ItalicMT   DAAAAA+TimesNewRomanPS-BoldMT
+```
+
+Subset prefixes are assigned **sequentially by the producing application** as it embeds each font.
+Identical prefixes bound to identical faces in identical order indicates the same application, the
+same installed font environment, and **the same document lineage** — one source document exported
+twice, five months apart.
+
+Reproducing that would require OpenOffice.org 2.4, that exact font environment, and a source
+document yielding the same embedding order. It is a different proposition from altering a date field.
+
+**And the page count moved 8 → 9**, which is what adding the Section 6 transaction-fee material would
+do — independently what the November 2008 mail record shows happening.
+
 ### Where the draft came from — a custody chain on the record since 2015
 
 The file did not appear from nowhere in 2020. Its history is recorded on the same mailing list that
