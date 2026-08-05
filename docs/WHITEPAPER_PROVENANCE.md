@@ -119,12 +119,40 @@ paragraph" could be derived.
 The file's internal date of 3 October 2008 is *consistent* with that. It is corroboration, not proof —
 a creation date is writable, which is exactly how four fabricated copies were caught.
 
+### Where the draft came from — a custody chain on the record since 2015
+
+The file did not appear from nowhere in 2020. Its history is recorded on the same mailing list that
+carried the announcement:
+
+| date | record |
+|---|---|
+| **2015-01-24** | Asked on the cryptography list whether anyone saved the original, the pseudonymous **StealthMonger** replies: *"Looks like I have it… the local date of the file I have is **2008 Nov 2**"* — **183697 bytes** |
+| **2015-01-25** | Posts the hash: **`427c63b3…982faa`**. Bryan Bishop replies that *"the one everyone else has"* is `b1674191…` — the community had only the canonical file |
+| **2015-01-30** | **David Johnston** receives it by anonymous remailer in ~26 parts, reassembles it, and **republishes it** — same hash |
+| **2015-02-14** | The Internet Archive [captures that page](https://web.archive.org/web/20150214024140if_/https://www.blacksheepatorenco.com/bitcoin.html), hash and all |
+| **2017-08-17** | **Ray Dillinger** — who argued with Satoshi in the original November 2008 thread — confirms: *"Yes. The hash matches. That's definitely it."* |
+
+So the hash is fixed in **two independent third-party records from early 2015**, five years before the
+archive.org copy existed, and confirmed by a participant from 2008.
+
+**And the content dating agrees with the custody claim without either knowing about the other.**
+StealthMonger said early November 2008; the absent transaction-fee paragraph independently says
+before 9 November 2008. Nothing in the file could have been tuned to match a claim made years later
+by someone who never mentioned fees.
+
+*Recorded for completeness: in 2015 StealthMonger gives the file's local date as 2 November 2008; in
+2017 he writes "received here 2008 November 8". Six days apart. Both precede the 9 November fee
+proposal, so the dating is unaffected — but the two statements are not identical.*
+
 ### What is still not established
 
-- **No 2008 hash of any version exists.** Nothing here is cryptographically bound to 2008.
-- **The file served at the 31 October link is still not identified.** The draft is dated 3 October and
-  its content is pre-9-November. Whether the announcement linked *this* file, or something between it
-  and the March 2009 version, is unknown.
+- **No 2008 hash of any version exists.** Nothing here is cryptographically bound to 2008. The
+  earliest recorded hash is January 2015.
+- **The November 2008 download rests on a pseudonymous party's word** — corroborated by the file's
+  own content and by Dillinger, but not anchored.
+- **The file served at the 31 October link is still not identified as such.** The draft is internally
+  dated 3 October and its content is pre-9-November; whether the announcement linked *this* file is
+  consistent with the record but not demonstrated by it.
 
 ## The file served on 31 October 2008 is not identified
 
@@ -263,11 +291,22 @@ since** — the file behind the announced link, which is the one thing still uni
 Any candidate is testable **without trusting a byte of its metadata**, by content alone. Three
 independent discriminators, in increasing order of usefulness:
 
-| test | pre-revision | March 2009 |
-|---|---|---|
-| abstract wording | *"the burdens of"*, *"honest nodes control the most CPU power"*, *"broadcasted"* | *"not cooperating to attack the network"*, *"broadcast"* |
-| contact address on page 1 | `satoshi@vistomail.com` | `satoshin@gmx.com` |
-| **Section 6 transaction fees** | **absent** → also **before 9 Nov 2008** | present |
+| test | Aug 2008 pre-release | 3 Oct 2008 draft | March 2009 |
+|---|---|---|---|
+| title | *Electronic Cash Without a Trusted Third Party* | *Bitcoin: A Peer-to-Peer…* | *Bitcoin: A Peer-to-Peer…* |
+| digital signatures … | *"**offer** part of the solution"* | *"**provide** part"* | *"**provide** part"* |
+| abstract wording | *"the burdens of"* | *"the burdens of"* | *"not cooperating to attack the network"* |
+| contact address on page 1 | — | `satoshi@vistomail.com` | `satoshin@gmx.com` |
+| **Section 6 transaction fees** | ? | **absent** → **before 9 Nov 2008** | present |
+
+The **August 2008 row is known from Satoshi's own words**: his 22 August 2008 email to Wei Dai quotes
+the pre-release's title and full abstract, and that abstract differs from the announced October one
+by exactly one word — *offer* → *provide*. The draft we hold already says *provide* and already
+carries the *Bitcoin:* title, so **both changes happened between 22 August and 3 October 2008**.
+
+That earliest version — `ecash.pdf` — is **lost**. Its download link was never archived (20 Wayback
+captures, all 404/302, earliest 2020), and the file circulating under that name is PDF v1.6 and
+linearized, which OpenOffice 2.4 does not produce; it fails on structure, not merely on its dates.
 
 The third is the strongest, and it is the one that dates a file rather than merely ordering it:
 Satoshi proposed transaction fees on the mailing list on **9 November 2008**, so a copy without them
