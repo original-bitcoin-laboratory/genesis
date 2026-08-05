@@ -276,6 +276,41 @@ proposal, so the dating is unaffected — but the two statements are not identic
   dated 3 October and its content is pre-9-November; whether the announcement linked *this* file is
   consistent with the record but not demonstrated by it.
 
+## A fourth version exists: 11 November 2008
+
+Arthur Rosendahl's expert report in COPA v Wright lists his exhibits:
+
+```
+Exhibit AR2: Bitcoin White Paper - March 2009 version
+Exhibit AR3: Bitcoin White Paper - November 2008 version
+Exhibit AR4: Bitcoin White Paper - October 2008 version
+```
+
+and states in the body:
+
+> *"I was also provided with two further copies of the Bitcoin White Paper, one from **3 October 2008**
+> (Exhibit AR4) and another from **11 November 2008** (Exhibit AR3). I understand these to be further
+> copies of the White Paper which are also deemed, for the purposes of these proceedings, **control
+> copies**."*
+
+**So the sequence is at least four versions, not three:**
+
+```
+Aug 2008     "Electronic Cash Without a Trusted Third Party"     lost
+3 Oct 2008   the draft we hold                                   held
+9 Nov 2008   Satoshi proposes transaction fees on the list
+11 Nov 2008  Exhibit AR3 -- a High Court control copy            NOT HELD, contents not public
+24 Mar 2009  the canonical                                       held, chain-anchored
+```
+
+**The November version is dated two days after the fee proposal.** Whether it contains the Section 6
+transaction-fee paragraph would date that addition to within 48 hours — and if it does not, that is
+more interesting still. The exhibit is not public and we do not hold it.
+
+Rosendahl also records that all three versions he examined are alike in construction: *"All three are
+very similar in each respect, and I have reached the same conclusion about those 2008 versions for
+the same reasons as the 2009 version"* — i.e. all OpenOffice output, not LaTeX.
+
 ## The court's agreed chronology
 
 ¶23 of the judgment sets out an **agreed** timeline for the period the pseudonym was in use. Three
