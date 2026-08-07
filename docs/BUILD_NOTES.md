@@ -93,7 +93,8 @@ string that is gated from one that merely looks gated is the whole of it.
 **`-g` is dropped.** Building with it produced a **54.8 MB** binary carrying eight `.debug_*`
 sections, against 15.5 MB without. DWARF is debugger metadata: it changes no instruction, and this
 is a client meant to be run, copied and kept, not stepped through. It is also where absolute build
-paths live — with `-g` on, the build refused to link because `/home/xyoga` had been embedded via
+paths live — with `-g` on, the build refused to link because the builder's `/home/<user>` path had
+been embedded via
 DWARF arriving from wxWidgets' own `--enable-debug` compilation, which `-ffile-prefix-map` did not
 reach. `__WXDEBUG__` is the half of `DEBUGFLAGS` with observable behaviour and it stays; `-g` has
 none and goes.

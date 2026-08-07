@@ -260,7 +260,7 @@ def main():
              c: {"method": _method(c)[0], "impl": _method(c)[1],
                  "available": _available(c), "consistent": xc[c]}
              for c in DESCENDANTS},
-         "rows": rows}, indent=2) + "\n", encoding="utf-8")
+         "rows": rows}, indent=2) + "\n", encoding="utf-8", newline="\n")
 
     cols = DESCENDANTS
     L = ["# Descendant-conformance matrix (neutral, from the v0.1 origin)", "",
@@ -314,7 +314,7 @@ def main():
           "- **BSV**: Bitcoin SV *Genesis* (2020-02), \"restore original Script\" minus `OP_2MUL/2DIV`, "
           "via `bitcoinx`. **Executed.**",
           ""]
-    (out / "MATRIX.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    (out / "MATRIX.md").write_text("\n".join(L) + "\n", encoding="utf-8", newline="\n")
     print("wrote MATRIX.md + conformance.json | cross-check per chain:")
     for c in cols:
         m, impl = _method(c)

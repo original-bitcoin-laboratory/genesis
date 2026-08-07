@@ -52,6 +52,13 @@ python scripts/reproduce.py        # every Python suite + regenerated artifacts 
 python scripts/verify_genesis.py   # both experimental genesis blocks re-derive from source
 ```
 
+> **Run the suites through `reproduce.py`, not a bare `pytest` from the repository root.** Each
+> subsystem under `derivatives/` is a standalone tree that imports its siblings by directory, and two
+> of them deliberately share a test-file basename. `reproduce.py` runs each suite in its own working
+> directory, which is what those imports expect; invoking `pytest` across the whole repo instead
+> raises an import/collection error that is an artefact of the layout, not a failing test. To run one
+> subsystem directly, `cd` into it first (e.g. `cd derivatives/persist && python -m pytest -q`).
+
 The unmodified 2009 `bitcoin.exe` was also run and hash‑verified against these
 reconstructions — the **historical** genesis is reproduced by the unmodified 2009 binary (block 0 of its
 `blk0001.dat`; `r3-findings/run1/`, level `JAN09-EXECUTED`); the headless consensus port (`derivatives/node`)

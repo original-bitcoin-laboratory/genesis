@@ -95,7 +95,8 @@ def write_provenance(nov: Rules):
            "network_identity": {"class": "NEW-EXP",
                                 "items": ["new genesis", "new magic", "new ports",
                                           "new address version", "no inherited balances"]}}
-    (_HERE / "PROVENANCE.json").write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+    (_HERE / "PROVENANCE.json").write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8",
+                                           newline="\n")
     return len(rows)
 
 
@@ -106,7 +107,7 @@ def main():
     except Exception:
         pass
     report, nov = build_report()
-    (_HERE / "DIFFERENTIAL.md").write_text(report, encoding="utf-8")
+    (_HERE / "DIFFERENTIAL.md").write_text(report, encoding="utf-8", newline="\n")
     n = write_provenance(nov)
     print(report)
     print(f"wrote DIFFERENTIAL.md + PROVENANCE.json ({n} N-ORIG rules)")
