@@ -1,6 +1,7 @@
 # OBL-JAN09 — Source inventory (`v0.1.0-source-inventory`, R1)
 
-First-pass structural map of the January 2009 Bitcoin v0.1.0 `src/` tree
+First-pass structural map of the January 2009 Bitcoin `src/` tree (the archive distributed
+as v0.1.0; its contents are v0.1.1 — see [`common/VERSION_LABEL.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md))
 (26 source units, 19,820 lines). Line counts and class/symbol names are read
 directly from the extracted, hash-verified source (`manifests/SOURCE_MANIFEST.json`).
 For the full opcode vocabulary see [`OPCODES.md`](OPCODES.md).

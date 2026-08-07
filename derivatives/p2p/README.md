@@ -8,7 +8,9 @@ protocol, and relay a block and a transaction between them.
 
 - Message = `[magic:4][command:12][size:4 LE][payload]` with **no checksum**
   (`CMessageHeader`, net.h). Magic = `f9 be b4 d9` (net.h:54).
-- `PROTOCOL_VERSION = 101` (serialize.h:22).
+- `PROTOCOL_VERSION = 101` (serialize.h:22) — this is **v0.1.1's** wire version, which is
+  what the surviving January archive contains. v0.1.0's was `100`. See
+  [`common/VERSION_LABEL.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md).
 - Handshake is a plain `version` exchange with **no verack** (main.cpp:1705) —
   `version` payload = `int nVersion, uint64 nServices, int64 nTime, CAddress`.
 - Relay: `inv` → `getdata` → `block` / `tx` (main.cpp:1772-1955); `CInv` =

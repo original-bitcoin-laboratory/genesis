@@ -77,11 +77,20 @@ hashes below (full in `SHA256SUMS`). All six show `0 connections` and `1 blocks`
   the 2009 registration (`IRC ERROR: Closing link … Registration timeout`) →
   **0 peers**, so the node stayed isolated even while online. Confirms the R3 plan's
   premise that a local `mini_ircd` is required for a real two-node run.
-- **Version string.** The About box reads **"version 0.1.1 Alpha"** — the source
-  computes `strprintf("version 0.%d.%d Alpha", VERSION/100, VERSION%100)` with
-  `VERSION=101` (serialize.h:22). So the binary shipped in the *0.1.0* archive
-  self-identifies as **0.1.1**, and `101` is exactly the `PROTOCOL_VERSION` our P2P
-  port uses (`derivatives/p2p`).
+- **★ Version string — and this turned out to be the identification, not a curiosity.**
+  The About box reads **"version 0.1.1 Alpha"** — the source computes
+  `strprintf("version 0.%d.%d Alpha", VERSION/100, VERSION%100)` with `VERSION=101`
+  (serialize.h:22). So the binary shipped in the *0.1.0* archive self-identifies as
+  **0.1.1**, and `101` is exactly the `PROTOCOL_VERSION` our P2P port uses
+  (`derivatives/p2p`).
+
+  > **Followed up 8 August 2026 — the software was right and the filename was wrong.**
+  > The archive **is** `bitcoin-0.1.1.rar`: Satoshi states its exact byte size (2,132,686) in a
+  > 10 January 2009 email, its `bitcoin.exe` carries a 10 January PE link stamp, and the
+  > `mapAddresses.count` line he deleted *for* 0.1.1 is absent. This run recorded the fact and
+  > filed it as a GUI observation; it was the identification all along. **Nothing in this run's
+  > results changes** — the genesis witness stands, because the whole v0.1.0→v0.1.1 delta is
+  > `irc.cpp` and `serialize.h`. See [`common/VERSION_LABEL.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md).
 - **Pay-to-IP.** The Send-Coins dialog offers payment to a *"recipient's IP address …
   for online transfer"* (or a bitcoin address if offline) — the early IP-to-IP
   payment mode Bitcoin later removed. Captured live.

@@ -157,7 +157,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   `DIFFERENTIAL.md`. **20 tests.** Design: `common/nov08x/DESIGN_LEDGER.md`. Open: NOV08-Full
   (walled-off interpretation).
 - [x] **JAN09-X (R8) — released chain, full vocabulary, isolated** → `derivatives/jan09x/`
-  (MODEL) — the symmetric twin. Runs the **released v0.1.0 constitution** (COIN=1e8, 50-coin
+  (MODEL) — the symmetric twin. Runs the **released January 2009 constitution** (COIN=1e8, 50-coin
   subsidy, 210k halving, 10-min, compact PoW, `≤` coinbase) with the **full vocabulary
   re-opened**: `script_full.py` **re-enables `OP_NOTEQUAL`** (the one functional opcode v0.1
   disabled, script.cpp:486) as byte-level `!=`, disclosed NEW-EXP **with Satoshi's

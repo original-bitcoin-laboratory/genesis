@@ -1,7 +1,7 @@
 # JAN09‑X — the released chain, full vocabulary, isolated (R8)
 
 **Evidence level: `MODEL`.** The symmetric twin of NOV08‑X. JAN09‑X runs the
-**released v0.1.0 constitution** — `COIN=1e8`, 50‑coin subsidy, 210k halving, 10‑min
+**released January 2009 constitution** — `COIN=1e8`, 50‑coin subsidy, 210k halving, 10‑min
 spacing, **compact** proof‑of‑work, `≤` coinbase rule (exactly what the lab's
 `../p2p/chainsync` + `../node` already execute) — with the **full opcode vocabulary
 re‑opened** and its own isolated network identity.

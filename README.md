@@ -1,6 +1,6 @@
 # Original Bitcoin Laboratory — Genesis (`OBL-JAN09`)
 
-Self-contained reconstruction of the **January 2009 Bitcoin v0.1.0** release — the
+Self-contained reconstruction of the **January 2009 Bitcoin** release — the
 first publicly announced Bitcoin implementation (node + wallet + miner + validator
 + Script interpreter + P2P networking + database + a commerce/market subsystem). This is the
 principal **behavioral oracle** for "original Bitcoin", and its runnable `derivatives/`
@@ -21,6 +21,12 @@ Archives land in `artifacts/jan09/` (gitignored) and are never edited. Verified
 values: MD5/SHA-1 (SNI catalogue) plus SHA-256 matching the 2012 Hal Finney
 recovery thread — `bitcoin-0.1.0.rar` = `8b17eb9a…`, `bitcoin-0.1.0.tgz` =
 `ce9da465…`.
+
+> **These files are named `bitcoin-0.1.0` by everyone who serves them, but their contents are
+> v0.1.1** — Satoshi gives its exact byte size in a 10 January 2009 email, and its `bitcoin.exe`
+> carries a **10 January** PE link stamp, two days after v0.1.0 was announced. We keep the filename
+> because the published hashes are under it. **No consensus rule differs**; the whole delta is
+> `irc.cpp` and `serialize.h`. Evidence: [`common/VERSION_LABEL.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md).
 
 ## Reproduce the executable reconstruction
 
