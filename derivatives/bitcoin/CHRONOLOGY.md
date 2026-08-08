@@ -50,7 +50,30 @@ All times UTC.
                         nNonce 895691393 — 28h 14m after the genesis
 2026-08-05            Bitcoin-v0.1.2  099c011d…   ·  v0.1.3  d24469a4…
                         SHA256SUMS signed and OpenTimestamped, then upgraded
+2026-08-06 00:23:51   BLOCK 2                                      000000001690a604…
+                        nNonce 1510572694
+2026-08-06 01:40:22   BLOCK 3                                      00000000428303928…
+                        nNonce 612491648
 ```
+
+**The chain is at height 3.** All four blocks link, and all four satisfy their proof-of-work target —
+checked against the difficulty arithmetic, not by eye.
+
+### Each mined block is bracketed by a bound binary
+
+Before and after each mining session, the live process is captured and its executable hashed against
+the published release. **Every block's own timestamp falls strictly between two such captures.**
+
+```
+                    PRE binding            block nTime            POST binding          binary
+block 1   2026-08-04 21:36:06  <  2026-08-04 22:36:53  <  2026-08-04 22:43:46   v0.1.1  cfb59606…
+block 2   2026-08-06 00:18:12  <  2026-08-06 00:23:51  <  2026-08-06 00:34:13   v0.1.3  c3f15fc5…
+block 3   2026-08-06 00:43:56  <  2026-08-06 01:40:22  <  2026-08-06 01:44:16   v0.1.3  c3f15fc5…
+```
+
+**The intervals between blocks are wall-clock gaps, not mining times.** The miner runs
+intermittently — the client is stopped between blocks to take the post-binding, exit cleanly and copy
+the chain files. **Nothing here supports any statement about hashrate.**
 
 ### The genesis header, in full
 
@@ -163,7 +186,9 @@ Listed here rather than left to be discovered.
   unattested — but the tags themselves are not, and history will not be rewritten to hide that.
 - **Only v0.1.3's tarball is individually OpenTimestamped.** The earlier three are covered
   transitively through the stamped `SHA256SUMS`.
-- **Blocks 2 and 3 have no evidence directory.** Block 1 was the witness; later blocks are routine
-  and were not captured with the same ceremony.
+- **Only block 1's evidence is published here.** Blocks 2 and 3 are evidenced to the same standard —
+  findings, checksums, pre/post bindings, the raw chain file and screenshots — but that material is
+  currently held offline rather than in this repository. **The bracketing table above is read from
+  it**, and the block hashes it contains are verifiable from the chain by anyone regardless.
 
 MIT. `license.txt` in every release is the 2009 source's own and is unmodified.
