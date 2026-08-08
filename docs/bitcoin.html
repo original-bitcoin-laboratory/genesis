@@ -201,27 +201,81 @@
   </section>
 
   <section class="chain">
-    <h2>Block 1</h2>
+    <h2>The chain</h2>
+    <p class="wp-note" style="margin:0 0 14px"><b>Five blocks.</b> All link, and all meet their
+      proof-of-work target — checked from the raw block file against the difficulty arithmetic, not by
+      eye. <b>nBits is <span class="mono">0x1d00ffff</span> on every block: difficulty has never
+      moved.</b></p>
+    <pre style="margin:0 0 14px">height 0  00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a   3 Aug 2026 18:22:55Z
+height 1  000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c   4 Aug 2026 22:36:53Z
+height 2  000000001690a604f122ddf97c77d2580535fde2b2d700dc8a4478aea7ed75d5   6 Aug 2026 00:23:51Z
+height 3  00000000428303928c985745792c7ad7644cb5f310b417263a66108fa7f49dcf   6 Aug 2026 01:40:22Z
+height 4  0000000097b1298a990e8f872e4acda48ace5274e99d2a5f9a483f183c1bd20c   8 Aug 2026 22:19:22Z</pre>
     <dl>
-      <dt>hash</dt>     <dd>000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c</dd>
-      <dt>prev</dt>     <dd>00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a</dd>
-      <dt>nTime</dt>    <dd>1785883013 — 2026-08-04 22:36:53 UTC</dd>
-      <dt>nBits</dt>    <dd>0x1d00ffff</dd>
-      <dt>nNonce</dt>   <dd>895691393</dd>
-      <dt>coinbase</dt> <dd>04ffff001d0101 <span style="opacity:.7">— height and extra-nonce, nothing else</span></dd>
+      <dt>latest</dt>   <dd>block 4 — nonce 2045882594, prev 00000000428303928c98…</dd>
       <dt>mined by</dt>
-      <dd>the released client, <span class="mono">bitcoin.exe</span> sha256 cfb59606…eacba5ac — the live
-        process was bound to those bytes before and after the block, under one PID.</dd>
+      <dd><b>Block 1</b> by <span class="mono">bitcoin.exe</span> cfb59606… (v0.1.1).
+        <b>Blocks 2–4</b> by <span class="mono">c3f15fc5…</span> — <b>the released v0.1.3 client</b>,
+        matching its own release hash. In each case the live process was hashed before and after the
+        block, same PID and start time in both captures. <b>Block 4's bracket is 39 minutes wide with
+        the block in the middle of it.</b></dd>
+      <dt>intervals</dt>
+      <dd>28.2 h · 23.9 h · 1.3 h · 68.6 h — <b>gaps between sessions, not block times.</b> The miner
+        is not left running; a 68-hour gap means the machine was switched off. At difficulty 1 a
+        2-vCPU guest finds a block in roughly 50–90 minutes of actual mining.</dd>
     </dl>
     <p class="lnk">
-      <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/bitcoin-findings/2026-08-05-block1/FINDINGS.md">findings</a> ·
-      <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/bitcoin-findings/2026-08-05-block1/SHA256SUMS">evidence hashes</a> ·
+      <a href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/bitcoin-findings">all findings</a> ·
+      <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/bitcoin-findings/CORRECTIONS.md">corrections</a> ·
       <a href="status.html">live status</a>
     </p>
   </section>
 
   <section class="chain">
-    <h2>Bitcoin v0.1.3</h2>
+    <h2>Bitcoin v0.1.4</h2>
+    <dl>
+      <dt>Date</dt>
+      <dd>9 August 2026</dd>
+
+      <dt>Download</dt>
+      <dd>
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.4/bitcoin-0.1.4.tar.gz">bitcoin-0.1.4.tar.gz</a><br>
+        <span style="opacity:.75">SHA256: 3d7a7b3c23679b5bc9f92bfe74fd25854de99bd5ef343aece0013f6459b5ca44</span><br>
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.4/bitcoin-0.1.4.tar.gz.asc">.asc</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.4/SHA256SUMS">SHA256SUMS</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.4/SHA256SUMS.asc">SHA256SUMS.asc</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.4/bitcoin-0.1.4.tar.gz.ots">.ots</a>
+      </dd>
+
+      <dt>bitcoin.exe</dt>
+      <dd><span style="opacity:.75">SHA256: c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d</span>
+        &nbsp;<b>— byte-identical to v0.1.3.</b> Nothing in the client changed, so nothing in the
+        binary did; a release shipping different bytes for the same source would be the thing worth
+        worrying about.</dd>
+
+      <dt>Signed by</dt>
+      <dd>B128 526A F85A E4A8 F22B&nbsp; 949F B014 5F74 B78C F1DA
+        &nbsp;<a href="parthod0x-signing-key.asc">key</a>
+        &nbsp;<a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA">keyserver</a></dd>
+
+      <dt>Source</dt>
+      <dd><a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.4">github.com/original-bitcoin-laboratory/genesis</a></dd>
+
+      <dt>Changes</dt>
+      <dd><b>Block 4, mined by the released client.</b> Blocks 2 and 3 published — they had been sitting
+        in the local evidence set since 6 August. <b>This tag is signed and annotated</b>: v0.1.2 and
+        v0.1.3 were lightweight tags, a regression nobody noticed because a lightweight tag looks
+        identical until you ask it who made it. The earlier tags are <b>not</b> re-cut — rewriting a
+        published tag breaks every clone and invalidates the timestamps anchored to it, so the gap is
+        recorded instead. And the genesis-era artifacts are now <b>anchored in Bitcoin</b> via
+        OpenTimestamps: that cannot prove they existed on 3 August, but it stops the window widening,
+        and it is the same standard this project refuses to waive for anyone else's self-asserted
+        dates.</dd>
+    </dl>
+  </section>
+
+  <section class="chain">
+    <h2>Bitcoin v0.1.3 <span style="opacity:.6;font-size:.7em">— superseded by v0.1.4</span></h2>
     <dl>
       <dt>Date</dt>
       <dd>5 August 2026</dd>
@@ -445,7 +499,7 @@ SHA256SUMS.asc            QmcVxjbgyQxj6KWP32MoBrYfvPfy4VRnn9ZyAeW5conQH2</pre>
     <span class="lf-h" id="lf-btc">bitcoin&nbsp;—</span></span></p>
   <p class="lf-links">
     <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.6.0-experimental">v0.6.0-experimental</a> ·
-    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.3">Bitcoin-v0.1.3</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.4">Bitcoin-v0.1.4</a> ·
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md">source · verify</a> ·
     <a href="parthod0x-signing-key.asc" title="ed25519 release-signing key">key B128&nbsp;526A…B78C&nbsp;F1DA</a>
     <a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA"

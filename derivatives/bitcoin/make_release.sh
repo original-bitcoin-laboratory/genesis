@@ -13,7 +13,9 @@ SRC="$HERE/src"                                # derived tree from make_chain.py
 # has to stay exactly where the evidence records say it is.
 EXE="${EXE:-$HERE/build/bitcoin-0.1.0-reconstructed.exe}"
 OUT="$HERE/dist"
-NAME="bitcoin-0.1.3"
+# NAME is overridable for the same reason EXE is: cutting v0.1.4 must not require editing this
+# script, and a hardcoded version is how a release quietly ships under the previous name.
+NAME="${NAME:-bitcoin-0.1.3}"
 
 [ -d "$SRC" ]  || { echo "!! run: python make_chain.py"; exit 2; }
 [ -f "$EXE" ]  || { echo "!! build first: SRC=$SRC bash ../build-reconstruction/full_build_wsl.sh"; exit 2; }
@@ -24,6 +26,9 @@ cp    "$ORIG/license.txt"     "$OUT/$NAME/license.txt"      # MIT, unmodified
 cp    "$ORIG/readme.txt"      "$OUT/$NAME/readme.txt"       # unmodified
 cp    "$EXE"                  "$OUT/$NAME/bitcoin.exe"
 
+if [ -n "${RELEASE_NOTES:-}" ] && [ -f "$RELEASE_NOTES" ]; then
+  cp "$RELEASE_NOTES" "$OUT/$NAME/RELEASE.txt"
+else
 cat > "$OUT/$NAME/RELEASE.txt" <<'TXT'
 Bitcoin v0.1.3
 ==============
@@ -159,6 +164,7 @@ encryption, no authentication, and a wallet.dat written in the clear.
 NOT MONEY. No premine of value, no token, no sale, no market. Experimental research artifact.
 Run the client only in an isolated VM: it is a live node.
 TXT
+fi
 
 cd "$OUT"
 tar --format=ustar -czf "$NAME.tar.gz" "$NAME"

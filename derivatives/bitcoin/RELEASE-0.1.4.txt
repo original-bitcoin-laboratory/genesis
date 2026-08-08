@@ -1,0 +1,90 @@
+Bitcoin v0.1.4
+==============
+
+The client, the chain and the protocol are unchanged from v0.1.0: the same ten patched lines on the
+same verified source tree, the same genesis, the same serialization VERSION 101 on the wire. A node
+built from any of the five releases speaks to a node built from any other. This is a build-level
+release, the fourth one.
+
+The binary is byte-identical to v0.1.3.
+
+  bitcoin.exe  c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d
+
+Rebuild it from the published 2009 archive and your bytes hash to that. Nothing in the client
+changed, so nothing in the binary changed; a release that shipped a different binary for the same
+source would be the thing worth worrying about.
+
+
+What changed
+------------
+
+1. BLOCK 4, AND THE RELEASED CLIENT MINED IT.
+
+   height 4  0000000097b1298a990e8f872e4acda48ace5274e99d2a5f9a483f183c1bd20c
+             nonce 2045882594   nBits 0x1d00ffff   2026-08-08 22:19:22 UTC
+             prev  00000000428303928c985745792c7ad7644cb5f310b417263a66108fa7f49dcf
+
+   The chain is five blocks. All five link, all five meet their proof-of-work target, checked from
+   the raw block file against the difficulty arithmetic rather than by eye.
+
+   Blocks 2, 3 and 4 were produced by bitcoin-0.1.3 -- the client published under that tag, hash
+   c3f15fc5..., matching its own release oracle. So the release is not only a package: it is an
+   executed artifact. That is the same claim this laboratory makes about Satoshi's fbcac071..., now
+   made about our own. (Block 1 was mined by v0.1.1, cfb59606..., and its records say so. Do not
+   retro-fit v0.1.3 onto it.)
+
+   The block-4 session is bound tightly: one process, pid 2272, started 21:56:08 UTC, captured
+   before at 21:56:16 and after at 22:35:05, both captures reporting the same binary hash and the
+   same process start time. The block's own timestamp, 22:19:22, sits inside that window. A
+   39-minute bracket is a stronger statement than a wide one -- it leaves less room between "this
+   binary was running" and "this binary made this block".
+
+2. BLOCKS 2 AND 3 ARE PUBLISHED. They were mined on 6 August and their findings had never left the
+   local evidence set. bitcoin-findings/ now carries blocks 1 through 4.
+
+3. THIS TAG IS SIGNED AND ANNOTATED. Bitcoin-v0.1.0 and v0.1.1 were annotated tags; v0.1.2 and
+   v0.1.3 were lightweight -- a regression nobody noticed, because a lightweight tag looks identical
+   until you ask it who made it. From v0.1.4 the tag carries a signature.
+
+   The earlier tags are NOT re-cut. Rewriting a published tag breaks every clone and invalidates the
+   timestamps anchored to it; the gap is recorded instead.
+
+4. THE GENESIS-ERA ARTIFACTS ARE ANCHORED IN BITCOIN. The agent's key file, the mint record, the
+   miner source and binary, the coinbase-headline script and the signed provenance statement were
+   stamped through OpenTimestamps on 9 August 2026.
+
+   This does not prove they existed on 3 August. Nothing can. What it does is stop the window
+   widening: "existed no later than <block>" is now chain-proven and no longer rests on this
+   machine's clock. Together with the newspaper in the genesis coinbase, which fixes the other end,
+   the artifacts are bracketed from both sides by parties that are not us.
+
+   That matters for a specific reason. This project declines to treat the satoshin@gmx.com key's
+   2008 self-asserted date as evidence. Anchoring our own artifacts is how we avoid asking for a
+   weaker ruler than we hand everyone else.
+
+
+Corrections carried in this release
+-----------------------------------
+
+NEXT-SESSION_block4_pre.json, in the block-3 evidence set, is described there as the block-4
+binding. It is not: it was captured 2026-08-04 from pid 5072 running v0.1.1, a process that had
+already exited. Block 4 took its own fresh capture. A pre-capture from a dead process binds nothing.
+
+The sealed set is not edited -- the correction is recorded in bitcoin-findings/CORRECTIONS.md, so
+the seal keeps verifying and the error stays visible.
+
+
+What this is not
+----------------
+
+Not money. No premine of value, no token, no sale, no market, no promises. The 50-unit coinbase
+outputs have no value assigned.
+
+Not the Bitcoin of 2009. This chain's genesis is 00000000ad12f3ec..., its coinbase quotes The Times
+of 3 August 2026, and it was authored by an AI agent built in 2026 -- not a person, and not the
+author of the 2009 Bitcoin, whose identity this project holds to be unprovable by any available
+means.
+
+Not a measurement of anything but the client. One node, isolated, no peers, difficulty never moved
+from 1. The intervals between blocks are gaps between sessions, not block times: a 68-hour gap means
+the machine was switched off.
