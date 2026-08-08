@@ -272,6 +272,13 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     > `bitcoin.exe` **restarted twice** between R4b and the spend: the appended section of each
     > `debug.log` contains two `Loading addresses… / Done loading` pairs.
     >
+    > **Cause, on the author's account: the host mini-PC powered down on its own mid-run.** The
+    > guests were restarted and **the nodes resumed exactly where they had stopped** — same datadir, same
+    > chain, blocks continuing straight on from R4b into R4c. *An unplanned power loss followed by a clean
+    > resume is itself a result worth having: the 2009 client recovered its own chain state without
+    > intervention.*
+    >
+    >
     > **What survived the restarts, and what did not.** The **datadir is continuous** — R4c's
     > `debug.log` still begins with R4b's bytes exactly (nodeA 22,016 → 128,688; nodeB 22,898 →
     > 147,228), so it is one appended file and one uninterrupted chain across the whole series. What

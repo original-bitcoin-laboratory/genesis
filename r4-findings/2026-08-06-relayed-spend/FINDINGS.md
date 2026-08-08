@@ -54,7 +54,7 @@ the block it mined and then abandoned during the **R4-B partition**, still on di
 two files differ in length by one block while agreeing perfectly on the best chain. *The orphan is
 evidence, not noise: it is what a reorganisation leaves behind.*
 
-## ★ Executed-binary binding — one unchanged process, start to finish
+## ★ Executed-binary binding — one unchanged process, start to finish of R4c
 
 ```
                 pid     process start (UTC)        pre capture           post capture
@@ -69,7 +69,8 @@ matches oracle: True                                                            
 
 > **The PID and process start time are identical in the `pre` and `post` records on each node.** It
 > is not merely that a matching binary existed on disk — **the same process, launched from that exact
-> image, ran continuously for roughly 65 hours and produced these blocks.**
+> image, ran continuously for roughly 65 hours and produced these blocks.** *(For what happened
+> before that process started, see “The run was interrupted, and resumed” below.)*
 
 This is the evidence the deposit previously lacked: the artifacts are bound to the executing image,
 not just to a file in an archive.
@@ -83,6 +84,20 @@ client       bitcoin.exe from the January 2009 archive, C:\obl\bitcoin.exe, unmo
 chain        the real historical genesis; difficulty 1 throughout
 ```
 
+### The run was interrupted, and resumed
+
+`bitcoin.exe` restarted twice between R4b and the spend — two `Loading addresses… / Done loading`
+pairs in the appended `debug.log` on each node. **Cause, on the author's account: the host mini-PC powered down on its own mid-run.** The
+guests were restarted and **the nodes resumed exactly where they had stopped** — same datadir, same
+chain, blocks continuing straight on from R4b into R4c. *An unplanned power loss followed by a clean
+resume is itself a result worth having: the 2009 client recovered its own chain state without
+intervention.*
+
+**What this means for the evidence:** the *chain* is continuous (R4c's log begins with R4b's bytes
+exactly), but the *process* is not — so the binding pair here brackets the final ~65-hour process,
+the one that produced the spend, and does not reach back over R4a/R4b. Those retain their own
+earlier binding. **A `pre`/`post` pair is only meaningful across one uninterrupted process.**
+
 **Clock note:** the guests run ~4–5 hours behind the host, so `debug.log` timestamps and the wallet
 dates are in guest time, while the binding JSONs record UTC. **A future reader comparing a screenshot
 clock against a log line should expect the offset and not read it as an inconsistency.**
@@ -94,7 +109,7 @@ ESTABLISHED   a coinbase matured under the client's own MATURITY+20 rule and bec
               a transaction was created, signed and broadcast by the real 2009 client
               it CROSSED THE NETWORK and was independently accepted by a second instance
               it was mined into a block and both nodes persisted that block identically
-              both nodes ran one unchanged bitcoin.exe throughout, bound before and after
+              both nodes ran one unchanged bitcoin.exe THROUGH R4c, bound before and after
 
 NOT           mining across a difficulty RETARGET window -- still exercised in the model only.
 ESTABLISHED   The chain never left difficulty 1.
