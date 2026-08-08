@@ -108,6 +108,16 @@ jobs:
           mkdir -p dist
           gh release download "$TAG" -R "$GITHUB_REPOSITORY" -D dist -p '*.tar.gz' -p 'SHA256SUMS' -p '*.asc' || true
           shopt -s nullglob
+          # A release created empty and populated afterwards fires `release: published` BEFORE its
+          # assets exist, so this downloads nothing and the loop below runs zero times -- green, and
+          # nothing pinned. That is exactly what happened to v0.6.0-experimental. Fail loudly instead:
+          # a preservation job that preserves nothing must not report success.
+          count=$(ls -1 dist/ 2>/dev/null | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "::error title=IPFS pin found no assets::Release $TAG has no downloadable assets, so NOTHING was pinned. Create releases WITH their assets attached (gh release create ... file1 file2), or re-run this workflow via workflow_dispatch once the assets are uploaded."
+            exit 1
+          fi
+          echo "found $count asset(s) to pin"
           for f in dist/*; do
             echo "== pinning $(basename "$f") =="
             resp=$(curl -sS -X POST "https://api.pinata.cloud/pinning/pinFileToIPFS" \

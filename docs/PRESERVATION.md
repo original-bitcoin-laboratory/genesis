@@ -12,7 +12,7 @@ Five independent roots, so no single one is load-bearing:
 | Layer | What it preserves | Status |
 |---|---|---|
 | **Software Heritage** | full history of all four OBL repositories, in the universal source-code archive | **live** — [`.github/workflows/preserve.yml`](../.github/workflows/preserve.yml) requests archival daily and on every release, no credentials required |
-| **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | ⚠ **NOT current — corrected 9 Aug 2026.** Earlier releases are pinned and their CIDs are listed below, but **`v0.6.0-experimental` is NOT pinned**: the CI step needs an `IPFS_TOKEN` secret, that secret is absent, and the step exits 0 — so the job reported **success while doing nothing.** *A green check that means "skipped" is exactly how a dormant mirror comes to look like a working one.* The step now emits a warning annotation. Pinning `v0.6.0` is an author action: set the secret, or pin by hand and add the CIDs below. CIDs are listed per release in the table below; retrievable from any gateway and cross-checkable against `SHA256SUMS`, so a gateway copy either matches or does not. |
+| **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — every release's signed assets are pinned; CIDs per release in the table below, cross-checkable against `SHA256SUMS`, so a gateway copy either matches or does not. **⚠ Ordering matters: `preserve.yml` fires on `release: published` and downloads the release's assets. Create the release WITH its assets attached** (`gh release create … file1 file2 …`) — a release created empty and populated afterwards makes the pin job run against nothing, log `no assets to download`, and exit green. That happened to `v0.6.0-experimental` on 9 Aug 2026; fixed by re-running the workflow once the assets were up. |
 | **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **live.** `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`), synced by hand at each release. **Synced 9 Aug 2026 for `v0.6.0-experimental`** — `main` at `df7db95`, synced with 3 seeds. *That sync also pushed `Bitcoin-v0.1.1`, `v0.1.2` and `v0.1.3`, which had **never reached Radicle before** — the tags were on GitHub only.* Replicated by 8 public seeds at the 5 Aug 2026 sync. Synced manually rather than from CI, deliberately: the identity key is unencrypted and stays off GitHub. |
 
 
@@ -38,6 +38,16 @@ anyone can rebuild from the published 2009 archive means the date attaches to so
 can independently arrive at.
 
 ## Pinned release CIDs
+
+| release | file | CID |
+|---|---|---|
+| v0.6.0-experimental | `obl-genesis-0.6.0.tar.gz` | `QmT3F2PeyfobCQSqstztcS7ZcBapuYXF3Sqiwt2gwSnDNi` |
+|  | `obl-genesis-0.6.0.tar.gz.asc` | `Qmdqiokepjo4TGCY92ZZkrxQoUQnWcfrpE2djr1QPFnySu` |
+|  | `SHA256SUMS` | `QmdmnsHfq65Thdzdqax3K7edfNKUDHy5hAxKt7TUveLcJg` |
+|  | `SHA256SUMS.asc` | `Qmd5cdEULtuJu2cxqyAPsqNgBhGSTtTkgkgQivWfJjW53r` |
+
+*(the table below continues with earlier releases)*
+
 
 Every signed asset of every Bitcoin release, by content hash. `ipfs get <CID>`, or any public
 gateway — then check what comes back against `SHA256SUMS` from the release itself.
