@@ -105,10 +105,14 @@ tries to ssh to a host called `rad`.
 
 ## 8. Backup
 
+Keep an offline copy of the repository and of every published release asset, and checksum the whole
+tree so the backup can be verified rather than trusted. `$BACKUP` is a path outside any checkout;
+nothing under it is ever published.
+
 ```bash
-git bundle create OBL-BACKUP/02-repos/genesis.bundle --all
-# copy release assets into OBL-BACKUP/04-evidence/bitcoin-v0.1.N-release/
-cd OBL-BACKUP && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+git bundle create "$BACKUP/repos/genesis.bundle" --all
+# copy this release's published assets into "$BACKUP/evidence/bitcoin-v0.1.N-release/"
+cd "$BACKUP" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
 sha256sum -c SHA256SUMS --quiet
 ```
 

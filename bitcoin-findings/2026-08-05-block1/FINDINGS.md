@@ -109,8 +109,8 @@ They remain hashed in the manifest, so their integrity is fixed and their existe
 For future runs, capture from **inside** the guest (VirtualBox *View → Take Screenshot*), which
 yields guest-only images publishable by construction — as the 1024×768 one already is.
 
-The wallet holding block 1's coinbase key is **not** here. It is in
-`OBL-BACKUP/01-keys-SECRET/bitcoin-chain-wallets/`, with the genesis key, and is never published.
+The wallet holding block 1's coinbase key is **not** here, and never will be. It is held offline in
+the project's cold backup together with the genesis key, and is not published in any form.
 
 **NOT money.** The output is 50.00000000 of nothing; no premine, no sale, no market. Block 1's coins
 mature at height 120 (`COINBASE_MATURITY` 100, plus the 20 `main.cpp:544` adds).
