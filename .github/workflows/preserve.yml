@@ -96,7 +96,8 @@ jobs:
           TAG: ${{ github.event.release.tag_name }}
         run: |
           if [ -z "$IPFS_TOKEN" ]; then
-            echo "IPFS_TOKEN not set — IPFS pin skipped. See docs/PRESERVATION.md to enable."
+            echo "::warning title=IPFS pin not configured::IPFS_TOKEN is not set, so NOTHING was pinned for this release. This job is green because skipping is not an error - the same failure mode the Radicle step warns about. docs/PRESERVATION.md must not claim every release is pinned while this secret is absent."
+            echo "IPFS_TOKEN not set - IPFS pin skipped. See docs/PRESERVATION.md to enable."
             exit 0
           fi
           # every OBL release is a pre-release, so `gh release view` (latest, non-prerelease) finds nothing;
