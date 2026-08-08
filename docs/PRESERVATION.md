@@ -41,6 +41,14 @@ can independently arrive at.
 
 | release | file | CID |
 |---|---|---|
+| Bitcoin-v0.1.4 | `bitcoin-0.1.4.tar.gz` | `QmVRRpDq68wMiKKBySZcCtE6Enus11YYDut52g9geXFY7Q` |
+|  | `bitcoin-0.1.4.tar.gz.asc` | `QmZ3pHMbpbs3gUHWqZevm3YQJSWLXkAC41MyFRqAaTsDFr` |
+|  | `SHA256SUMS` | `QmQN1W5tBW9Rxd6bjrRpJA8qhrY3SFMWTaVEyMHZ58U9Rz` |
+|  | `SHA256SUMS.asc` | `QmZcdo8aa4zXzWnktzU1JH2vSog77PhbwXEXc8AXiEbxsQ` |
+
+
+| release | file | CID |
+|---|---|---|
 | v0.6.0-experimental | `obl-genesis-0.6.0.tar.gz` | `QmT3F2PeyfobCQSqstztcS7ZcBapuYXF3Sqiwt2gwSnDNi` |
 |  | `obl-genesis-0.6.0.tar.gz.asc` | `Qmdqiokepjo4TGCY92ZZkrxQoUQnWcfrpE2djr1QPFnySu` |
 |  | `SHA256SUMS` | `QmdmnsHfq65Thdzdqax3K7edfNKUDHy5hAxKt7TUveLcJg` |
