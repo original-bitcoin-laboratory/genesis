@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>Block explorer — Original Bitcoin Laboratory</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Recent blocks on the NOV08-X / JAN09-X experimental chains — height, hash, time, tx count. Not money.">
+<meta name="description" content="Recent blocks on the Bitcoin / JAN09-X / NOV08-X experimental chains — height, hash, time, tx count. Not money.">
 <style>
   :root{
     --ground:#0e1316;--panel:#151d22;--panel-2:#11181c;--ink:#e7eaec;--ink-dim:#93a0a7;--ink-faint:#5f6d74;
@@ -63,7 +63,7 @@
 
 <script>
 const SRC = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
-const LABEL = {jan09x:"JAN09-X", nov08x:"NOV08-X", bitcoin:"Bitcoin"};
+const LABEL = {bitcoin:"Bitcoin", jan09x:"JAN09-X", nov08x:"NOV08-X"};
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const short = h => h ? esc(h.slice(0,10) + "…" + h.slice(-8)) : "—";
 function ago(iso){ const s=Math.max(0,(Date.now()-Date.parse(iso))/1000);
@@ -89,8 +89,8 @@ function section(name, c){
 fetch(SRC, {cache:"no-store"}).then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
   .then(d => {
     document.getElementById("updated").textContent = "updated " + ago(d.updated) + " · " + d.updated;
-    const order = ["jan09x","nov08x"].filter(n => d.chains[n])
-      .concat(Object.keys(d.chains).filter(n => !["jan09x","nov08x"].includes(n)));
+    const order = ["bitcoin","jan09x","nov08x"].filter(n => d.chains[n])
+      .concat(Object.keys(d.chains).filter(n => !["bitcoin","jan09x","nov08x"].includes(n)));
     document.getElementById("chains").innerHTML = order.map(n => section(n, d.chains[n])).join("");
   })
   .catch(e => {
@@ -108,9 +108,9 @@ fetch(SRC, {cache:"no-store"}).then(r => { if(!r.ok) throw new Error(r.status); 
   <div class="lf-brand"><a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none;border:0">◆ Original Bitcoin Laboratory</a></div>
   <p class="lf-anchor">Anchored to block <b>0</b> · 3 January 2009 ·
     <span class="lf-h">000000000019d668…0a8ce26f</span><span class="lf-tips" hidden> ·
-    live lab chains: <span class="lf-h" id="lf-jan">jan09x&nbsp;—</span> ·
-    <span class="lf-h" id="lf-nov">nov08x&nbsp;—</span> ·
-    <span class="lf-h" id="lf-btc">bitcoin&nbsp;—</span></span></p>
+    live lab chains: <span class="lf-h" id="lf-btc">bitcoin&nbsp;—</span> ·
+    <span class="lf-h" id="lf-jan">jan09x&nbsp;—</span> ·
+    <span class="lf-h" id="lf-nov">nov08x&nbsp;—</span></span></p>
   <p class="lf-links">
     <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.6.0-experimental">v0.6.0-experimental</a> ·
     <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.4">Bitcoin-v0.1.4</a> ·
