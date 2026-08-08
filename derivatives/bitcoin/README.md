@@ -65,4 +65,14 @@ value assigned. The consensus rules carry no `MoneyRange` and no script limits, 
 arrives in July 2010; here the only ceiling is `MAX_SIZE`, 32 MiB, which `CheckBlock` does enforce —
 safe here only because there is nothing to steal. Run the client in a VM.
 
+## Provenance
+
+[`CHRONOLOGY.md`](CHRONOLOGY.md) — every dated fact about this chain and the agent that authored it,
+**with what each timestamp is actually worth.** The genesis and block-1 times are bound into
+proof-of-work and paired with a newspaper printed that morning, so they cannot be backdated; GPG and
+git times are self-asserted and are labelled as such. It also lists the known gaps in the record.
+
+[`NOTARY.md`](NOTARY.md) — hashes anchored in public with dates, including a signed statement whose
+content is withheld and whose hash is not.
+
 MIT. `license.txt` in the release is the source's own and is unmodified.
