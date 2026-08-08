@@ -141,7 +141,16 @@ converge for you.)*
 
 ---
 
-## Part 3 — R4c: a relayed spend (OPTIONAL, overnight)
+## Part 3 — R4c: a relayed spend ✅ WITNESSED (2026-08-06→08, `r4-findings/2026-08-06-relayed-spend/`)
+
+> **Done.** tx `f4309c…` — one input, one 50.00 output, no change, no fee — created on node B,
+> **accepted by node A across the wire**, mined into block `00000000b4ca03f9…` at height 122, both
+> nodes converged. Both ran one unchanged `bitcoin.exe` (`fbcac071…`) for ~65 hours, bound by PID and
+> process start time in the `pre`/`post` records.
+>
+> **★ Correction to step 3 below: `received tx` is NOT what v0.1 logs.** Grep for
+> **`AcceptTransaction(): accepted <txid>`** — the same txid appearing in both nodes' logs is the
+> relay proof.
 
 Hard constraint: coinbase outputs are spendable only after **120 confirmations — not 100.** `main.h` sets
 `COINBASE_MATURITY = 100`, but `main.cpp:544` returns `max(0, (COINBASE_MATURITY+20) - GetDepthInMainChain())`,
@@ -154,7 +163,7 @@ cell witnessed on the real binary.
 1. On node B, mine until the chain is **≥120 blocks** (leave it running for days; node A receiver).
 2. Once block 1's coinbase has matured, on node B: **Send Coins** → pay node A (v0.1 supports pay-to-IP
    `172.20.0.1`, or send to a node-A address).
-3. Confirm the tx **relays** (`nodeA\debug.log`: `received tx …`) and is **mined into a block** (appears in a
+3. Confirm the tx **relays** (`nodeA\debug.log`: `AcceptTransaction(): accepted <txid>` — **not** `received tx`) and is **mined into a block** (appears in a
    subsequent block; recipient balance updates on node A).
 4. Capture `blk0001.dat` + `debug.log` + wallet screenshots.
 

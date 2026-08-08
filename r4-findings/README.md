@@ -12,8 +12,13 @@ See `docs/R4_RUNBOOK.md` for the procedure and `../r3-findings/` for the single-
 | [`2026-08-01-sustained-relay/`](2026-08-01-sustained-relay/FINDINGS.md) | **R4a** — sustained multi-block mining + relay | node B mined 3 blocks in succession, node A accepted every one; extended bidirectionally to 14 blocks (A↔B), byte-identical `blk0001.dat`, **0 reorgs**, survived a guest reboot |
 | [`2026-08-02-reorg-partition/`](2026-08-02-reorg-partition/FINDINGS.md) | **R4b** — a chain reorganisation | nodes partitioned until chains diverged by depth 1; on reconnect node A fired `*** REORGANIZE ***`, orphaned its own height-14 block `000000000234ed…`, adopted node B's taller chain; both converged on tip `000000004e442b…` (height 15). node A `blk0001.dat` = **1 orphan** (and exactly **+223 bytes** = one v0.1 block) vs node B's 0 |
 
-**Still deferred:** **R4c** — a relayed spend of a matured coinbase (needs block ~101, ~a day of
-difficulty-1 mining). Already covered headlessly by `derivatives/node` + `derivatives/p2p`.
+**✅ R4c — WITNESSED 2026-08-06→08** (`2026-08-06-relayed-spend/`). A matured coinbase spent on node B,
+relayed to and accepted by node A, mined into block `00000000b4ca03f9…` at height 122. tx `f4309c…`,
+one input → one 50.00 output, no change, no fee. Both nodes converged. Both bound to one unchanged
+`bitcoin.exe` (`fbcac071…`) by PID and process start time across a ~65-hour run.
+
+**The R-series is complete.** Still modelled rather than executed: mining across a difficulty
+**retarget** window — the chain never left difficulty 1.
 
 **Operator's-eye view:** [`screenshots/`](screenshots/INDEX.md) is a 75-frame desktop-capture gallery of the
 whole run (31 Jul bring-up → 2 Aug reorg → the run climbing toward maturity at 26 blocks), hashed in its own

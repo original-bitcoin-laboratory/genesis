@@ -240,8 +240,17 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     `blk0001.dat` is exactly **+223 bytes** (one v0.1 block) larger than node B's — the retained orphan. This
     lifts a **reorganisation** for the released binary from MODEL to **JAN09-EXECUTED**. Findings + hashed
     manifest committed (raw bytes gitignored).
-  - Still to capture: a **relayed spend** (R4c) between the two nodes — already covered headlessly by
-    `derivatives/node` + `derivatives/p2p`. **In flight as of 2026-08-04.** A coinbase matures at **120
+  - ✅ **R4c — a relayed spend — WITNESSED 2026-08-06→08** (`r4-findings/2026-08-06-relayed-spend/`).
+    Transaction **`f4309c…`**, one input and one 50.00 output with no change and no fee, was created on
+    node B (`SendMoney: f4309c`), **accepted by node A across the network**
+    (`AcceptTransaction(): accepted f4309c` in *both* logs — the same txid on both sides is the relay
+    proof), and **mined into block `00000000b4ca03f9…` at height 122**, which carries two transactions:
+    its coinbase `f14a63…` and the spend. `verify_r4.py` confirms both nodes at height 122 on the same
+    tip, all PoW valid, real genesis; node A still retains the R4b orphan `000000000234edf2…` off
+    height 13. **This lifts tx-relay for the released binary from MODEL to JAN09-EXECUTED and closes
+    the R-series.** *(Runbook correction: v0.1 does not log `received tx`; the string is
+    `AcceptTransaction(): accepted <txid>`.)*
+  - **Superseded note, kept because the discipline it describes is what saved the record.** A coinbase matures at **120
     confirmations, not 100**: `main.h` sets `COINBASE_MATURITY = 100` but `main.cpp:544` returns
     `max(0, (COINBASE_MATURITY+20) - depth)`, and the running wallets agree — a coin 58 blocks deep reads
     *"matures in 62 blocks"*. So the chain must reach **~height 120**; it stood at 68 when this was written,
@@ -254,14 +263,33 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     two must bracket **one uninterrupted process** — restarting `bitcoin.exe` between them voids the pair
     and a fresh `pre` is required.
   - Two things fall out of those records that are worth stating. **The bound processes started
-    `2026-08-01T01:32:00Z` and `…:32:20Z`**, twenty seconds apart, and have run continuously since —
-    **R4a, R4b and R4c are one single run**, not three. That is not recalled, it is measured: R4a's
+    `2026-08-01T01:32:00Z` and `…:32:20Z`**, twenty seconds apart —
+    **R4a and R4b are one single run**, not two.
+
+    > **★ CORRECTED 2026-08-09.** An earlier version of this line said *"R4a, R4b and R4c are one
+    > single run"*. **That is false for R4c.** The R4c binding records show PIDs **4468 / 7632**
+    > started **2026-08-06T01:56:52Z / 01:57:09Z** — not the 5212 / 4196 processes started 2026-08-01.
+    > `bitcoin.exe` **restarted twice** between R4b and the spend: the appended section of each
+    > `debug.log` contains two `Loading addresses… / Done loading` pairs.
+    >
+    > **What survived the restarts, and what did not.** The **datadir is continuous** — R4c's
+    > `debug.log` still begins with R4b's bytes exactly (nodeA 22,016 → 128,688; nodeB 22,898 →
+    > 147,228), so it is one appended file and one uninterrupted chain across the whole series. What
+    > does *not* carry across is the **process** binding: a `pre`/`post` pair must bracket one
+    > uninterrupted process.
+    >
+    > **The discipline held.** This same section already warned that *"restarting `bitcoin.exe`
+    > between them voids the pair and a fresh `pre` is required"* — and a fresh `pre` **was** taken
+    > (2026-08-06T01:58) with the new PIDs, bracketing the ~65-hour process that actually produced the
+    > spend. **The rule was written down before it was needed, and then it was followed.** That is not recalled, it is measured: R4a's
     `debug.log` is a **byte-exact prefix** of R4b's on *both* nodes (nodeA 6,248 → 22,016 bytes; nodeB
     6,982 → 22,898), so the same file was appended to and `bitcoin.exe` never restarted between them.
     (v0.1.0 writes no timestamps into `debug.log` — that arrives in v0.1.3's `util.cpp` — so the prefix
     test is the available proof, and it is a stronger one.) The binding therefore reaches **backwards over
     the whole R4 series**: the already-witnessed sustained relay and reorganisation are retroactively bound
     to a live process running `fbcac071…`, which they were not when they were written up.
+    **(Scope corrected 2026-08-09: this retroactive reach covers R4a and R4b, which share those
+    processes. R4c is bound by its own `pre`/`post` pair — see the correction above.)**
     And **both guests report the same `vm_hostname` and `data_dir`** (they were cloned from one
     image), so nothing *measured* in these files distinguishes node A's machine from node B's — the `-Node`
     label is operator-supplied. That is not a flaw in the binding, whose job is process→binary; two-node

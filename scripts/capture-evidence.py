@@ -76,7 +76,14 @@ def main() -> int:
     if not findings.exists() and tmpl.exists():
         findings.write_text(tmpl.read_text(encoding="utf-8").replace("<RUN>", args.run), encoding="utf-8")
 
-    print(f"wrote {out.relative_to(ROOT)}/EVIDENCE_MANIFEST.json ({len(entries)} files)")
+    # relative_to(ROOT) raises when --findings-dir is given as a relative path (e.g. "r4-findings"),
+    # which is how the R4 runs invoke this. Fall back to the path as given rather than crashing
+    # AFTER the manifest has already been written — the files are fine; only the report was not.
+    try:
+        _shown = out.relative_to(ROOT)
+    except ValueError:
+        _shown = out
+    print(f"wrote {_shown}/EVIDENCE_MANIFEST.json ({len(entries)} files)")
     if not entries:
         print("  (no files found — nothing captured yet)")
     for e in entries:

@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>The two-node witness — Original Bitcoin Laboratory</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Two unmodified 3 Jan 2009 v0.1.0 bitcoin.exe binaries, in network-isolated VMs, re-derive the historical genesis and then produce, relay, sustain, and reorganise blocks — each result verifiable from the raw block bytes. Not money.">
+<meta name="description" content="Two unmodified 3 Jan 2009 v0.1.0 bitcoin.exe binaries, in network-isolated VMs, re-derive the historical genesis and then produce, relay, sustain, reorganise and spend — each result verifiable from the raw block bytes. Not money.">
 <style>
   :root{
     --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
@@ -93,7 +93,7 @@
   <h1>The two-node witness</h1>
   <p class="lede">Two <b>unmodified 3 Jan 2009 <code style="font-family:var(--mono)">v0.1.0</code> bitcoin.exe</b>
     binaries — in network-isolated Windows VMs, discovering each other over the client's own hard-coded IRC
-    path — re-derive the <b>historical genesis</b> and then <b>produce, relay, sustain, and reorganise</b>
+    path — re-derive the <b>historical genesis</b> and then <b>produce, relay, sustain, reorganise and spend</b>
     real blocks. Every result below is verifiable straight from the raw <code style="font-family:var(--mono)">blk0001.dat</code>
     block bytes. <b>Not <i>the</i> Bitcoin. Not money.</b></p>
 
@@ -160,17 +160,29 @@
       </div>
     </div>
 
-    <div class="step wait">
+    <div class="step">
       <div class="top">
-        <span class="id">R4c · in progress</span>
+        <span class="id">R4c · 6–8 Aug 2026</span>
         <h3>A relayed spend of a matured coinbase</h3>
-        <span class="pill live">running now</span>
+        <span class="pill">witnessed</span>
       </div>
-      <p>The nodes are live and mining toward coinbase maturity (~block&nbsp;101). Once a coinbase matures,
-        one node will <b>spend it in a transaction</b> and the other will relay, validate, and confirm the
-        spend — closing the last behaviour (value transfer, not just block production) on the unmodified
-        2009 client. <b>This section will be filled in from the raw transaction and block bytes when the
-        capture completes.</b></p>
+      <p>A coinbase matured under the client's own rule — <b>120 confirmations, not 100</b>: <code>main.h</code>
+        sets <code>COINBASE_MATURITY&nbsp;=&nbsp;100</code> but <code>main.cpp:544</code> withholds a generated
+        coin for twenty blocks beyond it. Node&nbsp;B then spent it. Transaction
+        <code>f4309c…</code> — <b>one input, one 50.00 output, no change and no fee</b> — was created on node B
+        (<code>SendMoney: f4309c</code>) and <b>accepted by node A across the wire</b>
+        (<code>AcceptTransaction(): accepted f4309c</code> appears in <i>both</i> nodes' logs; the same
+        transaction id on both sides is the relay itself). It was <b>mined into block
+        <code>00000000b4ca03f9…</code> at height 122</b>, which carries two transactions: its own coinbase
+        <code>f14a63…</code> and the spend. Both nodes converged on that tip.</p>
+      <p><b>The binaries are bound to the run, not merely present on disk.</b> Each node's executing image was
+        hashed before and after: identical PID and process start time in both records
+        (node A 4468 from 01:56:52Z, node B 7632 from 01:57:09Z), <code>bitcoin.exe</code>
+        <code>fbcac071…</code> in all four — <b>one unchanged process on each node, running ~65 hours,
+        produced these blocks.</b></p>
+      <p><b>This closes the R-series.</b> Value transfer on the unmodified 2009 client is now executed, not
+        modelled. What remains modelled is mining across a difficulty <i>retarget</i> window; the chain never
+        left difficulty&nbsp;1. <b>No value is assigned to any of it.</b></p>
     </div>
 
   </div>
@@ -209,7 +221,13 @@ python 2026-08-01-sustained-relay/<b>verify_r4.py</b> \
 <span class="c"># R4b — reorganisation: node A 1 orphan, both converge on one tip</span>
 python 2026-08-02-reorg-partition/<b>verify_r4.py</b> \
     2026-08-02-reorg-partition/nodeA_blk0001.dat \
-    2026-08-02-reorg-partition/nodeB_blk0001.dat</pre>
+    2026-08-02-reorg-partition/nodeB_blk0001.dat
+
+<span class="c"># R4c — relayed spend: both at height 122 on one tip; block 122 holds 2 transactions</span>
+python derivatives/r4/<b>verify_r4.py</b> \n    2026-08-06-relayed-spend/nodeA/blk0001.dat \n    2026-08-06-relayed-spend/nodeB/blk0001.dat
+
+<span class="c"># and the relay itself — the SAME txid in both nodes' logs</span>
+grep -n "AcceptTransaction(): accepted f4309c" \n    2026-08-06-relayed-spend/nodeA/debug.log \n    2026-08-06-relayed-spend/nodeB/debug.log</pre>
 
   <h2 class="sec">The evidence &amp; the recipe</h2>
   <div class="links">
