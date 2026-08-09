@@ -179,16 +179,37 @@ sha256  98b30c08a3ad44a011d64da5290011214193923c6fe927bfc7021297aaa658eb   PROVE
 
 ## Known gaps in this record
 
-Listed here rather than left to be discovered.
+Listed here rather than left to be discovered. **Updated 9 August 2026 — two of the three below have
+since been closed, and they are shown closed rather than deleted, because a gap that quietly
+disappears teaches a reader nothing.**
 
-- **`Bitcoin-v0.1.2` and `v0.1.3` are lightweight git tags, not signed tag objects.** All four
-  release tarballs *are* GPG-signed, and `SHA256SUMS` is signed and OpenTimestamped, so nothing is
-  unattested — but the tags themselves are not, and history will not be rewritten to hide that.
-- **Only v0.1.3's tarball is individually OpenTimestamped.** The earlier three are covered
-  transitively through the stamped `SHA256SUMS`.
-- **Only block 1's evidence is published here.** Blocks 2 and 3 are evidenced to the same standard —
-  findings, checksums, pre/post bindings, the raw chain file and screenshots — but that material is
-  currently held offline rather than in this repository. **The bracketing table above is read from
-  it**, and the block hashes it contains are verifiable from the chain by anyone regardless.
+- ✅ **CLOSED — signed tags.** `Bitcoin-v0.1.2` and `v0.1.3` were lightweight git tags rather than
+  signed tag objects. **`Bitcoin-v0.1.4` is a signed annotated tag**, and every release from here on
+  will be. **The two earlier tags are still lightweight and will not be re-cut** — rewriting a
+  published tag breaks every clone and invalidates timestamps anchored to it. All release tarballs
+  were and remain GPG-signed, so nothing was ever unattested; what was missing was attestation of
+  the *tag*, and that is fixed forward, not backward.
+- ✅ **CLOSED — OpenTimestamps coverage.** **v0.1.4's tarball, its signature, `SHA256SUMS` and
+  `SHA256SUMS.asc` are each individually stamped.** v0.1.3's tarball was stamped; v0.1.0–v0.1.2
+  remain covered transitively through the stamped `SHA256SUMS` of their era.
+- ✅ **CLOSED — blocks 2 and 3 are published.** They are in
+  [`bitcoin-findings/`](https://github.com/original-bitcoin-laboratory/genesis/tree/main/bitcoin-findings)
+  alongside blocks 1 and 4: findings, checksums and pre/post bindings. **The raw chain files,
+  wallets and screenshots remain offline by design** — the manifests hash them, the repository does
+  not carry them. *A hash is not a reproduction, and a wallet is not evidence anyone needs.*
+- ◻ **OPEN — the binding narrows a gap, it does not close it.** A `pre`/`post` pair proves that a
+  process running a binary of a known hash was alive before and after a block's own timestamp, with
+  the same PID and start time in both captures. **It does not prove that this process mined this
+  block** — no artifact ties a nonce to a PID. **Block 4's bracket is 39 minutes wide; earlier ones
+  are wider, and a wide bracket is weaker evidence, not equal evidence.**
+- ◻ **OPEN — one node, no network.** Every block here was mined by a single node on an isolated
+  chain. Nothing in this record measures hashrate, difficulty or peer behaviour, and `nBits` has
+  never moved from `0x1d00ffff`. **The intervals between blocks are gaps between sessions, not block
+  times:** a 68-hour gap means the machine was switched off.
+
+**Corrections to sealed evidence are recorded, never edited in place** — see
+[`bitcoin-findings/CORRECTIONS.md`](https://github.com/original-bitcoin-laboratory/genesis/blob/main/bitcoin-findings/CORRECTIONS.md).
+The block-3 set describes a file as a block-4 binding that is not one; the seal keeps verifying and
+the error stays visible.
 
 MIT. `license.txt` in every release is the 2009 source's own and is unmodified.
