@@ -395,10 +395,24 @@ function syncSegs(){
   });
 }
 
+// Count the CONCLUSION people reach, and only when it changes. render() runs on every
+// keystroke and toggle, so counting each call would drown the dashboard in noise and tell
+// us nothing; counting each distinct verdict tells us which of the four senses of "Bitcoin"
+// readers actually end up in. The subject's NAME is never sent -- it is free text a visitor
+// typed, so it is exactly the thing that must not leave the page.
+let _lastVerdict=null;
+function countVerdict(html){
+  const t=String(html).replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim().slice(0,90);
+  if(!t || t===_lastVerdict) return;
+  _lastVerdict=t;
+  if(window.gcEvent) gcEvent("is-it-bitcoin: "+t,"verdict reached");
+}
+
 function render(){
   const name=subjectEl.value.trim();
   subjEchoEl.innerHTML=name?`Placing <b>${esc(name)}</b> across the four senses:`:"";
   blEl.innerHTML=bottomLine();
+  countVerdict(blEl.innerHTML);
   cardsEl.innerHTML="";
   for(const q of QUESTIONS){
     const v=q.f();
@@ -415,6 +429,7 @@ render();
 
 <!-- shared provenance footer (SNI "established block" + bitaddress "verify" idioms) -->
 <script data-goatcounter="https://parthod0x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script src="analytics.js"></script>
 <footer class="lab-footer" aria-label="provenance and license">
   <div class="lf-brand"><a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none;border:0">◆ Original Bitcoin Laboratory</a></div>
   <p class="lf-anchor">Anchored to block <b>0</b> · 3 January 2009 ·
