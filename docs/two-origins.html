@@ -1,0 +1,219 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Two origins &mdash; the 2009 Bitcoin and the 2026 Bitcoin, on identical axes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Two Bitcoin origins compared on identical axes - genesis hash, coinbase headline, client, difficulty, and what can and cannot be proved about each. Neither is ranked: which live network is Bitcoin has no factual answer, only convention. Not money.">
+<style>
+  :root{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
+    --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44;
+    --brass:#c9a75f; --brass-ink:#0e1316; --fill:#4c7186; --focus:#7fb2c8;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:light){:root{
+    --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6; --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+    --line:#e0e5e0; --line-strong:#cfd6d0; --brass:#9a7726; --brass-ink:#fffdf7; --fill:#5a8298; --focus:#2f6b85; }}
+  :root[data-theme="dark"]{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c; --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44; --brass:#c9a75f; --brass-ink:#0e1316; --fill:#4c7186; --focus:#7fb2c8; }
+  :root[data-theme="light"]{
+    --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6; --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+    --line:#e0e5e0; --line-strong:#cfd6d0; --brass:#9a7726; --brass-ink:#fffdf7; --fill:#5a8298; --focus:#2f6b85; }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;min-height:100%}
+  .wrap{flex:1 0 auto;max-width:760px;width:100%;margin:0 auto;padding:clamp(48px,12vh,140px) clamp(20px,5vw,28px) 40px;
+    display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(36px,7vh,72px)}
+  h1{font-family:var(--mono);font-weight:700;font-size:clamp(44px,11vw,96px);letter-spacing:-.02em;margin:0;color:var(--ink)}
+
+  a.paper{display:inline-flex;align-items:center;gap:12px;text-decoration:none;background:var(--panel);
+    border:1px solid var(--line);border-radius:14px;padding:16px 22px;transition:border-color .16s,transform .16s;max-width:100%}
+  a.paper:hover{border-color:var(--brass);transform:translateY(-2px)}
+  a.paper .ic{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);
+    border:1px solid var(--line-strong);border-radius:6px;padding:5px 8px;white-space:nowrap}
+  a.paper .t{font-family:var(--mono);font-size:14.5px;color:var(--ink);text-align:left;line-height:1.4}
+  a.paper .t small{display:block;color:var(--ink-faint);font-size:12px;margin-top:2px}
+
+  .chain{width:100%;max-width:640px;text-align:left;border:1px solid var(--line);border-radius:14px;
+    background:var(--panel);padding:22px clamp(16px,4vw,26px)}
+  .chain h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--brass);margin:0 0 14px;font-weight:600}
+  .chain dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 18px;font-family:var(--mono);font-size:12.5px}
+  .chain dt{color:var(--ink-faint)}
+  .chain dd{margin:0;color:var(--ink-dim);overflow-wrap:anywhere;min-width:0}
+  /* min-width:0 is load-bearing: a grid item defaults to min-width:auto and refuses to shrink
+     below its content, so a long preformatted line widens the column and spills past the card
+     instead of scrolling within it. */
+  .chain pre{margin:16px 0 0;padding:12px 14px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:8px;font-family:var(--mono);font-size:12px;color:var(--ink-dim);overflow-x:auto}
+  .chain .lnk{margin:14px 0 0;font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+  .chain .lnk a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  .chain .lnk a:hover{color:var(--brass);border-color:var(--brass)}
+
+  blockquote{margin:0;max-width:56ch;opacity:.9}
+  blockquote p{font-size:clamp(13.5px,1.8vw,15px);line-height:1.65;color:var(--ink-faint);font-weight:400;margin:0;text-wrap:balance;font-style:italic}
+  blockquote cite{display:block;margin-top:10px;font-family:var(--mono);font-size:11.5px;font-style:normal;color:var(--ink-faint);letter-spacing:.02em}
+  blockquote cite a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  blockquote cite a:hover{color:var(--brass);border-color:var(--brass)}
+  /* .wrap centres its children; long prose needs to opt out or it reads badly. */
+  .wp-note{max-width:70ch;margin:0;font-size:13.5px;line-height:1.75;text-align:left;
+    color:var(--ink-faint,#8a8a8a)}
+  .wp-note .mono{font-family:var(--mono);font-size:12.5px;color:var(--ink-dim)}
+  .wp-notes{display:flex;flex-direction:column;gap:16px;max-width:70ch;text-align:left}
+  .wp-note b{color:var(--ink-dim,#b0b0b0);font-weight:600}
+  .wp-note i{font-style:italic;opacity:.9}
+  .wp-note a{color:var(--ink-faint,#8a8a8a);border-bottom:1px solid var(--line-strong,#3a3a3a);
+    text-decoration:none}
+  .wp-note a:hover{color:var(--ink,#e8e8e8);border-color:var(--brass,#c79a3a)}
+
+  .navtop{font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+  .navtop a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  .navtop a:hover{color:var(--brass);border-color:var(--brass)}
+  .cmp{width:100%;max-width:820px;overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  .cmp table{width:100%;border-collapse:collapse;font-size:13px;min-width:660px}
+  .cmp th,.cmp td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+  .cmp thead th{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--brass);background:var(--panel-2);position:sticky;top:0}
+  .cmp tbody th{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);font-weight:400;
+    white-space:nowrap;width:1%}
+  .cmp td{color:var(--ink-dim);font-family:var(--mono);font-size:12px;overflow-wrap:anywhere}
+  .cmp tr:last-child th,.cmp tr:last-child td{border-bottom:0}
+  .cmp .same{color:var(--brass)}
+  .band{width:100%;max-width:70ch;border:1px solid var(--line);border-left:2px solid var(--brass);
+    border-radius:10px;padding:14px 18px;background:var(--panel-2);text-align:left;
+    font-size:13.5px;line-height:1.75;color:var(--ink-faint)}
+  .band b{color:var(--ink-dim)}
+  .band h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--brass);margin:0 0 10px;font-weight:600}
+  .band p{margin:0 0 10px} .band p:last-child{margin-bottom:0}
+</style>
+
+<div class="wrap">
+  <h1>Two origins</h1>
+  <p class="navtop"><a href="/">Lab home</a> &nbsp;&middot;&nbsp; <a href="bitcoin.html">Bitcoin</a>
+    &nbsp;&middot;&nbsp; <a href="verify-genesis.html">derive either genesis</a>
+    &nbsp;&middot;&nbsp; <a href="is-it-bitcoin.html">the compass</a></p>
+
+  <blockquote>
+  <p>A Bitcoin genesis is a block whose coinbase carries a headline nobody could have written earlier.
+  There are two of them.</p>
+  <cite>&mdash; <a href="verify-genesis.html">both derive from the same code path</a></cite>
+  </blockquote>
+
+  <div class="cmp">
+    <table>
+      <thead><tr><th></th><th>Bitcoin &middot; 3 Jan 2009</th><th>Bitcoin &middot; 3 Aug 2026</th></tr></thead>
+      <tbody>
+      <tr><th>genesis hash</th><td>000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f</td><td>00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a</td></tr>
+      <tr><th>coinbase</th><td>The Times 03/Jan/2009<br>Chancellor on brink of second bailout for banks</td><td>The Times 03/Aug/2026<br>Toll of schooling &lsquo;straitjacket&rsquo;</td></tr>
+      <tr><th>block 0 time</th><td>1231006505<br>2009-01-03 18:15:05 UTC</td><td>1785781375<br>2026-08-03 18:22:55 UTC</td></tr>
+      <tr><th>block 0 nonce</th><td>2083236893</td><td>33394338</td></tr>
+      <tr><th>difficulty</th><td><span class="same">1 &mdash; nBits 0x1d00ffff</span></td><td><span class="same">1 &mdash; nBits 0x1d00ffff</span></td></tr>
+      <tr><th>subsidy</th><td><span class="same">50 coins</span></td><td><span class="same">50 units, no value assigned</span></td></tr>
+      <tr><th>network magic</th><td>f9 be b4 d9</td><td>f0 0b a7 26</td></tr>
+      <tr><th>the client</th><td>bitcoin.exe <b>fbcac071&hellip;</b><br>released January 2009</td><td>the same source, rebuilt<br>Bitcoin-v0.1.4, <b>c3f15fc5&hellip;</b></td></tr>
+      <tr><th>gap to block 1</th><td>5.36 days</td><td>28.2 hours</td></tr>
+      <tr><th>who released it</th><td>published under the pseudonym<br><b>Satoshi Nakamoto</b></td><td>published under the same pseudonym<br>by <b>a different party</b></td></tr>
+      <tr><th>is that identity provable?</th><td><b>No.</b> No genesis-era key has ever produced a verifying signature.</td><td><b>Not by signature either</b> &mdash; but the artifacts are hashed, bracketed and anchored.</td></tr>
+      <tr><th>artifact timestamps</th><td>the newspaper fixes the earliest date.<br>Nothing fixes the latest.</td><td>the newspaper fixes the earliest.<br><b>Bitcoin block 961652</b> fixes the latest.</td></tr>
+      <tr><th>executed-binary binding</th><td>none exists</td><td>PID + process start time, before and after each block</td></tr>
+      <tr><th>is it money?</th><td>yes, by convention</td><td><b>no.</b> No premine, no sale, no market, no value assigned</td></tr>
+      <tr><th>which one <i>is</i> Bitcoin?</th><td><span class="same">no factual answer &mdash; convention only</span></td><td><span class="same">no factual answer &mdash; convention only</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="band"><h2>What this page is not doing</h2>
+<p><b>It is not arguing that the 2026 chain is Bitcoin, and not arguing that the 2009 one is either.</b>
+This laboratory&rsquo;s position is that <em>which live network &ldquo;is&rdquo; Bitcoin has no answer
+recoverable from the artifacts</em> &mdash; it is fixed by convention, and convention is not evidence.
+That holds for both columns, which is why neither is ranked and both are simply called Bitcoin.</p>
+<p><b>They are also not the same chain.</b> Different genesis, different network magic, no shared
+history, no shared balances, and the units of one are not the units of the other. A node on either
+cannot speak to the other, and no configuration makes it.</p></div>
+  <div class="band"><h2>Where they genuinely differ &mdash; and it is not the direction you would expect</h2>
+<p><b>The 2009 origin is better attested socially and worse attested evidentially.</b> Fifteen years of
+network, market and usage stand behind it. What does <em>not</em> stand behind it is a signature:
+<b>no genesis-era key has ever signed anything</b>, so every identity claim about it is forensic,
+archival or adjudicated &mdash; never cryptographic. That ceiling is a property of the world, not a
+gap in anyone&rsquo;s research.</p>
+<p><b>The 2026 chain has none of the social weight and all of the paperwork.</b> Every artifact is
+hashed into a sealed manifest, every mining session is bracketed by before-and-after captures sharing
+one process identity, and the release is anchored in Bitcoin block 961652 by proof-of-work that
+belongs to nobody here.</p>
+<p><b>So it is not offered as a rival. It is a control.</b> It shows what a completely documented
+Bitcoin origin looks like &mdash; and having one is what lets the gaps in the 2009 record be
+<em>measured</em> rather than merely regretted.</p></div>
+  <div class="band"><h2>The honest asymmetry, stated plainly</h2>
+<p><b>Being first is a fact. Being <i>the</i> Bitcoin is not.</b> The January 2009 source and its
+genesis are the unique origin artifact &mdash; there is exactly one of them, and the 2026 chain
+re-realizes it rather than being it. That is chronology, and this page does not pretend otherwise:
+the <a href="is-it-bitcoin.html">origin compass</a> returns <em>&ldquo;it runs the origin, it isn&rsquo;t
+the origin&rdquo;</em> for the 2026 chain, and it is right to.</p>
+<p>What does not follow is deference. <b>Priority in time is not authority over meaning</b>, and a
+chain with a market is not thereby better evidenced than a chain without one.</p></div>
+  <div class="band"><h2>Check it rather than believe it</h2>
+<p>The <a href="verify-genesis.html">genesis verifier</a> derives <b>either</b> block from its
+ingredients, in your browser, offline, with no server &mdash; <b>the same code path for both</b>. Change
+one character of either headline and watch the hash break. That is the strongest form this comparison
+can take: not a claim that the two are alike, but the same instrument running on both and neither
+getting special treatment.</p>
+<p>The <a href="https://satoshioncha.in/timeline.html">verifiable timeline</a> carries both eras on one
+evidence table. Six of its seven 2026 rows are graded <span class="mono">PARTY-RELEASED</span> &mdash;
+our own record of our own runs, the same grade Satoshi&rsquo;s own releases get &mdash; exactly one
+reaches <span class="mono">CHAIN</span>, and one is marked <b>NOT HELD</b> against us.</p></div>
+</div>
+<script data-goatcounter="https://parthod0x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<footer class="lab-footer" aria-label="provenance and license">
+  <div class="lf-brand"><a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none;border:0">◆ Original Bitcoin Laboratory</a></div>
+  <p class="lf-anchor">Anchored to block <b>0</b> · 3 January 2009 ·
+    <span class="lf-h">000000000019d668…0a8ce26f</span><span class="lf-tips" hidden> ·
+    live lab chains: <span class="lf-h" id="lf-btc">bitcoin&nbsp;—</span> ·
+    <span class="lf-h" id="lf-jan">jan09x&nbsp;—</span> ·
+    <span class="lf-h" id="lf-nov">nov08x&nbsp;—</span></span></p>
+  <p class="lf-links">
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.4">Bitcoin-v0.1.4</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.6.0-experimental">v0.6.0-experimental</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md">source · verify</a> ·
+    <a href="parthod0x-signing-key.asc" title="ed25519 release-signing key">key B128&nbsp;526A…B78C&nbsp;F1DA</a>
+    <a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA"
+       title="the same key from a keyserver, so the key and the release do not come from one host">keyserver</a>
+  </p>
+  <p class="lf-related">Related · <a href="https://satoshioncha.in">Satoshi On-Chain</a> — the verifiable
+    on-chain footprint of the original Satoshi. This lab gets to the bottom of <i>Bitcoin</i>; that one
+    gets to the bottom of <i>Satoshi</i>.</p>
+    <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
+    · reconstructions + Bitcoin — <b>NOT money</b> · no warranty</p>
+</footer>
+<style>
+  .lab-footer{flex-shrink:0;max-width:860px;margin:0 auto;padding:20px clamp(16px,4vw,28px) 34px;
+    border-top:1px solid var(--line,#2a2a2a);font-family:var(--mono,ui-monospace,monospace);
+    font-size:12px;line-height:1.75;color:var(--ink-faint,#8a8a8a);text-align:center}
+  .lab-footer .lf-related{margin:6px 0 0}
+  .lab-footer .lf-related i{font-style:italic;opacity:.85}
+  .lab-footer .lf-brand{letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim,#b0b0b0);
+    font-size:11px;margin-bottom:10px}
+  .lab-footer p{margin:3px 0}
+  .lab-footer .lf-h{color:var(--ink-dim,#b0b0b0)}
+  .lab-footer b{color:var(--brass,#c79a3a);font-weight:600}
+  .lab-footer a{color:var(--ink-faint,#8a8a8a);text-decoration:none;
+    border-bottom:1px solid var(--line-strong,#3a3a3a)}
+  .lab-footer a:hover{color:var(--ink,#e8e8e8);border-color:var(--brass,#c79a3a)}
+</style>
+<script>
+  (function () {
+    var S = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
+    fetch(S, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.chains) return;
+      var j = d.chains.jan09x, n = d.chains.nov08x, b = d.chains.bitcoin, any = false;
+      if (j && typeof j.height === "number") { document.getElementById("lf-jan").textContent = "jan09x #" + j.height.toLocaleString(); any = true; }
+      if (n && typeof n.height === "number") { document.getElementById("lf-nov").textContent = "nov08x #" + n.height.toLocaleString(); any = true; }
+      if (b && typeof b.height === "number") { var e = document.getElementById("lf-btc"); if (e) e.textContent = "bitcoin #" + b.height.toLocaleString(); any = true; }
+      if (any) { var t = document.querySelector(".lab-footer .lf-tips"); if (t) t.hidden = false; }
+    }).catch(function () {});
+  })();
+</script>
+
