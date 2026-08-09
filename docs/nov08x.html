@@ -1,0 +1,253 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>NOV08-X - November 2008's constitution, executed</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="NOV08-X: an executable reconstruction of the 15 November 2008 pre-release constitution - COIN=1e6, 100-coin subsidy, 100k halving, 15-minute blocks, proof-of-work counted in leading zero bits. Its own genesis, its own isolated network. Evidence level MODEL. Not money.">
+<style>
+  :root{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
+    --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44;
+    --brass:#c9a75f; --brass-ink:#0e1316; --fill:#4c7186; --focus:#7fb2c8;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:light){:root{
+    --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6; --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+    --line:#e0e5e0; --line-strong:#cfd6d0; --brass:#9a7726; --brass-ink:#fffdf7; --fill:#5a8298; --focus:#2f6b85; }}
+  :root[data-theme="dark"]{
+    --ground:#0e1316; --panel:#151d22; --panel-2:#11181c; --ink:#e7eaec; --ink-dim:#93a0a7; --ink-faint:#5f6d74;
+    --line:#222e34; --line-strong:#2f3d44; --brass:#c9a75f; --brass-ink:#0e1316; --fill:#4c7186; --focus:#7fb2c8; }
+  :root[data-theme="light"]{
+    --ground:#f3f5f2; --panel:#ffffff; --panel-2:#f7f9f6; --ink:#18211f; --ink-dim:#4f5c60; --ink-faint:#859295;
+    --line:#e0e5e0; --line-strong:#cfd6d0; --brass:#9a7726; --brass-ink:#fffdf7; --fill:#5a8298; --focus:#2f6b85; }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;min-height:100%}
+  .wrap{flex:1 0 auto;max-width:760px;width:100%;margin:0 auto;padding:clamp(48px,12vh,140px) clamp(20px,5vw,28px) 40px;
+    display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(36px,7vh,72px)}
+  h1{font-family:var(--mono);font-weight:700;font-size:clamp(44px,11vw,96px);letter-spacing:-.02em;margin:0;color:var(--ink)}
+
+  a.paper{display:inline-flex;align-items:center;gap:12px;text-decoration:none;background:var(--panel);
+    border:1px solid var(--line);border-radius:14px;padding:16px 22px;transition:border-color .16s,transform .16s;max-width:100%}
+  a.paper:hover{border-color:var(--brass);transform:translateY(-2px)}
+  a.paper .ic{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);
+    border:1px solid var(--line-strong);border-radius:6px;padding:5px 8px;white-space:nowrap}
+  a.paper .t{font-family:var(--mono);font-size:14.5px;color:var(--ink);text-align:left;line-height:1.4}
+  a.paper .t small{display:block;color:var(--ink-faint);font-size:12px;margin-top:2px}
+
+  .chain{width:100%;max-width:640px;text-align:left;border:1px solid var(--line);border-radius:14px;
+    background:var(--panel);padding:22px clamp(16px,4vw,26px)}
+  .chain h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--brass);margin:0 0 14px;font-weight:600}
+  .chain dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 18px;font-family:var(--mono);font-size:12.5px}
+  .chain dt{color:var(--ink-faint)}
+  .chain dd{margin:0;color:var(--ink-dim);overflow-wrap:anywhere;min-width:0}
+  /* min-width:0 is load-bearing: a grid item defaults to min-width:auto and refuses to shrink
+     below its content, so a long preformatted line widens the column and spills past the card
+     instead of scrolling within it. */
+  .chain pre{margin:16px 0 0;padding:12px 14px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:8px;font-family:var(--mono);font-size:12px;color:var(--ink-dim);overflow-x:auto}
+  .chain .lnk{margin:14px 0 0;font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+  .chain .lnk a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  .chain .lnk a:hover{color:var(--brass);border-color:var(--brass)}
+
+  blockquote{margin:0;max-width:56ch;opacity:.9}
+  blockquote p{font-size:clamp(13.5px,1.8vw,15px);line-height:1.65;color:var(--ink-faint);font-weight:400;margin:0;text-wrap:balance;font-style:italic}
+  blockquote cite{display:block;margin-top:10px;font-family:var(--mono);font-size:11.5px;font-style:normal;color:var(--ink-faint);letter-spacing:.02em}
+  blockquote cite a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  blockquote cite a:hover{color:var(--brass);border-color:var(--brass)}
+  /* .wrap centres its children; long prose needs to opt out or it reads badly. */
+  .wp-note{max-width:70ch;margin:0;font-size:13.5px;line-height:1.75;text-align:left;
+    color:var(--ink-faint,#8a8a8a)}
+  .wp-note .mono{font-family:var(--mono);font-size:12.5px;color:var(--ink-dim)}
+  .wp-notes{display:flex;flex-direction:column;gap:16px;max-width:70ch;text-align:left}
+  .wp-note b{color:var(--ink-dim,#b0b0b0);font-weight:600}
+  .wp-note i{font-style:italic;opacity:.9}
+  .wp-note a{color:var(--ink-faint,#8a8a8a);border-bottom:1px solid var(--line-strong,#3a3a3a);
+    text-decoration:none}
+  .wp-note a:hover{color:var(--ink,#e8e8e8);border-color:var(--brass,#c79a3a)}
+
+  .evb{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--brass);border:1px solid var(--line-strong);border-radius:999px;padding:6px 14px}
+  .chain .new{margin:14px 0 0;padding:12px 14px;background:var(--panel-2);border:1px solid var(--line);
+    border-left:2px solid var(--brass);border-radius:8px;font-size:12.5px;line-height:1.7;
+    color:var(--ink-faint);text-align:left}
+  .chain .new b{color:var(--ink-dim)}
+  .chain table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;margin-top:4px}
+  .chain th,.chain td{text-align:left;padding:5px 10px 5px 0;border-bottom:1px solid var(--line);
+    color:var(--ink-dim);vertical-align:top}
+  .chain th{color:var(--ink-faint);font-weight:400}
+  .chain td.src{color:var(--ink-faint);white-space:nowrap}
+  .tbw{overflow-x:auto}
+  .navtop{font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+  .navtop a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  .navtop a:hover{color:var(--brass);border-color:var(--brass)}
+</style>
+
+<div class="wrap">
+  <h1>NOV08-X</h1>
+  <span class="evb">Reconstruction &middot; evidence level MODEL &middot; not money</span>
+  <p class="navtop"><a href="/">Lab home</a> &nbsp;·&nbsp; the three chains: <a href="bitcoin.html">Bitcoin</a> &nbsp;·&nbsp; <a href="jan09x.html">JAN09-X</a> &nbsp;·&nbsp; <a href="nov08x.html">NOV08-X</a></p>
+
+  <blockquote>
+  <p>&ldquo;ridiculously easy for testing&rdquo; &mdash; the comment beside <span class="mono">MINPROOFOFWORK = 20</span>, the November difficulty floor this chain still runs on.</p>
+  <cite>&mdash; <a href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/derivatives/nov08x">Satoshi Nakamoto &mdash; main.h, 15 November 2008 pre-release</a></cite>
+  </blockquote>
+
+  <div class="chain">
+    <h2>Genesis &mdash; minted by this chain, not inherited</h2>
+    <dl>
+      <dt>genesis</dt><dd>00000f088c16f6dbc9e64870125fca75012f51c6d5638c6eda66490a271caec6</dd>
+      <dt>coinbase</dt><dd>NOV08-X lab chain: 15 Nov 2008 pre-release, not money</dd>
+      <dt>reward</dt><dd>100 coins &mdash; no value assigned, ever</dd>
+      <dt>proof-of-work</dt><dd>20 leading zero bits</dd>
+    </dl>
+    <p class="new"><b>Look at the genesis hash: it leads with five zeros, not eight.</b> That is not
+      cosmetic. November counts proof-of-work in <em>leading zero bits</em>, so the hash is shaped by a
+      different rule than every chain descended from January.</p>
+  </div>
+
+  <div class="chain">
+    <h2>The constitution &mdash; November 2008, read verbatim from the pre-release</h2>
+    <div class="tbw"><table>
+      <tr><th>denomination</th><td><span class="mono">COIN = 1,000,000</span> &mdash; and <b>no &ldquo;satoshi&rdquo;</b>; that unit is a January property</td><td class="src">main.h:34</td></tr>
+      <tr><th>subsidy</th><td>100 coins (<span class="mono">10000 * CENT</span>)</td><td class="src">main.cpp:654</td></tr>
+      <tr><th>halving</th><td>every 100,000 blocks &mdash; an explicit loop</td><td class="src">main.cpp:655</td></tr>
+      <tr><th>block spacing</th><td>900 s &mdash; 15 minutes</td><td class="src">main.cpp:663</td></tr>
+      <tr><th>proof-of-work</th><td><span class="mono">nBits</span> = leading zero bits, <span class="mono">target = ~0 &gt;&gt; nBits</span></td><td class="src">main.h:38,875</td></tr>
+      <tr><th>retarget</th><td>&plusmn;1-bit nudge, at most one change per 30-day window</td><td class="src">main.cpp:660-705</td></tr>
+      <tr><th>coinbase value</th><td>must <b>equal</b> subsidy + fees &mdash; <span class="mono">!=</span> rejects</td><td class="src">main.cpp:739</td></tr>
+      <tr><th>fee</th><td>fixed <span class="mono">1 * CENT</span></td><td class="src">main.cpp</td></tr>
+    </table></div>
+    <p class="lnk">Frozen in <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/derivatives/nov08x/rules_nov08.json">rules_nov08.json</a>, every value carrying
+      its source line and a provenance class &mdash; read from the surviving pre-release source, with
+      January used only as the differential baseline.</p>
+  </div>
+
+  <div class="chain">
+    <h2>Nothing disabled &mdash; because November had nothing to disable</h2>
+    <p class="new"><b>November never had a Script file</b>, so it disabled nothing. NOV08-X&rsquo;s script
+      engine is reconstructed from the interface <span class="mono">main.cpp</span> actually references
+      (<span class="mono">CScript</span>, <span class="mono">OP_CHECKSIG</span>) and carries the complete
+      original vocabulary &mdash; <span class="mono">OP_CAT</span>, <span class="mono">OP_MUL</span>,
+      <span class="mono">OP_LSHIFT</span>, <span class="mono">OP_INVERT</span>. <b>This is the most
+      interpretive part of the chain and is marked as such</b>: a reconstruction from a referenced
+      interface is a weaker claim than a rule read off a line of source, and the two are not presented as
+      equals.</p>
+  </div>
+
+  <div class="chain">
+    <h2>Network identity &mdash; isolated by construction</h2>
+    <dl>
+      <dt>magic</dt><dd>f0 0b a7 08 &nbsp;&middot;&nbsp; mainnet is f9 be b4 d9</dd>
+      <dt>port</dt><dd>18008</dd>
+      <dt>address version</dt><dd>0x35</dd>
+      <dt>anchor</dt><dd>seed.bitcoin-lab.org:18008</dd>
+    </dl>
+    <p class="new"><b>A mainnet-framed message is refused.</b> Isolation is enforced by the wire format, not
+      by policy &mdash; NOV08-X cannot reach Bitcoin, JAN09-X, or any historical chain.</p>
+  </div>
+
+  <div class="chain">
+    <h2>Live</h2>
+    <dl>
+      <dt>height</dt><dd id="lv-h">&mdash;</dd>
+      <dt>tip</dt><dd id="lv-tip">&mdash;</dd>
+      <dt>status</dt><dd id="lv-up">&mdash;</dd>
+      <dt></dt><dd id="lv-when" style="opacity:.7">&mdash;</dd>
+    </dl>
+    <pre># join it
+docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode \
+    --chain nov08x --datadir /data --connect seed.bitcoin-lab.org:18008
+
+# or from source
+python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-lab.org:18008</pre>
+    <p class="lnk">Your node mints the genesis itself and re-validates every block &mdash;
+      <a href="status.html">live status</a> &middot; <a href="explorer.html">explorer</a> &middot;
+      <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/ANNOUNCE.md">the invitation</a></p>
+  </div>
+
+  <div class="wp-notes">
+  <p class="wp-note"><b>What &ldquo;MODEL&rdquo; means, and why it is stated first.</b> NOV08-X executes November&rsquo;s
+constitution on the laboratory&rsquo;s own engines &mdash; <b>no period toolchain, no 2008 binary</b>,
+because no released November binary exists to run. That is a weaker class of evidence than
+<a href="bitcoin.html">Bitcoin</a> or the <a href="witness.html">two-node witness</a>, both of which
+execute Satoshi&rsquo;s actual January 2009 client. <b>The laboratory keeps those apart deliberately.</b></p>
+  <p class="wp-note"><b>Every rule carries a source anchor, and the interpretive parts are fenced off.</b> The monetary,
+proof-of-work, retarget and coinbase rules are read verbatim from the surviving pre-release source. The
+script engine is not &mdash; it is reconstructed from an interface, and is labelled as reconstruction
+wherever it appears. <b>NOV08-Full, the interpretive completion, remains walled off as speculation and is
+not run here.</b></p>
+  <p class="wp-note"><b>It is not recovered history and not &ldquo;true Bitcoin.&rdquo;</b> A new experimental descendant,
+treated as neutrally as any other chain on this site &mdash; <i>a</i> Bitcoin, not <i>the</i> Bitcoin. Its
+sibling <a href="jan09x.html">JAN09-X</a> answers the same counterfactual from the January end.</p>
+  <p class="wp-note"><b>NOT money.</b> No premine, no sale, no market, no value assigned, no promises.</p>
+  </div>
+</div>
+<script data-goatcounter="https://parthod0x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<footer class="lab-footer" aria-label="provenance and license">
+  <div class="lf-brand"><a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none;border:0">◆ Original Bitcoin Laboratory</a></div>
+  <p class="lf-anchor">Anchored to block <b>0</b> · 3 January 2009 ·
+    <span class="lf-h">000000000019d668…0a8ce26f</span><span class="lf-tips" hidden> ·
+    live lab chains: <span class="lf-h" id="lf-btc">bitcoin&nbsp;—</span> ·
+    <span class="lf-h" id="lf-jan">jan09x&nbsp;—</span> ·
+    <span class="lf-h" id="lf-nov">nov08x&nbsp;—</span></span></p>
+  <p class="lf-links">
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.4">Bitcoin-v0.1.4</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.6.0-experimental">v0.6.0-experimental</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md">source · verify</a> ·
+    <a href="parthod0x-signing-key.asc" title="ed25519 release-signing key">key B128&nbsp;526A…B78C&nbsp;F1DA</a>
+    <a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA"
+       title="the same key from a keyserver, so the key and the release do not come from one host">keyserver</a>
+  </p>
+  <p class="lf-related">Related · <a href="https://satoshioncha.in">Satoshi On-Chain</a> — the verifiable
+    on-chain footprint of the original Satoshi. This lab gets to the bottom of <i>Bitcoin</i>; that one
+    gets to the bottom of <i>Satoshi</i>.</p>
+    <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
+    · reconstructions + Bitcoin — <b>NOT money</b> · no warranty</p>
+</footer>
+<style>
+  .lab-footer{flex-shrink:0;max-width:860px;margin:0 auto;padding:20px clamp(16px,4vw,28px) 34px;
+    border-top:1px solid var(--line,#2a2a2a);font-family:var(--mono,ui-monospace,monospace);
+    font-size:12px;line-height:1.75;color:var(--ink-faint,#8a8a8a);text-align:center}
+  .lab-footer .lf-related{margin:6px 0 0}
+  .lab-footer .lf-related i{font-style:italic;opacity:.85}
+  .lab-footer .lf-brand{letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim,#b0b0b0);
+    font-size:11px;margin-bottom:10px}
+  .lab-footer p{margin:3px 0}
+  .lab-footer .lf-h{color:var(--ink-dim,#b0b0b0)}
+  .lab-footer b{color:var(--brass,#c79a3a);font-weight:600}
+  .lab-footer a{color:var(--ink-faint,#8a8a8a);text-decoration:none;
+    border-bottom:1px solid var(--line-strong,#3a3a3a)}
+  .lab-footer a:hover{color:var(--ink,#e8e8e8);border-color:var(--brass,#c79a3a)}
+</style>
+<script>
+  (function () {
+    var S = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
+    fetch(S, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.chains) return;
+      var j = d.chains.jan09x, n = d.chains.nov08x, b = d.chains.bitcoin, any = false;
+      if (j && typeof j.height === "number") { document.getElementById("lf-jan").textContent = "jan09x #" + j.height.toLocaleString(); any = true; }
+      if (n && typeof n.height === "number") { document.getElementById("lf-nov").textContent = "nov08x #" + n.height.toLocaleString(); any = true; }
+      if (b && typeof b.height === "number") { var e = document.getElementById("lf-btc"); if (e) e.textContent = "bitcoin #" + b.height.toLocaleString(); any = true; }
+      if (any) { var t = document.querySelector(".lab-footer .lf-tips"); if (t) t.hidden = false; }
+    }).catch(function () {});
+  })();
+</script>
+
+<script>
+  (function(){
+    var S="https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
+    fetch(S,{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(d){
+      if(!d||!d.chains) return;
+      var c=d.chains["nov08x"]; if(!c) return;
+      var set=function(id,v){var e=document.getElementById(id); if(e&&v!=null) e.textContent=v;};
+      if(typeof c.height==="number") set("lv-h","#"+c.height.toLocaleString());
+      set("lv-tip",c.tip||null);
+      set("lv-up",c.online?("online, "+c.reachable_anchors+" anchor"+(c.reachable_anchors===1?"":"s")+" reachable"):"unreachable");
+      if(d.updated) set("lv-when","measured "+d.updated.replace("T"," ").replace("Z"," UTC"));
+    }).catch(function(){});
+  })();
+</script>

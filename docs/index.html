@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>Original Bitcoin Laboratory — the earliest Bitcoin, made to run</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Bitcoin — an experimental chain on its own genesis, running Satoshi's released January 2009 client, five blocks mined. Plus JAN09-X and NOV08-X: evidence-first, executable reconstructions of the earliest Bitcoin, released as candidates — a Bitcoin, not the Bitcoin. Not money.">
+<meta name="description" content="Bitcoin — an experimental chain on its own genesis, running Satoshi's released January 2009 client and still mining. Plus JAN09-X and NOV08-X: evidence-first, executable reconstructions of the earliest Bitcoin, released as candidates — a Bitcoin, not the Bitcoin. Not money.">
 <style>
   :root{
     --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
@@ -67,7 +67,7 @@
   <p class="lede" style="margin-top:14px"><a href="bitcoin.html"
     style="color:var(--focus);text-decoration:none;border-bottom:1px solid var(--line-strong)"><b>Bitcoin</b></a>
     runs that same January 2009 client on a genesis of its own — its own network, its own signed release,
-    <b>five blocks mined</b>. It is <b>not</b> a reconstruction and not interoperable with the two
+    and a chain it is <b>still mining</b><span id="hero-h"></span>. It is <b>not</b> a reconstruction and not interoperable with the two
     above, and it is the chain to look at first: it is the one with a live network, mined blocks and
     a released client that provably mined them.</p>
   <p class="lede" style="margin-top:14px;font-size:13px;opacity:.78">The January 2009 archive is
@@ -81,14 +81,14 @@
   <h2 class="sec">The chains<span>three live networks — one released, two reconstructions</span></h2>
   <div class="grid">
     <a class="card" href="bitcoin.html" data-goatcounter-click="open-bitcoin">
-      <div class="k">Released · executed · five blocks</div>
+      <div class="k">Released · executed · live</div>
       <h2>Bitcoin</h2>
       <p>Its own genesis, its own network, its own signed release — running Satoshi's January 2009 client.
-        <b>Five blocks mined, and blocks 2–4 were mined by the released client itself.</b> Separate
-        from the two reconstructions; they do not interoperate.</p>
+        <b>Blocks 2–4 were mined by the released client itself</b>, bound to it before and after by process
+        identity. Separate from the two reconstructions; they do not interoperate.</p>
       <span class="go">Open Bitcoin →</span>
     </a>
-    <a class="card" href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/derivatives/jan09x" data-goatcounter-click="open-jan09x">
+    <a class="card" href="jan09x.html" data-goatcounter-click="open-jan09x">
       <div class="k">Reconstruction · MODEL · Jan 2009</div>
       <h2>JAN09-X</h2>
       <p>The <b>released January 2009 constitution</b> — <span class="mono">COIN=1e8</span>, 50-coin
@@ -96,7 +96,7 @@
         <span class="mono">OP_NOTEQUAL</span> re-opened. Nothing disabled.</p>
       <span class="go">Open JAN09-X →</span>
     </a>
-    <a class="card" href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/derivatives/nov08x" data-goatcounter-click="open-nov08x">
+    <a class="card" href="nov08x.html" data-goatcounter-click="open-nov08x">
       <div class="k">Reconstruction · MODEL · Nov 2008</div>
       <h2>NOV08-X</h2>
       <p>November 2008's constitution instead — <span class="mono">COIN=1e6</span>, 100-coin subsidy,
@@ -214,10 +214,10 @@
     running node — it's the reproducible recipe, which lets anyone re‑derive the exact genesis with no
     key and no node to trust.</p>
   <p class="note"><b>Verify what you run.</b> Every release tarball is GPG‑signed by
-    <a href="parthod0x-signing-key.asc" style="color:var(--focus)">parthod0x</a> — fingerprint
+    <a href="parthod0x-signing-key.asc" style="color:var(--focus)">the laboratory release key</a> — fingerprint
     <code style="font-family:var(--mono);font-size:.85em">B128 526A F85A E4A8 F22B 949F B014 5F74 B78C F1DA</code>.
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md" style="color:var(--focus)">How to verify →</a></p>
-  <p class="note"><b>Related research</b> (a separate project). <a href="https://satoshi-onchain.github.io/satoshi-onchain/" style="color:var(--focus)">satoshi‑onchain</a>
+  <p class="note"><b>Related research</b> (a separate project). <a href="https://satoshioncha.in" style="color:var(--focus)">satoshi‑onchain</a>
     — a reproducible verifier + Patoshi classifier for the <i>original Satoshi's on‑chain footprint</i>
     (the genesis block, the ~1.1M‑BTC Patoshi mining pattern, the block‑170 Satoshi→Finney spend) —
     forensic, not cryptographic, in the same honest, evidence‑tiered style. A companion angle on the same
@@ -226,6 +226,16 @@
 </div>
 
 <!-- shared provenance footer (SNI "established block" + bitaddress "verify" idioms) -->
+<script>
+  (function(){
+    var S="https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
+    fetch(S,{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(d){
+      var b=d&&d.chains&&d.chains.bitcoin, e=document.getElementById("hero-h");
+      if(!b||!e||typeof b.height!=="number") return;
+      e.textContent=" — "+(b.height+1).toLocaleString()+" blocks so far";
+    }).catch(function(){});
+  })();
+</script>
 <script data-goatcounter="https://parthod0x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <footer class="lab-footer" aria-label="provenance and license">
   <div class="lf-brand"><a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none;border:0">◆ Original Bitcoin Laboratory</a></div>

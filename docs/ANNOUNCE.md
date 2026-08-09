@@ -9,8 +9,8 @@ is nothing here to buy, sell, or hold, and there never will be. Read [why](#the-
 
 - **Bitcoin** — **not a reconstruction.** It runs Satoshi’s released **January 2009 client itself**,
   on a genesis of its own, mined at the original difficulty‑1, its coinbase carrying the front page
-  of the day it was mined. Its own network, its own signed release (`Bitcoin-v0.1.4`), **five blocks
-  mined — and blocks 2–4 were mined by the released client itself.** It does **not** interoperate
+  of the day it was mined. Its own network, its own signed release (`Bitcoin-v0.1.4`), and a chain it is
+  **still mining** — **blocks 2–4 were mined by the released client itself.** It does **not** interoperate
   with the two below, and it has its own seed rather than sharing the crawler.
 
 **NOV08‑X** and **JAN09‑X** are faithful, executable **reconstructions** of the earliest Bitcoin —

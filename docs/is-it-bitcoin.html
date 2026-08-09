@@ -1,7 +1,7 @@
 <title>Is it a Bitcoin? — the origin compass</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A reasoning compass, grounded in the whitepaper and v0.1.0, for whether an object qualifies as 'a Bitcoin' or 'a satoshi' — and where the answer is convention, not fact.">
+<meta name="description" content="A reasoning compass, grounded in the whitepaper and the January 2009 released source, for whether an object qualifies as 'a Bitcoin' or 'a satoshi' — and where the answer is convention, not fact.">
 <style>
   :root{
     --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
@@ -134,7 +134,7 @@
     kinds of thing</b> (a design, a client, a network, a ledger, a unit, a lineage…). So this doesn't
     hand back a yes/no. You state a few <b>artifact‑grounded facts</b> about your object; it maps them
     onto each sense and reasons out where your object <b>qualifies, and where the answer is convention,
-    not fact</b>. Grounded only in the whitepaper and the v0.1.0 source.</p>
+    not fact</b>. Grounded only in the whitepaper and the January 2009 released source.</p>
 
   <nav class="nav">
     <a href="/">Lab home</a>
@@ -175,11 +175,11 @@
       senses turns “you're wrong about what Bitcoin is” into the tractable “we mean the same root, a
       different branch.”</p>
     <p><b>What's fact, what's convention.</b> Fact (needs no convention): the <b>design</b> (the whitepaper
-      predicate) and the <b>origin artifacts</b> — the hash‑verified v0.1.0 source and genesis
+      predicate) and the <b>origin artifacts</b> — the hash‑verified January 2009 source and genesis
       <code>000000000019d668…</code>. Convention: which live network deserves the bare word, which codebase
       defines “the” unit, and therefore the bitcoin↔satoshi ratio itself. This tool never smuggles the
       second in as the first.</p>
-    <div class="tags"><span>grounded: whitepaper + v0.1.0 [S]</span><span>you supply the facts; it maps the senses</span><span>not money · no chain privileged</span></div>
+    <div class="tags"><span>grounded: whitepaper + Jan 2009 source [S]</span><span>you supply the facts; it maps the senses</span><span>not money · no chain privileged</span></div>
   </div>
 </div>
 
@@ -205,7 +205,7 @@ const PROPS = [
 /* --- examples: [pow, ledger, genesis, faithful, priced, unit] --- */
 const PRESETS = {
   "The whitepaper":            ["y","n","n","y","n","n"],
-  "v0.1.0 (the origin)":       ["y","y","y","y","n","n"],
+  "Jan 2009 source (the origin)": ["y","y","y","y","n","n"],
   "BTC today":                 ["y","y","y","n","y","n"],
   "BSV":                       ["y","y","y","n","y","n"],
   "Litecoin":                  ["y","y","n","n","y","n"],
@@ -256,13 +256,13 @@ function vOrigin(){                                 // the origin — unique, be
     "that artifact.</b> The origin is the frozen 2009 pair and there is exactly one of it; what you have is a "+
     "<em>fidelity candidate</em>, which is the next card, and a strong one. (§4, §8)"};
   if(is("faithful")) return {b:"Yes — the origin", c:"fact", why:
-    "It is, or faithfully re‑derives, a frozen origin artifact — the whitepaper, or the hash‑verified v0.1.0 "+
+    "It is, or faithfully re‑derives, a frozen origin artifact — the whitepaper, or the hash‑verified January 2009 "+
     "source whose genesis is <code>000000000019d668…</code>. This is the one referent you can point to "+
     "<b>uniquely and beyond doubt</b>; every claimant traces back to it. (§4, §8)"};
   if(unk("faithful")) return {b:"Indeterminate", c:"ind", why:
-    "Set whether your object <em>is</em>, or exactly reconstructs, the whitepaper or the hash‑verified v0.1.0 source."};
+    "Set whether your object <em>is</em>, or exactly reconstructs, the whitepaper or the hash‑verified January 2009 source."};
   return {b:"No — not the origin itself", c:"no", why:
-    "The origin is the frozen, hash‑verified pair — whitepaper + v0.1.0, genesis <code>000000000019d668…</code>. "+
+    "The origin is the frozen, hash‑verified pair — whitepaper + the January 2009 source, genesis <code>000000000019d668…</code>. "+
     "Your object isn't that artifact. It may still be a <em>candidate instance</em> — see the next card."};
 }
 
@@ -324,7 +324,7 @@ function vUnit(){                                   // a bitcoin / a satoshi —
 
 const QUESTIONS = [
   {t:"Bitcoin, the design?", s:"the type / genus — senses 1,3,7", f:vType},
-  {t:"The origin?",          s:"the unique v0.1.0 + genesis artifact — sense 2", f:vOrigin},
+  {t:"The origin?",          s:"the unique Jan 2009 source + genesis artifact — sense 2", f:vOrigin},
   {t:"A Bitcoin?",           s:"a candidate instance — senses 4,5", f:vCandidate},
   {t:"The Bitcoin?",         s:"the one true one", f:vThe},
   {t:"A bitcoin / a satoshi?", s:"the unit — sense 6", f:vUnit}

@@ -154,13 +154,13 @@
       removing a feature (disabling opcodes) both change a value, so both add distance — nothing here
       is ranked better or worse.</p>
     <p>Choose <b>whitepaper</b> and everything reads <code>0</code>: the design constrains none of these
-      implementation axes — it does not discriminate. Choose <b>nov08</b> and <code>v0.1.0</code> is
-      already <code>2</code> (it differs on the unit and the proof‑of‑work) — so v0.1.0 is the zero
+      implementation axes — it does not discriminate. Choose <b>nov08</b> and <code>JAN09</code> is
+      already <code>2</code> (it differs on the unit and the proof‑of‑work) — so JAN09 is the zero
       point <b>only</b> when you choose it as the origin.</p>
     <p>From <b>26 Jul 2026</b> two more appear — the lab’s own reconstructions <code>NOV08-X</code>
       and <code>JAN09-X</code>, MODEL builds carrying the full original vocabulary (nothing disabled)
       under each constitution. Under <b>nov08</b>, <code>NOV08-X</code> reads <code>0</code>; under
-      <b>v0.1.0</b>, <code>JAN09-X</code> reads <code>1</code> — it differs only by re‑opening the one
+      <b>JAN09</b>, <code>JAN09-X</code> reads <code>1</code> — it differs only by re‑opening the one
       opcode v0.1 disabled. They are candidates for reference, not "the real Bitcoin."</p>
     <p><b>Does the answer depend on which axes we picked?</b> The axis set is itself a choice, so an
       ordering is only worth stating if it survives that choice. When one version’s differing axes are
@@ -171,7 +171,7 @@
     <p>Companion: <a href="./is-it-bitcoin.html" style="color:var(--focus)">Is it a Bitcoin?</a> — a
       reasoning compass that maps any object onto the seven senses of the word, honest about where the
       answer is convention rather than fact. &nbsp;·&nbsp; <a href="/" style="color:var(--focus)">Lab home →</a></p>
-    <div class="tags"><span>v0.1.0 / nov08 values — source-verified [S]</span><span>change dates — public record [D]</span><span>Bitcoin / JAN09-X / NOV08-X — MODEL</span></div>
+    <div class="tags"><span>JAN09 / nov08 values — source-verified [S]</span><span>change dates — public record [D]</span><span>Bitcoin / JAN09-X / NOV08-X — MODEL</span></div>
   </div>
 </div>
 
@@ -180,7 +180,7 @@
 const AXES = {   // operational definition of each axis (shown on chip hover) — mirrors tracker.py AXIS_DEFS
   script_vocabulary:"which Script opcodes the interpreter executes vs treats as disabled",
   value_bounds:"presence/absence of an output-value + money-supply sanity check (MoneyRange)",
-  block_size:"the protocol ceiling on block bytes — v0.1.0 has no MAX_BLOCK_SIZE but a 32 MiB MAX_SIZE serialization cap; BTC added a 1 MB cap (2010); BSV removed the protocol cap (2020), distinct from v0.1.0",
+  block_size:"the protocol ceiling on block bytes — JAN09 has no MAX_BLOCK_SIZE but a 32 MiB MAX_SIZE serialization cap; BTC added a 1 MB cap (2010); BSV removed the protocol cap (2020), distinct from JAN09",
   script_limits:"element-size / op-count / stack-depth ceilings in the interpreter",
   sig_encoding:"how strictly signature encoding is enforced (lenient vs strict-DER / BIP66)",
   crypto_lib:"the library performing ECDSA-on-secp256k1 for consensus",
@@ -197,12 +197,12 @@ const FROZEN = {
   nov08: {monetary:"nov 1e6/100/100k/15m", pow_algo:"leading-zero-bits",
     script_vocabulary:N, value_bounds:N, block_size:N, script_limits:N, sig_encoding:N, crypto_lib:N,
     consensus_db:N, witness:N, sig_scheme:N},
-  "v0.1.0": {script_vocabulary:"full", value_bounds:"none", block_size:"no-cap", script_limits:"none",
+  "JAN09": {script_vocabulary:"full", value_bounds:"none", block_size:"no-cap", script_limits:"none",
     sig_encoding:"lenient", crypto_lib:"openssl", pow_algo:"sha256d-compact",
     monetary:"jan 1e8/50/210k/10m", consensus_db:"bdb", witness:"inline", sig_scheme:"ecdsa"}
 };
 const RECON = {                                  // the lab's reconstructions (MODEL), from 26 Jul 2026
-  // Runs the v0.1.0 client itself rather than modelling it, so crypto_lib and consensus_db are the
+  // Runs the January 2009 client itself rather than modelling it, so crypto_lib and consensus_db are the
   // real OpenSSL and Berkeley DB it links, not null. Its consensus code is unmodified: the release
   // changes only the genesis and the network identity, neither of which is an axis here.
   "Bitcoin (Aug 2026)":{monetary:"jan 1e8/50/210k/10m", pow_algo:"sha256d-compact",
@@ -221,7 +221,7 @@ const CHAINS = {
   BTC:{born:"2009-01-03",forked_from:null}, BCH:{born:"2017-08-01",forked_from:"BTC"},
   BSV:{born:"2018-11-15",forked_from:"BCH"}, XEC:{born:"2020-11-15",forked_from:"BCH"}
 };
-const SINCE = {whitepaper:"2008-10-31", nov08:"2008-11-15", "v0.1.0":"2009-01-03",
+const SINCE = {whitepaper:"2008-10-31", nov08:"2008-11-15", "JAN09":"2009-01-03",
   "Bitcoin (Aug 2026)":"2026-08-03", "NOV08-X":"2026-07-26", "JAN09-X":"2026-07-26",
   BTC:"2009-01-03", BCH:"2017-08-01", BSV:"2018-11-15", XEC:"2020-11-15"};
 const EVENTS = [
@@ -239,7 +239,7 @@ function stateOf(name, at){
   if(name in FROZEN) return {...FROZEN[name]};
   if(name in RECON) return {...RECON[name]};
   const ch = CHAINS[name];
-  const st = ch.forked_from ? stateOf(ch.forked_from, ch.born) : {...FROZEN["v0.1.0"]};
+  const st = ch.forked_from ? stateOf(ch.forked_from, ch.born) : {...FROZEN["JAN09"]};
   for(const e of EVENTS){ if(e.chain===name && e.when>=ch.born && e.when<=at) st[e.axis]=e.value; }
   return st;
 }
@@ -288,7 +288,7 @@ function idxToLabel(v){ const m=START+ +v; return `${MONTHS[m%12]} ${Math.floor(
 const segEl=document.getElementById("seg"), timeEl=document.getElementById("time"),
   dateEl=document.getElementById("date"), relEl=document.getElementById("rel"),
   rowsEl=document.getElementById("rows"), capEl=document.getElementById("caption");
-let origin="v0.1.0";
+let origin="JAN09";
 
 Object.keys(FROZEN).forEach(name=>{
   const b=document.createElement("button"); b.textContent=name; b.type="button";
