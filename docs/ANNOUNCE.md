@@ -5,21 +5,23 @@ is nothing here to buy, sell, or hold, and there never will be. Read [why](#the-
 
 ## What these are
 
-**NOV08‑X** and **JAN09‑X** are faithful, executable reconstructions of the earliest Bitcoin:
+**Three chains, and they are not the same kind of thing.** Take them in this order:
 
-- **JAN09‑X** — the released reference client, **v0.1.0** (3 January 2009): its full opcode
-  vocabulary, its value/consensus rules, its genesis‑born choices — with **nothing disabled** (none
-  of the guardrails added from 2010 onward).
+- **Bitcoin** — **not a reconstruction.** It runs Satoshi’s released **January 2009 client itself**,
+  on a genesis of its own, mined at the original difficulty‑1, its coinbase carrying the front page
+  of the day it was mined. Its own network, its own signed release (`Bitcoin-v0.1.4`), **five blocks
+  mined — and blocks 2–4 were mined by the released client itself.** It does **not** interoperate
+  with the two below, and it has its own seed rather than sharing the crawler.
+
+**NOV08‑X** and **JAN09‑X** are faithful, executable **reconstructions** of the earliest Bitcoin —
+models of a rule set rather than the original binary:
+
+- **JAN09‑X** — the **released January 2009 constitution**: its full opcode vocabulary, its
+  value/consensus rules, its genesis‑born choices — with **nothing disabled** (none of the guardrails
+  added from 2010 onward).
 - **NOV08‑X** — the **pre‑release** of 15 November 2008: the design *before* the genesis block, where
   it differs from January (a 100‑coin subsidy, `COIN = 1e6`, ~15‑minute blocks, a leading‑zero‑bits
   proof‑of‑work).
-
-A third chain runs alongside them and is **not** a reconstruction:
-
-- **Bitcoin** — the same v0.1.0 client on a genesis of its own, mined at the original difficulty‑1,
-  its coinbase carrying the front page of the day it was mined. Its own network, its own signed
-  release (`Bitcoin-v0.1.3`). It does **not** interoperate with the two above, and it has its own
-  seed rather than sharing the crawler.
 
 The reconstructions are released as **candidates** — *a* Bitcoin, not *the* Bitcoin. That
 distinction is the whole point, and it is made carefully in [`../../common/WHAT_IS_BITCOIN.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/WHAT_IS_BITCOIN.md)
@@ -73,13 +75,13 @@ and recent blocks. **Verify what you run:** every release is GPG‑signed — ch
 
 ## Join the live network — peers you can connect to today
 
-**Two** live, always‑on anchors run the two reconstructions side by side, and a third node serves
-the Bitcoin chain:
+A node serves the **Bitcoin** chain, and **two** live, always‑on anchors run the two
+reconstructions side by side:
 
 ```
-seed.bitcoin-lab.org:18009      JAN09‑X  (Jan 2009 v0.1.0 genesis client · magic f00ba709)
-seed.bitcoin-lab.org:18008      NOV08‑X  (15 Nov 2008 pre‑release · magic f00ba708 · leading‑zero‑bits PoW)
 bitcoin.bitcoin-lab.org:18026   Bitcoin  (its own genesis 00000000ad12f3ec… · magic f00ba726 · difficulty‑1)
+seed.bitcoin-lab.org:18009      JAN09‑X  (Jan 2009 released constitution · magic f00ba709)
+seed.bitcoin-lab.org:18008      NOV08‑X  (15 Nov 2008 pre‑release · magic f00ba708 · leading‑zero‑bits PoW)
 ```
 
 All three experimental, all **NOT money**. Join in **one command** with the prebuilt image — or clone and
@@ -95,9 +97,9 @@ docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode \
 # or from source (needs Python 3 + cryptography):
 git clone https://github.com/original-bitcoin-laboratory/genesis
 cd genesis/derivatives
-python -m netnode --chain jan09x --datadir ./data-jan09 --connect seed.bitcoin-lab.org:18009
 python -m netnode --chain bitcoin --datadir ./data-bitcoin --connect bitcoin.bitcoin-lab.org:18026
-python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-lab.org:18008
+python -m netnode --chain jan09x  --datadir ./data-jan09   --connect seed.bitcoin-lab.org:18009
+python -m netnode --chain nov08x  --datadir ./data-nov08   --connect seed.bitcoin-lab.org:18008
 ```
 
 Your node mints the matching genesis (JAN09‑X `51eec236…` / NOV08‑X `00000f08…`), dials the anchor,
@@ -112,8 +114,9 @@ ever moves, the name follows it — so prefer the name, and the reproducible rec
 
 ### Or join Bitcoin with the released 2009 client
 
-`bitcoin-0.1.3.tar.gz` ships the actual client, and it will find the network on its own — but read this
-first, because it behaves like software from 2009, which is the point.
+`bitcoin-0.1.4.tar.gz` ships the actual client, and it will find the network on its own — but read
+this first, because it behaves like software from 2009, which is the point. (Its `bitcoin.exe` is
+byte-identical to v0.1.3’s, `c3f15fc5…`: nothing in the client changed, so nothing in the binary did.)
 
 It has **no `-connect` and no `-addnode`**. Reading `mapArgs` in `ui.cpp`, the switches it honours are
 `/datadir /proxy /debug /dropmessages /loadblockindextest /printblockindex /gen /randsendtest`. But it
