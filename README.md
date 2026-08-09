@@ -77,7 +77,13 @@ both nodes byte‑identical) and then a
 **chain reorganisation** — partitioned until their equal‑difficulty chains diverged by one block, the shorter
 node fired Satoshi's `*** REORGANIZE ***`, orphaned its own valid block, and adopted the longer chain, both
 converging on one tip (`r4-findings/2026-08-01-sustained-relay/` and `r4-findings/2026-08-02-reorg-partition/`,
-level `JAN09-EXECUTED`). The Python and Rust
+level `JAN09-EXECUTED`). Finally they **relayed a spend of a matured coinbase** — matured under the
+client's own rule of **120 confirmations, not 100** (`main.h` sets `COINBASE_MATURITY = 100`, but
+`main.cpp:544` withholds a generated coin for twenty blocks beyond it). Transaction `f4309c…` was
+created on node B and accepted by node A across the wire, then mined into block
+`00000000b4ca03f9…` at height 122 (`r4-findings/2026-08-06-relayed-spend/`, level `JAN09-EXECUTED`).
+**That closes the R-series**: value transfer on the unmodified 2009 client is executed, not modelled.
+The Python and Rust
 nodes regenerate the *experimental-network* genesis blocks, which they check differ from the historical
 hash. Findings, the honest claim, and scope live in the umbrella:
 [`common/README.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/README.md) · [`common/CLAIMS.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/CLAIMS.md).
@@ -106,7 +112,7 @@ python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-l
 
 A third chain lives here too, and is **not** one of the reconstructions: **Bitcoin**
 ([`derivatives/bitcoin/`](derivatives/bitcoin/)) — its own genesis, its own network, its own signed
-release. It runs the v0.1.0 client and does not interoperate with the two above.
+release. It runs Satoshi's January 2009 client and does not interoperate with the two above.
 
 ```bash
 python -m netnode --chain bitcoin --datadir ./data-bitcoin --connect bitcoin.bitcoin-lab.org:18026
