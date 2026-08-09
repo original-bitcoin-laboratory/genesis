@@ -18,24 +18,52 @@ Five independent roots, so no single one is load-bearing:
 
 ## OpenTimestamps — a date nobody here can move
 
-Every `Bitcoin-v0.1.3` asset carries a `.ots` proof, submitted to four independent calendars
+Every release asset carries a `.ots` proof, submitted to four independent calendars
 (`a.pool`/`b.pool.opentimestamps.org`, `a.pool.eternitywall.com`, `ots.btc.catallaxy.com`). Once the
 calendars fold them into a Bitcoin block, the proof shows the file existed before that block — and
 that is attested by Bitcoin's own proof-of-work rather than by us, a host, or a certificate
 authority.
 
+### Where the proofs actually landed
+
+**A stamp is a request; an attestation is the answer.** These are the answers, and each is checkable
+against any block explorer without trusting this file:
+
 ```
-ots verify bitcoin-0.1.3.tar.gz.ots     # needs the tarball beside it
-ots upgrade bitcoin-0.1.3.tar.gz.ots    # fetch the completed proof once a block confirms
+Bitcoin-v0.1.4   all four assets      block 961652   2026-08-09 00:16:42 UTC
+                 merkle root  9f989be977da16156acd44eac5fc92a52b235b2fb7addddde766f0b35b264a86
+                 block hash   00000000000000000000b286970ddbb501ced552e95c7ceda6ab92cf0f44fdbc
+
+Bitcoin-v0.1.3   all four assets      blocks 961105, 961106, 961130
 ```
 
-Freshly stamped proofs read *"Pending confirmation in Bitcoin blockchain"* until then; that is the
-normal state for the first few hours, not a failure.
+```
+ots verify bitcoin-0.1.4.tar.gz.ots     # needs the tarball beside it; wants a local Bitcoin node
+ots upgrade bitcoin-0.1.4.tar.gz.ots    # fetch the completed proof once a block confirms
+```
 
-The hash stamped is **`d24469a4…`**, the reproducible release. That choice is the point: stamping a
-binary nobody else can regenerate would prove only that *we* had a file on a date. Stamping one that
-anyone can rebuild from the published 2009 archive means the date attaches to something a stranger
-can independently arrive at.
+**Without a Bitcoin node `ots verify` cannot finish**, and that is not a reason to take the anchor on
+faith. The proof is self-contained: hash the file, walk the operations in the `.ots`, and the result
+must equal the merkle root of the stated block. Compare that root against any explorer. Both steps
+were run for the heights above.
+
+Freshly stamped proofs read *"Pending confirmation in Bitcoin blockchain"*; that is the normal state
+for the first few hours, not a failure.
+
+> **The trap that eats attestations.** `ots upgrade` writes `<file>.ots.bak` before replacing the
+> proof, and **refuses to write at all if that `.bak` already exists** — after it has already fetched
+> the attestation from the calendar. The fetch is silently discarded and the file stays pending.
+> Because `SHA256SUMS` is a filename every release reuses, a stale `.bak` from the previous release
+> sits exactly where the next one needs to write. **Move old `.bak` files aside before upgrading**,
+> and check `ots info` afterwards rather than trusting the exit output — a discarded fetch still
+> prints calendar chatter that reads like progress. (`dist/` is not tracked here, so the superseded
+> backups live only in the working tree.)
+
+The hash stamped for `Bitcoin-v0.1.4` is **`3d7a7b3c…`** (`bitcoin-0.1.4.tar.gz`), the reproducible
+release; `Bitcoin-v0.1.3`'s was **`d24469a4…`**. That choice is the point: stamping a binary nobody
+else can regenerate would prove only that *we* had a file on a date. Stamping one that anyone can
+rebuild from the published 2009 archive means the date attaches to something a stranger can
+independently arrive at.
 
 ## Pinned release CIDs
 
