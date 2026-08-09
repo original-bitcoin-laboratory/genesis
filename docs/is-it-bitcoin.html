@@ -194,7 +194,7 @@ const PROPS = [
                  cite:"distinguishes an instance from a document, an idea, or a number"},
   {k:"genesis",  q:"Traces to Bitcoin's genesis block 000000000019d668… (a branch of the launched chain).",
                  cite:"continuity with the instance the world calls Bitcoin (§3)"},
-  {k:"faithful", q:"Is, or faithfully reconstructs, a frozen origin artifact (the whitepaper, or the hash‑verified v0.1.0 source / its genesis).",
+  {k:"faithful", q:"Is, or faithfully reconstructs, a frozen origin artifact — the whitepaper, the 15 Nov 2008 pre‑release, or the hash‑verified January 2009 released source / its genesis.",
                  cite:"identity with the unique origin (§4, §8)"},
   {k:"priced",   q:"Is bought, sold, or held as a priced asset.",
                  cite:"the ‘asset’ sense — sense 6"},
@@ -209,8 +209,9 @@ const PRESETS = {
   "BTC today":                 ["y","y","y","n","y","n"],
   "BSV":                       ["y","y","y","n","y","n"],
   "Litecoin":                  ["y","y","n","n","y","n"],
+  "Bitcoin (this lab)":        ["y","y","n","y","n","n"],
   "JAN09‑X (this lab)":        ["y","y","n","y","n","n"],
-  "Bitcoin (Aug 2026)":        ["y","y","n","y","n","n"],
+  "NOV08‑X (this lab)":        ["y","y","n","y","n","n"],
   "A PoW altcoin":             ["y","y","n","n","y","n"],
   "0.5 BTC (an amount)":       ["n","n","n","n","y","y"],
   "Exchange‑IOU ‘BTC’":        ["n","n","n","n","y","y"],
@@ -248,6 +249,12 @@ function vType(){                                   // Bitcoin, the design / typ
 }
 
 function vOrigin(){                                 // the origin — unique, beyond doubt
+  if(is("faithful") && is("ledger") && no("genesis")) return {b:"No — it runs the origin, it isn’t the origin", c:"cand", why:
+    "This is the distinction the lab is built on, so it is not blurred here. Your object <em>re‑realizes</em> the "+
+    "origin — by executing a hash‑verified original client, or by reconstructing a frozen rule set — but it mined "+
+    "its <b>own genesis</b>, not <code>000000000019d668…</code>. <b>Executing an artifact faithfully is not being "+
+    "that artifact.</b> The origin is the frozen 2009 pair and there is exactly one of it; what you have is a "+
+    "<em>fidelity candidate</em>, which is the next card, and a strong one. (§4, §8)"};
   if(is("faithful")) return {b:"Yes — the origin", c:"fact", why:
     "It is, or faithfully re‑derives, a frozen origin artifact — the whitepaper, or the hash‑verified v0.1.0 "+
     "source whose genesis is <code>000000000019d668…</code>. This is the one referent you can point to "+

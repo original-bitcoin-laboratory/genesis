@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>The two-node witness — Original Bitcoin Laboratory</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Two unmodified 3 Jan 2009 v0.1.0 bitcoin.exe binaries, in network-isolated VMs, re-derive the historical genesis and then produce, relay, sustain, reorganise and spend — each result verifiable from the raw block bytes. Not money.">
+<meta name="description" content="Two unmodified January 2009 bitcoin.exe binaries (v0.1.1, the archive distributed as bitcoin-0.1.0.rar), in network-isolated VMs, re-derive the historical genesis and then produce, relay, sustain, reorganise and spend — each result verifiable from the raw block bytes. Not money.">
 <style>
   :root{
     --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
@@ -91,7 +91,7 @@
 <div class="wrap">
   <p class="eyebrow"><a href="./">◆ Original Bitcoin Laboratory</a> &nbsp;·&nbsp; Evidence · JAN09-EXECUTED · not money</p>
   <h1>The two-node witness</h1>
-  <p class="lede">Two <b>unmodified 3 Jan 2009 <code style="font-family:var(--mono)">v0.1.0</code> bitcoin.exe</b>
+  <p class="lede">Two <b>unmodified January 2009 <code style="font-family:var(--mono)">v0.1.1</code> bitcoin.exe</b>
     binaries — in network-isolated Windows VMs, discovering each other over the client's own hard-coded IRC
     path — re-derive the <b>historical genesis</b> and then <b>produce, relay, sustain, reorganise and spend</b>
     real blocks. Every result below is verifiable straight from the raw <code style="font-family:var(--mono)">blk0001.dat</code>
@@ -187,13 +187,38 @@
 
   </div>
 
+  <h2 class="sec">What this page is not<span>the other executed chain, and why it is not a milestone here</span></h2>
+  <div class="facts-wrap">
+    <table class="facts">
+      <tr><th>This page</th><td><b>Satoshi’s binary, Satoshi’s genesis, two nodes.</b> Nothing was written by us:
+        the client is <code>fbcac071…</code> as released in January 2009, and the chain it builds descends from the
+        real <code>000000000019d668…</code>. The evidence class is <b>JAN09-EXECUTED</b>.</td></tr>
+      <tr><th>Not this page</th><td>The laboratory also runs a chain called <b>Bitcoin</b> — five blocks, its own
+        genesis <code>00000000ad12f3ec…</code>, coinbase quoting <i>The Times</i> of 3 August 2026. <b>It is
+        executed evidence too</b>, and blocks 2–4 were mined by our own published release. But it is
+        <b>one node, our genesis, our build</b> — not two nodes on Satoshi’s. Folding it into the R-series would
+        flatten exactly the line this laboratory exists to hold.
+        <a href="bitcoin.html">the Bitcoin chain →</a></td></tr>
+      <tr><th>Why keep them apart</th><td><b>A witness and a demonstration answer different questions.</b> The
+        R-series asks <em>what does the 2009 client do when two of them meet</em> — and we are not the author of
+        the answer. The Bitcoin chain asks <em>can that client still be built, released and run today</em> — where
+        we authored the genesis and the build. Merging them would let the second borrow the first’s authority.</td></tr>
+    </table>
+  </div>
+
   <h2 class="sec">Anchor facts</h2>
   <div class="facts-wrap">
     <table class="facts">
       <tr><th>Genesis</th><td><code>000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f</code><br>
         the real 3 Jan 2009 block 0 — <i>The Times</i> Chancellor coinbase — re-derived by the unmodified binary.</td></tr>
       <tr><th>Binary</th><td><code>bitcoin.exe</code> sha256 <code>fbcac071d92e26d82ec917214e334bd43850c0691f113bab1d4741c9bdd30d2d</code><br>
-        the released v0.1.0 executable; retrievable from <code>cdn.nakamotoinstitute.org/code/bitcoin-0.1.0.rar</code>. Same on both nodes.</td></tr>
+        Satoshi’s released January 2009 executable. <b>It is v0.1.1, built 10 Jan 2009</b> — the archive is
+        distributed everywhere as <code>bitcoin-0.1.0.rar</code>, and that label is the ecosystem’s, not the bytes’:
+        the PE <code>TimeDateStamp</code> reads 2009-01-10 23:16:00 UTC, two days after v0.1.0 was announced.
+        <b>No result on this page changes</b> — <code>main.cpp</code> is untouched between the two, so the genesis
+        and every consensus rule exercised here are identical. Retrievable from
+        <code>cdn.nakamotoinstitute.org/code/bitcoin-0.1.0.rar</code>; same on both nodes.
+        <a href="https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md">the six checks →</a></td></tr>
       <tr><th>Network</th><td>VirtualBox <b>Internal Network</b> <code>172.20.0.0/24</code>, no gateway, no DNS, firewall off. Node A <code>172.20.0.1</code>, node B <code>172.20.0.2</code>.</td></tr>
       <tr><th>Discovery</th><td>the client's own hard-coded IRC path, reproduced against a minimal in-network daemon (<code>hosts</code> override) — never the historical Freenode.</td></tr>
       <tr><th>Status</th><td>Isolated network · the real historical genesis · <b>no value assigned by design</b>. A <i>Bitcoin</i>, not <i>the</i> Bitcoin.</td></tr>

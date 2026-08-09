@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>Original Bitcoin Laboratory — the earliest Bitcoin, made to run</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Bitcoin — an experimental chain on its own genesis, running the 3 Jan 2009 v0.1.0 client, five blocks mined. Plus JAN09-X and NOV08-X: evidence-first, executable reconstructions of the earliest Bitcoin, released as candidates — a Bitcoin, not the Bitcoin. Not money.">
+<meta name="description" content="Bitcoin — an experimental chain on its own genesis, running Satoshi's released January 2009 client, five blocks mined. Plus JAN09-X and NOV08-X: evidence-first, executable reconstructions of the earliest Bitcoin, released as candidates — a Bitcoin, not the Bitcoin. Not money.">
 <style>
   :root{
     --ground:#0e1316; --panel:#151d22; --panel-2:#11181c;
@@ -52,6 +52,7 @@
   .peers span{color:var(--ink-faint)}
   .note{margin-top:34px;font-size:12.5px;color:var(--ink-faint);max-width:70ch;line-height:1.6}
   .note b{color:var(--ink-dim)}
+  .mono{font-family:var(--mono);font-size:.93em;color:var(--ink-dim);overflow-wrap:anywhere}
   .tags{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
   .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
 </style>
@@ -60,40 +61,70 @@
   <p class="eyebrow">Original Bitcoin Laboratory</p>
   <h1>The earliest Bitcoin, made to run.</h1>
   <p class="lede">Evidence‑first, <b>executable</b> reconstructions of the earliest Bitcoin — the
-    <b>15 Nov 2008 pre‑release</b> and the <b>3 Jan 2009 v0.1.0</b> client — built from two
+    <b>15 Nov 2008 pre‑release</b> and the <b>January 2009 released client</b> — built from two
     hash‑verified archives, with <b>nothing disabled</b> and <b>no chain privileged</b>. Released as
     <b>candidates</b>: <i>a</i> Bitcoin, not <i>the</i> Bitcoin. <b>Not money.</b></p>
   <p class="lede" style="margin-top:14px"><a href="bitcoin.html"
     style="color:var(--focus);text-decoration:none;border-bottom:1px solid var(--line-strong)"><b>Bitcoin</b></a>
-    runs that same v0.1.0 client on a genesis of its own — its own network, its own signed release,
+    runs that same January 2009 client on a genesis of its own — its own network, its own signed release,
     <b>five blocks mined</b>. It is <b>not</b> a reconstruction and not interoperable with the two
     above, and it is the chain to look at first: it is the one with a live network, mined blocks and
     a released client that provably mined them.</p>
+  <p class="lede" style="margin-top:14px;font-size:13px;opacity:.78">The January 2009 archive is
+    distributed everywhere as <span class="mono">bitcoin-0.1.0.rar</span>. <b>The bytes say it is
+    v0.1.1, built 10 January 2009</b> — two days after v0.1.0 was announced. We inherited that label
+    and repeated it; this note records what the file actually is. The <span class="mono">0.1.0→0.1.1</span>
+    delta is <span class="mono">irc.cpp</span> and <span class="mono">serialize.h</span> — networking only — so
+    <b>no genesis, consensus or executed result on this site changes</b>.
+    <a href="https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md" style="color:var(--focus)">the six checks →</a></p>
 
-  <h2 class="sec">The chains<span>three live networks — run one, or watch them</span></h2>
+  <h2 class="sec">The chains<span>three live networks — one released, two reconstructions</span></h2>
   <div class="grid">
     <a class="card" href="bitcoin.html" data-goatcounter-click="open-bitcoin">
-      <div class="k">Released · the thesis, instantiated</div>
+      <div class="k">Released · executed · five blocks</div>
       <h2>Bitcoin</h2>
-      <p>Its own genesis, its own network, its own signed release — running the v0.1.0 client.
-        Separate from the two reconstructions; they do not interoperate.</p>
+      <p>Its own genesis, its own network, its own signed release — running Satoshi's January 2009 client.
+        <b>Five blocks mined, and blocks 2–4 were mined by the released client itself.</b> Separate
+        from the two reconstructions; they do not interoperate.</p>
       <span class="go">Open Bitcoin →</span>
     </a>
+    <a class="card" href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/derivatives/jan09x" data-goatcounter-click="open-jan09x">
+      <div class="k">Reconstruction · MODEL · Jan 2009</div>
+      <h2>JAN09-X</h2>
+      <p>The <b>released January 2009 constitution</b> — <span class="mono">COIN=1e8</span>, 50-coin
+        subsidy, 210k halving, 10-minute target — with the full original opcode vocabulary and
+        <span class="mono">OP_NOTEQUAL</span> re-opened. Nothing disabled.</p>
+      <span class="go">Open JAN09-X →</span>
+    </a>
+    <a class="card" href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/derivatives/nov08x" data-goatcounter-click="open-nov08x">
+      <div class="k">Reconstruction · MODEL · Nov 2008</div>
+      <h2>NOV08-X</h2>
+      <p>November 2008's constitution instead — <span class="mono">COIN=1e6</span>, 100-coin subsidy,
+        100k halving, 15-minute target, and proof-of-work counted in <b>leading zero bits</b> rather
+        than a compact target.</p>
+      <span class="go">Open NOV08-X →</span>
+    </a>
+  </div>
+
+  <h2 class="sec">Run one, or watch<span>the networks are live and joinable</span></h2>
+  <div class="grid">
     <a class="card" href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/ANNOUNCE.md" data-goatcounter-click="open-join-network">
       <div class="k">Live · experimental · not money</div>
       <h2>Join the live network</h2>
-      <p>A node serves <b>Bitcoin</b>, and two always‑on anchors run the reconstructions. Clone the
-        repo and point a node at any of them — it syncs and independently re‑validates every block.</p>
+      <p>A node serves <b>Bitcoin</b>, and two always-on anchors serve <b>JAN09-X</b> and
+        <b>NOV08-X</b>. Clone the repo and point a node at any of the three — it syncs and
+        independently re-validates every block.</p>
       <span class="go">Read the invitation →</span>
     </a>
     <a class="card" href="status.html" data-goatcounter-click="open-status">
       <div class="k">Live · proof of life</div>
       <h2>Network status &amp; explorer</h2>
       <p>Anchor uptime, each chain's tip height, and the most recent blocks — measured live over the
-        peer‑to‑peer protocol.</p>
+        peer-to-peer protocol.</p>
       <span class="go">See the live status →</span>
     </a>
   </div>
+
   <h2 class="sec">Check it yourself<span>nothing here asks to be believed</span></h2>
   <div class="grid">
     <a class="card" href="./verify-genesis.html" data-goatcounter-click="open-verify-genesis">
