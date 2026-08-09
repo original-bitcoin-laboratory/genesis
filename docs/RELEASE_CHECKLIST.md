@@ -68,7 +68,7 @@ for f in bitcoin-0.1.N.tar.gz bitcoin-0.1.N.tar.gz.asc SHA256SUMS SHA256SUMS.asc
 gh release upload Bitcoin-v0.1.N *.ots --repo original-bitcoin-laboratory/genesis
 ```
 
-Three things that are easy to get wrong:
+Four things that are easy to get wrong:
 
 - **The Windows client does not work.** `ctypes.find_library` returns None and it dies with
   `LoadLibrary() argument 1 must be str, not None`. Use WSL:
@@ -76,6 +76,18 @@ Three things that are easy to get wrong:
 - **A fresh proof is incomplete.** It reads *"Pending confirmation in Bitcoin blockchain"* for a few
   hours. **Come back and `ots upgrade` each `.ots`, then re-upload.** A proof left un-upgraded never
   completes itself, and the release ships something that looks like a timestamp and is not yet one.
+- **A stale `.bak` silently eats the attestation.** `ots upgrade` writes `<file>.ots.bak` before
+  replacing a proof and **refuses to write if that `.bak` already exists** — but only *after* it has
+  fetched the attestation, which is then thrown away. `SHA256SUMS` is a filename every release
+  reuses, so the previous release's `SHA256SUMS.ots.bak` sits exactly where this one must write.
+  **Move old `.bak` files aside first.** The console output is no help: it prints calendar chatter
+  that reads like success. **Confirm with `ots info`** — an upgraded proof names a
+  `BitcoinBlockHeaderAttestation(<height>)` and grows well past its stamped size; a pending one lists
+  only `PendingAttestation` and stays put.
+- **`ots verify` needs a Bitcoin node, and without one you must verify by hand.** Hash the file,
+  walk the operations in the `.ots`, and check the result equals the merkle root of the stated block
+  on any explorer. Record the height, the block hash and the block time in `PRESERVATION.md` — "we
+  stamped it" is not the claim; "it is anchored in block N" is.
 - **Stamp the reproducible hash.** A timestamp on a binary nobody else can regenerate dates a private
   artifact. On one anyone can rebuild, it dates a public fact.
 
