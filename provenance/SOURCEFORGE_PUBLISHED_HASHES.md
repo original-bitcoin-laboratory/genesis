@@ -33,12 +33,46 @@ It also corroborates two figures published elsewhere in this project from unrela
 - **`download-count 83`** — the figure this project has published as the upper bound on the Research
   Paper package's lifetime downloads.
 
-## An oddity, recorded not explained
+## ★ RESOLVED — this was recorded as an unexplained oddity; it is not unexplained
 
 `bitcoin-0.1.0.rar` and `bitcoin-0.1.3.rar` are listed with **the same size and the same MD5**
-(`2,127,418` / `9a73e0826d…`), despite different release dates. Either the same archive was published
-twice under two version labels, or SourceForge's feed associated one file with two releases. **We do
-not know which**, and it is recorded here as an open observation rather than resolved.
+(`2,127,418` / `9a73e0826d…`) despite different release dates. **An earlier version of this file said
+"we do not know which". We do know, and the discriminator is inside the bytes.**
+
+**We hold an archive matching that exact digest and size.** Its `serialize.h` declares:
+
+```
+held bitcoin-0.1.3.rar    md5 9a73e0826d…  2,127,418 B    serialize.h VERSION = 103
+held bitcoin-0.1.0.rar    md5 91e2dfa2af…  2,132,686 B    serialize.h VERSION = 101
+                          (the SNI archive -- and see the note below on its real label)
+```
+
+**VERSION 103 is v0.1.3's wire version; v0.1.0 and v0.1.1 carry 101.** So the bytes SourceForge
+published under the **`bitcoin-0.1.0.rar`** row are **v0.1.3's code**, not v0.1.0's. The feed
+associated one later file with two releases.
+
+### ⚠️ The consequence, stated plainly
+
+> **There is no server-published hash for the actual v0.1.0 code.** The digest published beside that
+> filename belongs to different bytes, and the v0.1.0-era archive we hold matches **no** published
+> hash anywhere.
+
+**That is not a gap in the searching — it is a property of the record**, and it matters because it
+removes a custodian-free link we might otherwise have assumed we had. **For v0.1.0 the only
+custodian-free check is reproduction**: derive the source, rebuild, and compare the bytes you get.
+That is exactly what `derivatives/build-reconstruction/` exists to make possible, and why the
+laboratory anchors to reproduction rather than to a published digest.
+
+### And a second label problem in the same neighbourhood
+
+**The archive circulated as `bitcoin-0.1.0.rar` is v0.1.1.** Its size, 2,132,686 bytes, is precisely
+the figure Satoshi states for **`bitcoin-0.1.1.rar`** in a 10 January 2009 message; its shipped
+`bitcoin.exe` carries a PE `TimeDateStamp` of 2009-01-10, two days after v0.1.0 was announced. See
+[`../../common/VERSION_LABEL.md`](../../common/VERSION_LABEL.md).
+
+**Neither correction changes any consensus result** — the v0.1.0→v0.1.1 delta is confined to
+`irc.cpp` and `serialize.h`, and `main.cpp` is untouched. **What changes is what may be claimed about
+provenance**, which is the whole point of this file.
 
 ## Limits
 
