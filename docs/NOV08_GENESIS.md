@@ -214,6 +214,30 @@ are the third and fourth of the reversed pubkey — `04 d4 51 b0 …`. They matc
 | | 15 Nov 2008 pre-release | 3 Jan 2009 v0.1.0 |
 |---|---|---|
 | **coinbase** | `CScript() << 247422313` — an integer | `The Times 03/Jan/2009 Chancellor on brink…` |
+
+> ### ⚠️ On reading `247422313` as a date — don't
+>
+> The claim circulates that the coinbase integer decodes as a Unix timestamp:
+> **`247422313` → 1977-11-03 16:25:13 UTC.** *The arithmetic is correct.* **The inference is not.**
+>
+> **Every nine-digit integer decodes to some date.** The range `100000000`–`999999999` maps onto
+> **1973-03-03 to 2001-09-09** — so any value of that size is *guaranteed* to land on a plausible
+> historical date. Finding one is not a discovery; it is arithmetic.
+>
+> ```
+> 247422313  ->  1977-11-03    "significant?"
+> 141755     ->  1970-01-02    the nNonce, decoded the same way
+> 10000      ->  1970-01-01    the nValue
+> 20         ->  1970-01-01    nBits
+> ```
+>
+> **There is no independent reason to read this field as a time.** In the January genesis the coinbase
+> carries a newspaper headline — an *external, checkable* commitment. Here it carries a bare integer
+> with no unit, no encoding marker, and no corroborating artifact. **The honest reading is the one
+> this document already gives: it commits to nothing.**
+>
+> *Recorded because the numerology is in public circulation (satoshitimeline.com card 8) and will
+> otherwise be re-derived by someone who has not checked the base rate.*
 | **proof of time** | **none** | the front page of that morning |
 | `nTime` | 1221069728 = **2008-09-10** 18:02:08 UTC | 1231006505 = 2009-01-03 18:15:05 UTC |
 | `nBits` | `20` — leading-zero **bits**, `MINPROOFOFWORK=20`, "ridiculously easy for testing" | `0x1d00ffff` — compact target |
