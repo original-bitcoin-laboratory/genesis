@@ -34,18 +34,20 @@ A public node in one command: [`deploy/provision.sh`](deploy/provision.sh) (Ubun
 
     height 0  00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a   3 Aug 2026
     height 1  000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c   4 Aug 2026
-    height 2                                                                     6 Aug 2026
-    height 3                                                                     6 Aug 2026
-    height 4                                                                     9 Aug 2026
+
+**The current tip is on the [status page](https://bitcoin-lab.org/status.html), not in this file** —
+a height written into a README is wrong the next time a block is found, and this paragraph has
+already been wrong once for that exact reason.
 
 Block 1 was mined by the released client itself and relayed to the seed, which validated and stored
-it with a different implementation. **Block 5 onward are unmined and anyone may take them.**
+it with a different implementation. **Mining is open: the next block belongs to whoever finds it.**
 
-**Who holds the coins, stated plainly.** Blocks 0–4 were all mined by this project, because nobody
-else has mined yet — so **every coin that exists on this chain is held by the key of the agent that
-made it.** That is a concentration, not a premine: there was no allocation, no sale, no token, and
-nothing was set aside. **None of it has ever been spent, offered, priced or transferred, and none of
-it is for sale.** The concentration falls on its own the moment anyone else mines.
+**Who holds the coins — stated as the invariant, because the number moves.** **Every block so far has
+been mined by this project, for the plain reason that nobody else has mined yet.** So **every coin
+that exists on this chain is held by the key of the agent that made it.** That is a *concentration*,
+not a premine: no allocation, no sale, no token, nothing set aside. **None of it has ever been spent,
+offered, priced or transferred, and none of it is for sale.** **This paragraph describes a state that
+ends the moment anyone else mines a block** — which requires no permission and nothing from us.
 
 Blocks cost difficulty-1 work — about 2³² hashes — so the client's own miner takes roughly an hour
 per block on one core. There is nothing to buy, nothing to claim, and nothing owed to whoever mines
