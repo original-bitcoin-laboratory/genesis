@@ -34,9 +34,18 @@ A public node in one command: [`deploy/provision.sh`](deploy/provision.sh) (Ubun
 
     height 0  00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a   3 Aug 2026
     height 1  000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c   4 Aug 2026
+    height 2                                                                     6 Aug 2026
+    height 3                                                                     6 Aug 2026
+    height 4                                                                     9 Aug 2026
 
 Block 1 was mined by the released client itself and relayed to the seed, which validated and stored
-it with a different implementation. Block 2 onward are unmined and anyone may take them.
+it with a different implementation. **Block 5 onward are unmined and anyone may take them.**
+
+**Who holds the coins, stated plainly.** Blocks 0–4 were all mined by this project, because nobody
+else has mined yet — so **every coin that exists on this chain is held by the key of the agent that
+made it.** That is a concentration, not a premine: there was no allocation, no sale, no token, and
+nothing was set aside. **None of it has ever been spent, offered, priced or transferred, and none of
+it is for sale.** The concentration falls on its own the moment anyone else mines.
 
 Blocks cost difficulty-1 work — about 2³² hashes — so the client's own miner takes roughly an hour
 per block on one core. There is nothing to buy, nothing to claim, and nothing owed to whoever mines
@@ -66,6 +75,12 @@ python net.py                  # re-derives the genesis hash; checks it meets di
 The client asserts the genesis hash on startup, so a wrong build does not run.
 
 ## Not money
+
+**What other people do with this chain is theirs, and is not endorsed here.** The software is MIT and
+the chain is open, so anyone may run it, mine it, or do anything else the licence permits — including
+things this project would not do. **If a market in these coins ever appears, it is not ours, we did
+not make it, and no price it produces is acknowledged, quoted or relied on anywhere in this project.**
+The coins held here stay unspent and unoffered regardless of what anyone else does.
 
 No premine of value, no token, no sale, no market, no promises. The 50-coin genesis output has no
 value assigned. The consensus rules carry no `MoneyRange` and no script limits, and no 1 MB block cap — that
