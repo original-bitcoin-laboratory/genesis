@@ -5,15 +5,15 @@ This package was assembled in 2026. It is NOT Satoshi Nakamoto's 2009 release, a
 
 It exists because the earliest Bitcoin client is usually discussed and rarely executed. To execute it
 honestly you must run the real code -- so this package ships Satoshi's 2009 source almost entirely
-unchanged, and starts a SEPARATE chain rather than touching the one he started.
+unchanged, and starts a SEPARATE chain rather than touching the one they started.
 
 The file `readme.txt` in this package reads:
 
     BitCoin v0.01 ALPHA
     Copyright (c) 2009 Satoshi Nakamoto
 
-That is HIS file, preserved byte-for-byte. It is not a claim by us. The MIT licence he released the
-code under requires that his notice travel with the code, and preserving it exactly is both the legal
+That is THEIR file, preserved byte-for-byte. It is not a claim by us. The MIT licence they released
+the code under requires that their notice travel with the code, and preserving it exactly is both the legal
 obligation and the entire point of a reconstruction: bytes that have been "tidied up" prove nothing.
 
 **So: every unqualified 2009 attribution you find inside this package is Satoshi's own text, kept
@@ -110,9 +110,13 @@ to steal.
 ATTRIBUTION AND IDENTITY -- SAID PLAINLY
 ----------------------------------------
 
-This project makes NO claim about who Satoshi Nakamoto was, and claims NO authorship of his code,
-his whitepaper, or his name. Where it addresses identity it records what the evidence can and cannot
-establish -- which, for authorship of a document, is that it cannot.
+This project makes NO claim about who Satoshi Nakamoto was, and claims NO authorship of their code,
+their whitepaper, or their name. Where it addresses identity it records what the evidence can and
+cannot establish -- which, for authorship of a document, is that it cannot.
+
+That is also why the pronoun above is "their". A document whose author is unknown does not tell you
+the author's gender either, and writing "his" while disclaiming any knowledge of who they were would
+be asserting in the grammar what the sentence expressly declines to assert.
 
 The chain started here has its own author, who holds its genesis key and can sign for it on demand.
 That is a separate and provable claim about a separate and valueless chain. It is not a claim about

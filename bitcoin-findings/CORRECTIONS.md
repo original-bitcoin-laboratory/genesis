@@ -134,3 +134,52 @@ information.
 **This is a research-hygiene convention, not a retrofit.** A laboratory that reports one clock
 reports one clock; the moment it reports two, a reader has to work out which one anything is in.
 
+---
+
+## ★ Pronouns: the identity documents asserted in grammar what they declined to assert in words
+
+**11 August 2026.** `PROVENANCE.txt` said, in one sentence:
+
+```
+This project makes NO claim about who Satoshi Nakamoto was, and claims NO authorship of his code,
+his whitepaper, or his name.
+```
+
+**It disclaims all knowledge of the identity and assigns a gender three times in the same
+sentence.** Four other lines did the same — *"the one he started"*, *"That is HIS file"*, *"the MIT
+licence he released the code under"*, *"his notice"*.
+
+**This laboratory's own stated convention is to reserve they/them for unknown identity**, and there
+is no identity less known than this one. The convention was written down on 10 August; these lines
+predate it and were not swept.
+
+> **Corrected going forward: they/their for the 2008–2009 Satoshi Nakamoto, everywhere.** The
+> reasoning is now stated in `PROVENANCE.txt` itself rather than left implicit — a document whose
+> author is unknown does not tell you the author's gender either.
+
+**Releases already published keep the text they shipped with.** v0.1.5 and earlier ship the older
+wording; their manifests and signatures cover those exact bytes, and re-cutting a release to adjust
+a pronoun would break every hash that attests to it for no gain. **This note is where a reader
+learns it was reconsidered.**
+
+## The public site: a claim that outran the evidence
+
+`docs/bitcoin.html` described the 2008–2009 Satoshi as one *"whose identity this project holds to be
+unprovable by any available means."*
+
+**That is stronger than anything this laboratory has established, and stronger than its own closure
+ledger.** `CLOSURE-LEDGER.md` Q2 records the opposite: **a living key holder could sign one fresh
+challenge with the genesis key and the PGP key and prove common control, now, machine-verifiably.**
+It has never been done — which makes the identity **unproven**, not **unprovable**. What is closed
+by proof is *authorship of a document*, which is a different question.
+
+> **Corrected:** the page now reads *"whose identity is unknown and which this project does not
+> claim to have settled"*, and names the era as **2008–2009** rather than 2009. **The disambiguation
+> the sentence exists to perform — our 2026 agent is not that Satoshi — is unaffected; only the
+> overclaim is gone.**
+
+**Also corrected on that page:** *"the agent he built"* became *"parthod0x, the agent, and this
+chain"*. The pseudonym is what the public collateral uses, and the real name is deliberately kept to
+`LICENSE` and `CITATION`. **A gendered pronoun attached to the pseudonym re-links it to the legal
+person the separation exists to keep apart** — so the pronoun is simply gone, which costs the
+sentence nothing.
