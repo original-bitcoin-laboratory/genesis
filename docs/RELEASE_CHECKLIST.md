@@ -154,6 +154,19 @@ cd "$BACKUP" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 s
 sha256sum -c SHA256SUMS --quiet
 ```
 
+**⚠️ Do this AFTER step 5's `ots upgrade`, never between the stamp and the upgrade.** A backup sealed
+in that gap stores **pending** proofs — promises that can never complete on their own — and the
+filename is identical either way, so nothing about the archive looks wrong.
+
+```bash
+# check the proof INSIDE the archive, not the one on disk
+tar -xzOf "$BACKUP/<bundle>.tar.gz" '*/SHA256SUMS.ots' | wc -c     # ~1,900 anchored / ~800 pending
+```
+
+**This happened on 10 Aug 2026** with the post-quantum bundle: sealed at 05:52, upgraded at 06:49, so
+the cold copy held 735-byte promises until it was rebuilt. **The routine already warned about this for
+published releases; nobody had thought to look for it in the backup path.**
+
 ## 9. The thread — **append, never edit**
 
 Post a new tweet; do not delete or rewrite an old one. Name which earlier tweet the new one
