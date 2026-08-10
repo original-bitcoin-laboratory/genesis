@@ -86,10 +86,25 @@ Different genesis, different key, different network. They are not the same chain
 NOT MONEY
 ---------
 
-No premine of value, no token, no sale, no offer, no market, no price. The coins on this chain are
-research artifacts and evidence of authorship. Nothing is owed to anyone who mines, and nothing is
-for sale. This is a stated design commitment, not an oversight, and it is the reason a live node with
-a plaintext wallet and no script limits is safe to run at all: there is nothing to steal.
+This is a commitment about what THIS PROJECT does, and it is written that way on purpose:
+
+  no premine of value        no token          no sale by us
+  no offer by us             no price set      no value assigned in the coinbase
+
+The coins are research artifacts and evidence of authorship. Nothing is owed to anyone who mines,
+and nothing here is for sale.
+
+WHAT WE CANNOT PROMISE, STATED PLAINLY
+Anyone may find this software, run it, and mine. Whether a third party then values or trades those
+units is outside any software's control, and outside ours. We do not solicit it, we do not
+facilitate it, and nothing here invites it -- but we will not pretend to a guarantee we cannot give.
+
+That distinction is deliberate. "We assign no value and make no sale" stays true whatever a stranger
+does. "There is no market" would be a claim about the world, and the world is not ours to bind.
+
+This is why a live node with a plaintext wallet and no script limits is safe to run at all: not
+because no one could ever value these units, but because nothing here has been given value BY US
+to steal.
 
 
 ATTRIBUTION AND IDENTITY -- SAID PLAINLY

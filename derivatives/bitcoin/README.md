@@ -84,7 +84,9 @@ things this project would not do. **If a market in these coins ever appears, it 
 not make it, and no price it produces is acknowledged, quoted or relied on anywhere in this project.**
 The coins held here stay unspent and unoffered regardless of what anyone else does.
 
-No premine of value, no token, no sale, no market, no promises. The 50-coin genesis output has no
+No premine of value, no token, no sale by us, no price set, no promises. **We solicit no market;
+whether a third party values or trades these units is outside any software's control, and we do
+not pretend otherwise.** The 50-coin genesis output has no
 value assigned. The consensus rules carry no `MoneyRange` and no script limits, and no 1 MB block cap — that
 arrives in July 2010; here the only ceiling is `MAX_SIZE`, 32 MiB, which `CheckBlock` does enforce —
 safe here only because there is nothing to steal. Run the client in a VM.

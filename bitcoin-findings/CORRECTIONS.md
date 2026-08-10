@@ -76,3 +76,33 @@ the part that can be published. **A hash is not a reproduction** — you can ver
 these digests without us shipping a wallet.
 
 **NOT money.** The chain has no value assigned, no market, no sale.
+
+---
+
+## ★ A wording correction that applies to EVERY sealed findings set
+
+**The sealed sets say "no market". That is the wrong KIND of claim, and it cannot be edited out of
+them — which is exactly why this file exists.**
+
+```
+2026-08-05-block1/FINDINGS.md   "no premine, no sale, no market"
+2026-08-09-block4/FINDINGS.md   "50.00 of nothing, no market, no sale"
+```
+
+**"No sale" and "no premine" are claims about what THIS PROJECT does. They stay true whatever anyone
+else does. "No market" is a claim about the WORLD** — and the world is not ours to bind. Anyone may
+find this software, run it, and mine; whether a third party then values or trades those units is
+outside any software's control, and outside ours.
+
+> **The distinction is not pedantry. A published statement that a stranger can falsify by acting
+> undermines every other statement standing next to it** — and this project's whole method is that
+> its statements survive checking.
+
+**Corrected going forward:** `PROVENANCE.txt`, `derivatives/bitcoin/README.md` and
+`satoshi-onchain/docs/PRESERVATION.md` now say **"no sale by us, no price set, we solicit no
+market"**, and state plainly that third-party behaviour is not something we can promise about.
+
+**The sealed sets stay exactly as sealed.** Their seals still verify, the wording stays visible, and
+this correction is where a reader learns it was reconsidered. **Editing a sealed record to make it
+read better is the one thing that would make the seal worthless.**
+
