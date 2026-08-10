@@ -81,19 +81,22 @@ that block — which is what a forgery cannot reproduce.
   about any claim the bytes make. **Not money, not financial advice.**
 - **The public key here is dated by its own OpenTimestamps proof.** Compare it against a second
   source before relying on it, exactly as with the OpenPGP fingerprint — a key and its own claimed
-  provenance are not independent. **This page and the key are published byte-identically at three
-  independently hosted domains, so the comparison costs one command:**
+  provenance are not independent. **The key is published byte-identically on the two sites that
+  actually publish signed releases, and on the releases themselves:**
 
   ```bash
-  for h in satoshioncha.in bitcoin-lab.org bitcoinwhitepaper.online; do
+  for h in satoshioncha.in bitcoin-lab.org; do
     curl -sL "https://$h/parthod0x-pq-countersign.pem" | sha256sum
   done
-  # all three -> 0624d2c7149d4af09e25b558e76f5e6b1a8855d60723c45333829c46488ceda4
+  # both -> 0624d2c7149d4af09e25b558e76f5e6b1a8855d60723c45333829c46488ceda4
   ```
 
-  **Three hosts agreeing is not proof** — one publisher controls all three. It rules out a single
-  substituted file, not a substituted publisher. **The OpenTimestamps proof is what the compromise of
-  a host cannot backdate**, and it is the reason the key was stamped at all.
+  **Two hosts agreeing is weak evidence and should be treated as such** — one publisher controls
+  both. It rules out a single substituted file, not a substituted publisher. **The OpenTimestamps
+  proof on the key is what a compromised host cannot backdate**, and it is the reason the key was
+  stamped at all. *(For the OpenPGP key there is a genuinely independent route — the public
+  keyservers. There is no equivalent for a raw SLH-DSA key, which is precisely why its timestamp
+  carries the weight here.)*
 - **Old releases can still be covered.** A counter-signature made today and anchored today protects a
   release published earlier, because the anchor proves it predates any break. **The deadline is
   "before a break", not "at release."**
