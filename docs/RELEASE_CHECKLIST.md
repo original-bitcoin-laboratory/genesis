@@ -161,7 +161,19 @@ filename is identical either way, so nothing about the archive looks wrong.
 ```bash
 # check the proof INSIDE the archive, not the one on disk
 tar -xzOf "$BACKUP/<bundle>.tar.gz" '*/SHA256SUMS.ots' | wc -c     # ~1,900 anchored / ~800 pending
+
+# and sweep the WHOLE backup, not just this release -- a stale proof announces nothing
+find "$BACKUP" -name '*.ots' -size -1k -printf '  STALE %s B  %p
+'   # any output is a defect
 ```
+
+**Sweep the whole backup, not only the release you are working on.** On 10 Aug 2026 four of eight
+proofs in the cold backup were pending -- for releases cut days earlier -- and it was found only
+because an unrelated mistake caused someone to look. The published releases were fine; the backup was
+not, and the backup is the copy that matters if GitHub does not survive.
+
+**Refresh stale proofs from the PUBLISHED release, not the working tree.** The published copy is the
+authoritative one, and re-downloading also catches assets the backup never had.
 
 **This happened on 10 Aug 2026** with the post-quantum bundle: sealed at 05:52, upgraded at 06:49, so
 the cold copy held 735-byte promises until it was rebuilt. **The routine already warned about this for
