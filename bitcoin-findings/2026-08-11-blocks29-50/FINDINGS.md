@@ -130,6 +130,31 @@ real time.
 > **Worth keeping as a finding rather than a footnote.** A single peer feeding a nonsense clock is
 > exactly the case that guard exists for, and here it is, in a running 2009 client, doing its job.
 
+## Peer discovery: measured, and it is not what the source implies
+
+**The IRC bootstrap has never succeeded on this chain, and the mechanism is not the reason.**
+
+```
+against chat.freenode.net   blocks 4, 5-28, 29-50    0 joins, 13 connect failures
+against a LOCAL ircd        R3 two-node, R4 relay,   21 joins,  0 failures
+                            R4 relayed spend
+```
+
+`src/irc.cpp` hardcodes `chat.freenode.net`. It still answers TCP on 6667 — 0.27s from the host —
+but the 2009 client waits for greeting strings today's freenode does not send, and freenode lost its
+staff and community in 2021. **`docs/R3_HISTORICAL_NODE.md` already prescribes the working path:**
+run a local IRC daemon and point the guests at it, which is what the two-node runs did.
+
+**In practice this chain finds peers through a seeded `addr.dat` (32 KB here) plus the project's own
+seed node.** `docs/ANNOUNCE.md` anticipated exactly this — *"If IRC is unavailable — blocked, or
+Freenode simply gone — put a file called `addr.txt` next to…"*.
+
+> **Recorded because someone reproducing this would otherwise rediscover it the hard way**, and
+> because the distinction matters: **a dead rendezvous point is not a broken protocol.** Everything
+> else in the chain's identity — genesis, magic, port — works exactly as written. The channel is the
+> only one of the nine substitutions that depends on a third party still existing, and it is the
+> only one that has failed.
+
 ## Limits, stated plainly
 
 - ~~**No cross-implementation validation for 29–50 yet.**~~ **★ CLOSED the same day — see below.**
