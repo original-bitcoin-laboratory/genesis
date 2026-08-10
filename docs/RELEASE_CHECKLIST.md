@@ -8,6 +8,26 @@ Steps marked **manual** have nothing behind them but this page.
 
 ---
 
+## 0. Timestamps — UTC, everywhere, including git
+
+**This project reports one clock.** Block times, OpenTimestamps attestations, findings headers and
+release notes are all UTC. **Commit metadata should match**, and by default it does not — git stamps
+commits in the machine's local zone.
+
+```bash
+# make the shell's git operations UTC for this session
+export TZ=UTC
+git commit -m "..."          # author and committer dates now +0000
+```
+
+**Why it matters and why it is not urgent.** A single-clock record is easier to check: every
+timestamp in every artifact compares directly against the chain, with no conversion. It is a
+research-hygiene convention.
+
+**It does not rewrite anything.** The existing history carries a local offset and will continue to;
+that is ordinary for git and true of most projects. **The point is consistency going forward, not
+retrofit** — and rewriting history to change it would break the signed tags for no gain.
+
 ## 1. Build
 
 ```bash

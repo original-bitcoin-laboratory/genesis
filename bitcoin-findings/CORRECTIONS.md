@@ -106,3 +106,31 @@ market"**, and state plainly that third-party behaviour is not something we can 
 this correction is where a reader learns it was reconsidered. **Editing a sealed record to make it
 read better is the one thing that would make the seal worthless.**
 
+---
+
+## ★ Timestamps: this project standardises on UTC, and two sealed sets do not
+
+**Everything this laboratory measures is timestamped in UTC** — block times, OpenTimestamps
+attestations, the genesis constants, every findings header. **Two sealed sets also carry a local
+timezone in parentheses, and they should not have.**
+
+```
+2026-08-06-block2/FINDINGS.md   "2026-08-06 00:23:51 UTC (05:53:51 IST)"
+                                "11 captures, 06:04-06:16 IST"
+2026-08-06-block3/FINDINGS.md   "2026-08-06 01:40:22 UTC (07:10 IST)"
+```
+
+**The UTC figure in each is correct and is the one every other record cross-checks against.** The
+local rendering adds nothing a reader can use: it cannot be verified against the chain, it does not
+appear in any other artifact, and a second timezone in a research record is noise rather than
+information.
+
+> **Corrected going forward: UTC only, everywhere, with no parenthetical local time.**
+>
+> **The sealed sets stay exactly as sealed** — their seals verify, the text stays visible, and this
+> note is where a reader learns it was reconsidered. **Editing a sealed record to tidy it is the one
+> thing that would make the seal worthless.**
+
+**This is a research-hygiene convention, not a retrofit.** A laboratory that reports one clock
+reports one clock; the moment it reports two, a reader has to work out which one anything is in.
+
