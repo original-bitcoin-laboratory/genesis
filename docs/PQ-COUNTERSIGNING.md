@@ -1,8 +1,19 @@
 # Post-quantum counter-signatures
 
-**Since v1.2.0, each release's `SHA256SUMS` carries a second signature under a post-quantum
-algorithm, in addition to the OpenPGP one.** This page explains what it is for and how to check it.
-**It changes nothing about the existing GPG signatures — it sits beside them.**
+**Every published release's `SHA256SUMS` carries a second signature under a post-quantum algorithm,
+in addition to the OpenPGP one.** This page explains what it is for and how to check it. **It changes
+nothing about the existing GPG signatures — it sits beside them.**
+
+> **Applied retroactively on 10 August 2026, and that works for a reason worth stating.** A
+> counter-signature made today protects a release published earlier, because what matters is not when
+> it was *signed* but that its OpenTimestamps anchor **predates any cryptographic break**. All twelve
+> published manifests were counter-signed in one batch and anchored in **Bitcoin block 961879**.
+>
+> Each was fetched **from its published release** before signing, so the signature covers the bytes
+> the world can actually download rather than a local copy.
+>
+> *(`satoshi-onchain` v1.0.0 has no published assets, so there is no manifest to cover — a property
+> of that release, not a gap here.)*
 
 ## Why
 
