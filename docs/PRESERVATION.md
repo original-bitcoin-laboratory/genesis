@@ -70,8 +70,22 @@ independently arrive at.
 
 ## Pinned release CIDs
 
+> **Every CID below was verified by FETCHING it from a public gateway and hashing the bytes**, not by
+> reading the workflow log. The log prints CIDs without saying which file each belongs to, so
+> recording them from it would be guesswork — and a mislabelled CID is worse than none, because it
+> looks checkable and fails only for whoever tries.
+>
+> **⚠️ The pin workflow covers four assets and does NOT pin `SHA256SUMS.slhdsa`** — the post-quantum
+> counter-signature — or any `.ots` proof. Those live on the GitHub release and in the cold backup.
+> **Worth extending when the workflow is next touched; noted here rather than left to be discovered.**
+
+
 | release | file | CID |
 |---|---|---|
+| Bitcoin-v0.1.5 | `bitcoin-0.1.5.tar.gz` | `Qmf3gedtsL5oaWXaWLwWqjNNjxC2qwDNGguWT6y1CwoPAu` |
+|  | `bitcoin-0.1.5.tar.gz.asc` | `QmeoomwgPrJ1zdrY81wfZuxFUfuvcXMRb1afQvh1tgXT2D` |
+|  | `SHA256SUMS` | `QmdguWZuoNEkmxSN5CLZhXJZWg7FsxFxf5u9Qy8rNTSYUW` |
+|  | `SHA256SUMS.asc` | `QmbNRBoVwYTU4H3jkXdWtrGGecq525ai5hfi1DbzurhEpc` |
 | Bitcoin-v0.1.4 | `bitcoin-0.1.4.tar.gz` | `QmVRRpDq68wMiKKBySZcCtE6Enus11YYDut52g9geXFY7Q` |
 |  | `bitcoin-0.1.4.tar.gz.asc` | `QmZ3pHMbpbs3gUHWqZevm3YQJSWLXkAC41MyFRqAaTsDFr` |
 |  | `SHA256SUMS` | `QmQN1W5tBW9Rxd6bjrRpJA8qhrY3SFMWTaVEyMHZ58U9Rz` |
