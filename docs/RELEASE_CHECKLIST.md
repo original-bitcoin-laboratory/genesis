@@ -48,11 +48,31 @@ Key `B0145F74B78CF1DA`, gpg4win, passphrase cached about two hours.
 `.asc` immediately, and a stale signature does not announce itself — it simply fails for whoever
 checks, long after anyone is watching.
 
+### 3b. Counter-sign with the post-quantum key — **manual**
+
+```bash
+openssl pkeyutl -sign -rawin -in SHA256SUMS \
+  -inkey <OBL-BACKUP>/01-keys-SECRET/pq-counter-signing/pq-countersign-sk.pem \
+  -out SHA256SUMS.slhdsa                                    # 7,856 B
+
+openssl pkeyutl -verify -pubin -rawin -in SHA256SUMS \
+  -inkey docs/parthod0x-pq-countersign.pem -sigfile SHA256SUMS.slhdsa
+```
+
+`SLH-DSA-SHA2-128s`, needs OpenSSL 3.5+ and nothing installed. **Ed25519 does not survive a quantum
+break; this does, because its security rests only on hashes.** Sign the **manifest only** — it already
+commits to every asset by hash, so one 7,856-byte signature covers the release. See
+[`PQ-COUNTERSIGNING.md`](PQ-COUNTERSIGNING.md).
+
+**`-rawin` is not optional.** SLH-DSA signs the message itself, not a pre-hash; without it OpenSSL
+takes a different path and the signature will not verify the way the published instructions say it
+should.
+
 ## 4. Publish
 
 ```bash
 gh release create Bitcoin-v0.1.N \
-  bitcoin-0.1.N.tar.gz bitcoin-0.1.N.tar.gz.asc SHA256SUMS SHA256SUMS.asc \
+  bitcoin-0.1.N.tar.gz bitcoin-0.1.N.tar.gz.asc SHA256SUMS SHA256SUMS.asc SHA256SUMS.slhdsa \
   --repo original-bitcoin-laboratory/genesis --title "Bitcoin v0.1.N" \
   --notes-file bitcoin-0.1.N/RELEASE.txt
 ```
@@ -64,9 +84,15 @@ pins them but nothing writes them down.
 
 ```bash
 # WSL, not Windows
-for f in bitcoin-0.1.N.tar.gz bitcoin-0.1.N.tar.gz.asc SHA256SUMS SHA256SUMS.asc; do ots stamp "$f"; done
+for f in bitcoin-0.1.N.tar.gz bitcoin-0.1.N.tar.gz.asc SHA256SUMS SHA256SUMS.asc SHA256SUMS.slhdsa
+do ots stamp "$f"; done
 gh release upload Bitcoin-v0.1.N *.ots --repo original-bitcoin-laboratory/genesis
 ```
+
+**Stamping `SHA256SUMS.slhdsa` is the step that gives the counter-signature its value**, and it is the
+one that looks skippable. A counter-signature proves *who*; only its anchor proves it was made
+**before a break**, which is the whole claim. An unanchored counter-signature is indistinguishable
+from one a forger made afterwards.
 
 Four things that are easy to get wrong:
 
