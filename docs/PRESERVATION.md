@@ -31,9 +31,15 @@ against any block explorer without trusting this file:
 
 ```
 Bitcoin-v0.1.4   all four assets      block 961652   2026-08-09 00:16:42 UTC
-Bitcoin-v0.1.5   all FIVE assets      PENDING -- stamped 2026-08-10, ots upgrade due
+Bitcoin-v0.1.5   all FIVE assets      block 961885   2026-08-10 14:28:15 UTC
                  (five, not four: SHA256SUMS.slhdsa, the post-quantum counter-signature,
                   is stamped alongside the OpenPGP ones from this release onward)
+                 merkle root 7c8fd92d03b2bb5c247182268bd5bab9351ac3c29844775d20995141efd5a234
+                 -- read off the chain and compared, not taken from the ots output
+
+                 Also anchored the same day, retroactively: the post-quantum
+                 counter-signature over EVERY earlier published manifest, in block 961879.
+                 Eight of those releases had no timestamp of any kind before this.
                  merkle root  9f989be977da16156acd44eac5fc92a52b235b2fb7addddde766f0b35b264a86
                  block hash   00000000000000000000b286970ddbb501ced552e95c7ceda6ab92cf0f44fdbc
 
