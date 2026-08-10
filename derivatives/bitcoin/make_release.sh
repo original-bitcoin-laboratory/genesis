@@ -25,6 +25,12 @@ cp -r "$SRC"                  "$OUT/$NAME/src"
 cp    "$ORIG/license.txt"     "$OUT/$NAME/license.txt"      # MIT, unmodified
 cp    "$ORIG/readme.txt"      "$OUT/$NAME/readme.txt"       # unmodified
 cp    "$EXE"                  "$OUT/$NAME/bitcoin.exe"
+# 00- prefix so it sorts first in any listing or file browser. readme.txt is Satoshi's own file and
+# opens with an unqualified "Copyright (c) 2009 Satoshi Nakamoto" -- correct, required by MIT, and
+# the whole point of a byte-identical reconstruction. But it is also the first thing a stranger
+# opens, so something must sit above it saying which bytes are whose. RELEASE.txt says so too, in
+# one line, 200 lines down; that is not where someone unpacking a tarball in 2050 will look.
+cp    "$HERE/PROVENANCE.txt"  "$OUT/$NAME/00-PROVENANCE.txt"
 
 if [ -n "${RELEASE_NOTES:-}" ] && [ -f "$RELEASE_NOTES" ]; then
   cp "$RELEASE_NOTES" "$OUT/$NAME/RELEASE.txt"

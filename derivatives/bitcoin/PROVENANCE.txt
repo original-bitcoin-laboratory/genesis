@@ -1,0 +1,109 @@
+READ THIS FIRST -- WHAT YOU ARE HOLDING, AND WHAT YOU ARE NOT
+=============================================================
+
+This package was assembled in 2026. It is NOT Satoshi Nakamoto's 2009 release, and it is not money.
+
+It exists because the earliest Bitcoin client is usually discussed and rarely executed. To execute it
+honestly you must run the real code -- so this package ships Satoshi's 2009 source almost entirely
+unchanged, and starts a SEPARATE chain rather than touching the one he started.
+
+The file `readme.txt` in this package reads:
+
+    BitCoin v0.01 ALPHA
+    Copyright (c) 2009 Satoshi Nakamoto
+
+That is HIS file, preserved byte-for-byte. It is not a claim by us. The MIT licence he released the
+code under requires that his notice travel with the code, and preserving it exactly is both the legal
+obligation and the entire point of a reconstruction: bytes that have been "tidied up" prove nothing.
+
+**So: every unqualified 2009 attribution you find inside this package is Satoshi's own text, kept
+intact. Everything written by this project is dated 2026 and says so.**
+
+
+WHICH BYTES ARE WHOSE
+---------------------
+
+  SATOSHI'S, VERBATIM (2009, MIT)
+    readme.txt, license.txt
+    23 of the 26 source files in src/, byte-identical to the published archive
+      sha256 8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56
+
+  THIRD PARTY, VERBATIM (public domain)
+    src/sha.cpp, src/sha.h -- Crypto++ by Wei Dai, from Steve Reid's public-domain sha1.c.
+    These carry no Satoshi notice in the 2009 release either. That absence is preserved, not created.
+
+  THIS PROJECT'S (2026, MIT, (c) Parth Mauria Saxena, published as "parthod0x")
+    this file, RELEASE.txt
+    SEVEN CONSTANTS in THREE files, and nothing else:
+
+      src/main.cpp   genesis hash, coinbase text, coinbase output pubkey, nTime, nNonce, merkle root
+      src/net.h      DEFAULT_PORT 8333 -> 18026
+                     pchMessageStart f9beb4d9 -> f00ba726
+      src/irc.cpp    bootstrap channel #bitcoin -> #bitcoin26
+
+    The exact diff is published as bitcoin-v0.1.0.patch and is 26 changed lines. make_chain.py
+    refuses to build unless every edit matches exactly once, so the tree cannot drift silently.
+
+
+WHY THOSE SEVEN AND NO OTHERS
+-----------------------------
+
+Every one is CHAIN SEPARATION. Not one changes a consensus rule.
+
+The network magic and port make this protocol-level incompatible with Bitcoin mainnet: a node built
+here cannot connect to a mainnet node, and cannot relay a block or a transaction to one, even by
+accident. The IRC channel keeps peer discovery separate. The genesis constants start a different
+chain from block 0.
+
+Subsidy, halving interval, difficulty retarget, script, serialization, the wire format and the wallet
+are UNTOUCHED and byte-identical to 2009. That is deliberate: the value of running this client comes
+entirely from it being the same program.
+
+
+WHICH CHAIN IS THIS -- THE ONLY RELIABLE TEST
+---------------------------------------------
+
+**A version number will not tell you.** Both eras use v0.1.x, because this laboratory reconstructs
+that era. Read the coinbase of block 0:
+
+    SATOSHI'S CHAIN (2009)
+      genesis   000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+      coinbase  The Times 03/Jan/2009 Chancellor on brink of second bailout for banks
+
+    THIS CHAIN (2026)
+      genesis   00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
+      coinbase  The Times 03/Aug/2026 Toll of schooling 'straitjacket'
+
+Different genesis, different key, different network. They are not the same chain and never touch.
+
+
+NOT MONEY
+---------
+
+No premine of value, no token, no sale, no offer, no market, no price. The coins on this chain are
+research artifacts and evidence of authorship. Nothing is owed to anyone who mines, and nothing is
+for sale. This is a stated design commitment, not an oversight, and it is the reason a live node with
+a plaintext wallet and no script limits is safe to run at all: there is nothing to steal.
+
+
+ATTRIBUTION AND IDENTITY -- SAID PLAINLY
+----------------------------------------
+
+This project makes NO claim about who Satoshi Nakamoto was, and claims NO authorship of his code,
+his whitepaper, or his name. Where it addresses identity it records what the evidence can and cannot
+establish -- which, for authorship of a document, is that it cannot.
+
+The chain started here has its own author, who holds its genesis key and can sign for it on demand.
+That is a separate and provable claim about a separate and valueless chain. It is not a claim about
+2009.
+
+
+VERIFY ANY OF THE ABOVE
+-----------------------
+
+  python make_chain.py --check    # src/ is the 2009 tree plus that patch, and nothing else
+  python net.py                   # re-derives this chain's genesis and checks its proof-of-work
+  sha256sum bitcoin.exe           # compare against RELEASE.txt; the build is reproducible
+
+If something here is wrong, it is a defect and will be corrected in the open rather than argued
+about. Corrections are published, dated, and never made silently.
