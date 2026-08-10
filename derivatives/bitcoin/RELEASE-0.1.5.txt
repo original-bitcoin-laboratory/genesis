@@ -1,0 +1,139 @@
+Bitcoin v0.1.5
+==============
+
+A documentation release. No source file changed, no rule changed, and the binary is byte-identical
+to the one v0.1.3 and v0.1.4 shipped.
+
+  bitcoin.exe  c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d
+
+The client, the chain and the protocol are unchanged from v0.1.0: the same patched source tree, the
+same genesis, the same serialization VERSION 101 on the wire. A node built from any of the six
+releases speaks to a node built from any other.
+
+
+What changed
+------------
+
+ONE FILE WAS ADDED: 00-PROVENANCE.txt.
+
+Nothing else. Not a byte of src/, not a byte of bitcoin.exe.
+
+
+Why it was added
+----------------
+
+This package ships readme.txt exactly as Satoshi Nakamoto wrote it in 2009. It opens:
+
+    BitCoin v0.01 ALPHA
+    Copyright (c) 2009 Satoshi Nakamoto
+
+That is correct, it is required by the MIT licence the code was released under, and it is the entire
+point of a reconstruction -- bytes that have been tidied up prove nothing. It stays exactly as it is.
+
+But it is also the first file a stranger opens, and until now nothing sat above it. RELEASE.txt said
+so in a single line two hundred lines down, which is not where someone unpacking this archive in
+2050 will look. A 2026 package whose first readable file carries an unqualified 2009 attribution is
+a question waiting to be asked, and the answer should be in the package rather than in an argument.
+
+00-PROVENANCE.txt sorts first in any listing and states:
+
+  * which bytes are Satoshi's (readme.txt, license.txt, 23 of 26 source files, verbatim)
+  * which are third-party (src/sha.cpp and sha.h -- Crypto++ by Wei Dai, public domain, and they
+    carry no Satoshi notice in the 2009 release either; that absence is preserved, not created)
+  * which are this project's -- NINE SUBSTITUTIONS ACROSS TEN LINES in three files, enumerated
+    one by one, every one of them chain separation and not one of them a consensus rule
+  * how to tell which chain you are looking at, since a version number cannot tell you: both eras
+    use v0.1.x, so the coinbase of block 0 is the only reliable test
+  * that this is not money, and that no claim is made about who Satoshi Nakamoto was
+
+
+A correction carried in this release
+------------------------------------
+
+An earlier draft of that file said "seven constants". It is NINE substitutions across ten lines --
+nine values, ten lines, because the IRC channel name appears twice, in JOIN and in WHO. The error
+was found by running make_chain.py --check and reading its count rather than trusting the prose
+beside it, and the corrected file enumerates all nine so the number can be checked rather than
+believed.
+
+
+What was NOT done, deliberately
+-------------------------------
+
+Published releases were not retro-fitted. v0.1.0 through v0.1.4 are signed, hashed and timestamped
+exactly as they were, and they stay that way. Rewriting a signed and anchored artifact to improve
+its documentation would destroy the property that makes the artifact worth anything, which is that
+nobody -- including its author -- can change it after the fact.
+
+The correction travels forward. The record is appended to, never rewritten.
+
+
+Post-quantum
+------------
+
+Since 10 August 2026 this project's release manifests carry a second signature under
+SLH-DSA-SHA2-128s (NIST FIPS 205), alongside the OpenPGP one. The OpenPGP key is Ed25519 and does
+not survive a quantum break; SHA-256 manifests and OpenTimestamps anchors do.
+
+All twelve previously published manifests were counter-signed retroactively on the same day, because
+what matters is not when a counter-signature was made but that its timestamp predates a break.
+
+  verification instructions   docs/PQ-COUNTERSIGNING.md
+  public key                  docs/parthod0x-pq-countersign.pem
+                              sha256 0624d2c7149d4af09e25b558e76f5e6b1a8855d60723c45333829c46488ceda4
+
+
+Genesis
+-------
+  hash      00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
+  coinbase  The Times 03/Aug/2026 Toll of schooling 'straitjacket'
+  output    50.00000000 -> P2PK 04c0414c...  (no value assigned)
+  nTime     1785781375 = 2026-08-03 18:22:55 UTC
+  nBits     0x1d00ffff
+  nNonce    33394338
+
+Network
+-------
+  magic     f00ba726          port 18026
+  seed      bitcoin.bitcoin-lab.org:18026
+
+The current tip is on the status page, https://bitcoin-lab.org/status.html, not in this file. A
+height written into a release note is wrong the next time a block is found.
+
+
+Verify
+------
+  python make_chain.py --check     # src/ is the 2009 tree plus that patch, and nothing else
+  python net.py                    # re-derives the genesis hash; checks it meets difficulty-1
+  sha256sum bitcoin.exe            # must equal c3f15fc5... -- the same bytes v0.1.3 shipped
+
+To rebuild the binary yourself
+------------------------------
+  git clone https://github.com/original-bitcoin-laboratory/genesis && cd genesis
+  bash scripts/fetch-artifacts.sh          # bitcoin-0.1.0.tgz, from the Nakamoto Institute
+  tar xzf artifacts/jan09/bitcoin-0.1.0.tgz -C extracted
+  python3 derivatives/bitcoin/make_chain.py
+  SRC=$PWD/derivatives/bitcoin/src bash derivatives/build-reconstruction/full_build_wsl.sh
+  sha256sum derivatives/bitcoin/build/bitcoin-0.1.0-reconstructed.exe
+
+Reproducible with gcc 13.2.0 (win32 thread model), binutils 2.41.90, mingw-w64 11.0.1, on Ubuntu
+24.04. A different toolchain emits different code; that is what reproducible building means
+everywhere.
+
+
+What running this client discloses
+----------------------------------
+Read this before you run it anywhere but an isolated VM.
+
+The 2009 client bootstraps over IRC, and this one still does, unchanged but for the channel name.
+On startup it resolves chat.freenode.net, connects on 6667, and joins #bitcoin26 with its NICK set
+to a base58 encoding of its own routable address -- so your public IP is published, in a trivially
+decodable form, into a public channel on infrastructure nobody here operates.
+
+That is what the client does, and it is left alone for the same reason everything else is: changing
+it would make this a different program. But 2009's Freenode is not 2026's, and you should decide
+knowingly. Everything else is equally period-accurate: no encryption, no authentication, and a
+wallet.dat written in the clear.
+
+NOT MONEY. No premine of value, no token, no sale, no market. Experimental research artifact.
+Run the client only in an isolated VM: it is a live node.

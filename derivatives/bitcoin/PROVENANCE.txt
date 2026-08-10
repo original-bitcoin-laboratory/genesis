@@ -34,19 +34,25 @@ WHICH BYTES ARE WHOSE
 
   THIS PROJECT'S (2026, MIT, (c) Parth Mauria Saxena, published as "parthod0x")
     this file, RELEASE.txt
-    SEVEN CONSTANTS in THREE files, and nothing else:
+    NINE SUBSTITUTIONS ACROSS TEN LINES in THREE files, and nothing else:
 
-      src/main.cpp   genesis hash, coinbase text, coinbase output pubkey, nTime, nNonce, merkle root
-      src/net.h      DEFAULT_PORT 8333 -> 18026
-                     pchMessageStart f9beb4d9 -> f00ba726
-      src/irc.cpp    bootstrap channel #bitcoin -> #bitcoin26
+      src/main.cpp   1  hashGenesisBlock                 -> this chain's genesis
+                     2  pszTimestamp (the coinbase text) -> The Times 03/Aug/2026 ...
+                     3  vout[0].scriptPubKey             -> this chain's own pubkey
+                     4  block.nTime                      -> 1785781375
+                     5  block.nNonce                     -> 33394338
+                     6  the hashMerkleRoot assert        -> this chain's merkle root
+      src/net.h      7  DEFAULT_PORT      8333       -> 18026
+                     8  pchMessageStart   f9beb4d9   -> f00ba726
+      src/irc.cpp    9  bootstrap channel #bitcoin   -> #bitcoin26   (two lines: JOIN and WHO)
 
-    The exact diff is published as bitcoin-v0.1.0.patch and is 26 changed lines. make_chain.py
-    refuses to build unless every edit matches exactly once, so the tree cannot drift silently.
+    Nine values, ten lines, because the channel name appears twice. The exact diff is published as
+    bitcoin-v0.1.0.patch. make_chain.py refuses to build unless every substitution is located
+    exactly once, so the tree cannot drift silently -- run it with --check to confirm.
 
 
-WHY THOSE SEVEN AND NO OTHERS
------------------------------
+WHY THOSE NINE AND NO OTHERS
+----------------------------
 
 Every one is CHAIN SEPARATION. Not one changes a consensus rule.
 
