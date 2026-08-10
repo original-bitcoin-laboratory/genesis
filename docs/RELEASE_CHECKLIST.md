@@ -184,16 +184,29 @@ filename is identical either way, so nothing about the archive looks wrong.
 ```bash
 # check the proof INSIDE the archive, not the one on disk
 tar -xzOf "$BACKUP/<bundle>.tar.gz" '*/SHA256SUMS.ots' | wc -c     # ~1,900 anchored / ~800 pending
-
-# and sweep the WHOLE backup, not just this release -- a stale proof announces nothing
-find "$BACKUP" -name '*.ots' -size -1k -printf '  STALE %s B  %p
-'   # any output is a defect
 ```
 
-**Sweep the whole backup, not only the release you are working on.** On 10 Aug 2026 four of eight
-proofs in the cold backup were pending -- for releases cut days earlier -- and it was found only
-because an unrelated mistake caused someone to look. The published releases were fine; the backup was
-not, and the backup is the copy that matters if GitHub does not survive.
+### ★ This is no longer your job to remember
+
+**Run `python _verify_self_sufficient.py`.** Section 4 walks every `.ots` in the workspace, and
+**FAILS** on any proof inside `OBL-BACKUP/` or `archives/` that carries no
+`BitcoinBlockHeaderAttestation`. It also reports stray `.ots.bak` files, which are the other half of
+the same hazard.
+
+It classifies by **reading the attestation marker**, not by file size. The old sweep here used
+`-size -1k`; that happened to catch every real case, but a pending proof is not required to be
+small and an anchored one is not required to be large. **Size was a proxy that worked until it
+didn't.**
+
+**Why this moved out of the checklist and into the verifier:** on 10 Aug 2026 four of eight proofs
+in the cold backup were pending, and it was found only because an unrelated mistake caused someone
+to look. This warning was then written, in detail, with a working command. **On 11 Aug 2026 it
+happened again** — twelve pending proofs plus one release missing entirely — and the warning did not
+stop it, because a checklist step only fires when a human remembers to read the checklist.
+
+> **A warning is not a control. A check that runs whether or not anyone remembers it is.**
+> The published releases were fine both times. The backup was not, and the backup is the copy that
+> matters if GitHub does not survive.
 
 **Refresh stale proofs from the PUBLISHED release, not the working tree.** The published copy is the
 authoritative one, and re-downloading also catches assets the backup never had.
