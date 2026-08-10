@@ -87,6 +87,26 @@ python scripts/reproduce.py           # 25/25
 cd derivatives/validator-rs && cargo test   # 30 passed
 ```
 
+
+## The post-quantum counter-signature
+
+**Since v1.2.0 the `SHA256SUMS` manifest carries a second signature**, under `SLH-DSA-SHA2-128s`
+(NIST FIPS 205). The key above is **Ed25519 and does not survive a quantum break**; this one rests
+only on hash functions, and so does the timestamp that dates it.
+
+```bash
+openssl pkeyutl -verify -pubin -rawin -in SHA256SUMS   -inkey parthod0x-pq-countersign.pem -sigfile SHA256SUMS.slhdsa
+ots verify SHA256SUMS.slhdsa.ots        # the step that makes it mean anything
+```
+
+Public key [`parthod0x-pq-countersign.pem`](parthod0x-pq-countersign.pem), 126 bytes, sha256
+`0624d2c7…8ceda4`. Needs OpenSSL 3.5+ and nothing installed. **Full rationale and scope:**
+[`PQ-COUNTERSIGNING.md`](PQ-COUNTERSIGNING.md).
+
+**It adds *who*, not *when*.** The OpenTimestamps anchor was already the durable half — a post-break
+forger can mint a signature but cannot mint an earlier Bitcoin block. **So verify the `.ots`; a
+counter-signature nobody dated is one a forger could also have made.**
+
 ## The trust model, stated plainly
 
 - A valid signature proves the build came from **you** and is **unmodified**. That's all.
