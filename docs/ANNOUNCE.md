@@ -9,7 +9,7 @@ is nothing here to buy, sell, or hold, and there never will be. Read [why](#the-
 
 - **Bitcoin** — **not a reconstruction.** It runs Satoshi’s released **January 2009 client itself**,
   on a genesis of its own, mined at the original difficulty‑1, its coinbase carrying the front page
-  of the day it was mined. Its own network, its own signed release (`Bitcoin-v0.1.4`), and a chain it is
+  of the day it was mined. Its own network, its own signed release (`Bitcoin-v0.1.5`), and a chain it is
   **still mining** — **blocks 2–4 were mined by the released client itself.** It does **not** interoperate
   with the two below, and it has its own seed rather than sharing the crawler.
 
@@ -114,7 +114,7 @@ ever moves, the name follows it — so prefer the name, and the reproducible rec
 
 ### Or join Bitcoin with the released 2009 client
 
-`bitcoin-0.1.4.tar.gz` ships the actual client, and it will find the network on its own — but read
+`bitcoin-0.1.5.tar.gz` ships the actual client, and it will find the network on its own — but read
 this first, because it behaves like software from 2009, which is the point. (Its `bitcoin.exe` is
 byte-identical to v0.1.3’s, `c3f15fc5…`: nothing in the client changed, so nothing in the binary did.)
 

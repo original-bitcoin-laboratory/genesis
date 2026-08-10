@@ -232,7 +232,58 @@ height 4  0000000097b1298a990e8f872e4acda48ace5274e99d2a5f9a483f183c1bd20c   8 A
   </section>
 
   <section class="chain">
-    <h2>Bitcoin v0.1.4</h2>
+    <h2>Bitcoin v0.1.5</h2>
+    <dl>
+      <dt>Date</dt>
+      <dd>10 August 2026</dd>
+
+      <dt>Download</dt>
+      <dd>
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.5/bitcoin-0.1.5.tar.gz">bitcoin-0.1.5.tar.gz</a><br>
+        <span style="opacity:.75">SHA256: e6cf0b13ea1177733a46fbf263e83458f6fcdd03a9cd1b0a35f9528079c6adc4</span><br>
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.5/bitcoin-0.1.5.tar.gz.asc">.asc</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.5/SHA256SUMS">SHA256SUMS</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.5/SHA256SUMS.asc">SHA256SUMS.asc</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.5/SHA256SUMS.slhdsa">SHA256SUMS.slhdsa</a> &middot;
+        <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/download/Bitcoin-v0.1.5/bitcoin-0.1.5.tar.gz.ots">.ots</a>
+      </dd>
+
+      <dt>bitcoin.exe</dt>
+      <dd><span style="opacity:.75">SHA256: c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d</span>
+        &nbsp;<b>— byte-identical to v0.1.3 and v0.1.4.</b> No source file changed and no rule
+        changed; this is a documentation release.</dd>
+
+      <dt>What changed</dt>
+      <dd><b>One file was added: <code>00-PROVENANCE.txt</code>.</b> Nothing else.
+        <p style="margin:.6em 0 0">This package ships <code>readme.txt</code> exactly as Satoshi
+        Nakamoto wrote it in 2009 — it opens <i>“BitCoin v0.01 ALPHA / Copyright (c) 2009 Satoshi
+        Nakamoto”</i>. That is correct, it is what the MIT licence requires, and it is the point of a
+        reconstruction: bytes that have been tidied up prove nothing. <b>But it is the first file a
+        stranger opens, and nothing sat above it.</b></p>
+        <p style="margin:.6em 0 0"><code>00-PROVENANCE.txt</code> sorts first in any listing and says
+        which bytes are Satoshi’s, which are third-party (<code>sha.cpp</code>/<code>sha.h</code> —
+        Crypto++ by Wei Dai, public domain), and which are this project’s: <b>nine substitutions
+        across ten lines in three files</b>, enumerated one by one, <b>every one of them chain
+        separation and not one a consensus rule</b>. It also gives the only reliable test of which
+        chain you are looking at — <b>the coinbase of block 0</b>, since both eras use v0.1.x and a
+        version number cannot tell you.</p>
+        <p style="margin:.6em 0 0"><b>A correction travels with it.</b> An earlier draft said “seven
+        constants”. It is nine — ten lines, because the IRC channel name appears twice. Found by
+        running <code>make_chain.py --check</code> and reading its count rather than trusting the
+        prose beside it.</p>
+        <p style="margin:.6em 0 0"><b>Published releases were not retro-fitted.</b> v0.1.0 through
+        v0.1.4 stay exactly as signed and anchored. Rewriting a signed artifact to improve its
+        documentation would destroy the one property that makes it worth anything.</p>
+      </dd>
+
+      <dt>Post-quantum</dt>
+      <dd>The manifest carries a second signature under <b>SLH-DSA-SHA2-128s</b> beside the OpenPGP
+        one — <a href="PQ-COUNTERSIGNING.md">how to check it</a>.</dd>
+    </dl>
+  </section>
+
+  <section class="chain">
+    <h2>Bitcoin v0.1.4 <span style="opacity:.6;font-size:.7em">— superseded by v0.1.5</span></h2>
     <dl>
       <dt>Date</dt>
       <dd>9 August 2026</dd>
@@ -499,7 +550,7 @@ SHA256SUMS.asc            QmcVxjbgyQxj6KWP32MoBrYfvPfy4VRnn9ZyAeW5conQH2</pre>
     <span class="lf-h" id="lf-jan">jan09x&nbsp;—</span> ·
     <span class="lf-h" id="lf-nov">nov08x&nbsp;—</span></span></p>
   <p class="lf-links">
-    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.4">Bitcoin-v0.1.4</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.5">Bitcoin-v0.1.5</a> ·
     <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.6.0-experimental">v0.6.0-experimental</a> ·
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md">source · verify</a> ·
     <a href="parthod0x-signing-key.asc" title="ed25519 release-signing key">key B128&nbsp;526A…B78C&nbsp;F1DA</a>

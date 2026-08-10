@@ -31,6 +31,9 @@ against any block explorer without trusting this file:
 
 ```
 Bitcoin-v0.1.4   all four assets      block 961652   2026-08-09 00:16:42 UTC
+Bitcoin-v0.1.5   all FIVE assets      PENDING -- stamped 2026-08-10, ots upgrade due
+                 (five, not four: SHA256SUMS.slhdsa, the post-quantum counter-signature,
+                  is stamped alongside the OpenPGP ones from this release onward)
                  merkle root  9f989be977da16156acd44eac5fc92a52b235b2fb7addddde766f0b35b264a86
                  block hash   00000000000000000000b286970ddbb501ced552e95c7ceda6ab92cf0f44fdbc
 
