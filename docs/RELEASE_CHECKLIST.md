@@ -106,6 +106,9 @@ Four things that are easy to get wrong:
   replacing a proof and **refuses to write if that `.bak` already exists** — but only *after* it has
   fetched the attestation, which is then thrown away. `SHA256SUMS` is a filename every release
   reuses, so the previous release's `SHA256SUMS.ots.bak` sits exactly where this one must write.
+  **Move old `.bak` files aside first** — and sweep for them again *after* every upgrade, including
+  a re-run on proofs that are already complete: **`ots upgrade` writes a `.bak` every time it runs,
+  finished or not**, so simply re-checking a release arms this trap for the next one.
   **Move old `.bak` files aside first.** The console output is no help: it prints calendar chatter
   that reads like success. **Confirm with `ots info`** — an upgraded proof names a
   `BitcoinBlockHeaderAttestation(<height>)` and grows well past its stamped size; a pending one lists
