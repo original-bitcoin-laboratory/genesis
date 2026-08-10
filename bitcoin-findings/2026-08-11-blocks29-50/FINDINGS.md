@@ -132,13 +132,46 @@ real time.
 
 ## Limits, stated plainly
 
-- **No cross-implementation validation for 29–50 yet.** Blocks 5–28 were independently validated by
-  `netnode` on a third machine syncing from the seed — **29/29 identical hashes.** That has **not**
-  been repeated for the new blocks. Until it is, 29–50 rest on this node's own file and this
-  parse. *(Re-running it is the natural next step and needs only the seed plus the Python node.)*
+- ~~**No cross-implementation validation for 29–50 yet.**~~ **★ CLOSED the same day — see below.**
 - **No value.** These coins have never been spent, offered, priced or transferred.
 - **The post-binding gap above.** Not hidden, not minimised.
 - **One node mining.** Nothing here measures hashrate, difficulty or competitive network behaviour.
+
+## ★★ Cross-implementation validation — the limit above, closed
+
+**A second implementation, in a different language, pulled these blocks over the network and
+validated every one of them.**
+
+```
+python -m netnode --chain bitcoin --datadir <EMPTY> --no-listen --connect 168.144.27.117:18026
+```
+
+```
+the 2009 C++ client, in the VM       51 blocks   blk0001.dat  11,428 B
+netnode (Python), on the host        51 blocks   blocks.dat   11,224 B
+                                     synced from the seed, 168.144.27.117:18026
+identical block hashes               51 / 51     mismatches: 0
+heights 29-50 (this run's new work)  22 / 22     validated independently
+height 0    00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
+height 29   000000005d1babdd909102e1abaa14886096ad8bdc3b3b5a86ea9289e099e995
+height 50   000000000fbf84aa2b5f84ecb7c274f0dd0def53606a7f44b705ad1e2c32ca1d
+```
+
+**It minted the genesis itself, before connecting to anything** — deriving
+`00000000ad12f3ec…` from the chain parameters alone and confirming it meets difficulty-1 — and only
+then synced. **netnode never read the VM's block file.** The blocks travelled VM → seed → netnode,
+and were validated on arrival by code that shares no lineage with the 2009 client.
+
+*(The 204-byte size difference is framing, not content: the C++ store writes `magic+length+block`,
+netnode writes `length+block` — exactly 4 bytes × 51 blocks. The same arithmetic held at 29 blocks
+in the previous run.)*
+
+> **Scope, stated precisely rather than blurred.** This is cross-**implementation** and
+> cross-**network**. It is **not** cross-**machine** in the stronger sense the blocks 5–28 run
+> achieved, which used a genuinely separate third machine — netnode here ran on the host that hosts
+> the VM. The blocks still round-tripped through a remote seed and were validated by an independent
+> codebase, which is what the limit was about. **The weaker property is named so nobody has to
+> discover it later.**
 
 ## Files
 

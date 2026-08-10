@@ -1,6 +1,6 @@
 05713adb1b592a24b324211df96a84837d573f04ec8136750b4d826823bf341d *EXECUTED_BINARY_BINDING_bitcoin-node-1_post.json
 fb5cabe0147d9d74c420e4929e078ad61092ac64cdabe8f6885cb835d99abae3 *EXECUTED_BINARY_BINDING_bitcoin-node-1_pre.json
-886c681042f0be5b709ad2bd42e19bf15fdb057255811377189e8240c7b04102 *FINDINGS.md
+beef3c0e493e6d2454518c88fd740f68f6e80014db44f40e7373e96152af7759 *FINDINGS.md
 
 # Held in the cold backup only -- raw bytes never enter this repository.
 # OBL-BACKUP/04-evidence/bitcoin-chain-evidence/2026-08-11-blocks29-50/
@@ -21,6 +21,9 @@ fb5cabe0147d9d74c420e4929e078ad61092ac64cdabe8f6885cb835d99abae3 *EXECUTED_BINAR
 # 0e44b911d45d222a69881482a82aa69b974dcecdb9333b47972da85c5f27fa5a  block28onward/datadir/blkindex.dat
 # c78c59aad2ecab6e4ff3b8595b1e2a82dd57b09cdfbfc99a50eb9fefd3c82e0c  block28onward/datadir/wallet.dat
 # c7ce918342fa7dc93f7a6aa2a5f58f8ccf9b8a912e5b4190afa4bcd7460391f6  block28onward/datadir/database/log.0000000001
+# 4ebecdd0a5b03afc2074bd9ac05fdf7c1dcd14fbedc7e48a8c310b6f8f3f2eda  netnode-crossvalidation/README.txt
+# 40a3631da93168ab5dcdd03248e803f08e9b6e2b3e89f899af28249bc0d78f96  netnode-crossvalidation/blocks.dat
+# 4aa8c51e79fba2ede7792a04374ec1fb7c6bb6b57ff79a431f6b84e886de269b  netnode-crossvalidation/peers.json
 # b5983f441c8fb0b4a4df1dc55f6fd9c73246eeabef85b52f45993e70b4cf49b7  screenshots/Screenshot 2026-08-10 044318.png
 # 33d08b8b0d06074bd723b7149e8c3006e7f80ff687aaea26c73dd35cebc68d6a  screenshots/Screenshot 2026-08-10 045305.png
 # 5179087d12d0cce9a75393bba080f655c641e5347ff66cd7973381d5241f95af  screenshots/Screenshot 2026-08-10 045309.png
