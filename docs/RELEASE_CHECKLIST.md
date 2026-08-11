@@ -186,6 +186,23 @@ filename is identical either way, so nothing about the archive looks wrong.
 tar -xzOf "$BACKUP/<bundle>.tar.gz" '*/SHA256SUMS.ots' | wc -c     # ~1,900 anchored / ~800 pending
 ```
 
+### ⏳ One dated file that rots on its own: `security.txt`
+
+**`.well-known/security.txt` carries a mandatory `Expires:` field (RFC 9116), currently
+`2027-08-11T00:00:00.000Z` on all three sites.** After that date the file is **not merely stale — it
+is invalid**, and a scanner is entitled to treat it as absent.
+
+```bash
+# any release after mid-2027, or any time you think of it:
+for h in bitcoin-lab.org satoshioncha.in bitcoinwhitepaper.online; do
+  curl -s "https://$h/.well-known/security.txt" | grep Expires
+done
+```
+
+**Push the date out by a year and redeploy all three.** It is the only file this project publishes
+that becomes wrong by the passage of time alone — everything else is a hash, a signature or an
+anchor, and none of those expire.
+
 ### ★ This is no longer your job to remember
 
 **Run `python _verify_self_sufficient.py`.** Section 4 walks every `.ots` in the workspace, and
