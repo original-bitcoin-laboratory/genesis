@@ -253,6 +253,21 @@ release is already signed by hand for the same reason; syncing by hand costs one
 none of them is obliged to keep it. That is a different kind of durability from Software Heritage, not a lesser
 one, and it is why the sync output is recorded with a date rather than described as permanent.
 
+> ### ⚠️ A push to Radicle is not a push to the seeds, and the difference is measurable
+>
+> **Measured 12 Aug 2026.** `git push rad` updated the canonical reference in LOCAL storage
+> immediately and reported **`✓ Synced with 0 seed(s)`**; `rad sync --announce` then returned
+> **`✗ All seeds timed out`**. Meanwhile `rad sync status` showed eleven seeds holding the
+> repository at refs one to two days old.
+>
+> **Nothing was broken.** This node runs behind NAT and is *"not configured to listen for inbound
+> connections"*, so a seed that hears the announcement cannot open a connection back to fetch. The
+> seeds converge on their own polling schedule instead of on ours.
+>
+> ⇒ **`git push rad` succeeding means the local canonical ref moved. It does not mean any seed has
+> the commit.** Read `rad sync status` for that, and read the per-seed timestamps rather than the
+> summary line. Recorded here because the summary line is the one that looks like an answer.
+
 ### Syncing by hand
 
 ```
