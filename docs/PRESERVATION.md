@@ -36,6 +36,23 @@ IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against th
   + a .ots proof over each of the three
 ```
 
+**Anchored 11 August 2026 in Bitcoin block 962049.** All three proofs upgraded from pending to
+complete; each carries `BitcoinBlockHeaderAttestation(962049)`.
+
+```
+block height   962049
+block hash     00000000000000000000b1914635ada20cd0992856ebba4ba21b5ea4815eda1b
+merkle root    cf62d5d80f9e0a2fecdba1c129eff6fb42ce259572649c163e42e8641ea90864
+block time     2026-08-11 20:03:25 UTC
+```
+
+> **The merkle root was read off the chain and compared, not taken from the `ots` output.** That is
+> the whole point of an anchor: it is checkable against Bitcoin by anyone, without trusting this
+> file, the calendars, or us. Compare it against any block explorer.
+>
+> ⇒ **The manifest now carries all three: a signature saying WHO, a post-quantum counter-signature
+> saying WHO STILL after an elliptic-curve break, and a Bitcoin anchor saying BEFORE WHEN.**
+
 **It is deliberately not a list of every key the project holds, and says so in its own text.** Server
 access keys and machine-identifying node keys are excluded: they authenticate infrastructure rather
 than statements, and publishing them would expose the machines they belong to while proving nothing
