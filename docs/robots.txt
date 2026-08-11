@@ -1,0 +1,21 @@
+# bitcoin-lab.org
+#
+# This laboratory publishes in order to be read, checked, and archived.
+#
+# Nearly half of this project's own findings rest on third parties having crawled
+# somebody else's site without asking permission. Internet Archive CDX rows dated a
+# file nobody thought to preserve. Common Crawl indexes closed a search branch with
+# counts instead of impressions. Software Heritage answered a question about bytes
+# that no living person could. It would be incoherent to build on that and then
+# refuse it here.
+#
+# So: crawl, index, archive, mirror, quote. Repeated snapshots are WELCOME.
+# This project publishes corrections rather than editing quietly, and an
+# independent, timestamped record of what this site said and when is a defence,
+# not a nuisance.
+#
+# Nothing here sits behind a form, an account, or a paywall, and nothing is intended
+# to. If an automated client cannot fetch something it needs, that is a bug.
+
+User-agent: *
+Allow: /

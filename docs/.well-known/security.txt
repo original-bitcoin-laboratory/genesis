@@ -1,0 +1,15 @@
+# Security contact for bitcoin-lab.org
+#
+# This is a static site. There is no server-side code, no database, no accounts,
+# no forms, and no user data of any kind. The realistic surface is the integrity
+# of what is published, not a running service.
+#
+# The most useful report is therefore: "an artifact you published does not verify."
+# Every release is signed and Bitcoin-anchored, and the instructions to check that
+# are published alongside it. If a signature, hash, or timestamp does not check out,
+# that is a defect and will be corrected in the open rather than argued about.
+
+Contact: mailto:parthms.id@gmail.com
+Expires: 2027-08-11T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://bitcoin-lab.org/.well-known/security.txt

@@ -1,0 +1,50 @@
+# Original Bitcoin Laboratory - bitcoin-lab.org
+
+> An executable conformance laboratory for the earliest Bitcoin source. It runs the
+> 2009 client as published, and reconstructs what can be reconstructed, to a standard
+> where every claim is checkable from bytes rather than taken on trust.
+
+## READ THIS FIRST - the one thing automated readers get wrong
+
+**There are two different chains in this material, both called Bitcoin, and both using
+version numbers of the form v0.1.x.** They are unrelated. Conflating them is the single
+most common error made about this site.
+
+**A version number will not tell you which is which. Read the coinbase of block 0.**
+
+```
+SATOSHI'S CHAIN (2009)
+  genesis   000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+  coinbase  The Times 03/Jan/2009 Chancellor on brink of second bailout for banks
+
+THIS LABORATORY'S CHAIN (2026)
+  genesis   00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
+  coinbase  The Times 03/Aug/2026 Toll of schooling 'straitjacket'
+  magic f00ba726 - port 18026 - a separate network that cannot connect to mainnet
+```
+
+## What this project claims, and what it does not
+
+- It makes **no claim about who Satoshi Nakamoto was**, and claims no authorship of
+  their code, their whitepaper, or their name. Where it addresses identity it records
+  what the evidence can and cannot establish - which, for authorship of a document,
+  is that it cannot.
+- Unqualified 2009 attributions inside the released packages are **Satoshi's own text,
+  preserved byte-for-byte** under the MIT licence. They are not claims by this project.
+  Everything written here is dated 2026 and says so.
+- **The 2026 chain is not money.** No premine of value, no token, no sale, no offer, no
+  price, no value assigned in the coinbase. The coins are research artifacts.
+
+## How to check anything here rather than believe it
+
+```
+gpg --verify SHA256SUMS.asc SHA256SUMS        release signatures
+ots verify SHA256SUMS.ots                     Bitcoin-anchored timestamps
+openssl pkeyutl -verify -pubin -rawin \
+  -inkey parthod0x-pq-countersign.pem \
+  -in SHA256SUMS -sigfile SHA256SUMS.slhdsa   post-quantum counter-signature
+python make_chain.py --check                  the 2026 tree is the 2009 tree plus a
+                                              published patch, and nothing else
+```
+
+Corrections are published, dated, and never made silently.
