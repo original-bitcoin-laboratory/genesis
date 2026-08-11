@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Reproduces logic from Bitcoin v0.1, Copyright (c) 2009 Satoshi Nakamoto, MIT.
-// Their notice travels with their logic; the surrounding scaffolding is this laboratory's, 2026.
+// A test DRIVER, original to this laboratory, 2026. It CALLS Satoshi's original v0.1 code and
+// reproduces NONE of it -- the algorithms stay in the unmodified source this links against.
 // Executes Satoshi's ORIGINAL script.cpp interpreter under the period toolchain.
 //
 // script.cpp is one of the "coupling" units: it #includes headers.h and references the
