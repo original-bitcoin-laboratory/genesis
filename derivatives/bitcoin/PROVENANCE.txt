@@ -65,6 +65,24 @@ Subsidy, halving interval, difficulty retarget, script, serialization, the wire 
 are UNTOUCHED and byte-identical to 2009. That is deliberate: the value of running this client comes
 entirely from it being the same program.
 
+THE LINE THAT DECIDES IT
+
+    You can change all nine of these and still be running Bitcoin.
+    You cannot change one consensus rule and still be.
+
+That is why the list is nine values long and not ten. The nine say WHICH CHAIN this is and WHO it
+will speak to. They say nothing about what the rules are. Everything that decides whether a block is
+valid is the 2009 code, unedited.
+
+So this package is a DIFFERENT CHAIN running the SAME PROTOCOL -- and those are two different kinds
+of difference. Keeping them apart is the entire point of the list being this short.
+
+A note on the nine themselves, since the count invites the question: only THREE of them are choices.
+The coinbase headline, the output key and the timestamp were chosen. The merkle root is a hash of the
+first two; the genesis hash is a hash of the rest; and the nonce had to be FOUND, by real
+proof-of-work at difficulty-1. A separate chain cannot be assembled by editing constants -- the work
+has to be redone, which is why this one took about 2^32 hashes to start.
+
 
 WHICH CHAIN IS THIS -- THE ONLY RELIABLE TEST
 ---------------------------------------------
