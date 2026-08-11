@@ -225,6 +225,12 @@
     <a href="parthod0x-signing-key.asc" style="color:var(--focus)">the laboratory release key</a> — fingerprint
     <code style="font-family:var(--mono);font-size:.85em">B128 526A F85A E4A8 F22B 949F B014 5F74 B78C F1DA</code>.
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md" style="color:var(--focus)">How to verify →</a></p>
+  <p class="note"><b>Post-quantum signing, measured.</b> What a quantum-resistant signature would
+    actually cost a 2009-shaped chain — signature and key sizes cross-checked against FIPS 204/205,
+    sign and verify timings against a measured process-spawn floor, and the transaction arithmetic
+    that follows. <b>Verification is not the problem; size is</b> — a transaction grows 19× to 86×.
+    Reproducible in one command, and it takes no position on whether Bitcoin should change anything.
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/PQ-SIGNATURE-COST.md" style="color:var(--focus)">The measurement →</a></p>
   <p class="note"><b>Related research</b> (a separate project). <a href="https://satoshioncha.in" style="color:var(--focus)">satoshi‑onchain</a>
     — a reproducible verifier + Patoshi classifier for the <i>original Satoshi's on‑chain footprint</i>
     (the genesis block, the ~1.1M‑BTC Patoshi mining pattern, the block‑170 Satoshi→Finney spend) —
