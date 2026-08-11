@@ -22,7 +22,9 @@ recommends no scheme, predicts nothing about when any cryptography breaks, and f
 > **VALIDATED BEFORE USE** — the same serialization walker parses **51 real coinbase transactions
 > from a live v0.1-format `blk0001.dat`** (min 134 B, max 189 B, mean 135.1 B) before a single
 > modelled figure is produced. **If it parses zero blocks, the run declares the validation VOID
-> rather than reporting it as done.**
+> rather than reporting it as done.** *(51 is the chain's height on the day of this run; the chain
+> keeps growing, so a later run validates against more records and prints its own count. A different
+> number there is the check working, not a discrepancy.)*
 
 **The baseline is secp256k1 ECDSA because that is what v0.1 actually calls** —
 `EC_KEY_new_by_curve_name(NID_secp256k1)` and `ECDSA_sign` in `key.h`.

@@ -1,0 +1,52 @@
+a63e0aae4a5f4e28781e82bea94c1bcc81e44fd6a2f193c16c49672a149ed97e *EXECUTED_BINARY_BINDING_bitcoin-node-1_post.json
+853a36e7f2d24f07fb2bd91673e207b7c1bb69a1f95f48a58a9cfab082689a2a *EXECUTED_BINARY_BINDING_bitcoin-node-1_pre.json
+0592732f2f36eee7ec4f5d2feb6a47902e717d8535cc00c447389641825c3cac *FINDINGS.md
+
+# Held in the cold backup only -- raw bytes never enter this repository.
+# OBL-BACKUP/04-evidence/bitcoin-chain-evidence/2026-08-12-blocks51-60/
+# a63e0aae4a5f4e28781e82bea94c1bcc81e44fd6a2f193c16c49672a149ed97e  block51onward/bitcoin-0.1.3/EXECUTED_BINARY_BINDING_bitcoin-node-1_post.json
+# 853a36e7f2d24f07fb2bd91673e207b7c1bb69a1f95f48a58a9cfab082689a2a  block51onward/bitcoin-0.1.3/EXECUTED_BINARY_BINDING_bitcoin-node-1_pre.json
+# c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d  block51onward/bitcoin-0.1.3/bitcoin.exe
+# dbb1c564cce2e2ccdfe60c6a1ac4a39aee433b18ef52f79503875c1bd6f286e2  block51onward/bitcoin-0.1.3/capture_binding.ps1
+# e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  block51onward/bitcoin-0.1.3/db.log
+# 77fe38f2ce988f0991d107d2c9651e918cc6ec8fa16a7bca187dccc098aaf02e  block51onward/bitcoin-0.1.3/debug.log
+# 9d7de18d69e8805572dee802241a690b0b6f19fc6f71143dcc6ff3b817c47324  block51onward/blk0001-blk51onward-20260809.dat
+# a63e0aae4a5f4e28781e82bea94c1bcc81e44fd6a2f193c16c49672a149ed97e  block51onward/block51onward_post.json
+# 853a36e7f2d24f07fb2bd91673e207b7c1bb69a1f95f48a58a9cfab082689a2a  block51onward/block51onward_pre.json
+# 629e7662afae72e386d0304ec947108e1204339df257c3656aed4c71c40577bd  block51onward/datadir/addr.dat
+# 9d7de18d69e8805572dee802241a690b0b6f19fc6f71143dcc6ff3b817c47324  block51onward/datadir/blk0001.dat
+# 5a1195a8e067baef91b72823bdb8a2a6c535e83ca382608b007bec927beeb49b  block51onward/datadir/blkindex.dat
+# 67bb9169bf5499bebbddc1fbe30bbad606519f34fd29b5277cb0bcd02524db1a  block51onward/datadir/database/log.0000000001
+# 17c1aa7091e750bedce863f6d98fd1d8473e3b9263443537ddb68598985065aa  block51onward/datadir/wallet.dat
+# 17c1aa7091e750bedce863f6d98fd1d8473e3b9263443537ddb68598985065aa  block51onward/wallet-clean-blk51onward-20260809.dat
+# 2e57f467330f9d361bb5211400455d4f540f921b0b89480e1a77f87b8167f20c  netnode-crossvalidation/README.txt
+# b49308a80fd0c6e18d7b301aef7495e0480bb78b478f3ef693277835c6fbaedf  netnode-crossvalidation/blocks.dat
+# a2e9bee2e640b4777e0827b4c8326c44ecd5f6c72578988973f09c1e66d473a0  netnode-crossvalidation/peers.json
+# f5246e7e79954fa9aa07481a71f1017889d1cf94112e61656cb53bf70023e19f  screenshots/Screenshot 2026-08-11 033629.png
+# f5246e7e79954fa9aa07481a71f1017889d1cf94112e61656cb53bf70023e19f  screenshots/Screenshot 2026-08-11 033633.png
+# b012d0b0d146c60a465e6a771ff85ec11c0bf36f1de2aa56713cf4cf842739ed  screenshots/Screenshot 2026-08-11 033637.png
+# eaeb971a026e7a9e5772bf5b8b09459c2e0f649f155235a469ed103685066e64  screenshots/Screenshot 2026-08-11 033645.png
+# 05366404236b94962fcff5f4f21aafa8797da795ff1ddb498fc2696d31a33878  screenshots/Screenshot 2026-08-11 033657.png
+# df1a3523526369bbc5a33246445e45cdedae1305b543f5fdeef22c270b11168e  screenshots/Screenshot 2026-08-11 033702.png
+# 6752671e8197518bd8efcc38448a705640bec25553f38606658a5e96dd3f1cee  screenshots/Screenshot 2026-08-11 033707.png
+# 3179a50914c91b551380a632b3e060249a1d1691dad265006b1db745afdcfdee  screenshots/Screenshot 2026-08-11 033715.png
+# facac54476415613d35ffbd083a4916d15b71e707cd6b9e487df4e6038f862cd  screenshots/Screenshot 2026-08-11 033730.png
+# 4ec28e7d493aa8565dc77c2b42fa9adcf45f3d3ce085f56eee752d66060e74c7  screenshots/Screenshot 2026-08-11 033736.png
+# c8a895d93287dadc175dd4af469d54bb7d9ba497331cc995aa8c01ebe85cebb5  screenshots/Screenshot 2026-08-11 033740.png
+# ba165600076a86ee0eaf2d99790697a5267a3d7663ca5e426a6789fa23b53670  screenshots/Screenshot 2026-08-11 033744.png
+# 50fa8d0d51c754800dafe5060aa4ce43875dbd928904ca4a7061977ceda9a783  screenshots/Screenshot 2026-08-11 033751.png
+# b02b3c898c4f737f2da40bfd2998eaf7359677655be692eb1de073bbf6989d72  screenshots/Screenshot 2026-08-11 033756.png
+# 7b27d50b56199b6bcee40777201332e636046e132e076f816d4334b648c5bc00  screenshots/Screenshot 2026-08-11 072904.png
+# 94eace3f829206e25187b260c4df310c8286b201a7100e4a1c52590c721cd140  screenshots/Screenshot 2026-08-11 072910.png
+# 20a4b6ac61174d94f26f681394e1077ba12a7c8dad856770ad11a99be8584470  screenshots/Screenshot 2026-08-11 072916.png
+# e4328b37d148ccd8dea393aecbd7aa510ee9fbddae238567e06a52d242fd4f01  screenshots/Screenshot 2026-08-12 004028.png
+# 82d7fa090f0550e660b379889d761f9befa5fbad720873326d2aa519dbe84130  screenshots/Screenshot 2026-08-12 004032.png
+# af1fe1bdd98451df11aec46e53aca24f85c2c63bc31823d66ad3145fd568b2da  screenshots/Screenshot 2026-08-12 004036.png
+# fde897d22f13ca417fbe6f5d877cc399c6e94bb517e6f2d41c723484cde9ca4f  screenshots/Screenshot 2026-08-12 004044.png
+# b97f8946ebb1aecca764dff901ea504bfa6993633d18b2ef04c61e66fdf01a60  screenshots/Screenshot 2026-08-12 004048.png
+# f39e9c38e2bb58ba03a7914992f01a701249f0cf4242456a9faa0e523690668d  screenshots/Screenshot 2026-08-12 010117.png
+# 98b59a7096e0a7df8f57285b8e985604810277c44c34d2024321fd1afdc8c248  screenshots/Screenshot 2026-08-12 010120.png
+# 05061a2e404f0cd9315aee2cd790969b6248425eef918c9da4022a0053d3081b  screenshots/Screenshot 2026-08-12 010304.png
+
+# The wallet is Tier-1 and is ALSO stored in the key store, same bytes:
+# OBL-BACKUP/01-keys-SECRET/bitcoin-chain-wallets/wallet-clean-blk60-20260811.dat

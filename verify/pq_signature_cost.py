@@ -46,8 +46,12 @@ def find_chain():
     """
     if "--chain" in sys.argv:
         return sys.argv[sys.argv.index("--chain") + 1]
+    # Newest round first: a longer chain validates the parser against more real records.
+    # Older rounds stay as fallbacks so this still works for anyone holding only those.
     for cand in (
         os.path.join(HERE, "blk0001.dat"),
+        os.path.join(WS, "OBL-BACKUP", "04-evidence", "bitcoin-chain-evidence",
+                     "2026-08-12-blocks51-60", "block51onward", "datadir", "blk0001.dat"),
         os.path.join(WS, "OBL-BACKUP", "04-evidence", "bitcoin-chain-evidence",
                      "2026-08-11-blocks29-50", "block28onward", "datadir", "blk0001.dat"),
         os.path.join(os.path.expanduser("~"), "AppData", "Roaming", "Bitcoin", "blk0001.dat"),
