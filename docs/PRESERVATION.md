@@ -16,6 +16,34 @@ Five independent roots, so no single one is load-bearing:
 | **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **live.** `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`), synced by hand at each release. **Synced 9 Aug 2026 for `v0.6.0-experimental`** — `main` at `df7db95`, synced with 3 seeds. *That sync also pushed `Bitcoin-v0.1.1`, `v0.1.2` and `v0.1.3`, which had **never reached Radicle before** — the tags were on GitHub only.* Replicated by 8 public seeds at the 5 Aug 2026 sync. Synced manually rather than from CI, deliberately: the identity key is unencrypted and stays off GitHub. |
 
 
+## The identity manifest — one signed answer for the whole periphery
+
+Preservation spreads the work across hosts nobody here controls, which raises a question the mirrors
+themselves cannot answer: **who says this Radicle repository, this organisation, this domain is
+ours?** Until 12 August 2026 the answer was prose in this file — worth nothing to a reader with a
+reason to doubt it.
+
+[`IDENTITY-MANIFEST.txt`](IDENTITY-MANIFEST.txt) replaces that prose with one signature. It lists
+every identity that *publishes* — the OpenPGP key, the post-quantum counter-signing key, the GitHub
+account and both organisations, the three sites, the Radicle identity and repository IDs, and the
+2026 chain's genesis and agent key — and it is **GPG-signed, SLH-DSA counter-signed, and
+Bitcoin-anchored**, so the assertion provably predates any dispute about it.
+
+```
+IDENTITY-MANIFEST.txt          11,394 B   sha256 11b3f7db9497374d99e58873fc4d0c46740a292587c5cbc5cc9473d130816f94
+IDENTITY-MANIFEST.txt.asc         273 B   OpenPGP, B128526AF85AE4A8F22B949FB0145F74B78CF1DA
+IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against the published pk
+  + a .ots proof over each of the three
+```
+
+**It is deliberately not a list of every key the project holds, and says so in its own text.** Server
+access keys and machine-identifying node keys are excluded: they authenticate infrastructure rather
+than statements, and publishing them would expose the machines they belong to while proving nothing
+a reader could check. A signed inventory that said *"every"* while quietly omitting things would be
+the exact failure this project exists not to make.
+
+Mirrored byte-identically to `satoshioncha.in`, since it speaks for that site too.
+
 ## OpenTimestamps — a date nobody here can move
 
 Every release asset carries a `.ots` proof, submitted to four independent calendars
@@ -81,9 +109,17 @@ independently arrive at.
 > recording them from it would be guesswork — and a mislabelled CID is worse than none, because it
 > looks checkable and fails only for whoever tries.
 >
-> **⚠️ The pin workflow covers four assets and does NOT pin `SHA256SUMS.slhdsa`** — the post-quantum
-> counter-signature — or any `.ots` proof. Those live on the GitHub release and in the cold backup.
-> **Worth extending when the workflow is next touched; noted here rather than left to be discovered.**
+> **✅ Fixed 11 Aug 2026 — the pin workflow now covers every signed asset.** It previously fetched
+> only `*.tar.gz`, `SHA256SUMS` and `*.asc`, so a release survived on IPFS *without* the two
+> artifacts built specifically to outlive it: `SHA256SUMS.slhdsa`, the post-quantum
+> counter-signature, and the `.ots` proofs. A content-addressed copy carrying neither is a copy of
+> the thing we can no longer prove anything about. `preserve.yml` now also passes `-p '*.slhdsa'`
+> and `-p '*.ots'` — **4 of 10 `v0.1.5` assets were pinned under the old patterns, 10 of 10 under
+> the new ones.**
+>
+> **⚠️ The CID table below predates that fix**, so its rows list four assets per release. Those CIDs
+> remain correct for the files they name; the missing ones are on the GitHub release and in the cold
+> backup, and will be pinned from the next release onward.
 
 
 | release | file | CID |

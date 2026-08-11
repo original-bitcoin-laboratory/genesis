@@ -516,8 +516,19 @@ SHA256SUMS.asc            QmcVxjbgyQxj6KWP32MoBrYfvPfy4VRnn9ZyAeW5conQH2</pre>
 
       <dt>Git</dt>
       <dd><a href="https://github.com/original-bitcoin-laboratory/genesis">github.com/original-bitcoin-laboratory/genesis</a></dd>
+
+      <dt>Who&nbsp;owns&nbsp;them</dt>
+      <dd><a href="IDENTITY-MANIFEST.txt">IDENTITY-MANIFEST.txt</a>
+        <span style="opacity:.7">&mdash; the mirrors above cannot say whose they are. One signed file
+        does: every key, account, repository and domain this project publishes under, GPG-signed,
+        post-quantum counter-signed and Bitcoin-anchored, so the claim predates any argument about
+        it. It is <b>not</b> a list of every key held &mdash; server and machine keys are excluded
+        deliberately, and it says so itself.</span>
+        <pre style="margin-top:10px;font-size:11px;line-height:1.6">gpg    --verify IDENTITY-MANIFEST.txt.asc IDENTITY-MANIFEST.txt
+ots    verify  IDENTITY-MANIFEST.txt.ots</pre></dd>
     </dl>
-    <p class="lnk">Four roots. The genesis re-derives from source with none of them
+    <p class="lnk">Four roots, and one signed statement of who stands behind them. The genesis
+      re-derives from source with none of them
       (<a href="verify-genesis.html">in a browser</a>), and any node you run is an equal peer.</p>
   </section>
 
