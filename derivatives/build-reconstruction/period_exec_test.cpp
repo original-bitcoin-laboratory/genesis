@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Reproduces logic from Bitcoin v0.1, Copyright (c) 2009 Satoshi Nakamoto, MIT.
+// Their notice travels with their logic; the surrounding scaffolding is this laboratory's, 2026.
 // Executes Satoshi's ORIGINAL bignum.h + key.h under a PERIOD toolchain
 // (i686 target + OpenSSL 1.0.2, where BIGNUM is still a public struct).
 //

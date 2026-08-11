@@ -1,4 +1,7 @@
 #pragma once
+// SPDX-License-Identifier: MIT
+// Reproduces logic from Bitcoin v0.1, Copyright (c) 2009 Satoshi Nakamoto, MIT.
+// Their notice travels with their logic; the surrounding scaffolding is this laboratory's, 2026.
 // Headless replacement for Satoshi's headers.h, extended to the SCRIPT layer.
 // Same idea as prelude.h (std + OpenSSL, no wx/winsock/BDB), but it also includes the
 // original project headers in dependency order and the donor scaffolding, so the ORIGINAL

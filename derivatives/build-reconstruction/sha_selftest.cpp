@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Original to this laboratory, 2026. Reproduces no 2009 source.
 // Executes Satoshi's ORIGINAL sha.cpp (the Crypto++-derived SHA-256) on a modern
 // 64-bit toolchain and checks it against NIST/known-answer vectors.
 //

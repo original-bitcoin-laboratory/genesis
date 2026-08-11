@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Reproduces logic from Bitcoin v0.1, Copyright (c) 2009 Satoshi Nakamoto, MIT.
+// Their notice travels with their logic; the surrounding scaffolding is this laboratory's, 2026.
 // Headless PORT of v0.1 UTXO block-connect (derivative). Builds a chain of blocks
 // with real spends and validates it with faithful reproductions of CheckTransaction,
 // ConnectInputs, and ConnectBlock (main.cpp:772-954, main.h:437-465) over an

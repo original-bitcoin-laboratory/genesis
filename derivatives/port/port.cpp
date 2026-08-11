@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Reproduces logic from Bitcoin v0.1, Copyright (c) 2009 Satoshi Nakamoto, MIT.
+// Their notice travels with their logic; the surrounding scaffolding is this laboratory's, 2026.
 // C++ PORT harness for OBL-JAN09 EvalScript opcode semantics.
 // Evidence level: PORT (a compiled derivative). Numeric engine is REAL OpenSSL BN;
 // number codec is the original bignum.h logic. Opcode bodies reproduced from

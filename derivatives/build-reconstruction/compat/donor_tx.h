@@ -1,4 +1,7 @@
 #pragma once
+// SPDX-License-Identifier: MIT
+// Reproduces logic from Bitcoin v0.1, Copyright (c) 2009 Satoshi Nakamoto, MIT.
+// Their notice travels with their logic; the surrounding scaffolding is this laboratory's, 2026.
 // Donor scaffolding (J-DONOR / NEW-EXP): a faithful minimal transaction surface so the
 // ORIGINAL script.cpp compiles headless. The data members and IMPLEMENT_SERIALIZE mirror
 // main.h EXACTLY (COutPoint/CTxIn/CTxOut/CTransaction), so the serialization -- and hence

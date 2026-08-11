@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Reproduces logic from Bitcoin v0.1, Copyright (c) 2009 Satoshi Nakamoto, MIT.
+// Their notice travels with their logic; the surrounding scaffolding is this laboratory's, 2026.
 // Headless PORT of v0.1 consensus/chain code (derivative). Reproduces the exact
 // genesis block from Satoshi's original construction (main.cpp:1455-1480) and runs
 // the real proof-of-work, subsidy/halving, and difficulty-retarget logic — no GUI,

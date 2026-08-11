@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Reproduces logic from Bitcoin v0.1, Copyright (c) 2009 Satoshi Nakamoto, MIT.
+// Their notice travels with their logic; the surrounding scaffolding is this laboratory's, 2026.
 // C++ PORT of v0.1.0 CTransaction serialization + SignatureHash (script.cpp:818).
 // Evidence level: PORT. Builds the SAME fixed transaction as the Python MODEL
 // (model/tx_sighash.py demo_tx) and prints the 32-byte signature hashes for each

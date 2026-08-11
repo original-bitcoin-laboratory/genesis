@@ -106,7 +106,16 @@ jobs:
           if [ -z "$TAG" ]; then echo "no release found to pin"; exit 1; fi
           echo "Pinning signed assets from release $TAG"
           mkdir -p dist
-          gh release download "$TAG" -R "$GITHUB_REPOSITORY" -D dist -p '*.tar.gz' -p 'SHA256SUMS' -p '*.asc' || true
+          # Pin the SIGNATURES AND ANCHORS TOO, not just the payload. Until 11 Aug 2026 this line
+          # fetched only the tarball, SHA256SUMS and the GPG detached signatures -- so a release
+          # survived on IPFS WITHOUT the two artifacts built specifically to outlive it:
+          #   *.slhdsa  the SLH-DSA post-quantum counter-signature. Ed25519 does not survive a
+          #             quantum break; this does, because its security rests only on hashes.
+          #   *.ots     the OpenTimestamps proofs. A signature proves WHO; only the anchor proves
+          #             it existed BEFORE a break, which is the entire claim.
+          # A content-addressed copy carrying neither is a copy of the thing we can no longer
+          # prove anything about.
+          gh release download "$TAG" -R "$GITHUB_REPOSITORY" -D dist -p '*.tar.gz' -p 'SHA256SUMS' -p '*.asc' -p '*.slhdsa' -p '*.ots' || true
           shopt -s nullglob
           # A release created empty and populated afterwards fires `release: published` BEFORE its
           # assets exist, so this downloads nothing and the loop below runs zero times -- green, and

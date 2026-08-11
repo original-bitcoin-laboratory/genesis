@@ -1,4 +1,7 @@
 #pragma once
+// SPDX-License-Identifier: MIT
+// Reproduces logic from Bitcoin v0.1, Copyright (c) 2009 Satoshi Nakamoto, MIT.
+// Their notice travels with their logic; the surrounding scaffolding is this laboratory's, 2026.
 // Donor scaffolding (NEW-EXP): the hash helpers script.cpp / base58.h expect from
 // util.h -- double-SHA256 and SHA256+RIPEMD160 -- so the ORIGINAL interpreter compiles
 // headless without pulling in util.h's wxWidgets/Win32 half. Same algorithm and same

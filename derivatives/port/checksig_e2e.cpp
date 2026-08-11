@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Reproduces logic from Bitcoin v0.1, Copyright (c) 2009 Satoshi Nakamoto, MIT.
+// Their notice travels with their logic; the surrounding scaffolding is this laboratory's, 2026.
 // C++ PORT end-to-end for OP_CHECKSIG / OP_CHECKMULTISIG on real secp256k1.
 // Evidence level: PORT. Uses the same OpenSSL EC API as v0.1 key.h (EC_KEY on
 // NID_secp256k1, ECDSA_sign/verify, i2o_ECPublicKey) + the SignatureHash from
