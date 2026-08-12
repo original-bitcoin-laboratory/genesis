@@ -61,22 +61,69 @@ implied duration              roughly 4-5 MONTHS of continuous mining
 > unattended is a real commitment, and it is only worth making for a stated result. **It now has
 > one.**
 
-## The stopping rule
+## ⚠️ What "stopping" means, stated so it cannot be misread in twenty years
+
+**THE EXPERIMENT ends at 2016. THE MINING is not constrained by anything in this document.**
 
 ```
-STOP AT 2016, or at the first retarget, whichever comes first.
+THE EXPERIMENT    ends when the retarget fires. After that, further height is NOT a result,
+                  NOT evidence, and must not be presented as either.
 
-There is nothing after it. Height 4032 is the same code a second time. The halving at 210,000
-is unreachable at any plausible rate -- roughly forty years -- and would demonstrate arithmetic
-already proven from the source.
+THE MINING        is free. It may continue forever, stop tomorrow, pause for a year and
+                  resume. Nothing here obliges it to run, and nothing here forbids it.
 ```
 
-**When the retarget executes, the R-series and the chain series are both complete and the chain
-enters maintenance: it keeps running for availability, and no further height is a result.**
+> ★ **Naming a hypothesis constrains what may be CLAIMED, never what may be DONE.** The experiment
+> is a subset of the operator's freedom to run the chain, not a limit on it. **A chain that keeps
+> growing after its last hypothesis is answered is perfectly fine — it is simply not evidence, and
+> the honest word for it is maintenance rather than experiment.**
 
-⚠️ **If the VM stops before 2016 for any reason, that is not a failure.** The chain's existing
-results stand exactly as they are — the append-only proof, the cross-validation, the custody
-separation, every binding. **This target adds one result; it does not put the others at risk.**
+**If the VM stops before 2016 for any reason, that is not a failure.** Every existing result stands
+— the append-only proof, the cross-validation, the custody separation, every binding. **This target
+adds one result; it does not put the others at risk.**
+
+## ★★ THE PREDICTION, pre-registered before the experiment runs
+
+**Naming the hypothesis forced a calculation nobody had done, and the expected answer is a surprise
+worth stating in advance: the retarget will execute and change nothing.**
+
+```
+this chain mines at nBits 0x1d00ffff, which IS bnProofOfWorkLimit -- difficulty 1, the easiest
+                    the protocol allows
+
+at ~105 min/block the chain is ~10.5x SLOWER than the 10-minute target, so the retarget
+                    wants to LOOSEN the target
+
+    nActualTimespan > nTargetTimespan*4          -> clamped to a 4x step
+    bnNew = 0x1d00ffff * 4                       -> LARGER than bnProofOfWorkLimit
+    if (bnNew > bnProofOfWorkLimit)              -> clamped straight back
+        bnNew = bnProofOfWorkLimit;
+
+=> nBits stays EXACTLY 0x1d00ffff.
+```
+
+**So the predicted result is a no-op**, and the cadence after 2016 stays ~105 min/block — which also
+means height 4032 is another ~147 days, not a cheap follow-on.
+
+> ### ⇒ What the experiment is worth, honestly, now that the answer is predictable
+>
+> **Less than it looked, and still worth having.** What executing it proves:
+>
+> ```
+> the code path RUNS on a real chain rather than in a test harness
+> nActualTimespan is computed from real block timestamps
+> the 4x clamp behaves
+> the proof-of-work-limit clamp behaves -- the branch that makes this a no-op
+> ```
+>
+> ★★ **And the prediction is the valuable part.** A stated-in-advance expectation that is then
+> checked is stronger than any observation made afterwards. **If `nBits` is anything other than
+> `0x1d00ffff` at height 2016, this prediction is wrong and THAT is a significant finding** — far
+> more interesting than the expected pass.
+>
+> ⚠️ **This is also why the target is worth keeping even though the outcome is dull:** the
+> calculation only happened because the hypothesis was named. **Momentum would never have produced
+> it.**
 
 ## What will be recorded when it fires
 
