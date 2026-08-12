@@ -1,0 +1,156 @@
+POST-QUANTUM DESIGNATION -- parthod0x
+=====================================
+
+Issued 12 August 2026 by the holder of the OpenPGP key
+
+    B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA
+    uid: parthod0x <parthms.id@gmail.com>
+    Ed25519, sign/certify only, no subkeys
+
+I designate the following key as able to speak for this publishing identity:
+
+    algorithm         SLH-DSA-SHA2-128s   (NIST FIPS 205, the standardised SPHINCS+)
+    public key file   parthod0x-pq-countersign.pem
+    sha256 of that    0624d2c7149d4af09e25b558e76f5e6b1a8855d60723c45333829c46488ceda4
+    size              126 bytes
+
+The designated key already exists and already works. It was generated on 10 August 2026, its public
+half is anchored in Bitcoin block 961803, and it counter-signs every published release manifest
+alongside the OpenPGP signature. This document does not create it. It states, in advance and in
+writing, what that key may and may not do -- which is the part that was missing.
+
+
+WHY THIS EXISTS
+---------------
+
+Ed25519 does not survive a cryptographically relevant quantum computer. Should one arrive, the
+OpenPGP key above can no longer distinguish its holder from anyone else, because the private key
+becomes recoverable from the public one.
+
+At that point every statement this identity has already made remains sound, because each is anchored
+in a Bitcoin block and a forger cannot produce an earlier block. What is lost is the ability to make
+a NEW statement that anyone can check.
+
+SLH-DSA rests only on hash functions, so it stands where SHA-256 stands. It is stateless: unlike LMS
+or XMSS it cannot be broken by restoring a backup or reusing a key index, which matters for a key
+that will be copied, archived and left alone for years.
+
+This designation exists to carry that ability forward, and for no other purpose.
+
+It is written because the agent that authored this project's chain has had such a certificate since
+10 August 2026 and this identity did not. The two keys were already cryptographically bound -- both
+sign IDENTITY-MANIFEST.txt over identical bytes -- but the SCOPE of the designated key's authority
+was never stated. An unstated scope is not a small thing: it is the difference between a tool with
+known limits and a key whose holder can later claim whatever is convenient.
+
+
+SCOPE -- WHAT THIS DESIGNATION DOES NOT DO
+------------------------------------------
+
+These limits are part of the designation. A reading that exceeds them is wrong.
+
+1.  IT DOES NOT REPLACE THE OPENPGP KEY.
+    B128526A...B78CF1DA remains the root of this publishing identity. This is a subordinate
+    designation: the designated key has no standing of its own and derives its authority from the
+    signature made over this document by the OpenPGP key.
+
+2.  IT IS NOT RETROACTIVE.
+    The designated key was generated on 10 August 2026. Nothing signed by it is evidence of anything
+    before that date, and any document presenting it as coeval with this identity's origin is false.
+    The OpenPGP key itself was created 27 July 2026; that record is unchanged and this designation
+    is appended to it.
+
+3.  IT DOES NOT PROVE WHO parthod0x IS.
+    A legal identity is not a key, and no signature makes it one. This limit is stated in this
+    laboratory's own published findings about somebody else, and it applies here exactly as it
+    applies there. Neither key, alone or together, establishes the identity of any person.
+
+4.  IT CONFERS NO POWER OVER THE CHAIN, AND NO AUTHORSHIP OF IT.
+    parthod0x publishes the software; parthod0x did not author the chain. That separation is the
+    integrity basis of this project and this document does not touch it. The designated key cannot
+    spend, cannot mine, cannot sign a transaction, and has no relationship to the chain's genesis
+    key beyond both having signed the same certificate as separate parties.
+
+5.  IT CREATES NO NEW PERSON, ENTITY, NAME OR RIGHT.
+    It is a tool designated by an existing publisher, not a second publisher. It asserts no trade
+    mark, no ownership of any name, and no claim about anyone who used the name "Satoshi Nakamoto"
+    before 2026.
+
+6.  IT SAYS NOTHING ABOUT VALUE.
+    The coins on this project's chain have no value by design: no premine, no token, no sale, no
+    offer, no market, no price. This designation concerns the authenticity of published software
+    only, and creates nothing that could be traded.
+
+
+WHAT THE DESIGNATED KEY MAY DO
+------------------------------
+
+One thing, narrowly:
+
+    attest that a published artifact of this project is genuine -- a release manifest, a document,
+    a key -- at a time when the OpenPGP signature over it can no longer be trusted to have come
+    from its holder.
+
+That is the whole capacity. It is the same capacity the OpenPGP key has today, carried across a
+break, and nothing more.
+
+
+HOW THIS DESIGNATION IS BOUND
+-----------------------------
+
+It carries two signatures, and needs both.
+
+    the OpenPGP key signs it       -- so the designation is authentic. Only the holder of the
+                                      publishing identity's root key can make it.
+    the designated key signs it    -- so its holder demonstrably possesses it. Without this, a
+                                      publisher could designate a key they do not hold, and a later
+                                      claimant could assert the matching secret.
+
+And it is OpenTimestamped, which is the part that carries the weight.
+
+    A designation made BEFORE a break proves it was made while the OpenPGP key was still
+    trustworthy. A designation made AFTER a break is indistinguishable from one a forger made, and
+    is worth nothing. The anchor is what separates the two, and nothing else can.
+
+
+IF THE DESIGNATED KEY IS LOST OR COMPROMISED
+--------------------------------------------
+
+Nothing that exists today is lost. Every already-anchored signature stands by precedence, because a
+compromise costs a key its FUTURE and never its past. This identity returns to the position it held
+before this document: anchored statements still verify, and no new post-break statement can be made.
+
+SLH-DSA has no revocation mechanism, so the replacement path is built from what does exist, and it
+is stated here in full rather than by reference:
+
+    1. a notice signed by the OpenPGP key, which is a different key and unaffected by the loss
+    2. proof of possession by the new key, signing the same notice
+    3. an OpenTimestamps anchor over both, so the replacement provably predates any later claim
+    4. publish the new public key; keep the old one published and marked superseded
+    5. re-counter-sign the current release manifests with the new key
+
+That procedure has been rehearsed end to end with a throwaway key -- generate, sign both ways,
+verify both, tamper-test (correctly rejected), stamp -- and the throwaway secret was destroyed. A
+procedure nobody has run is a guess.
+
+This designation can be superseded by a later one signed the same way, provided that later one is
+also anchored before a break.
+
+
+VERIFY
+------
+
+    sha256sum parthod0x-pq-countersign.pem
+      -> 0624d2c7149d4af09e25b558e76f5e6b1a8855d60723c45333829c46488ceda4
+
+    gpg --verify PQ-COUNTERSIGN-DESIGNATION.txt.asc PQ-COUNTERSIGN-DESIGNATION.txt
+
+    openssl pkeyutl -verify -pubin -inkey parthod0x-pq-countersign.pem \
+      -rawin -in PQ-COUNTERSIGN-DESIGNATION.txt -sigfile PQ-COUNTERSIGN-DESIGNATION.txt.slhdsa
+
+    ots verify PQ-COUNTERSIGN-DESIGNATION.txt.ots
+
+Nothing here is money. No premine, no token, no sale, no offer, no price, no warranty.
+
+    -- parthod0x
+       12 August 2026
