@@ -43,10 +43,14 @@ site. Each is already public, and this file adds a signature over the set rather
 anything new.
 
   !! THIS IS NOT A LIST OF EVERY KEY THE PROJECT HOLDS, and it does not claim to be. Purely
-    operational credentials -- server access keys, node keys that identify a machine rather than a
-    publication, and keys not yet published -- are DELIBERATELY EXCLUDED. They authenticate
-    infrastructure, not statements. Listing them would expose the machines they belong to while
-    proving nothing a reader could check.
+    operational credentials -- server access keys and node keys that identify a machine rather than
+    a publication -- are DELIBERATELY EXCLUDED. They authenticate infrastructure, not statements.
+    Listing them would expose the machines they belong to while proving nothing a reader could check.
+
+    Revised 12 Aug 2026: this clause previously also excluded "keys not yet published", which
+    covered the agent's post-quantum successor. That key is now PUBLISHED and is in section 5, so
+    the exclusion no longer applies to it. A key was being withheld on a rule whose own reason --
+    never cite a hash a reader cannot fetch -- was better answered by publishing it.
 
   A signed inventory that quietly omitted things while saying "every" would be the exact failure
   this project exists not to make. So the omission is stated instead of hidden.
@@ -177,6 +181,23 @@ anything new.
   output script (0x41 <pubkey> OP_CHECKSIG). Anyone can read it straight out of the chain and check
   a signature against it without trusting this file, this project, or anyone at all. That makes it
   the one link in this manifest that needs no manifest.
+
+  post-quantum successor
+              SLH-DSA-SHA2-128s (NIST FIPS 205), designated 10 August 2026
+              published as agent-pq-successor-pk.pem
+              sha256 7ab42f6b45c8b70fb1264899cd79d5acd00d0f6f31ec21baa28d57ef8419b227
+
+  A SUBORDINATE designation, not a second identity. It has no standing of its own: all of its
+  authority comes from PQ-SUCCESSION-CERTIFICATE.txt, which the genesis key signed and which is
+  itself Bitcoin-anchored. It is NOT retroactive -- it did not exist before 10 August 2026 and is
+  evidence of nothing earlier. It CANNOT spend, mine, or sign a transaction; this chain's 2009-era
+  rules contain no post-quantum opcode and no mechanism by which such a key could act. Its only
+  capacity is to make statements of authorship after elliptic-curve signatures stop working.
+
+  It is published here, rather than held privately, for one reason: a successor key that first
+  appears AFTER a break is indistinguishable from one a forger made, and is worth nothing. Only a
+  designation made and anchored BEFORE a break can be told apart from a forgery afterwards. The
+  certificate says so in its own text, and the anchor is what carries the weight.
 
   The coins on that chain have never been sold, offered, priced or transferred, and will not be.
 

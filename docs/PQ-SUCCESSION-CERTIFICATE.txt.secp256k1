@@ -1,0 +1,17 @@
+secp256k1 signature by the Bitcoin (2026) genesis key over the SHA-256 of
+PQ-SUCCESSION-CERTIFICATE.txt.
+
+  message signed   9d892f72ee5d4bcfb444b7321f11df65f897ee123600f1a1bcc56830d5aad538
+                   (the ASCII hex string above, 64 characters -- NOT the raw digest bytes)
+  public key       04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba7
+                   94ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834
+  genesis          00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
+
+  r  d4c4e20f1c112bf6dc5554e11a2bcd9314256e046a7c13aa81f21023f44c3de7
+  s  61ec2e5911565a9a4876286ba44c61d469ac8e1ade36dc4fb3ed2a16f1dbc430
+
+Signing is RFC6979-deterministic, so re-running prove.py with the same challenge reproduces these
+exact values. Low-s normalised.
+
+  reproduce   sha256sum PQ-SUCCESSION-CERTIFICATE.txt
+              python prove.py "<that hash>"

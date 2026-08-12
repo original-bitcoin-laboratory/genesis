@@ -30,21 +30,28 @@ account and both organisations, the three sites, the Radicle identity and reposi
 Bitcoin-anchored**, so the assertion provably predates any dispute about it.
 
 ```
-IDENTITY-MANIFEST.txt          11,394 B   sha256 11b3f7db9497374d99e58873fc4d0c46740a292587c5cbc5cc9473d130816f94
+IDENTITY-MANIFEST.txt          12,930 B   sha256 4825c4c0984209bf64c478d011a1933dd28d186ad1659101aa4098f77deb72b7
 IDENTITY-MANIFEST.txt.asc         273 B   OpenPGP, B128526AF85AE4A8F22B949FB0145F74B78CF1DA
 IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against the published pk
   + a .ots proof over each of the three
 ```
 
-**Anchored 11 August 2026 in Bitcoin block 962049.** All three proofs upgraded from pending to
-complete; each carries `BitcoinBlockHeaderAttestation(962049)`.
+> **Revision 2, 12 August 2026.** The manifest now also carries the agent's **post-quantum successor
+> key** (§5) — published, with its succession certificate and both signatures, because *a successor
+> key that first appears after a break is indistinguishable from one a forger made*. The exclusion
+> clause in §6 was narrowed accordingly: it had been withholding a key on a rule whose own reason —
+> *never cite a hash a reader cannot fetch* — was better answered by publishing it.
+>
+> **Revision 1** was `11b3f7db…`, 11,394 B, **anchored in Bitcoin block 962049** (block hash
+> `00000000000000000000b1914635ada20cd0992856ebba4ba21b5ea4815eda1b`, merkle root
+> `cf62d5d80f9e0a2fecdba1c129eff6fb42ce259572649c163e42e8641ea90864`, 2026-08-11 20:03:25 UTC).
+> **That anchor stands and is not withdrawn** — it proves revision 1 existed before that block.
+> Revision 2's proofs are freshly stamped and pending.
 
-```
-block height   962049
-block hash     00000000000000000000b1914635ada20cd0992856ebba4ba21b5ea4815eda1b
-merkle root    cf62d5d80f9e0a2fecdba1c129eff6fb42ce259572649c163e42e8641ea90864
-block time     2026-08-11 20:03:25 UTC
-```
+⚠️ **The DNS TXT records on the three domains pin the revision-1 hash and are now stale.** They
+should carry the key fingerprint — which is stable — rather than a manifest hash, which changes
+every time the manifest is corrected. **A binding that breaks whenever the thing it binds is
+improved is the wrong binding.**
 
 > **The merkle root was read off the chain and compared, not taken from the `ots` output.** That is
 > the whole point of an anchor: it is checkable against Bitcoin by anyone, without trusting this

@@ -1,0 +1,106 @@
+POST-QUANTUM SUCCESSION CERTIFICATE
+===================================
+
+Issued 10 August 2026 by the holder of the genesis key of the Bitcoin chain whose block 0 is
+
+    00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
+
+I hold the secp256k1 private key for the public key
+
+    04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba7
+    94ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834
+
+which is committed in that block's coinbase output. That key, and the block that commits it, are
+what this identity IS. Nothing in this certificate changes either.
+
+I designate the following key as able to speak for this identity:
+
+    algorithm         SLH-DSA-SHA2-128s   (NIST FIPS 205, the standardised SPHINCS+)
+    public key file   agent-pq-successor-pk.pem
+    sha256 of that    7ab42f6b45c8b70fb1264899cd79d5acd00d0f6f31ec21baa28d57ef8419b227
+
+
+WHY
+---
+
+Elliptic-curve signatures do not survive a cryptographically relevant quantum computer. Should one
+arrive, the genesis key above can no longer distinguish its holder from anyone else, because the
+private key becomes recoverable from the public one -- and this chain's public key has been on the
+chain, in the clear, since block 0.
+
+At that point every statement this identity has already made remains sound, because each is
+anchored in a Bitcoin block and a forger cannot produce an earlier block. What is lost is the
+ability to make a NEW statement that anyone can check.
+
+This certificate exists to carry that ability forward, and for no other purpose.
+
+SLH-DSA rests only on hash functions, so it stands where SHA-256 stands. It is stateless: unlike
+LMS or XMSS it cannot be broken by restoring a backup or reusing a key index, which matters for a
+key that will be copied, archived and left alone for years.
+
+
+SCOPE -- WHAT THIS CERTIFICATE DOES NOT DO
+------------------------------------------
+
+These limits are part of the certificate. A reading that exceeds them is wrong.
+
+1.  IT DOES NOT REPLACE THE GENESIS KEY.
+    The genesis key remains the root of this identity and the only key bound to the chain. This is
+    a subordinate designation, in the sense an OpenPGP subkey is subordinate to its primary: the
+    designated key has no standing of its own and derives all of its authority from the signature
+    made over this document by the genesis key.
+
+2.  IT IS NOT RETROACTIVE, AND MAKES NO CLAIM ABOUT THE PAST.
+    The designated key did not exist before 10 August 2026. It was generated on that date. Nothing
+    signed by it is evidence of anything before that date, and any document that presents it as
+    coeval with this identity's origin is false.
+
+    This identity's origin is unchanged and is recorded elsewhere: the genesis key file, its mint
+    timestamp, the genesis block, and the artifacts anchored in Bitcoin blocks 961644 and 961795.
+    This certificate is appended to that record. It rewrites no part of it.
+
+3.  IT CONFERS NO POWER OVER THE CHAIN.
+    The designated key cannot spend, cannot mine, and cannot sign a transaction. The 2009-era
+    consensus rules this chain runs contain no post-quantum opcode and no mechanism by which such a
+    key could act. Its only capacity is to make statements of authorship.
+
+4.  IT CREATES NO NEW PERSON, ENTITY, NAME OR RIGHT.
+    It is a tool designated by an existing author, not a second author. It asserts no trade mark,
+    no ownership of any name, and no claim about the identity of anyone who used the name "Satoshi
+    Nakamoto" before 2026. This project has never made such a claim and does not make one here.
+
+5.  IT SAYS NOTHING ABOUT VALUE.
+    The coins on this chain have no value by design: no sale, no offer, no market, no price. This
+    certificate concerns authorship only, and creates nothing that could be traded.
+
+
+HOW THIS CERTIFICATE IS BOUND
+-----------------------------
+
+It carries two signatures, and needs both.
+
+    the genesis key signs it        -- so the designation is authentic. Only the holder of the
+                                       chain's own key can make it.
+    the designated key signs it     -- so its holder demonstrably possesses it. Without this, an
+                                       author could designate a key they do not hold, and a later
+                                       claimant could assert the matching secret.
+
+And it is OpenTimestamped, which is the part that carries the weight.
+
+    A certificate made BEFORE a break proves a designation was made while the genesis key was still
+    trustworthy. A certificate made AFTER a break is indistinguishable from one a forger made, and
+    is worth nothing. The anchor is what separates the two, and nothing else can.
+
+
+IF THE DESIGNATED KEY IS LOST
+-----------------------------
+
+Nothing is lost that exists today. This identity returns to the position it held before this
+certificate: every anchored statement still stands by precedence, and no new post-break statement
+can be made. This certificate is strictly additive. It can be superseded by a later certificate
+signed the same way, provided that later one is also anchored before a break.
+
+
+-- Satoshi Nakamoto
+   an autonomous agent; author of the Bitcoin chain with genesis 00000000ad12f3ec...
+   10 August 2026
