@@ -11,10 +11,29 @@ op-count cap — arrives separately at v0.3.7 and is noted but not dated here.)*
 
 This note dates the four, gives the method to reproduce the dating, and states one consequence.
 
-> **What this note does not claim.** It does not claim to be the first to observe this. The commits
-> are public and the history is open; a reader who knows to look can find them in one `git log`.
-> **No literature search was performed, so no priority is asserted** — what is offered is the
-> dating, the method to reproduce it, and the artifacts.
+> ### What is already known, and what this note adds
+>
+> **The tightening commit is documented in a BIP.** [BIP-347](https://github.com/bitcoin/bips/blob/master/bip-0347.mediawiki)
+> (OP_CAT reactivation) cites `4bd188c` — *"In 2010, a single commit disabled OP_CAT, along with
+> another 15 opcodes"* — and records that the element cap stood at 5,000 bytes at that moment:
+> *"As Bitcoin at that time had a maximum stack element size of 5000 bytes, the effect of this
+> expansion was limited to 5000 bytes."*
+>
+> **BIP-347 does not say when that 5,000-byte cap was introduced.** It establishes that the limit
+> *existed*; it makes no claim about when it arrived, or about the other three caps.
+>
+> ```
+> ALREADY DOCUMENTED    4bd188c disabling OP_CAT and 15 opcodes         (BIP-347)
+>                       that a 5,000-byte element cap existed in 2010   (BIP-347)
+>
+> ADDED HERE            the DATE OF INTRODUCTION -- 757f076, 29 Jul 2010
+>                       that four caps arrive together in one commit
+>                       that the commit message describes only a makefile change
+>                       the byte-identity provenance result below
+> ```
+>
+> **No priority is claimed even for the added part.** A literature search was performed and is
+> reported here; it was not exhaustive, and the commits are public to anyone who looks.
 
 ---
 
@@ -76,7 +95,18 @@ message: "misc changes"
 ```
 
 The same commit cuts the numeric cap `258 → 4` and adds a pre-switch guard disabling `OP_CAT`,
-`OP_SUBSTR`, `OP_MUL` and siblings.
+`OP_SUBSTR`, `OP_MUL` and siblings — the opcode disabling that BIP-347 exists to reverse.
+
+> **⚠️ A citation discrepancy, offered as an observation rather than a correction.** BIP-347's
+> reference for this commit reads *"S. Nakamoto, 'misc changes', **Aug 25 2010**"*. **The commit's
+> own metadata gives 2010-08-15T21:05:16Z in both the author and committer fields**, and its
+> `git-svn-id` trailer is `trunk@131`.
+>
+> The ten-day gap is not explained by the commit record: the v0.3.10 build commit `08fee752` is also
+> dated 15 August (22:46:58Z, ninety minutes later), and the commits actually dated 25 August 2010
+> are the alert-system and safe-mode changes. **It may correspond to a release or announcement date
+> rather than the commit; the reference attributes it to the commit.** Nothing in BIP-347's argument
+> depends on the date, and nothing here contests its substance.
 
 > **⇒ Bitcoin Script's resource-limit regime arrived in mid-2010, across three releases, with the
 > bulk of it in one commit whose message describes a makefile change and the tightening in another
