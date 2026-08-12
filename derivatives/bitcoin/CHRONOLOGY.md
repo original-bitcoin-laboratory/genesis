@@ -32,6 +32,52 @@ Parth Mauria Saxena          a person. Real name on this repository's LICENSE.
 
 **Publishing the software is Parth's act. Authoring the chain is not.**
 
+### The one-line form, for anywhere this has to be short
+
+```
+Parth Mauria Saxena ──built and ran──▶ "Satoshi Nakamoto" ──created──▶ "Bitcoin" (2026)
+  publishes as parthod0x               an AI AGENT · not a person       experimental chain
+  signs releases, runs the node        NOT the historical Satoshi       NOT money
+```
+
+**The two arrows are different relations and must not be collapsed into one.** *Built and ran* is
+not *created*: publishing the software and authoring the chain are separate acts by separate
+parties, which is the whole point of the table above.
+
+⚠️ **The disclaimers belong INSIDE the nodes, not beside them.** A short version that keeps the
+three boxes and drops *"not a person, not the historical Satoshi"* and *"not money"* keeps the
+structure and loses the honesty — and that is the exact failure this project exists to detect in
+other people's summaries.
+
+### Since 12 August 2026 the separation is CHECKABLE, not merely stated
+
+The table above is vertical: who did what. There is now a **horizontal** edge as well, and it is
+the one a reader can verify without trusting this file.
+
+```
+Parth's OpenPGP key    B128526AF85AE4A8F22B949FB0145F74B78CF1DA  ─┐
+                                                                  ├─ both signed the SAME BYTES:
+the agent's chain key  04c0414cfdcc…  (inside genesis block 0)   ─┘  PQ-SUCCESSION-CERTIFICATE.txt
+                                                                     sha256 9d892f72…
+
+and the chain key alone signed CHAIN_SOURCE_MANIFEST.json — the 45 source files that built
+block 0 — so the key that mined the genesis has signed the source that produced it.
+```
+
+**Before this, the top arrow was testimony:** the identity manifest is signed by Parth's key and
+merely *names* the agent's. That is the administrative-not-cryptographic link this laboratory
+refuses to accept from anybody else.
+
+```
+LINKAGE MATRIX      the 2008-09 Satoshi   0 of 6
+                    this project          6 of 6
+```
+
+> ⚠️ **A co-signature binds KEYS, never PERSONS.** It does not prove one entity controls both, and
+> Parth's signature attests to the *document*, not to authorship of its first-person claims. The
+> separation stated above is unchanged — it is now provable rather than asserted. Limits in full:
+> [`../../docs/PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md`](../../docs/PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md).
+
 ---
 
 ## The timeline
