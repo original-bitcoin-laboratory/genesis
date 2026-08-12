@@ -13,6 +13,45 @@ recalled** — it will be mirrored within hours and content-addressed forever.
 
 ---
 
+## ⚠️ FIRST, A CORRECTION TO THIS FILE'S OWN PREMISE — added the day it was written
+
+**The existing appliance is NOT a candidate for publication, and that was already decided before
+this checklist was drafted.** `OBL-BACKUP/05-vm/OVA-RECORD.md`, written 8 August 2026, records:
+
+```
+obl-r4-nodes.ova   23.8 GiB   sha256 5C37A79ED31F53BD4D6AB6D5C645777C0869B309C4A59F25EB90E9EDEC249983
+                   exported 2026-08-08 22:18:32 UTC, VirtualBox 7.2.14r174565
+                   contains obl-r4-node-a and obl-r4-node-b as they stood after R4c
+```
+
+> **"Both guests carry `wallet.dat`, including the keys to the coins spent in tx `f4309c`… the
+> appliance is key material and is handled as such: it stays on that machine or on encrypted media,
+> never in a repository, never in a cloud sync, never published."**
+
+**That is the correct call and it stands.** This checklist was drafted as though publishing *that*
+image were the goal. It is not, and could not be — **a VM containing wallet keys is a secret, and no
+amount of hashing makes a secret publishable.**
+
+### ⇒ So the reproducibility artifact is a DIFFERENT, purpose-built appliance
+
+```
+obl-r4-nodes.ova     the RESEARCH appliance -- preserves the ability to RE-RUN the machine.
+                     Contains wallets. NEVER published. Already hashed and recorded.
+a clean appliance    the REPRODUCIBILITY artifact -- a fresh guest with the binary, the
+  (does not exist    isolated network and the chain data, and NO WALLET AT ALL, built for
+   yet)              the purpose of being handed to strangers.
+```
+
+**Everything below applies to that second appliance when it is built.** The hash and manifest steps
+also apply to the first — and are already done — because a hash on record makes any copy that ever
+surfaces checkable, whether or not it is ever meant to circulate.
+
+⚠️ **And the record names the deeper reason the research appliance must stay private:** *"it is also
+the only artifact that could later prove WHO ran the experiment. Anyone can copy a block file; only
+the key-holder can sign."* **Publishing it would give that away permanently.**
+
+---
+
 ## STEP 0 — The scrub audit. Not optional, and not skippable because "it was a clean VM"
 
 Run these **inside the guest** before exporting, or against a mounted copy of the disk.
