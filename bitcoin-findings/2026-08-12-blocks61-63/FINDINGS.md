@@ -1,4 +1,4 @@
-# Blocks 61–63 — three blocks, the append-only proof repeated, and one round with no cross-validation
+# Blocks 61–63 — three blocks, the append-only proof repeated, and two apparent gaps that closed
 
 **12 August 2026.** The fourth capture after
 [`2026-08-12-blocks51-60`](../2026-08-12-blocks51-60/FINDINGS.md). **The chain is now 64 blocks deep.**
@@ -49,11 +49,33 @@ post capture           2026-08-12 12:43:19 UTC   pid 7720, created 12:42:45 UTC
 same binary as the previous round (51-60)        yes -- identical sha256
 ```
 
-⚠️ **The pre and post captures are DIFFERENT processes** — pid 1040 then pid 7720, with a
-`create_time` seventeen hours apart. **This is not the single continuous process the previous round
-demonstrated.** The client was restarted between the two bindings. The binary is identical in both,
-so what is bound is *which executable ran*, not *that one uninterrupted run produced these blocks*.
-**Stated because the previous round could claim the stronger form and this one cannot.**
+**The pre and post captures are DIFFERENT processes** — pid 1040 then pid 7720, seventeen hours
+apart. That looked at first like a weaker binding than the previous round's. **The log settles it,
+and the answer is better than the appearance.**
+
+```
+line 45405   Bitcoin exiting          <- previous session ends
+line 45428   Loading addresses...     <- SESSION S begins (pid 1040, created 19:43:22,
+                                          pre-binding captured 19:43:56, 34 s later)
+line 47056   proof-of-work found
+line 47448   proof-of-work found      <- THREE blocks, and NO "Bitcoin exiting" between them
+line 49709   proof-of-work found
+line 50619   Loading addresses...     <- SESSION T begins (pid 7720, created 12:42:45,
+                                          post-binding captured 12:43:19, 34 s later)
+             proof-of-work found in session T: 0
+```
+
+> ### ⇒ **All three blocks were mined inside ONE continuous session, and the pre-binding bound it.**
+> **Session T mined nothing** — it is a later restart that happened to be running when the post
+> capture was taken.
+>
+> ⚠️ **So the defect is in the POST-BINDING PROCEDURE, not in the blocks' provenance.** The
+> post capture is supposed to close the same process the pre capture opened; here it bound a
+> different one. **The fix is procedural: take the post capture BEFORE restarting the client**, as
+> the previous round did.
+>
+> *(Cross-check: 62 cumulative `proof-of-work found` minus the previous round's 59 = 3, and session
+> S contains exactly 3. Two independent countings agree.)*
 
 ## Network behaviour
 
@@ -68,20 +90,41 @@ received block          0      NONE arrived from a peer
 **Every block on this chain was mined locally.** The delta matching the block count exactly is the
 check that the cumulative reading is being interpreted correctly.
 
-## ⚠️ This round has NO cross-implementation validation
+## ★★ Cross-implementation validation — obtained after the fact, from the seed
 
-Every previous round from `blocks5-28` onward carried a `netnode-crossvalidation/` directory — the
-independent Python implementation's `blocks.dat`, re-derived from the same chain, compared block by
-block. **This capture does not contain one.**
+The capture arrived without a `netnode-crossvalidation/` directory, which every round since
+`blocks5-28` had carried. **It did not need the VM to close: the independent Python implementation
+can sync from the public seed.**
 
 ```
-2026-08-12-blocks51-60     netnode-crossvalidation/  present    61/61, 0 mismatches
-2026-08-12-blocks61-63     netnode-crossvalidation/  ABSENT
+python -m netnode --chain bitcoin --datadir <empty> --no-listen --connect 168.144.27.117:18026
 ```
 
-**So heights 61–63 are verified by our parser and by proof-of-work, but not yet by a second
-implementation.** That is a real gap in this round's evidence, not a formatting difference. It closes
-whenever a netnode capture over the current chain is taken; nothing about the blocks needs redoing.
+**It minted the genesis ITSELF from the chain parameters before connecting to anything**, arriving
+at `00000000ad12f3ec…` independently, then validated every block it received.
+
+```
+netnode (Python, host)      66 blocks   blocks.dat    14,509 B
+2009 C++ client (in the VM) 64 blocks   blk0001.dat   14,327 B
+
+compared heights 0-63       64 / 64 identical, 0 mismatches
+heights 61-63, this round   3 / 3 VALIDATED
+  height 61  000000008a6bb267f77a2d2a53426d62d895edc5e0543e40faf441b9c0e7df15  match
+  height 62  000000003b21ac6cac30594480183e4c950e41403a875e0ee8566e31b91a2839  match
+  height 63  000000001b3089823e7f7cf60a5f61167e2636a97443a219d24ea04da29d06eb  match
+```
+
+**The size difference is FRAMING, not content**, and it is exact:
+
+```
+over the 64 blocks both hold:
+  netnode   length+block        (4 B/block)  = 14,071 B
+  C++       magic+length+block  (8 B/block)  = 14,327 B  == blk0001.dat exactly
+  difference 256 B = 4 x 64                              EXACT
+```
+
+**netnode also holds heights 64 and 65**, which the VM had mined after the snapshot — independently
+confirming the two blocks the seed advertised.
 
 ## The wallet — and the custody separation, re-verified
 
@@ -114,7 +157,7 @@ queried rather than assumed — `verify/probe_seed_node.py`, a v0.1 handshake pl
 ```
 bitcoin.bitcoin-lab.org  ->  168.144.27.117:18026     connected
 version reply             protocol 101, services 1     on magic f00ba726 -- our network
-inventory advertised      64 block hashes              heights 1-64
+inventory advertised      65 block hashes              heights 1-65 (re-probed after ingest)
 ```
 
 ⚠️ **v0.1's `version` message carries NO block height** — `nBestHeight` was added to the protocol
@@ -122,16 +165,17 @@ later — so the height cannot come from a handshake. It is obtained the way a 2
 ask for an inventory and count it.
 
 **The seed's height-1 hash matches ours exactly, so it is on this chain and not a fork.** It
-advertised 64 hashes where our capture holds 63 above genesis, **so the seed is one block ahead: the
-VM kept mining after the snapshot was taken.** Expected, and it resolves itself at the next capture.
+advertised 65 hashes where our capture holds 63 above genesis, **so the seed is two blocks ahead:
+the VM kept mining after the snapshot was taken.** Expected — a capture is behind by construction —
+and the netnode sync above independently confirms heights 64 and 65 as real blocks on this chain.
 
 ## Limits, stated plainly
 
 ```
-NOT cross-validated       heights 61-63 have no second-implementation check this round
-NOT one process           pre and post bindings are different pids; the binary is bound, the
-                          continuity of the run is not
-seed is ahead by one      height 64 exists on the seed and is not in this capture
+CLOSED  cross-validation  64/64 by the independent Python implementation, 61-63 at 3/3
+CLOSED  one process       the three blocks are all inside one session; the POST-BINDING
+                          procedure is what needs fixing, not the provenance
+seed is ahead by two      heights 64-65 exist on the seed and are not in this capture
 cadence                   NOT reported. Three inter-block gaps carry far too much variance to
                           say anything about hashrate, and the previous round already recorded
                           why 10 samples were not enough either
@@ -144,11 +188,12 @@ OBL-BACKUP/04-evidence/bitcoin-chain-evidence/2026-08-12-blocks61-63/    34 file
   block61onward/datadir/            blk0001.dat, blkindex.dat, addr.dat, wallet.dat, database/
   block61onward/bitcoin-0.1.3/      bitcoin.exe, debug.log, db.log, the two binding JSONs
   block61onward/                    blk0001-blk61onward-*.dat, wallet-clean-*, pre/post JSON
+  netnode-crossvalidation/          blocks.dat (66 blocks), peers.json -- added after ingest
   screenshots/                      19 PNGs
 OBL-BACKUP/01-keys-SECRET/bitcoin-chain-wallets/wallet-clean-blk63-20260812.dat
 ```
 
-**34 of 34 files re-hashed after the copy, 0 mismatches.**
+**34 of 34 files re-hashed after the copy, 0 mismatches** (plus the 2 cross-validation files added here).
 
 Related: [previous round](../2026-08-12-blocks51-60/FINDINGS.md) ·
 [`CORRECTIONS.md`](../CORRECTIONS.md) · `verify/probe_seed_node.py`
