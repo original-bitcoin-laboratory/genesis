@@ -48,10 +48,34 @@ IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against th
 > **That anchor stands and is not withdrawn** — it proves revision 1 existed before that block.
 > Revision 2's proofs are freshly stamped and pending.
 
-⚠️ **The DNS TXT records on the three domains pin the revision-1 hash and are now stale.** They
-should carry the key fingerprint — which is stable — rather than a manifest hash, which changes
-every time the manifest is corrected. **A binding that breaks whenever the thing it binds is
-improved is the wrong binding.**
+## Proof of domain control — a DNS TXT record on each of the three domains
+
+Each domain answers a TXT query at its apex with the same record, so control of the domain is
+demonstrated by the one party who can set it:
+
+```
+parthod0x-pgp=B128526AF85AE4A8F22B949FB0145F74B78CF1DA; manifest=https://bitcoin-lab.org/IDENTITY-MANIFEST.txt https://satoshioncha.in/IDENTITY-MANIFEST.txt
+```
+
+```
+$ dig +short TXT bitcoin-lab.org
+$ dig +short TXT satoshioncha.in
+$ dig +short TXT bitcoinwhitepaper.online
+```
+
+> ★ **It pins the KEY FINGERPRINT, not a manifest hash — and that is a correction, not a preference.**
+> The first version of these records carried `parthod0x-manifest=<sha256>`, which went stale within a
+> day when the manifest was revised. **A binding that breaks whenever the thing it binds is improved
+> is the wrong binding.** The fingerprint does not change; the manifest is expected to.
+>
+> **The record proves domain control, and nothing else.** It publishes a fingerprint, which is
+> already public — never a key. That is why `bitcoinwhitepaper.online` carries it while still hosting
+> no release material of any kind.
+>
+> ⚠️ **Verify against the authoritative nameservers, not a public resolver.** When these were set,
+> `1.1.1.1` and `8.8.8.8` both still served the previous record for one domain with 1,755 s of TTL
+> left, while `dns1`/`dns2.registrar-servers.com` already had the new one. **A cached answer is not
+> the zone** — reading the resolver would have reported a correct change as a failed one.
 
 > **The merkle root was read off the chain and compared, not taken from the `ots` output.** That is
 > the whole point of an anchor: it is checkable against Bitcoin by anyone, without trusting this
