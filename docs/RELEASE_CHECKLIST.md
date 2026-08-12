@@ -117,8 +117,21 @@ from one a forger made afterwards.
 Four things that are easy to get wrong:
 
 - **The Windows client does not work.** `ctypes.find_library` returns None and it dies with
-  `LoadLibrary() argument 1 must be str, not None`. Use WSL:
-  `pip install --break-system-packages opentimestamps-client`.
+  `LoadLibrary() argument 1 must be str, not None` — `ots` imports python-bitcoinlib, which loads an
+  OpenSSL DLL at import time for *wallet* code an upgrade never touches. **Every subcommand dies
+  before parsing its arguments.**
+  > ★ **Preferred: `python _ots_upgrade.py` at the workspace root** (`--dry-run` to report only). It
+  > reaches the calendars through the pure-python `opentimestamps` library, needs no WSL, and decides
+  > pending-vs-anchored by **parsing the proof** rather than by reading console output or file size.
+  > It also writes **no `.bak`**, so the trap two bullets down cannot arm itself.
+  >
+  > ⚠️ **Why this replaced the WSL workaround instead of joining it: a sweep once shelled out to the
+  > Windows client, grepped its traceback for `BitcoinBlockHeaderAttestation`, found none, and
+  > reported all 83 proofs pending when 74 were anchored.** A crashing tool does not answer "no" — it
+  > does not answer at all. **This bullet had warned about the crash the whole time; a warning is not
+  > a control.**
+  >
+  > WSL remains a valid fallback: `pip install --break-system-packages opentimestamps-client`.
 - **A fresh proof is incomplete.** It reads *"Pending confirmation in Bitcoin blockchain"* for a few
   hours. **Come back and `ots upgrade` each `.ots`, then re-upload.** A proof left un-upgraded never
   completes itself, and the release ships something that looks like a timestamp and is not yet one.
