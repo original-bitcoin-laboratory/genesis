@@ -231,6 +231,14 @@
     that follows. <b>Verification is not the problem; size is</b> — a transaction grows 19× to 86×.
     Reproducible in one command, and it takes no position on whether Bitcoin should change anything.
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/PQ-SIGNATURE-COST.md" style="color:var(--focus)">The measurement →</a></p>
+  <p class="note"><b>Bitcoin's script limits were retrofitted, and here are the dates.</b> The caps on
+    pushed-element size, script size, stack depth and numeric operands are commonly taken to be part of
+    the original design. <b>None of the four is in the January 2009 release.</b> All four arrive on
+    29 July 2010 in a commit whose message describes a makefile change, and the element cap is tightened
+    5,000&nbsp;→&nbsp;520 seventeen days later under the message &ldquo;misc changes&rdquo;. Every commit in the
+    window was fetched and tested individually; the genesis interpreter was compiled and executed rather
+    than read. It claims no priority — the commits are public — only the dating, the method, and the artifacts.
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/SCRIPT-LIMITS-RETROFITTED.md" style="color:var(--focus)">The note →</a></p>
   <p class="note"><b>Related research</b> (a separate project). <a href="https://satoshioncha.in" style="color:var(--focus)">satoshi‑onchain</a>
     — a reproducible verifier + Patoshi classifier for the <i>original Satoshi's on‑chain footprint</i>
     (the genesis block, the ~1.1M‑BTC Patoshi mining pattern, the block‑170 Satoshi→Finney spend) —
