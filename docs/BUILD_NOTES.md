@@ -161,7 +161,7 @@ This was the one objection in `00-DECISIONS-AND-REASONING.md` §11 conceded with
 
 ## What it took: two flags
 
-Nobody had ever built this twice and compared. Doing so cost minutes and found everything.
+We had not built this twice and compared, and no published account we could find had either. Doing so cost minutes and found everything.
 
 **First comparison — same machine.** Two builds of identical inputs differed in **4 bytes of
 15,529,604**: two in the PE `TimeDateStamp` at `0x88`, and two in the `CheckSum` at `0xd8` that
