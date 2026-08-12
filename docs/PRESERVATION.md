@@ -92,6 +92,36 @@ the exact failure this project exists not to make.
 
 Mirrored byte-identically to `satoshioncha.in`, since it speaks for that site too.
 
+## The post-quantum designations — one for each identity that publishes
+
+Two keys can outlive a break of elliptic-curve signatures, and each is now designated **in writing,
+in advance, with its limits stated**:
+
+```
+PQ-SUCCESSION-CERTIFICATE.txt      the 2026 agent's successor        10 Aug 2026
+                                   signed by the chain key AND the successor AND (12 Aug) the
+                                   OpenPGP key -- three signatures, two identities, one document
+PQ-COUNTERSIGN-DESIGNATION.txt     parthod0x's counter-signing key   12 Aug 2026
+                                   7,629 B, sha256 51c69df077f6150e04e97c9128dbe2919282879ceed107ebcfd464e8fa7c6246
+                                   signed by the OpenPGP key AND by the designated key itself
+```
+
+**Both are OpenTimestamped, and that is the part that carries the weight.** A designation made
+BEFORE a break proves it was made while the root key was still trustworthy; one made after is
+indistinguishable from a forger's, and worth nothing.
+
+> ⚠️ **Each states what its key may NOT do, and those limits are part of the designation.** Neither
+> proves the identity of any person — a legal identity is not a key. Neither confers power over the
+> chain: `parthod0x` publishes the software and did not author the chain, and the agent's successor
+> cannot spend, mine or sign a transaction. Neither asserts any name or trade mark. Neither says
+> anything about value.
+>
+> ★ **The designation for `parthod0x` was written last, and only because an audit noticed the
+> asymmetry:** the agent had one from 10 August and the publishing identity did not. The two keys
+> were already cryptographically bound — both sign `IDENTITY-MANIFEST.txt` over identical bytes —
+> but **the scope of the second key's authority was nowhere stated.** An unstated scope is the
+> difference between a tool with known limits and a key whose holder can later claim what suits them.
+
 ## OpenTimestamps — a date nobody here can move
 
 Every release asset carries a `.ots` proof, submitted to four independent calendars
