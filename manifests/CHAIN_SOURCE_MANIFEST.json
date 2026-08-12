@@ -1,0 +1,243 @@
+{
+ "agent_public_key": "04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba794ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834",
+ "excluded": [
+  "build outputs",
+  "dist/",
+  "build-*/",
+  "obj/",
+  "__pycache__/"
+ ],
+ "file_count": 45,
+ "files": [
+  {
+   "path": "PROVENANCE.txt",
+   "sha256": "bc477fd5c3846edeecc6d72e7b6cc03dbfd2db3f9412724a7bacd207cc597730",
+   "size": 7644
+  },
+  {
+   "path": "bitcoin-v0.1.0.patch",
+   "sha256": "4f63070cc8e91cf7218633c4274e17806a5dcaa84763bb9c6c43abe5720d8b1a",
+   "size": 3411
+  },
+  {
+   "path": "src/base58.h",
+   "sha256": "f74d61273812f0966968f4bdf5e42ff8cc28837f0df463fe09980065e84209eb",
+   "size": 5639
+  },
+  {
+   "path": "src/bignum.h",
+   "sha256": "c946d2678051772a771ec2ba9c33fee64d8c1d0c92b6a791d6637ba673b36fc0",
+   "size": 14096
+  },
+  {
+   "path": "src/db.cpp",
+   "sha256": "2b83d2432aa19ba3faceca58c0b610a715747089ec2d6ed580cd915b53c1a5ac",
+   "size": 16382
+  },
+  {
+   "path": "src/db.h",
+   "sha256": "6f0abeb8ae108f9823783a71ef214824e9f6ab72e93990bc70838cd55a433eda",
+   "size": 10979
+  },
+  {
+   "path": "src/headers.h",
+   "sha256": "dac61d922a9cdce5f6f6a8acd0e5628721d865ce9bb54ded32b5fa9a7a6e202f",
+   "size": 1639
+  },
+  {
+   "path": "src/irc.cpp",
+   "sha256": "04fec373805a83fa10a656823fca164cdd089e7b63eda0f1ea7b58f18e7eaaa7",
+   "size": 6572
+  },
+  {
+   "path": "src/irc.h",
+   "sha256": "f3c40402a7809562de6cc659e099ba9ccfee6f119958b7811ba82414edc42e7a",
+   "size": 317
+  },
+  {
+   "path": "src/key.h",
+   "sha256": "f631451db96081b0eeb4ca74d2f9c221de934f1079b166077055f4d0cea63e68",
+   "size": 4639
+  },
+  {
+   "path": "src/license.txt",
+   "sha256": "bf78d9cb6275b70fc0dd8af1248e9fd8cb4327d854a0e39ceb1b2d9993a96220",
+   "size": 1079
+  },
+  {
+   "path": "src/main.cpp",
+   "sha256": "06b624ed8ea3a795ec1b06da0911c61f3d99b25196f36396b84236c37546e96e",
+   "size": 82966
+  },
+  {
+   "path": "src/main.h",
+   "sha256": "f134c66c90c9ee054573a4f3199a0231b95c9e7a26e1ee45a73748ff4ac3511e",
+   "size": 33212
+  },
+  {
+   "path": "src/makefile",
+   "sha256": "fa2f6c3031eb8625e24aa012fa7c0d6e17c7f61e7b9604d45cde5b7bfdade161",
+   "size": 2693
+  },
+  {
+   "path": "src/makefile.vc",
+   "sha256": "c00a4413d656f958120265590701e0fe2159020e474470726f826f1178d790ed",
+   "size": 2647
+  },
+  {
+   "path": "src/market.cpp",
+   "sha256": "81c15691f9ca4c0a0d66b4a4a95e631caf3f31af26575e5ab49f8db838fa6e39",
+   "size": 6938
+  },
+  {
+   "path": "src/market.h",
+   "sha256": "85aa4b054d749e094e641d41233384c1e7b58c84696b7be145ab53e6c0fbdbc4",
+   "size": 3745
+  },
+  {
+   "path": "src/net.cpp",
+   "sha256": "fbaf9b912f7fedd87c8a1f1e232cb04dd567e41007abe900772579cf1e29dcbe",
+   "size": 31293
+  },
+  {
+   "path": "src/net.h",
+   "sha256": "28467d1851d32d56f840861677fb454c600ce7359d859ae0dcea8460cdec505c",
+   "size": 21345
+  },
+  {
+   "path": "src/rc/addressbook16.bmp",
+   "sha256": "a8687dc93616ba8d56a44c4edd52e1b6dc93b87b97b8177a65b369b3e9c4f853",
+   "size": 1334
+  },
+  {
+   "path": "src/rc/addressbook16mask.bmp",
+   "sha256": "a22071608f7e38b4b18f69d87123f6d7429710e8ea7b5370f1c86b14193fbf50",
+   "size": 126
+  },
+  {
+   "path": "src/rc/addressbook20.bmp",
+   "sha256": "76fe6679da5c4d9fd763084a19d1d0cf0eb3fb78f8799ba064e912d1ab4b0b10",
+   "size": 1478
+  },
+  {
+   "path": "src/rc/addressbook20mask.bmp",
+   "sha256": "392154912bd31605dee19df89e999db180bfa5a595a668ef097d5d3338fbedc8",
+   "size": 142
+  },
+  {
+   "path": "src/rc/bitcoin.ico",
+   "sha256": "8571889ac8a29b5c2e537f3fb11973295fcffc8f9b348623aa87b3598e869033",
+   "size": 22486
+  },
+  {
+   "path": "src/rc/check.ico",
+   "sha256": "8a1978ca70d9aa80942dac340a212d1e42650c21182e785cca99e586c9ccb620",
+   "size": 766
+  },
+  {
+   "path": "src/rc/send16.bmp",
+   "sha256": "553d3ee80472f791d1da36600f534b702af159f98c54191031847f283f70715e",
+   "size": 1334
+  },
+  {
+   "path": "src/rc/send16mask.bmp",
+   "sha256": "7297c773da79fc0ef61799b3b698274fd4f6d74d3c3a727ad6dff41358968191",
+   "size": 126
+  },
+  {
+   "path": "src/rc/send16masknoshadow.bmp",
+   "sha256": "08c7efff95fc90a198dd190e50761281cbfab42e17f064b7146d952d94601749",
+   "size": 126
+  },
+  {
+   "path": "src/rc/send20.bmp",
+   "sha256": "b4959ca84a316e494e2d5b61f406e54344249ace24b854e90f34d5deaccf61c3",
+   "size": 1478
+  },
+  {
+   "path": "src/rc/send20mask.bmp",
+   "sha256": "efb5d66bb902a281406d3b5cc4092008dbdcb5c77b298c06b3ef79e8bfa16160",
+   "size": 142
+  },
+  {
+   "path": "src/readme.txt",
+   "sha256": "9a735646db7a90f423f5f96c03af43afe2b1a836eb143f620dc7b21d09dc654d",
+   "size": 2663
+  },
+  {
+   "path": "src/script.cpp",
+   "sha256": "347c7526932d42a4d10ae487150b709e2ead737aa4b05f50aa9e2eefeb05a5b5",
+   "size": 35279
+  },
+  {
+   "path": "src/script.h",
+   "sha256": "f905858b5d6d4593a3051b593c45fb5a8dd4cd38b5636c5e4456060b034fa218",
+   "size": 17707
+  },
+  {
+   "path": "src/serialize.h",
+   "sha256": "797ab9b03e7abaf78a614ec2dde76365f1ef29cdc493fa86addc51cf936c678a",
+   "size": 39878
+  },
+  {
+   "path": "src/sha.cpp",
+   "sha256": "e99fec6d660bf7b06f7455f41567c5454b04c63e0ad0ee16b51ef421110cd0b5",
+   "size": 19000
+  },
+  {
+   "path": "src/sha.h",
+   "sha256": "8b4c2faf5156b67491aa78ead117870999c807f7627afc6d223194416df02ede",
+   "size": 5023
+  },
+  {
+   "path": "src/ui.cpp",
+   "sha256": "bec80418526c9fe45f3b83c99c0a708363942df271d3f048c18fec6ebff8fa63",
+   "size": 97185
+  },
+  {
+   "path": "src/ui.h",
+   "sha256": "33db8e6b87a6a5427661acf894f006dd112f2c339daaedc454c9aaf4de67cf8a",
+   "size": 11887
+  },
+  {
+   "path": "src/ui.rc",
+   "sha256": "a9cd94ed8280943bc35724ca7a53c46f2b167dce27adeca248920c5c16ff46b7",
+   "size": 602
+  },
+  {
+   "path": "src/uibase.cpp",
+   "sha256": "a6270e7d73012541cd086a5ca1d9b06ad8ec3422e2e3ce1c9ce0a064f0c350da",
+   "size": 108295
+  },
+  {
+   "path": "src/uibase.h",
+   "sha256": "945c2abf4280518a6d1ede7319e835fb3df82674e8a907ec4a2d1e8c74674eab",
+   "size": 27772
+  },
+  {
+   "path": "src/uint256.h",
+   "sha256": "54818c679957094352ca5a6d7b7d131cfa7052ee54d8481053f87f57217b0c59",
+   "size": 25269
+  },
+  {
+   "path": "src/uiproject.fbp",
+   "sha256": "60a494786f42edd610c7cf23c6a6427f2897cf78fc99604a5d0a471859ae2305",
+   "size": 841798
+  },
+  {
+   "path": "src/util.cpp",
+   "sha256": "08c445327efc7b127a70897da559114b5eb0ae1576018d5a3ba7b3b998a84365",
+   "size": 9386
+  },
+  {
+   "path": "src/util.h",
+   "sha256": "1411b8f3ff7c712ea80f98587e3b8a9cf05b81a1dc8c45021bbf491de6292534",
+   "size": 11482
+  }
+ ],
+ "files_carrying_satoshi_copyright": 29,
+ "genesis": "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a",
+ "root": "derivatives/bitcoin",
+ "schema": 1,
+ "what": "the source that produced this chain's genesis block, and the copyright line it carries"
+}
