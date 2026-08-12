@@ -125,6 +125,24 @@ means height 4032 is another ~147 days, not a cheap follow-on.
 > calculation only happened because the hypothesis was named. **Momentum would never have produced
 > it.**
 
+## ⚠️ Nothing was watching for it — fixed 13 August 2026
+
+**This document pre-registered a prediction and named a boundary, and then nothing observed either.**
+`retarget.py` is a MODEL — a line-for-line port of `GetNextWorkRequired` — not a monitor, and no
+scheduled job mentioned height 2016.
+
+> ★ **A pre-registered prediction that nobody is present to score is not an experiment. It is a
+> hope.** The chain mines at roughly 105 min/block, so the boundary is months out and the moment it
+> matters is a moment nobody would have been looking at.
+
+**`derivatives/retarget/retarget_watch.py`** now reads the published status feed, reports the
+distance to the boundary, and prints the capture list the instant the chain crosses it. It runs in
+one command and has a `--json` mode for a cron job.
+
+```
+at the time of writing:  height 70 · 1,946 blocks to go · ~142 days at the observed cadence
+```
+
 ## What will be recorded when it fires
 
 ```
