@@ -242,6 +242,21 @@ function run(){
   document.getElementById('hint').innerHTML = ok
     ? '<b>Verified.</b> Re-derived here, from these ingredients — not looked up. Compare the hash above with any independent source.'
     : '<b>Changed.</b> The coinbase no longer matches, so the block hash differs. Restore the headline to see it snap back.';
+
+  // Whether this re-derivation SUCCEEDS on real devices is the flagship claim of this site, and
+  // until now it was the one outcome never measured. Counted once per distinct verdict per chain,
+  // not once per keystroke: the tamper case is the reader deliberately breaking it, which is the
+  // page working as designed, so both outcomes are worth having.
+  //
+  // A FAIL on the UNMODIFIED headline would mean the derivation is broken in somebody's browser --
+  // the single most important thing this project could learn from a visitor, and it cannot be
+  // learned any other way.
+  var _verdict = (ok ? 'match' : 'tampered') + (hl === G().headline ? '' : ' (edited)');
+  if (window.gcEvent && _verdict !== window.__lastGenesisVerdict) {
+    window.__lastGenesisVerdict = _verdict;
+    gcEvent('verify-genesis: ' + SEL + ' — ' + _verdict,
+            'genesis re-derivation');
+  }
 }
 function paint(){
   const g=G();
