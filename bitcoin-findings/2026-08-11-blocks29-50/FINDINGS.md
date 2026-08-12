@@ -88,7 +88,7 @@ no binding that looks complete and attests to nothing. **The capture refused to 
 it could not substantiate, and said so.**
 
 > **Contrast it with what this laboratory measured the same day in a third party's tooling**
-> ([entry 88](../../../../bitcoin-origin-claims/88_the-coins-that-were-already-spent.md)): a
+> (recorded in this project's internal research corpus, which is not published): a
 > verifier that checks its inputs against its own unvalidated input file and prints
 > `ALL CHECKS PASSED` while thirteen of them are provably spent.
 >
