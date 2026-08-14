@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Documents — Original Bitcoin Laboratory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Every document this lab publishes, in one place: runbooks you can follow, the evidence and scope policies, the release and signing procedure, and the post-quantum certificates. Not money.">
+<link rel="canonical" href="https://bitcoin-lab.org/docs.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Original Bitcoin Laboratory">
+<meta property="og:url" content="https://bitcoin-lab.org/docs.html">
+<meta property="og:title" content="Documents — Original Bitcoin Laboratory">
+<meta property="og:description" content="Every document this lab publishes, in one place: runbooks, evidence and scope policies, release and signing procedure, post-quantum certificates. Not money.">
+<meta name="twitter:card" content="summary">
+<style>
+  :root{
+    --ground:#0e1316; --panel:#151d22; --line:#243037; --ink:#dfe7ea; --mut:#8ea0a9;
+    --focus:#7fd1c1; --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --ground:#fbfbf9; --panel:#fff; --line:#e2e5e3; --ink:#161a1c; --mut:#5d6a70; --focus:#0f6f5c; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);
+       font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:880px;margin:0 auto;padding:34px clamp(16px,4vw,26px) 70px}
+  h1{font-size:25px;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--mut);margin:0 0 8px}
+  .note{border-left:2px solid var(--focus);padding:10px 0 10px 14px;margin:22px 0 28px;
+        color:var(--mut);font-size:13.5px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--mut);
+     margin:34px 0 10px;font-family:var(--mono);font-weight:600}
+  ul{list-style:none;margin:0;padding:0}
+  li{border-top:1px solid var(--line);padding:11px 0}
+  li:last-child{border-bottom:1px solid var(--line)}
+  a.d{color:var(--ink);text-decoration:none;font-weight:600}
+  a.d:hover{color:var(--focus);text-decoration:underline}
+  .desc{display:block;color:var(--mut);font-size:13.5px;margin-top:2px}
+  .fn{font-family:var(--mono);font-size:11.5px;color:var(--mut);opacity:.75}
+  footer{margin-top:52px;padding-top:18px;border-top:1px solid var(--line);
+         font-family:var(--mono);font-size:12px;color:var(--mut)}
+  footer a{color:var(--focus)}
+</style>
+<div class="wrap">
+  <p class="fn"><a href="/" style="color:var(--focus);text-decoration:none">&larr; Original Bitcoin Laboratory</a></p>
+  <h1>Documents</h1>
+  <p class="sub">Everything this lab publishes as prose, in one place.</p>
+
+  <div class="note">
+    These were all reachable by URL before this page existed &mdash; and by nothing else. A document
+    nobody can navigate to is published in the same sense that a hash nobody can fetch is cited:
+    technically true, practically not. <b>The runbooks are the ones that mattered most</b>, because
+    they are the instructions for reproducing the work rather than taking it on trust.
+  </div>
+
+  <h2>Run it yourself</h2>
+  <ul>
+    <li><a class="d" href="R3_LAYMAN_RUNBOOK.md">Plain-language runbook</a>
+      <span class="desc">Run the real 2009 Bitcoin yourself. Start here if you start anywhere.</span></li>
+    <li><a class="d" href="R2_BUILD_STEPS.md">Build steps you can actually run</a>
+      <span class="desc">Rebuild the period binary from source, with WSL or Docker.</span></li>
+    <li><a class="d" href="R2_BUILD_RECONSTRUCTION.md">Historical build reconstruction</a>
+      <span class="desc">What the reconstruction establishes, stated honestly.</span></li>
+    <li><a class="d" href="R3_HISTORICAL_NODE.md">Historical node in an isolated VM</a>
+      <span class="desc">The isolated-VM procedure (JAN09-EXECUTED).</span></li>
+    <li><a class="d" href="R3_MANUAL_RUNBOOK.md">Manual runbook</a>
+      <span class="desc">The steps that cannot be automated.</span></li>
+    <li><a class="d" href="R4_RUNBOOK.md">Sustained mining and reorg</a>
+      <span class="desc">Two nodes, sustained mining, reorg, and optional transaction relay.</span></li>
+    <li><a class="d" href="R3_EVIDENCE_TEMPLATE.md">Run-findings template</a>
+      <span class="desc">The form each recorded run is written up in.</span></li>
+  </ul>
+
+  <h2>Verify it</h2>
+  <ul>
+    <li><a class="d" href="VERIFY_RELEASES.md">Verifying a release</a>
+      <span class="desc">Signature, checksum and timestamp, end to end.</span></li>
+    <li><a class="d" href="RELEASE_SIGNING.md">Release signing</a>
+      <span class="desc">How releases are produced reproducibly and signed.</span></li>
+    <li><a class="d" href="RELEASE_CHECKLIST.md">Cutting a release</a>
+      <span class="desc">The checklist actually followed each time.</span></li>
+    <li><a class="d" href="PRESERVATION.md">Preservation</a>
+      <span class="desc">Keeping the proof retrievable from more than one root &mdash; and what
+        content addressing does <i>not</i> promise.</span></li>
+    <li><a class="d" href="IDENTITY-MANIFEST.txt">Identity manifest</a>
+      <span class="desc">Every publishing identity bound to the signing key. Signed and anchored.</span></li>
+  </ul>
+
+  <h2>Post-quantum</h2>
+  <ul>
+    <li><a class="d" href="PQ-COUNTERSIGNING.md">Post-quantum counter-signatures</a>
+      <span class="desc">Why the timestamps outlive the signatures, and what was done about it.</span></li>
+    <li><a class="d" href="PQ-SUCCESSION-CERTIFICATE.txt">Succession certificate</a>
+      <span class="desc">The certificate itself. <a href="PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md">What it establishes</a>.</span></li>
+    <li><a class="d" href="PQ-COUNTERSIGN-DESIGNATION.txt">Counter-signing designation</a>
+      <span class="desc">The designation record for the counter-signing key.</span></li>
+    <li><a class="d" href="PQ-SIGNATURE-COST.md">What PQ signing costs a 2009-shaped chain</a>
+      <span class="desc">Measured, not estimated.</span></li>
+  </ul>
+
+  <h2>Scope, evidence and governance</h2>
+  <ul>
+    <li><a class="d" href="PROJECT_CHARTER.md">Project charter</a>
+      <span class="desc">What this lab is for.</span></li>
+    <li><a class="d" href="EVIDENCE_POLICY.md">Evidence policy</a>
+      <span class="desc">The grades, and what each one is allowed to claim.</span></li>
+    <li><a class="d" href="PUBLIC_TESTNET_SCOPE.md">Public experimental testnet &mdash; honest scope</a>
+      <span class="desc">Explicitly not a coin launch. <b>Not money.</b></span></li>
+    <li><a class="d" href="WHY-THE-CHAIN-CONTINUES.md">Why this chain continues, and where it stops</a>
+      <span class="desc">The boundary, written down before anyone asked for it.</span></li>
+    <li><a class="d" href="AUDIT.md">Internal robustness audit</a>
+      <span class="desc">And its <a href="AUDIT_SCOPE.md">scope</a>.</span></li>
+    <li><a class="d" href="STATUS.md">Status</a>
+      <span class="desc">Where Genesis (OBL-JAN09) currently stands.</span></li>
+    <li><a class="d" href="OVA-PUBLICATION-CHECKLIST.md">Publishing the VM image</a>
+      <span class="desc">The audit that must happen before an image leaves this machine.</span></li>
+  </ul>
+
+  <h2>The source, the chain and the whitepaper</h2>
+  <ul>
+    <li><a class="d" href="V010_TO_V013.md">v0.1.0 &rarr; v0.1.3</a>
+      <span class="desc">What Satoshi changed in the four days after the first release.</span></li>
+    <li><a class="d" href="NOV08_GENESIS.md">The November 2008 genesis</a>
+      <span class="desc">What it is, and what it is not.</span></li>
+    <li><a class="d" href="SCRIPT-LIMITS-RETROFITTED.md">Script resource limits were retrofitted</a>
+      <span class="desc">Mid-2010, not present at the beginning.</span></li>
+    <li><a class="d" href="BUILD_NOTES.md">Build notes &mdash; v0.1.2</a></li>
+    <li><a class="d" href="WHITEPAPER.md">The whitepaper &mdash; identified here, not hosted here</a>
+      <span class="desc">And <a href="WHITEPAPER_PROVENANCE.md">what is established about it, and what is not</a>.</span></li>
+    <li><a class="d" href="ANNOUNCE.md">An invitation to run the earliest Bitcoin</a></li>
+  </ul>
+
+  <footer>
+    &#9670; Original Bitcoin Laboratory &middot; reconstructions + Bitcoin &mdash; <b>NOT money</b>
+    &middot; no warranty<br>
+    MIT &copy; 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a> &middot;
+    <a href="https://satoshioncha.in">Satoshi On-Chain</a> &middot;
+    <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a>
+  </footer>
+</div>
+<script>window.goatcounter = {}</script>
+<script data-goatcounter="https://parthod0x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script src="analytics.js"></script>
+</html>

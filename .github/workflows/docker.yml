@@ -15,6 +15,10 @@ on:
 permissions:
   contents: read
   packages: write
+  # ⛔ id-token: write is what makes KEYLESS SIGNING possible. Cosign exchanges this short-lived
+  #    GitHub OIDC token for a Fulcio certificate, so the signature is bound to THIS workflow in
+  #    THIS repository and there is no long-lived signing secret to store or leak.
+  id-token: write
 
 jobs:
   build-push:
@@ -42,6 +46,7 @@ jobs:
             type=sha,format=short
 
       - name: Build + push
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -51,3 +56,48 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # ── SIGNING ────────────────────────────────────────────────────────────────────────────
+      # ⛔ WHY THIS EXISTS, ADDED 15 Aug 2026 AFTER AN AUDIT FOUND THE GAP.
+      #    Every other artifact this project publishes is GPG-signed, SHA-256 summed and
+      #    Bitcoin-anchored — and the pages tell readers to `docker run` THIS image, which was
+      #    the one published thing carrying no signature at all.
+      #
+      #    ★★ THE ARTIFACT EASIEST TO RUN WAS THE ONLY ONE THAT COULD NOT BE CHECKED. That is
+      #    exactly backwards: a tarball you must verify by hand was protected, while the thing a
+      #    reader would actually execute was not.
+      #
+      #  ⇒ Keyless (Fulcio/Rekor). No key material exists to steal, and the signature names the
+      #    workflow that made it. Verify with:
+      #
+      #      cosign verify ghcr.io/original-bitcoin-laboratory/xnode:<tag> \
+      #        --certificate-identity-regexp '^https://github.com/original-bitcoin-laboratory/genesis/' \
+      #        --certificate-oidc-issuer https://token.actions.githubusercontent.com
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign the image by digest
+        env:
+          # ⚠️ Sign the DIGEST, never a tag. A tag is mutable and can be moved to other bytes
+          #    later; the digest is the bytes. Signing `name:tag` would sign a name, not an image.
+          DIGEST: ${{ steps.build.outputs.digest }}
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          set -euo pipefail
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER}/xnode@${DIGEST}"
+          echo "signing ${image}"
+          cosign sign --yes "${image}"
+          echo "--- verifying what was just signed, so a broken signature fails the build ---"
+          cosign verify "${image}" \
+            --certificate-identity-regexp "^https://github.com/${GITHUB_REPOSITORY}/" \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            > /dev/null
+          echo "signature verifies"
+
+      # Provenance attestation: WHAT built the image, not merely that someone signed it.
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ghcr.io/${{ github.repository_owner }}/xnode
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true

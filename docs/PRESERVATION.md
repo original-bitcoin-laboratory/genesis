@@ -222,8 +222,17 @@ independently arrive at.
 *(the table below continues with earlier releases)*
 
 
-Every signed asset of every Bitcoin release, by content hash. `ipfs get <CID>`, or any public
+Every signed asset of every Bitcoin release, by content hash. `ipfs get <CID>`, or a public
 gateway — then check what comes back against `SHA256SUMS` from the release itself.
+
+> ⚠️ **RETRIEVAL IS NOT INSTANT AND IS NOT GUARANTEED, measured 15 Aug 2026.** Pinata's gateway
+> serves these immediately. A public gateway must first locate a provider: against `ipfs.io`,
+> **3 of 4 `v0.1.2` objects came back and one needed three attempts** (two 28-second timeouts
+> first); several other public gateways were down or redirect-broken on the day.
+>
+> ⇒ **Content addressing proves what the bytes ARE. It never promises somebody is still serving
+> them.** The GitHub release is the primary copy and the pin is a mirror — stated in that order
+> because the reverse would be a claim this project cannot keep.
 
 | release | file | CID |
 |---|---|---|
@@ -263,8 +272,9 @@ token, no market — a valueless research instrument, preserved.
    `IPFS_TOKEN`, paste the JWT.
 
 That is all. On the next published release the `ipfs` job downloads the signed `*.tar.gz`, `SHA256SUMS`, and
-`*.asc`, pins each to IPFS, and logs the CIDs — retrievable from any gateway and cross-checkable against
-`SHA256SUMS`.
+`*.asc`, pins each to IPFS, and logs the CIDs — cross-checkable against `SHA256SUMS`, and
+retrievable from Pinata's gateway immediately or from another public gateway once it has found a
+provider (which can take several attempts; see the note above the CID table).
 
 ### The signing key itself
 

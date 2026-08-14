@@ -63,6 +63,27 @@ A good signature prints `Good signature from "parthod0x <parthms.id@gmail.com>"`
 `WARNING: This key is not certified with a trusted signature` line is normal — it just means you
 haven't personally signed the key; the fingerprint check above is what matters.)
 
+## Verifying the container image
+
+The pages that tell you to `docker run` the node point at `ghcr.io/original-bitcoin-laboratory/xnode`.
+**From 15 August 2026 that image is signed too**, keylessly, so there is no key for you to fetch and
+none for anyone to steal:
+
+```bash
+cosign verify ghcr.io/original-bitcoin-laboratory/xnode:Bitcoin-v0.1.5   --certificate-identity-regexp '^https://github.com/original-bitcoin-laboratory/genesis/'   --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+That checks something a GPG signature cannot: it names **the workflow, in this repository, that
+built the image**, rather than a person who says they did. A build-provenance attestation is pushed
+alongside it and can be checked with `gh attestation verify`.
+
+> ⚠️ **IMAGES PUBLISHED BEFORE 15 AUGUST 2026 ARE NOT SIGNED**, and no back-dating is possible — a
+> signature made now would attest to a rebuild, not to what was published then. Their tags remain
+> pullable and their digests remain in the registry, so **verify those the long way**: pull by
+> digest and compare against the release tarball, which has always been signed. **The gap is stated
+> rather than quietly closed, because a signature that claims more than it witnessed is worse than
+> no signature.**
+
 ## What this does and does not mean
 
 - **Does:** the tarball is byte‑identical to what `parthod0x` released, and hasn't been altered in

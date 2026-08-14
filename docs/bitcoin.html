@@ -1,6 +1,14 @@
 <!doctype html>
+<html lang="en">
 <meta charset="utf-8">
 <title>Bitcoin</title>
+<link rel="canonical" href="https://bitcoin-lab.org/bitcoin.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Original Bitcoin Laboratory">
+<meta property="og:url" content="https://bitcoin-lab.org/bitcoin.html">
+<meta property="og:title" content="Bitcoin">
+<meta property="og:description" content="Bitcoin.">
+<meta name="twitter:card" content="summary">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Bitcoin.">
 <style>
@@ -496,8 +504,13 @@ SRC=$PWD/derivatives/bitcoin/src bash derivatives/build-reconstruction/full_buil
     <h2>Mirrors</h2>
     <dl>
       <dt>IPFS</dt>
-      <dd>v0.1.2, by content hash &mdash; retrievable from any gateway, and either it matches
-        <span class="mono">SHA256SUMS</span> or it does not:
+      <dd>v0.1.2, by content hash &mdash; and either it matches
+        <span class="mono">SHA256SUMS</span> or it does not. Pinned via Pinata, whose gateway serves
+        it immediately; <b>a public gateway may need two or three attempts</b> while it locates a
+        provider, and some public gateways are themselves unreliable. Measured 15&nbsp;Aug&nbsp;2026:
+        3 of these 4 objects came back from <span class="mono">ipfs.io</span>, one of them only on
+        the third try. <b>Content addressing guarantees what the bytes are, never that someone is
+        still serving them</b> &mdash; which is why the release, not the pin, is the primary copy:
         <pre style="margin-top:10px;font-size:11px;line-height:1.6">bitcoin-0.1.2.tar.gz      QmXeWBKYEJCBYJaP7N1FLjQbLxmqWtTjydyqLwBncRKUvP
 bitcoin-0.1.2.tar.gz.asc  Qmcgxva1kv9SGL6EwwEoCYN8RfbB9HBbeXyPziQpfMjeXW
 SHA256SUMS                QmU1JwBJ9Enw2VJwKoet1HLnpRiKWpT5yPsHavGJ1rTHXb
@@ -571,7 +584,10 @@ ots    verify  IDENTITY-MANIFEST.txt.ots</pre></dd>
   </p>
   <p class="lf-related">Related · <a href="https://satoshioncha.in">Satoshi On-Chain</a> — the verifiable
     on-chain footprint of the original Satoshi. This lab gets to the bottom of <i>Bitcoin</i>; that one
-    gets to the bottom of <i>Satoshi</i>.</p>
+    gets to the bottom of <i>Satoshi</i>. &middot;
+    <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> — which version is which,
+    and how to tell from the bytes. &middot;
+    <a href="/docs.html">all documents</a></p>
     <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
     · reconstructions + Bitcoin — <b>NOT money</b> · no warranty</p>
 </footer>
@@ -603,3 +619,4 @@ ots    verify  IDENTITY-MANIFEST.txt.ots</pre></dd>
     }).catch(function () {});
   })();
 </script>
+</html>
