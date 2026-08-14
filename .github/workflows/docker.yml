@@ -19,6 +19,12 @@ permissions:
   #    GitHub OIDC token for a Fulcio certificate, so the signature is bound to THIS workflow in
   #    THIS repository and there is no long-lived signing secret to store or leak.
   id-token: write
+  # ⛔ AND attestations: write, WITHOUT WHICH THE PROVENANCE STEP FAILS WITH A MISLEADING ERROR.
+  #    The first run said "Resource not accessible by integration", which reads like a token or
+  #    org-policy problem; it is simply a missing permission. Recorded so the next person does not
+  #    go looking in the wrong place. ★ The cosign signature succeeded on that same run -- the two
+  #    mechanisms are independent, and only the attestation needed this.
+  attestations: write
 
 jobs:
   build-push:
