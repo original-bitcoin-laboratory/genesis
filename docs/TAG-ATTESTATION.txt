@@ -1,0 +1,58 @@
+ATTESTATION OVER UNSIGNED TAGS
+Original Bitcoin Laboratory / satoshi-onchain     NOT money.
+
+I, parthod0x, holder of OpenPGP key
+B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA,
+state that at the time this file was signed, the tags listed below resolved to the
+commits and trees given beside them.
+
+WHY THIS FILE EXISTS
+  Three of these are LIGHTWEIGHT tags. A lightweight tag is a bare ref with no object,
+  so it cannot carry a signature -- not an oversight that can be corrected in place.
+  Re-creating them as signed tags would move what 16 published releases point at and
+  invalidate commit SHAs already quoted in findings, papers and PRESERVATION.md, while
+  removing nothing: GitHub, Software Heritage, Radicle seeds and every clone already
+  hold the old objects. So they are attested here instead of being rewritten.
+
+*** WHAT THIS DOES NOT PROVE -- READ THIS BEFORE RELYING ON IT ***
+  It proves these names pointed at these commits WHEN THIS FILE WAS SIGNED, and the
+  OpenTimestamps proof beside it fixes that moment in the Bitcoin chain.
+  It does NOT prove they pointed there originally. If a tag had been moved before this
+  file was written, nothing here would reveal it. This is weaker than a signed tag and
+  is not a substitute for one; it is what remains available after the fact.
+  Tags signed at creation are listed in the repositories and need none of this.
+
+HOW TO CHECK A ROW
+  git -C <repo> rev-list -n1 <tag>        must equal the commit below
+  git -C <repo> rev-parse <tag>^{tree}    must equal the tree below
+  gpg --verify TAG-ATTESTATION.txt.asc TAG-ATTESTATION.txt
+  python _ots_upgrade.py                  then confirm the .ots is Bitcoin-anchored
+
+====================================================================================================
+REPOSITORY       TAG                            KIND         COMMIT
+                                                             TREE
+====================================================================================================
+genesis          Bitcoin-v0.1.2                 lightweight  f94128825f45bc3e1c113e162d4e138ee1cba227
+                                                             e5d22926d0f1a5c6d85861896fd476b104b303a8   2026-08-05T05:07:59+05:30
+genesis          Bitcoin-v0.1.3                 lightweight  45910fcae543dec23db9eaf22a288a3fac585aa0
+                                                             d6eafb7ae9f78e5c916920d05ab5f22ddd87a4e2   2026-08-05T07:09:15+05:30
+genesis          netnode-v0.1.0-experimental    lightweight  cf654e508eebd624956c237b0505f4b15c695b9d
+                                                             07a1b4bc96456b7ea1c3e825923c956313e6498f   2026-07-27T20:14:51+05:30
+genesis          v0.0.1-provenance-bootstrap    annotated    3c9a1801a94f677fdc36ddd6d5a8c30366d9cc93
+                                                             0ab9e1dec55fa0064de62de5d06f219a037cb9fb   2026-07-26T05:32:55+05:30
+genesis          v0.1.0-source-inventory        annotated    94124804b41740ff5dfecc2b51b1185c237271fb
+                                                             683da01486ef12c57cdcec008de49b427efa121e   2026-07-26T14:59:51+05:30
+pre-genesis      v0.0.1-provenance-bootstrap    annotated    f9ee0830d6b8dfa16fba00b84a18d5ec4c95b485
+                                                             01ffbdfd189fa6a40e5a62941b510c137c35dee5   2026-07-26T05:32:37+05:30
+pre-genesis      v0.1.0-source-inventory        annotated    a5aa71e49482ae6963cf8d66374eb07667eccfe8
+                                                             05e52876c6a538e9a95a2c0b7d10328a0c6d04ef   2026-07-26T14:59:52+05:30
+common           v0.0.1-provenance-bootstrap    annotated    b306b27a2a7a03bbb80fd4293701e8ddf8411527
+                                                             a3bc07eab1901df8e138f0e2e8252cf9d41e1fb0   2026-07-26T14:55:37+05:30
+common           v0.1.0-source-inventory        annotated    1ca3ac81bbb1ca324f8bf9ebc505e3785fe9d61d
+                                                             a093e40b75a5f4c6f5d2838eea99f1de5e3e9a0e   2026-07-26T14:59:52+05:30
+satoshi-onchain  v1.0.0                         lightweight  ffeee4d6828ac1e1fa75f88e0c6a0eea60748f4f
+                                                             f2b6f35b95c1ea145fc0604a9b4d3f102d25a2f2   2026-07-22T23:59:01+05:30
+====================================================================================================
+
+10 unsigned tags attested.
+Tags NOT listed here carry their own OpenPGP signature; verify those with `git tag -v`.

@@ -83,6 +83,13 @@
         content addressing does <i>not</i> promise.</span></li>
     <li><a class="d" href="IDENTITY-MANIFEST.txt">Identity manifest</a>
       <span class="desc">Every publishing identity bound to the signing key. Signed and anchored.</span></li>
+    <li><a class="d" href="TAG-ATTESTATION.txt">Attestation over the unsigned tags</a>
+      <span class="desc">Ten tags carry no signature of their own &mdash; three are
+        <i>lightweight</i> and cannot carry one at all. Rather than re-create them and invalidate
+        commit SHAs already in circulation, this states what each resolves to.
+        <a href="TAG-ATTESTATION.txt.asc">.asc</a> &middot;
+        <a href="TAG-ATTESTATION.txt.slhdsa">.slhdsa</a>. It prints its own limit: it proves where
+        they pointed <b>when signed</b>, not originally.</span></li>
   </ul>
 
   <h2>Post-quantum</h2>
