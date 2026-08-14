@@ -43,3 +43,6 @@ reproduce-claims-manifest.json
 .env.*
 *.token
 BLOCKSTREAM_TOKEN*
+
+# retarget watcher runtime state -- a moving snapshot, not an artifact
+derivatives/retarget/_retarget_watch_state.json
