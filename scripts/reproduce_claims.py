@@ -85,6 +85,20 @@ CLAIMS = {
         ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
                      "evidence manifest (not the differential C++/OpenSSL port); author-reported, archival deposit pending"),
     ),
+    # ⛔ C1h WAS MISSING AND THE GAP WAS INVISIBLE. The deposit shipped 2026-08-06-relayed-spend/,
+    #    DEPOSIT_README named it C1h and the manuscript claimed it -- while the required set here
+    #    stopped at C1g, so a descriptor mapping only C1d-C1g went green with the newest result
+    #    unrepresented. ★ An enumeration that lags the evidence it gates is a gate with a hole cut
+    #    in it, and the hole is exactly the shape of the most recent work.
+    "C1h-historical-relayed-spend": (
+        "A coinbase output matured under the client's own rule and was spent: node B authors the "
+        "spend, relays it to node A (same txid in both logs), and it is mined into block 122 -- the "
+        "funding output being a coinbase at height 2, i.e. exactly COINBASE_MATURITY (100) + the 20 "
+        "the v0.1 wallet adds. EXTERNAL -- author-reported, carried by the archival deposit",
+        ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files and "
+                     "process-level binding records (not the differential C++/OpenSSL port); "
+                     "author-reported, archival deposit"),
+    ),
     "C2-broad-interpreter": (
         "A broad spending-predicate interpreter: opcode vocabulary + escrow/hash-lock/assurance + a marketplace source component",
         [("model instruments (escrow/hash-lock/assurance)", DERIV / "model", ["-k", "instrument or multisig"]),
@@ -159,13 +173,30 @@ def _profiles_block():
     return block
 
 
-def _external_evidence(path: Path) -> dict:
-    """Derive external-claim (C1d-C1g) completeness from a frozen deposit descriptor rather than a hand-set
-    boolean. Complete iff the file exists and carries a DOI, an archive sha256, an evidence-manifest sha256,
-    and a claim map covering every external claim C1d-C1g. Absent -> incomplete (the correct pre-deposit
-    state). This keeps `external_claims_complete` machine-verifiable: the author drops in the descriptor at
-    deposit; nobody flips the flag by hand."""
-    required = {"C1d", "C1e", "C1f", "C1g"}
+EXTERNAL_REQUIRED = {"C1d", "C1e", "C1f", "C1g", "C1h"}
+
+
+def _external_evidence(path: Path, archive: Path | None = None) -> dict:
+    """Derive external-claim (C1d-C1h) completeness by RE-VERIFYING THE DEPOSIT, not by reading fields.
+
+    ⛔⛔ THIS FUNCTION USED TO TRUST A DESCRIPTOR, AND AN EXTERNAL REVIEWER BROKE IT.
+       The previous version required only that historical-evidence.json carried a truthy `doi`, an
+       `archive_sha256`, a `top_level_manifest_sha256`, `verified is True`, and a claim map. It never
+       opened the archive. A hand-authored file naming an invented DOI (10.5281/zenodo.99999999), an
+       all-zero archive hash and `verified: true` turned `external_claims_complete` TRUE with **no
+       deposit in existence** -- demonstrated, not argued. Because the internal and cross-implementation
+       states are true in the real submission, that one forged field made the entire manifest green.
+
+    ★★ THE OLD DOCSTRING WAS THE TELL: it asserted that `verified: true` "is written ONLY by
+       finalize_deposit.py". That is a statement about a WORKFLOW, not an invariant this code
+       enforces -- and a consumer cannot inherit a guarantee by describing the producer's habits.
+       **A completeness flag must be earned from bytes the checker can see, or it is decoration.**
+
+    ⇒ So: recompute. The descriptor now supplies only *what to check against*; every claim in it is
+      re-derived here from the archive itself. Absent archive -> INCOMPLETE with a reason, never
+      complete-by-default. ⚠️ `finalize_deposit.py` still performs its own verification at deposit
+      time; that is belt and braces, and deliberately not relied on.
+    """
     doc = None
     if path.exists():
         try:
@@ -173,21 +204,103 @@ def _external_evidence(path: Path) -> dict:
         except (OSError, ValueError):
             doc = None
     if not doc:
-        return {"complete": False, "source": None, "reason": "no historical-evidence.json (pre-deposit state)"}
+        return {"complete": False, "source": None, "verified_here": False,
+                "reason": "no historical-evidence.json (pre-deposit state)"}
+
     mapped = {str(c).split("-")[0] for c in (doc.get("claim_map") or {})}
-    # top_level_manifest_sha256 = sha256 of the deposit's top-level SHA256SUMS (the manifest-of-manifests).
-    # `verified: true` is written ONLY by finalize_deposit.py after it re-extracts the archive, re-checks every
-    # SHA256SUMS entry, confirms the C1d-C1g folders exist, and re-runs the three verifiers -> so external
-    # completeness is backed by an actual machine verification of the deposit, not just descriptor fields.
-    complete = bool(doc.get("doi") and doc.get("archive_sha256") and doc.get("top_level_manifest_sha256")
-                    and doc.get("verified") is True and required <= mapped)
-    return {"complete": complete, "source": str(path), "doi": doc.get("doi"),
-            "archive_sha256": doc.get("archive_sha256"),
-            "top_level_manifest_sha256": doc.get("top_level_manifest_sha256"),
-            "verified": doc.get("verified") is True,
-            "finalization_log_sha256": doc.get("finalization_log_sha256"),
-            "claims_mapped": sorted(mapped),
-            "reason": None if complete else "descriptor incomplete: needs DOI + archive/top-level-manifest hash + verified:true (set by finalize_deposit.py) + full C1d-C1g map"}
+    out = {"complete": False, "source": str(path), "doi": doc.get("doi"),
+           "archive_sha256": doc.get("archive_sha256"),
+           "top_level_manifest_sha256": doc.get("top_level_manifest_sha256"),
+           "finalization_log_sha256": doc.get("finalization_log_sha256"),
+           "claims_mapped": sorted(mapped), "verified_here": False, "reason": None}
+
+    # ── descriptor shape: necessary, nowhere near sufficient ────────────────────────────────────
+    if not (doc.get("doi") and doc.get("archive_sha256") and doc.get("top_level_manifest_sha256")):
+        out["reason"] = "descriptor lacks doi / archive_sha256 / top_level_manifest_sha256"
+        return out
+    if not EXTERNAL_REQUIRED <= mapped:
+        out["reason"] = ("claim_map is missing %s -- the deposit carries a claim the descriptor does "
+                         "not map" % ", ".join(sorted(EXTERNAL_REQUIRED - mapped)))
+        return out
+
+    # ── ⛔ THE ARCHIVE ITSELF. No archive, no completeness. ──────────────────────────────────────
+    if archive is None or not Path(archive).exists():
+        out["reason"] = ("deposit archive not supplied (--deposit-archive): external completeness is "
+                         "re-derived from the archive bytes and cannot be granted from descriptor "
+                         "fields alone")
+        return out
+    archive = Path(archive)
+    got = hashlib.sha256(archive.read_bytes()).hexdigest()
+    out["archive_sha256_recomputed"] = got
+    if got != doc["archive_sha256"]:
+        out["reason"] = ("archive sha256 %s does not match the descriptor's %s"
+                         % (got, doc["archive_sha256"]))
+        return out
+
+    import tempfile
+    import zipfile
+    with tempfile.TemporaryDirectory() as td:
+        try:
+            with zipfile.ZipFile(archive) as z:
+                names = z.namelist()
+                # ⚠️ Refuse traversal/absolute members before extracting anything.
+                if any(n.startswith(("/", "\\")) or ".." in Path(n).parts for n in names):
+                    out["reason"] = "archive contains absolute or traversing member paths"
+                    return out
+                z.extractall(td)
+        except (OSError, zipfile.BadZipFile) as e:
+            out["reason"] = "archive could not be read: %s" % e
+            return out
+        root = Path(td) / "obl-historical-binary-evidence"
+        sums = root / "SHA256SUMS"
+        if not sums.exists():
+            out["reason"] = "archive has no top-level SHA256SUMS"
+            return out
+        if hashlib.sha256(sums.read_bytes()).hexdigest() != doc["top_level_manifest_sha256"]:
+            out["reason"] = "top-level SHA256SUMS does not match the descriptor's hash"
+            return out
+
+        # ── every listed file re-hashed, in-process: no sha256sum dependency, no subprocess ─────
+        listed, bad, missing = 0, [], []
+        for line in sums.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "  " not in line:
+                continue
+            want, name = line.split("  ", 1)
+            listed += 1
+            f = root / name.strip().lstrip("*").lstrip("./")
+            if not f.is_file():
+                missing.append(name.strip())
+            elif hashlib.sha256(f.read_bytes()).hexdigest() != want.strip():
+                bad.append(name.strip())
+        out["manifest_entries"] = listed
+        if bad or missing:
+            out["reason"] = "SHA256SUMS: %d mismatched, %d missing" % (len(bad), len(missing))
+            return out
+
+        # ── ★ COVERAGE, not just correctness. A `-c` run passes happily while an UNLISTED file
+        #      hides in the archive; the reviewer who found the forgery hole checked this by
+        #      set-differencing the two lists, and so does this.
+        on_disk = {p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file()}
+        in_list = set()
+        for line in sums.read_text(encoding="utf-8", errors="replace").splitlines():
+            if "  " in line:
+                in_list.add(line.split("  ", 1)[1].strip().lstrip("*").lstrip("./"))
+        unlisted = on_disk - in_list - {"SHA256SUMS"}
+        if unlisted:
+            out["reason"] = "unlisted files in archive: %s" % ", ".join(sorted(unlisted)[:4])
+            return out
+
+        # ── every claim's folder must actually be in the archive ────────────────────────────────
+        for cid, val in (doc.get("claim_map") or {}).items():
+            folder = str(val).split("/")[0].strip()
+            if folder and not (root / folder).exists():
+                out["reason"] = "%s maps to '%s/', absent from the archive" % (cid, folder)
+                return out
+
+    out["complete"] = True
+    out["verified_here"] = True
+    return out
 
 
 def _environment() -> dict:
@@ -215,10 +328,15 @@ def main() -> int:
     ap.add_argument("--rust", action="store_true", help="also run the Rust node's shared-vector suite (needs cargo)")
     ap.add_argument("--cpp", action="store_true", help="also run the C++/OpenSSL port differential (needs g++)")
     ap.add_argument("--manifest", type=Path, default=ROOT / "reproduce-claims-manifest.json")
+    ap.add_argument("--deposit-archive", type=Path, default=None,
+                    help="the deposit ZIP itself. REQUIRED for external_claims_complete: the archive is "
+                         "re-hashed against the descriptor, every SHA256SUMS entry is re-checked, coverage "
+                         "is set-differenced for unlisted files, and every claim folder must be present. "
+                         "Without it the flag stays false -- descriptor fields alone cannot earn it.")
     ap.add_argument("--historical-evidence", type=Path,
                     default=ROOT / "paper-artifacts" / "historical-evidence.json",
                     help="frozen external-evidence descriptor (DOI + archive_sha256 + top_level_manifest_sha256 "
-                         "+ a C1d-C1g claim map); its presence and validity DERIVE external_claims_complete -- "
+                         "+ a C1d-C1h claim map); its presence and validity DERIVE external_claims_complete -- "
                          "never set that boolean by hand. Absent (pre-deposit) -> external stays incomplete")
     args = ap.parse_args()
     py = sys.executable
@@ -367,7 +485,7 @@ def main() -> int:
     # external completeness is DERIVED from a frozen deposit descriptor, never a hand-set boolean: at deposit
     # the author adds historical-evidence.json (DOI + archive/evidence-manifest hashes + a C1d-C1g claim map)
     # and this computes True; absent or incomplete (the pre-deposit state) it stays False.
-    external_evidence = _external_evidence(args.historical_evidence)
+    external_evidence = _external_evidence(args.historical_evidence, args.deposit_archive)
     external_complete = external_evidence["complete"]
     submission_complete = bool(all_internal and cross_impl_complete and external_complete)
 
