@@ -16,7 +16,7 @@ wallet, persistence, marketplace/UI tools, the neutral descendant tracker/matrix
 
 Completeness is reported in three states, not one boolean: `all_internal_checks_passed` (the runnable
 checks), `cross_implementation_complete` (C1b's Python+Rust+C++ agreement — needs `--rust --cpp`), and
-`external_claims_complete` (the author-reported historical claims C1d–C1g, false until their archival deposit is
+`external_claims_complete` (the author-reported historical claims C1d–C1h, false until their archival deposit is
 public). Exit code 0 iff every internal runnable check passed; the external claim never flips it.
 """
 from __future__ import annotations
@@ -38,8 +38,8 @@ DERIV = ROOT / "derivatives"
 # claim id -> (description, [(label, dir, pytest args)]). The paper's findings rest on the faithful profiles
 # (jan09-faithful, nov08-source-bounded). The experimental-genesis determinism check is NOT a paper claim --
 # it is recorded separately under `auxiliary_checks` (a lab sanity check that the isolated NOV08-X/JAN09-X
-# blocks reproduce and differ from the historical hash). The historical-binary results (C1d-C1g) are EXTERNAL,
-# author-reported: C1d = the unmodified 2009 binary (block 0 of its blk0001.dat); C1e-C1g = the two-node
+# blocks reproduce and differ from the historical hash). The historical-binary results (C1d-C1h) are EXTERNAL,
+# author-reported: C1d = the unmodified 2009 binary (block 0 of its blk0001.dat); C1e-C1h = the two-node
 # binary run and its archived logs/block files -- NOT the modern differential C++/OpenSSL port (--cpp).
 CLAIMS = {
     "C1b-consensus-core-cross-implemented": (
@@ -54,7 +54,7 @@ CLAIMS = {
         [("reorg-safety", DERIV / "netnode", ["-k", "reorg or disconnect"])],
     ),
     # Each external claim carries its OWN carrier note: C1d (genesis) is the unmodified 2009 binary (block 0
-    # of blk0001.dat); C1e-C1g are the unmodified-binary two-node RUN and its archived logs/block files.
+    # of blk0001.dat); C1e-C1h are the unmodified-binary two-node RUN and its archived logs/block files.
     "C1d-historical-genesis": (
         "The HISTORICAL January genesis (000000000019d668...) is re-derived by the unmodified 2009 binary "
         "(the historical-binary witness) -- block 0 of its blk0001.dat. EXTERNAL -- author-reported and "
@@ -87,9 +87,12 @@ CLAIMS = {
     ),
     # ⛔ C1h WAS MISSING AND THE GAP WAS INVISIBLE. The deposit shipped 2026-08-06-relayed-spend/,
     #    DEPOSIT_README named it C1h and the manuscript claimed it -- while the required set here
-    #    stopped at C1g, so a descriptor mapping only C1d-C1g went green with the newest result
-    #    unrepresented. ★ An enumeration that lags the evidence it gates is a gate with a hole cut
-    #    in it, and the hole is exactly the shape of the most recent work.
+    #    stopped at C1g, so a descriptor mapping only the older claims went green with the newest
+    #    result unrepresented. ★ An enumeration that lags the evidence it gates is a gate with a
+    #    hole cut in it, and the hole is exactly the shape of the most recent work.
+    #  ⚠️ This comment was itself mangled once by a blanket C1g->C1h replace, which rewrote the
+    #    description of the bug into a description of the fix. A search-and-replace over prose
+    #    edits the explanation as readily as the thing explained.
     "C1h-historical-relayed-spend": (
         "A coinbase output matured under the client's own rule and was spent: node B authors the "
         "spend, relays it to node A (same txid in both logs), and it is mined into block 122 -- the "
@@ -350,7 +353,7 @@ def main() -> int:
         if is_external:
             # A claim whose evidence lives outside this reproducer (the deposited historical-binary
             # witness). Recorded with its own per-claim carrier note -- author-reported -- and NOT folded
-            # into all_passed. C1d = the unmodified 2009 binary (block 0 of blk0001.dat); C1e-C1g the two-node run.
+            # into all_passed. C1d = the unmodified 2009 binary (block 0 of blk0001.dat); C1e-C1h the two-node run.
             note = checks[1] if isinstance(checks, tuple) else ("author-reported and hash-manifested; "
                    "carried by the deposited historical-binary evidence (see the archival deposit)")
             print("  [EXTERNAL] author-reported (historical-binary witness); not executed by this reproducer")
@@ -483,14 +486,14 @@ def main() -> int:
                     and drift_ok and backends_ok and skipped_requested == 0)
     cross_impl_complete = bool(args.rust and args.cpp and rust_ok and cpp_ok)
     # external completeness is DERIVED from a frozen deposit descriptor, never a hand-set boolean: at deposit
-    # the author adds historical-evidence.json (DOI + archive/evidence-manifest hashes + a C1d-C1g claim map)
+    # the author adds historical-evidence.json (DOI + archive/evidence-manifest hashes + a C1d-C1h claim map)
     # and this computes True; absent or incomplete (the pre-deposit state) it stays False.
     external_evidence = _external_evidence(args.historical_evidence, args.deposit_archive)
     external_complete = external_evidence["complete"]
     submission_complete = bool(all_internal and cross_impl_complete and external_complete)
 
     manifest = {
-        "schema": 3,   # 3: C1a->auxiliary_checks; historical-binary split into external C1d-C1g
+        "schema": 3,   # 3: C1a->auxiliary_checks; historical-binary split into external C1d-C1h
         "kind": "claim-scoped reconstruction reproduction",
         "generated": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
         "commit": commit if ok_git else None,
@@ -536,7 +539,7 @@ def main() -> int:
     }
     args.manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     if all_internal and not external_complete:
-        print("\nAll internally runnable claims passed; the external historical claims (C1d–C1g) remain "
+        print("\nAll internally runnable claims passed; the external historical claims (C1d–C1h) remain "
               "author-reported pending archival deposit — submission evidence is NOT yet complete.")
     elif all_internal:
         print("\nAll internal claims passed and external claims complete.")
