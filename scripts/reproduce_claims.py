@@ -680,7 +680,12 @@ def main() -> int:
         #   different states for a reader deciding whether the deposit is citable.
         "public_deposit": {
             "receipt_wellformed": bool(receipt),
-            "receipt_reason": external_evidence.get("public_deposit_receipt_reason"),
+            # ⚠️ NEVER null. When the descriptor is absent the receipt never reaches validation at
+            #    all, and a bare null there reads as "no reason recorded" -- reintroducing the very
+            #    ambiguity this block exists to remove.
+            "receipt_reason": (external_evidence.get("public_deposit_receipt_reason")
+                               or "receipt never reached validation: %s"
+                               % (external_evidence.get("reason") or "unknown")),
             "online_check": online,
         },
         "submission_evidence_complete": submission_complete,
