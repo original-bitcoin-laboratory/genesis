@@ -1,0 +1,3192 @@
+{
+  "not_money": true,
+  "evaluated": "2026-08-01",
+  "profiles": [
+    "whitepaper",
+    "nov08",
+    "v0.1.0",
+    "BTC",
+    "BCH",
+    "BSV",
+    "XEC",
+    "BTG"
+  ],
+  "n_axes": 19,
+  "axes": [
+    {
+      "id": "fork_choice",
+      "name": "Best-chain selection",
+      "criterion": "How the node picks the active tip.",
+      "p": {
+        "whitepaper": {
+          "value": "most-work",
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "height",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "most-work",
+          "source": "c_chainwork",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "most-work",
+          "source": "c_chainwork",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "most-work",
+          "source": "c_chainwork",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "most-work+avalanche",
+          "source": "xec_aval",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "most-work",
+          "source": "c_chainwork",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "block_size_rule",
+      "name": "Block-size consensus rule",
+      "criterion": "The dedicated maximum-block-size consensus rule (ignoring the generic serialisation ceiling).",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "no-dedicated-cap",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "1mb+weight",
+          "source": [
+            "c_1mb",
+            "bip141"
+          ],
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "abla-dynamic",
+          "source": "bch_abla",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "no-consensus-cap",
+          "source": "bsv_genesis",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "32mb",
+          "source": "bch_2018",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "1mb+weight",
+          "source": "btg_src",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "script_opcodes",
+      "name": "Script opcode vocabulary",
+      "criterion": "Status of the broad opcode set v0.1 shipped and 2010 disabled (OP_CAT, OP_MUL, bitwise, etc.).",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "broad",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "restricted",
+          "source": "c_opdis",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "partial-restore",
+          "source": "bch_2018",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "broad",
+          "source": "bsv_genesis",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "partial-restore",
+          "source": "bch_2018",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "restricted",
+          "source": "c_opdis",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "script_number_width",
+      "name": "Script-number operand width",
+      "criterion": "The maximum width of a numeric script operand.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "unbounded-openssl",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "4-byte",
+          "source": "c_opdis",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "large-bigint",
+          "source": "bch_bigint",
+          "confidence": "med"
+        },
+        "BSV": {
+          "value": "32mb-limit",
+          "source": [
+            "bsv_genesis",
+            "bsv_chronicle"
+          ],
+          "confidence": "med"
+        },
+        "XEC": {
+          "value": "8-byte",
+          "source": "abc_src",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "4-byte",
+          "source": "c_opdis",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "element_size_limit",
+      "name": "Script element-size limit",
+      "criterion": "The maximum size of a single stack element.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "none",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "520-byte",
+          "source": "c_opdis",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "10000-byte",
+          "source": "bch_vm_limits",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "none",
+          "source": "bsv_genesis",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "520-byte",
+          "source": "abc_src",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "520-byte",
+          "source": "c_opdis",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "sig_encoding",
+      "name": "Signature encoding",
+      "criterion": "Whether strict-DER signature encoding is enforced.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "lenient-openssl",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "strict-der",
+          "source": "bip66",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "strict-der",
+          "source": "bip66",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "strict-der",
+          "source": "bip66",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "strict-der",
+          "source": "bip66",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "strict-der",
+          "source": "bip66",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "value_range_check",
+      "name": "Output-value range check",
+      "criterion": "Whether outputs/sums are bounded by a MoneyRange invariant (vs only nValue < 0).",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "none",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "moneyrange",
+          "source": "cve2010",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "moneyrange",
+          "source": "cve2010",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "moneyrange",
+          "source": "cve2010",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "moneyrange",
+          "source": "cve2010",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "moneyrange",
+          "source": "cve2010",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "sig_scheme",
+      "name": "Signature scheme",
+      "criterion": "Whether a Schnorr scheme is available in consensus in addition to ECDSA.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "ecdsa-only",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "ecdsa+schnorr",
+          "source": "bip34x",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "ecdsa+schnorr",
+          "source": "bch_schnorr",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "ecdsa-only",
+          "source": "bsv_no_schnorr",
+          "confidence": "med"
+        },
+        "XEC": {
+          "value": "ecdsa+schnorr",
+          "source": "bch_schnorr",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "ecdsa-only",
+          "source": "btg_src",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "p2sh",
+      "name": "Pay-to-Script-Hash (P2SH)",
+      "criterion": "Whether the P2SH special-case output template is a consensus rule.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "none",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "p2sh",
+          "source": "bip16",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "p2sh",
+          "source": "bip16",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "none",
+          "source": "bsv_genesis",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "p2sh",
+          "source": "bip16",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "p2sh",
+          "source": "bip16",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "segwit",
+      "name": "Segregated witness",
+      "criterion": "Whether witness data is segregated with a separate commitment (BIP141).",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "none",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "segwit",
+          "source": "bip141",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "none",
+          "source": "bch_fork",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "none",
+          "source": "bsv_genesis",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "none",
+          "source": "bch_fork",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "segwit",
+          "source": "btg_src",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "taproot",
+      "name": "Taproot output type",
+      "criterion": "Whether Taproot (BIP341 key/script-path) outputs are a consensus rule.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "none",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "taproot",
+          "source": "bip34x",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "none",
+          "source": "bch_fork",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "none",
+          "source": "bsv_genesis",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "none",
+          "source": "bch_fork",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "none",
+          "source": "btg_src",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "timelock_opcodes",
+      "name": "Timelock opcodes",
+      "criterion": "Whether CLTV/CSV-style timelock opcodes are active (v0.1 leaves the slots as NOPs).",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "nops",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "cltv+csv",
+          "source": [
+            "bip65",
+            "bip112"
+          ],
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "cltv+csv",
+          "source": "bch_2018",
+          "confidence": "med"
+        },
+        "BSV": {
+          "value": "nops",
+          "source": "bsv_genesis",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "cltv+csv",
+          "source": "bch_2018",
+          "confidence": "med"
+        },
+        "BTG": {
+          "value": "cltv+csv",
+          "source": "btg_src",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "difficulty_algorithm",
+      "name": "Difficulty-adjustment algorithm",
+      "criterion": "The retarget algorithm governing proof-of-work difficulty, INCLUDING any additional real-time target a block must also satisfy to be accepted.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "2016-block-retarget",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "2016-block-retarget",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "asert",
+          "source": "bch_asert",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "daa-cw144",
+          "source": "bch_daa_2017",
+          "confidence": "med"
+        },
+        "XEC": {
+          "value": "asert+rtt",
+          "source": "xec_asert",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "lwma",
+          "source": "btg_src",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "replay_protection",
+      "name": "Replay protection",
+      "criterion": "Whether a fork-id is mixed into the signature hash.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "none",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "none",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "forkid",
+          "source": "bch_fork",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "forkid",
+          "source": "bch_fork",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "forkid",
+          "source": "bch_fork",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "forkid",
+          "source": "btg_fork",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "tx_ordering",
+      "name": "Transaction ordering in a block",
+      "criterion": "Whether non-coinbase transactions must follow a canonical order (CTOR) vs topological.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "topological",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "topological",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "ctor",
+          "source": "bch_ctor",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "topological",
+          "source": "bsv_genesis",
+          "confidence": "med"
+        },
+        "XEC": {
+          "value": "ctor",
+          "source": "bch_ctor",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "topological",
+          "source": "btg_src",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "subsidy_base",
+      "name": "Initial block subsidy",
+      "criterion": "The genesis-era block subsidy (coins per block before the first halving).",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": "100",
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "50",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "50",
+          "source": "shared",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "50",
+          "source": "shared",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "50",
+          "source": "shared",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "50",
+          "source": "shared",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "50",
+          "source": "shared",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "block_spacing",
+      "name": "Target block spacing",
+      "criterion": "The target mean time between blocks.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": "15-min",
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "10-min",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "10-min",
+          "source": "shared",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "10-min",
+          "source": "shared",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "10-min",
+          "source": "shared",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "10-min",
+          "source": "shared",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "10-min",
+          "source": "btg_src",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "coinbase_height",
+      "name": "Coinbase height commitment",
+      "criterion": "Whether the block height must appear in the coinbase input (BIP34).",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": null,
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "not-required",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "required",
+          "source": "bip34",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "required",
+          "source": "bip34",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "required",
+          "source": "bip34",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "required",
+          "source": "bip34",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "required",
+          "source": "btg_src",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "id": "pow_function",
+      "name": "Proof-of-work function",
+      "criterion": "The hash function a valid block header must satisfy the target under.",
+      "p": {
+        "whitepaper": {
+          "value": null,
+          "source": "wp",
+          "confidence": "high"
+        },
+        "nov08": {
+          "value": "sha256d",
+          "source": "nov08",
+          "confidence": "high"
+        },
+        "v0.1.0": {
+          "value": "sha256d",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTC": {
+          "value": "sha256d",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BCH": {
+          "value": "sha256d",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BSV": {
+          "value": "sha256d",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "XEC": {
+          "value": "sha256d",
+          "source": "v01",
+          "confidence": "high"
+        },
+        "BTG": {
+          "value": "equihash-btg",
+          "source": "btg_fork",
+          "confidence": "high"
+        }
+      }
+    }
+  ],
+  "sources": {
+    "wp": "Nakamoto, Bitcoin whitepaper (2008)",
+    "nov08": "15 Nov 2008 pre-release source (SNI code archive; source-bounded model)",
+    "v01": "Bitcoin v0.1.0 source (SNI code archive)",
+    "c_chainwork": "bitcoin/bitcoin 3b7cd5d8 (2010, v0.3.3): best chain by cumulative work",
+    "c_1mb": "bitcoin/bitcoin a30b56eb (2010): MAX_BLOCK_SIZE = 1,000,000",
+    "c_opdis": "bitcoin/bitcoin 4bd188c4 (15 Aug 2010): disable OP_CAT/OP_MUL/bitwise etc. + 520 B element limit + nMaxNumSize 258->4",
+    "bip16": "BIP16 P2SH (2012)",
+    "bip66": "BIP66 strict-DER signatures (2015)",
+    "bip65": "BIP65 OP_CHECKLOCKTIMEVERIFY (2015)",
+    "bip112": "BIP112 OP_CHECKSEQUENCEVERIFY / relative locktime (2016)",
+    "bip141": "BIP141 segregated witness (2017)",
+    "bip34x": "BIP340-342 Schnorr/Taproot (2021)",
+    "cve2010": "CVE-2010-5139 value-overflow fix: MoneyRange / output-sum check (Aug 2010)",
+    "bch_fork": "Bitcoin Cash Aug 2017 fork: SIGHASH_FORKID replay protection, 8 MB blocks",
+    "bch_2018": "BCH May 2018 upgrade: re-enable OP_CAT/OP_SPLIT/bitwise/OP_DIV etc., 32 MB",
+    "bch_abla": "CHIP-2023-04 Adaptive Blocksize Limit Algorithm (gitlab.com/0353F40E/ebaa, status Accepted). Activated on BCH mainnet at MTP >= 1715774400 (15 May 2024 12:00:00 UTC) per upgradespecs.bitcoincashnode.org/2024-05-15-upgrade. The maximum block size becomes ALGORITHMICALLY VARYING, not a constant",
+    "bch_vm_limits": "CHIP-2021-05 Targeted Virtual Machine Limits (github.com/bitjson/bch-vm-limits, status Final, v3.1.3). Activated 2025-05-15T12:00:00Z. Raises the stack element length limit from 520 to 10,000 bytes",
+    "abc_src": "Bitcoin ABC source, src/script/script.h (master): 'static const unsigned int MAX_SCRIPT_ELEMENT_SIZE = 520;' and 'constexpr size_t MAX_SCRIPTNUM_BYTE_SIZE = 8;'. For a chain the implementation IS the consensus rule",
+    "bch_ctor": "BCH Nov 2018 upgrade: CTOR (canonical tx ordering), OP_CHECKDATASIG",
+    "bch_schnorr": "BCH May 2019 upgrade: Schnorr signatures",
+    "bch_daa_2017": "BCH 13 Nov 2017 upgrade: cw-144 difficulty algorithm, replacing the EDA that the 1 Aug 2017 fork shipped",
+    "bch_asert": "BCH Nov 2020 upgrade: ASERT (aserti3-2d) difficulty algorithm",
+    "bch_bigint": "CHIP-2024-07 BigInt: High-Precision Arithmetic for Bitcoin Cash (github.com/bitjson/bch-bigint), activated 15 May 2025. NOT the May 2022 upgrade, which delivered 64-bit script integers",
+    "bsv_no_schnorr": "ABSENCE: no BSV upgrade specification introduces Schnorr signatures; genesis-spec.md does not mention ECDSA or Schnorr at all (measured 14 Aug 2026). Weaker footing than a positive citation, by construction",
+    "bsv_genesis": "bitcoin-sv-specs/protocol genesis-spec.md (Feb 2020): remove block cap, remove P2SH, restore opcodes / miner-configurable limits; sunsets CLTV and CSV to NOPs; Numeric Value Size Consensus Rule = 750,000 bytes",
+    "bsv_chronicle": "bitcoin-sv-specs/protocol chronicle-spec.md: script-number consensus limit 750KB -> 32MB; further opcode additions. Activation height: the spec states mainnet 943,835, the BSV Node v1.2.0 release notes state 943,816 (7 Apr 2026); both precede the freeze, so the cell value is unaffected",
+    "btg_src": "BTCGPU/BTCGPU src/chainparams.cpp (master): BIP34Height = 227931, SegwitHeight = 481824, nPowTargetSpacing = 10*60, LWMA difficulty, Equihash PoW. BTG forked at height 491,406, AFTER BIP34 and segwit activated on Bitcoin, so it inherits both. For a chain the implementation IS the consensus rule",
+    "btg_fork": "Bitcoin Gold Oct 2017 fork: SIGHASH_FORKID-style replay protection, Equihash-BTG (Zhash 144,5) proof-of-work, ledger duplicated to block 491,406",
+    "bip34": "BIP34: coinbase must contain the block height. Activated on Bitcoin mainnet 2013 (Core consensus param BIP34Height = 227931), therefore inherited by every chain in this set, all of which forked later",
+    "xec_asert": "eCash (XEC) inherits ASERT from Bitcoin Cash ABC (Nov 2020) and has additionally enforced Real Time Targeting (Heartbeat) since Nov 2024: a second difficulty on top of the base DAA, with blocks exceeding the Real Time Target rejected",
+    "xec_aval": "eCash Avalanche post-consensus block finalisation (e.cash)",
+    "shared": "inherited unchanged from v0.1 by all descendants (21e6 cap, 210k-block halving, ~10-min target); XEC redenominated units (2 decimals) without changing the schedule"
+  },
+  "table": {
+    "whitepaper": {
+      "BTC": {
+        "jointly_specified": 1,
+        "differing": 0,
+        "total_axes": 19,
+        "coverage": 0.0526,
+        "coverage_exact": 0.05263157894736842,
+        "mismatch_rate": 0.0,
+        "mismatch_rate_exact": 0.0,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": "most-work",
+            "chain_value": "most-work",
+            "verdict": "match"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": null,
+            "chain_value": "1mb+weight",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": null,
+            "chain_value": "restricted",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": null,
+            "chain_value": "4-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": null,
+            "chain_value": "520-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": null,
+            "chain_value": "strict-der",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": null,
+            "chain_value": "moneyrange",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": null,
+            "chain_value": "ecdsa+schnorr",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": null,
+            "chain_value": "p2sh",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": null,
+            "chain_value": "segwit",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": null,
+            "chain_value": "taproot",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": null,
+            "chain_value": "cltv+csv",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": null,
+            "chain_value": "2016-block-retarget",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": null,
+            "chain_value": "topological",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": null,
+            "chain_value": "50",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": null,
+            "chain_value": "10-min",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": null,
+            "chain_value": "required",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": null,
+            "chain_value": "sha256d",
+            "verdict": "unspecified"
+          }
+        ]
+      },
+      "BCH": {
+        "jointly_specified": 1,
+        "differing": 0,
+        "total_axes": 19,
+        "coverage": 0.0526,
+        "coverage_exact": 0.05263157894736842,
+        "mismatch_rate": 0.0,
+        "mismatch_rate_exact": 0.0,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": "most-work",
+            "chain_value": "most-work",
+            "verdict": "match"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": null,
+            "chain_value": "abla-dynamic",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": null,
+            "chain_value": "partial-restore",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": null,
+            "chain_value": "large-bigint",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": null,
+            "chain_value": "10000-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": null,
+            "chain_value": "strict-der",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": null,
+            "chain_value": "moneyrange",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": null,
+            "chain_value": "ecdsa+schnorr",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": null,
+            "chain_value": "p2sh",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": null,
+            "chain_value": "cltv+csv",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": null,
+            "chain_value": "asert",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": null,
+            "chain_value": "forkid",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": null,
+            "chain_value": "ctor",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": null,
+            "chain_value": "50",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": null,
+            "chain_value": "10-min",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": null,
+            "chain_value": "required",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": null,
+            "chain_value": "sha256d",
+            "verdict": "unspecified"
+          }
+        ]
+      },
+      "BSV": {
+        "jointly_specified": 1,
+        "differing": 0,
+        "total_axes": 19,
+        "coverage": 0.0526,
+        "coverage_exact": 0.05263157894736842,
+        "mismatch_rate": 0.0,
+        "mismatch_rate_exact": 0.0,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": "most-work",
+            "chain_value": "most-work",
+            "verdict": "match"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": null,
+            "chain_value": "no-consensus-cap",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": null,
+            "chain_value": "broad",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": null,
+            "chain_value": "32mb-limit",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": null,
+            "chain_value": "strict-der",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": null,
+            "chain_value": "moneyrange",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": null,
+            "chain_value": "ecdsa-only",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": null,
+            "chain_value": "nops",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": null,
+            "chain_value": "daa-cw144",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": null,
+            "chain_value": "forkid",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": null,
+            "chain_value": "topological",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": null,
+            "chain_value": "50",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": null,
+            "chain_value": "10-min",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": null,
+            "chain_value": "required",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": null,
+            "chain_value": "sha256d",
+            "verdict": "unspecified"
+          }
+        ]
+      },
+      "XEC": {
+        "jointly_specified": 1,
+        "differing": 1,
+        "total_axes": 19,
+        "coverage": 0.0526,
+        "coverage_exact": 0.05263157894736842,
+        "mismatch_rate": 1.0,
+        "mismatch_rate_exact": 1.0,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": "most-work",
+            "chain_value": "most-work+avalanche",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": null,
+            "chain_value": "32mb",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": null,
+            "chain_value": "partial-restore",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": null,
+            "chain_value": "8-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": null,
+            "chain_value": "520-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": null,
+            "chain_value": "strict-der",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": null,
+            "chain_value": "moneyrange",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": null,
+            "chain_value": "ecdsa+schnorr",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": null,
+            "chain_value": "p2sh",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": null,
+            "chain_value": "cltv+csv",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": null,
+            "chain_value": "asert+rtt",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": null,
+            "chain_value": "forkid",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": null,
+            "chain_value": "ctor",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": null,
+            "chain_value": "50",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": null,
+            "chain_value": "10-min",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": null,
+            "chain_value": "required",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": null,
+            "chain_value": "sha256d",
+            "verdict": "unspecified"
+          }
+        ]
+      },
+      "BTG": {
+        "jointly_specified": 1,
+        "differing": 0,
+        "total_axes": 19,
+        "coverage": 0.0526,
+        "coverage_exact": 0.05263157894736842,
+        "mismatch_rate": 0.0,
+        "mismatch_rate_exact": 0.0,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": "most-work",
+            "chain_value": "most-work",
+            "verdict": "match"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": null,
+            "chain_value": "1mb+weight",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": null,
+            "chain_value": "restricted",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": null,
+            "chain_value": "4-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": null,
+            "chain_value": "520-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": null,
+            "chain_value": "strict-der",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": null,
+            "chain_value": "moneyrange",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": null,
+            "chain_value": "ecdsa-only",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": null,
+            "chain_value": "p2sh",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": null,
+            "chain_value": "segwit",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": null,
+            "chain_value": "cltv+csv",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": null,
+            "chain_value": "lwma",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": null,
+            "chain_value": "forkid",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": null,
+            "chain_value": "topological",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": null,
+            "chain_value": "50",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": null,
+            "chain_value": "10-min",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": null,
+            "chain_value": "required",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": null,
+            "chain_value": "equihash-btg",
+            "verdict": "unspecified"
+          }
+        ]
+      }
+    },
+    "nov08": {
+      "BTC": {
+        "jointly_specified": 3,
+        "differing": 2,
+        "total_axes": 19,
+        "coverage": 0.1579,
+        "coverage_exact": 0.15789473684210525,
+        "mismatch_rate": 0.6667,
+        "mismatch_rate_exact": 0.6666666666666666,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": null,
+            "chain_value": "most-work",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": null,
+            "chain_value": "1mb+weight",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": null,
+            "chain_value": "restricted",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": null,
+            "chain_value": "4-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": null,
+            "chain_value": "520-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": null,
+            "chain_value": "strict-der",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": null,
+            "chain_value": "moneyrange",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": null,
+            "chain_value": "ecdsa+schnorr",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": null,
+            "chain_value": "p2sh",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": null,
+            "chain_value": "segwit",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": null,
+            "chain_value": "taproot",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": null,
+            "chain_value": "cltv+csv",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": null,
+            "chain_value": "2016-block-retarget",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": null,
+            "chain_value": "topological",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": "100",
+            "chain_value": "50",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": "15-min",
+            "chain_value": "10-min",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": null,
+            "chain_value": "required",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": "sha256d",
+            "chain_value": "sha256d",
+            "verdict": "match"
+          }
+        ]
+      },
+      "BCH": {
+        "jointly_specified": 3,
+        "differing": 2,
+        "total_axes": 19,
+        "coverage": 0.1579,
+        "coverage_exact": 0.15789473684210525,
+        "mismatch_rate": 0.6667,
+        "mismatch_rate_exact": 0.6666666666666666,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": null,
+            "chain_value": "most-work",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": null,
+            "chain_value": "abla-dynamic",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": null,
+            "chain_value": "partial-restore",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": null,
+            "chain_value": "large-bigint",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": null,
+            "chain_value": "10000-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": null,
+            "chain_value": "strict-der",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": null,
+            "chain_value": "moneyrange",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": null,
+            "chain_value": "ecdsa+schnorr",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": null,
+            "chain_value": "p2sh",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": null,
+            "chain_value": "cltv+csv",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": null,
+            "chain_value": "asert",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": null,
+            "chain_value": "forkid",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": null,
+            "chain_value": "ctor",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": "100",
+            "chain_value": "50",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": "15-min",
+            "chain_value": "10-min",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": null,
+            "chain_value": "required",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": "sha256d",
+            "chain_value": "sha256d",
+            "verdict": "match"
+          }
+        ]
+      },
+      "BSV": {
+        "jointly_specified": 3,
+        "differing": 2,
+        "total_axes": 19,
+        "coverage": 0.1579,
+        "coverage_exact": 0.15789473684210525,
+        "mismatch_rate": 0.6667,
+        "mismatch_rate_exact": 0.6666666666666666,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": null,
+            "chain_value": "most-work",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": null,
+            "chain_value": "no-consensus-cap",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": null,
+            "chain_value": "broad",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": null,
+            "chain_value": "32mb-limit",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": null,
+            "chain_value": "strict-der",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": null,
+            "chain_value": "moneyrange",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": null,
+            "chain_value": "ecdsa-only",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": null,
+            "chain_value": "nops",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": null,
+            "chain_value": "daa-cw144",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": null,
+            "chain_value": "forkid",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": null,
+            "chain_value": "topological",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": "100",
+            "chain_value": "50",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": "15-min",
+            "chain_value": "10-min",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": null,
+            "chain_value": "required",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": "sha256d",
+            "chain_value": "sha256d",
+            "verdict": "match"
+          }
+        ]
+      },
+      "XEC": {
+        "jointly_specified": 3,
+        "differing": 2,
+        "total_axes": 19,
+        "coverage": 0.1579,
+        "coverage_exact": 0.15789473684210525,
+        "mismatch_rate": 0.6667,
+        "mismatch_rate_exact": 0.6666666666666666,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": null,
+            "chain_value": "most-work+avalanche",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": null,
+            "chain_value": "32mb",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": null,
+            "chain_value": "partial-restore",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": null,
+            "chain_value": "8-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": null,
+            "chain_value": "520-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": null,
+            "chain_value": "strict-der",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": null,
+            "chain_value": "moneyrange",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": null,
+            "chain_value": "ecdsa+schnorr",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": null,
+            "chain_value": "p2sh",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": null,
+            "chain_value": "cltv+csv",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": null,
+            "chain_value": "asert+rtt",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": null,
+            "chain_value": "forkid",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": null,
+            "chain_value": "ctor",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": "100",
+            "chain_value": "50",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": "15-min",
+            "chain_value": "10-min",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": null,
+            "chain_value": "required",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": "sha256d",
+            "chain_value": "sha256d",
+            "verdict": "match"
+          }
+        ]
+      },
+      "BTG": {
+        "jointly_specified": 3,
+        "differing": 3,
+        "total_axes": 19,
+        "coverage": 0.1579,
+        "coverage_exact": 0.15789473684210525,
+        "mismatch_rate": 1.0,
+        "mismatch_rate_exact": 1.0,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": null,
+            "chain_value": "most-work",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": null,
+            "chain_value": "1mb+weight",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": null,
+            "chain_value": "restricted",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": null,
+            "chain_value": "4-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": null,
+            "chain_value": "520-byte",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": null,
+            "chain_value": "strict-der",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": null,
+            "chain_value": "moneyrange",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": null,
+            "chain_value": "ecdsa-only",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": null,
+            "chain_value": "p2sh",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": null,
+            "chain_value": "segwit",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": null,
+            "chain_value": "none",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": null,
+            "chain_value": "cltv+csv",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": null,
+            "chain_value": "lwma",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": null,
+            "chain_value": "forkid",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": null,
+            "chain_value": "topological",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": "100",
+            "chain_value": "50",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": "15-min",
+            "chain_value": "10-min",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": null,
+            "chain_value": "required",
+            "verdict": "unspecified"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": "sha256d",
+            "chain_value": "equihash-btg",
+            "verdict": "mismatch"
+          }
+        ]
+      }
+    },
+    "v0.1.0": {
+      "BTC": {
+        "jointly_specified": 19,
+        "differing": 13,
+        "total_axes": 19,
+        "coverage": 1.0,
+        "coverage_exact": 1.0,
+        "mismatch_rate": 0.6842,
+        "mismatch_rate_exact": 0.6842105263157895,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": "height",
+            "chain_value": "most-work",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": "no-dedicated-cap",
+            "chain_value": "1mb+weight",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": "broad",
+            "chain_value": "restricted",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": "unbounded-openssl",
+            "chain_value": "4-byte",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": "none",
+            "chain_value": "520-byte",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": "lenient-openssl",
+            "chain_value": "strict-der",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": "none",
+            "chain_value": "moneyrange",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": "ecdsa-only",
+            "chain_value": "ecdsa+schnorr",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": "none",
+            "chain_value": "p2sh",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": "none",
+            "chain_value": "segwit",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": "none",
+            "chain_value": "taproot",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": "nops",
+            "chain_value": "cltv+csv",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": "2016-block-retarget",
+            "chain_value": "2016-block-retarget",
+            "verdict": "match"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": "none",
+            "chain_value": "none",
+            "verdict": "match"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": "topological",
+            "chain_value": "topological",
+            "verdict": "match"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": "50",
+            "chain_value": "50",
+            "verdict": "match"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": "10-min",
+            "chain_value": "10-min",
+            "verdict": "match"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": "not-required",
+            "chain_value": "required",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": "sha256d",
+            "chain_value": "sha256d",
+            "verdict": "match"
+          }
+        ]
+      },
+      "BCH": {
+        "jointly_specified": 19,
+        "differing": 14,
+        "total_axes": 19,
+        "coverage": 1.0,
+        "coverage_exact": 1.0,
+        "mismatch_rate": 0.7368,
+        "mismatch_rate_exact": 0.7368421052631579,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": "height",
+            "chain_value": "most-work",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": "no-dedicated-cap",
+            "chain_value": "abla-dynamic",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": "broad",
+            "chain_value": "partial-restore",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": "unbounded-openssl",
+            "chain_value": "large-bigint",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": "none",
+            "chain_value": "10000-byte",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": "lenient-openssl",
+            "chain_value": "strict-der",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": "none",
+            "chain_value": "moneyrange",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": "ecdsa-only",
+            "chain_value": "ecdsa+schnorr",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": "none",
+            "chain_value": "p2sh",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": "none",
+            "chain_value": "none",
+            "verdict": "match"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": "none",
+            "chain_value": "none",
+            "verdict": "match"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": "nops",
+            "chain_value": "cltv+csv",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": "2016-block-retarget",
+            "chain_value": "asert",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": "none",
+            "chain_value": "forkid",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": "topological",
+            "chain_value": "ctor",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": "50",
+            "chain_value": "50",
+            "verdict": "match"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": "10-min",
+            "chain_value": "10-min",
+            "verdict": "match"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": "not-required",
+            "chain_value": "required",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": "sha256d",
+            "chain_value": "sha256d",
+            "verdict": "match"
+          }
+        ]
+      },
+      "BSV": {
+        "jointly_specified": 19,
+        "differing": 8,
+        "total_axes": 19,
+        "coverage": 1.0,
+        "coverage_exact": 1.0,
+        "mismatch_rate": 0.4211,
+        "mismatch_rate_exact": 0.42105263157894735,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": "height",
+            "chain_value": "most-work",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": "no-dedicated-cap",
+            "chain_value": "no-consensus-cap",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": "broad",
+            "chain_value": "broad",
+            "verdict": "match"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": "unbounded-openssl",
+            "chain_value": "32mb-limit",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": "none",
+            "chain_value": "none",
+            "verdict": "match"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": "lenient-openssl",
+            "chain_value": "strict-der",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": "none",
+            "chain_value": "moneyrange",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": "ecdsa-only",
+            "chain_value": "ecdsa-only",
+            "verdict": "match"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": "none",
+            "chain_value": "none",
+            "verdict": "match"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": "none",
+            "chain_value": "none",
+            "verdict": "match"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": "none",
+            "chain_value": "none",
+            "verdict": "match"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": "nops",
+            "chain_value": "nops",
+            "verdict": "match"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": "2016-block-retarget",
+            "chain_value": "daa-cw144",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": "none",
+            "chain_value": "forkid",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": "topological",
+            "chain_value": "topological",
+            "verdict": "match"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": "50",
+            "chain_value": "50",
+            "verdict": "match"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": "10-min",
+            "chain_value": "10-min",
+            "verdict": "match"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": "not-required",
+            "chain_value": "required",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": "sha256d",
+            "chain_value": "sha256d",
+            "verdict": "match"
+          }
+        ]
+      },
+      "XEC": {
+        "jointly_specified": 19,
+        "differing": 14,
+        "total_axes": 19,
+        "coverage": 1.0,
+        "coverage_exact": 1.0,
+        "mismatch_rate": 0.7368,
+        "mismatch_rate_exact": 0.7368421052631579,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": "height",
+            "chain_value": "most-work+avalanche",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": "no-dedicated-cap",
+            "chain_value": "32mb",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": "broad",
+            "chain_value": "partial-restore",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": "unbounded-openssl",
+            "chain_value": "8-byte",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": "none",
+            "chain_value": "520-byte",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": "lenient-openssl",
+            "chain_value": "strict-der",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": "none",
+            "chain_value": "moneyrange",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": "ecdsa-only",
+            "chain_value": "ecdsa+schnorr",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": "none",
+            "chain_value": "p2sh",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": "none",
+            "chain_value": "none",
+            "verdict": "match"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": "none",
+            "chain_value": "none",
+            "verdict": "match"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": "nops",
+            "chain_value": "cltv+csv",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": "2016-block-retarget",
+            "chain_value": "asert+rtt",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": "none",
+            "chain_value": "forkid",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": "topological",
+            "chain_value": "ctor",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": "50",
+            "chain_value": "50",
+            "verdict": "match"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": "10-min",
+            "chain_value": "10-min",
+            "verdict": "match"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": "not-required",
+            "chain_value": "required",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": "sha256d",
+            "chain_value": "sha256d",
+            "verdict": "match"
+          }
+        ]
+      },
+      "BTG": {
+        "jointly_specified": 19,
+        "differing": 14,
+        "total_axes": 19,
+        "coverage": 1.0,
+        "coverage_exact": 1.0,
+        "mismatch_rate": 0.7368,
+        "mismatch_rate_exact": 0.7368421052631579,
+        "rows": [
+          {
+            "axis": "fork_choice",
+            "ref_value": "height",
+            "chain_value": "most-work",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "block_size_rule",
+            "ref_value": "no-dedicated-cap",
+            "chain_value": "1mb+weight",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "script_opcodes",
+            "ref_value": "broad",
+            "chain_value": "restricted",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "script_number_width",
+            "ref_value": "unbounded-openssl",
+            "chain_value": "4-byte",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "element_size_limit",
+            "ref_value": "none",
+            "chain_value": "520-byte",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "sig_encoding",
+            "ref_value": "lenient-openssl",
+            "chain_value": "strict-der",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "value_range_check",
+            "ref_value": "none",
+            "chain_value": "moneyrange",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "sig_scheme",
+            "ref_value": "ecdsa-only",
+            "chain_value": "ecdsa-only",
+            "verdict": "match"
+          },
+          {
+            "axis": "p2sh",
+            "ref_value": "none",
+            "chain_value": "p2sh",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "segwit",
+            "ref_value": "none",
+            "chain_value": "segwit",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "taproot",
+            "ref_value": "none",
+            "chain_value": "none",
+            "verdict": "match"
+          },
+          {
+            "axis": "timelock_opcodes",
+            "ref_value": "nops",
+            "chain_value": "cltv+csv",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "difficulty_algorithm",
+            "ref_value": "2016-block-retarget",
+            "chain_value": "lwma",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "replay_protection",
+            "ref_value": "none",
+            "chain_value": "forkid",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "tx_ordering",
+            "ref_value": "topological",
+            "chain_value": "topological",
+            "verdict": "match"
+          },
+          {
+            "axis": "subsidy_base",
+            "ref_value": "50",
+            "chain_value": "50",
+            "verdict": "match"
+          },
+          {
+            "axis": "block_spacing",
+            "ref_value": "10-min",
+            "chain_value": "10-min",
+            "verdict": "match"
+          },
+          {
+            "axis": "coinbase_height",
+            "ref_value": "not-required",
+            "chain_value": "required",
+            "verdict": "mismatch"
+          },
+          {
+            "axis": "pow_function",
+            "ref_value": "sha256d",
+            "chain_value": "equihash-btg",
+            "verdict": "mismatch"
+          }
+        ]
+      }
+    }
+  },
+  "sensitivity": {
+    "whitepaper|BTC": {
+      "base_exact": 0.0,
+      "merged_cluster_exact": 0.0,
+      "base": 0.0,
+      "leave_one_out_min": 0.0,
+      "leave_one_out_max": 0.0,
+      "merged_cluster": 0.0
+    },
+    "whitepaper|BCH": {
+      "base_exact": 0.0,
+      "merged_cluster_exact": 0.0,
+      "base": 0.0,
+      "leave_one_out_min": 0.0,
+      "leave_one_out_max": 0.0,
+      "merged_cluster": 0.0
+    },
+    "whitepaper|BSV": {
+      "base_exact": 0.0,
+      "merged_cluster_exact": 0.0,
+      "base": 0.0,
+      "leave_one_out_min": 0.0,
+      "leave_one_out_max": 0.0,
+      "merged_cluster": 0.0
+    },
+    "whitepaper|XEC": {
+      "base_exact": 1.0,
+      "merged_cluster_exact": 1.0,
+      "base": 1.0,
+      "leave_one_out_min": 1.0,
+      "leave_one_out_max": 1.0,
+      "merged_cluster": 1.0
+    },
+    "whitepaper|BTG": {
+      "base_exact": 0.0,
+      "merged_cluster_exact": 0.0,
+      "base": 0.0,
+      "leave_one_out_min": 0.0,
+      "leave_one_out_max": 0.0,
+      "merged_cluster": 0.0
+    },
+    "nov08|BTC": {
+      "base_exact": 0.6666666666666666,
+      "merged_cluster_exact": 0.6666666666666666,
+      "base": 0.6667,
+      "leave_one_out_min": 0.5,
+      "leave_one_out_max": 1.0,
+      "merged_cluster": 0.6667
+    },
+    "nov08|BCH": {
+      "base_exact": 0.6666666666666666,
+      "merged_cluster_exact": 0.6666666666666666,
+      "base": 0.6667,
+      "leave_one_out_min": 0.5,
+      "leave_one_out_max": 1.0,
+      "merged_cluster": 0.6667
+    },
+    "nov08|BSV": {
+      "base_exact": 0.6666666666666666,
+      "merged_cluster_exact": 0.6666666666666666,
+      "base": 0.6667,
+      "leave_one_out_min": 0.5,
+      "leave_one_out_max": 1.0,
+      "merged_cluster": 0.6667
+    },
+    "nov08|XEC": {
+      "base_exact": 0.6666666666666666,
+      "merged_cluster_exact": 0.6666666666666666,
+      "base": 0.6667,
+      "leave_one_out_min": 0.5,
+      "leave_one_out_max": 1.0,
+      "merged_cluster": 0.6667
+    },
+    "nov08|BTG": {
+      "base_exact": 1.0,
+      "merged_cluster_exact": 1.0,
+      "base": 1.0,
+      "leave_one_out_min": 1.0,
+      "leave_one_out_max": 1.0,
+      "merged_cluster": 1.0
+    },
+    "v0.1.0|BTC": {
+      "base_exact": 0.6842105263157895,
+      "merged_cluster_exact": 0.6470588235294118,
+      "base": 0.6842,
+      "leave_one_out_min": 0.6667,
+      "leave_one_out_max": 0.7222,
+      "merged_cluster": 0.6471
+    },
+    "v0.1.0|BCH": {
+      "base_exact": 0.7368421052631579,
+      "merged_cluster_exact": 0.8235294117647058,
+      "base": 0.7368,
+      "leave_one_out_min": 0.7222,
+      "leave_one_out_max": 0.7778,
+      "merged_cluster": 0.8235
+    },
+    "v0.1.0|BSV": {
+      "base_exact": 0.42105263157894735,
+      "merged_cluster_exact": 0.47058823529411764,
+      "base": 0.4211,
+      "leave_one_out_min": 0.3889,
+      "leave_one_out_max": 0.4444,
+      "merged_cluster": 0.4706
+    },
+    "v0.1.0|XEC": {
+      "base_exact": 0.7368421052631579,
+      "merged_cluster_exact": 0.8235294117647058,
+      "base": 0.7368,
+      "leave_one_out_min": 0.7222,
+      "leave_one_out_max": 0.7778,
+      "merged_cluster": 0.8235
+    },
+    "v0.1.0|BTG": {
+      "base_exact": 0.7368421052631579,
+      "merged_cluster_exact": 0.8235294117647058,
+      "base": 0.7368,
+      "leave_one_out_min": 0.7222,
+      "leave_one_out_max": 0.7778,
+      "merged_cluster": 0.8235
+    }
+  },
+  "reference_disagreement": {
+    "whitepaper|nov08": {
+      "jointly_specified": 0,
+      "differing": 0,
+      "mismatch_rate": null,
+      "differing_axes": []
+    },
+    "whitepaper|v0.1.0": {
+      "jointly_specified": 1,
+      "differing": 1,
+      "mismatch_rate": 1.0,
+      "differing_axes": [
+        "fork_choice"
+      ]
+    },
+    "nov08|v0.1.0": {
+      "jointly_specified": 3,
+      "differing": 2,
+      "mismatch_rate": 0.6667,
+      "differing_axes": [
+        "subsidy_base",
+        "block_spacing"
+      ]
+    }
+  },
+  "match_provenance": {
+    "BTC": {
+      "matches": 6,
+      "retentions": [
+        "difficulty_algorithm",
+        "replay_protection",
+        "tx_ordering",
+        "subsidy_base",
+        "block_spacing",
+        "pow_function"
+      ],
+      "restorations": [],
+      "reasons": {}
+    },
+    "BCH": {
+      "matches": 5,
+      "retentions": [
+        "segwit",
+        "taproot",
+        "subsidy_base",
+        "block_spacing",
+        "pow_function"
+      ],
+      "restorations": [],
+      "reasons": {}
+    },
+    "BSV": {
+      "matches": 11,
+      "retentions": [
+        "sig_scheme",
+        "segwit",
+        "taproot",
+        "tx_ordering",
+        "subsidy_base",
+        "block_spacing",
+        "pow_function"
+      ],
+      "restorations": [
+        "script_opcodes",
+        "element_size_limit",
+        "p2sh",
+        "timelock_opcodes"
+      ],
+      "reasons": {
+        "script_opcodes": "inherited the 2010 opcode restrictions through the BTC->BCH lineage; the 2020 Genesis upgrade re-enabled the broad set (c_opdis -> bsv_genesis)",
+        "element_size_limit": "inherited the 520-byte element cap from 2010; Genesis removed the consensus limit (c_opdis -> bsv_genesis)",
+        "p2sh": "P2SH was a consensus rule on BSV's lineage from 2012; Genesis removed it (bip16 -> bsv_genesis)",
+        "timelock_opcodes": "CLTV and CSV were consensus rules on BSV's lineage from 2015-16 (BIP65, BIP112, both predating the 2017 fork); genesis-spec.md sunsets them, saying the operations revert to NOPs which have no effect (bip65+bip112 -> bsv_genesis)"
+      }
+    },
+    "XEC": {
+      "matches": 5,
+      "retentions": [
+        "segwit",
+        "taproot",
+        "subsidy_base",
+        "block_spacing",
+        "pow_function"
+      ],
+      "restorations": [],
+      "reasons": {}
+    },
+    "BTG": {
+      "matches": 5,
+      "retentions": [
+        "sig_scheme",
+        "taproot",
+        "tx_ordering",
+        "subsidy_base",
+        "block_spacing"
+      ],
+      "restorations": [],
+      "reasons": {}
+    }
+  },
+  "subset_robustness": {
+    "subsets": 1160,
+    "orderings_where_the_lowest_chain_differs": 0,
+    "range": {
+      "BTC": [
+        0.625,
+        0.8125
+      ],
+      "BCH": [
+        0.6875,
+        0.875
+      ],
+      "BSV": [
+        0.3125,
+        0.5
+      ],
+      "XEC": [
+        0.6875,
+        0.875
+      ],
+      "BTG": [
+        0.6875,
+        0.875
+      ]
+    },
+    "drop_up_to": 3
+  },
+  "constant_axes": [
+    "sig_encoding",
+    "value_range_check",
+    "subsidy_base",
+    "block_spacing",
+    "coinbase_height"
+  ],
+  "label_sensitivity": {
+    "base": {
+      "BTC": 0.6842,
+      "BCH": 0.7368,
+      "BSV": 0.4211,
+      "XEC": 0.7368,
+      "BTG": 0.7368
+    },
+    "cases": [
+      {
+        "name": "block-size labels unified",
+        "rationale": "v0.1.0's 'no-dedicated-cap' and BSV's 'no-consensus-cap' name the same state",
+        "rates": {
+          "BTC": 0.6842,
+          "BCH": 0.7368,
+          "BSV": 0.3684,
+          "XEC": 0.7368,
+          "BTG": 0.7368
+        }
+      },
+      {
+        "name": "script-number qualifier dropped (inert since the BSV cell became 32mb-limit)",
+        "rationale": "v0.1.0's 'unbounded-openssl' drops its implementation qualifier; no profile carries 'unbounded' any more, so this moves nothing -- retained because it was live when the analysis was designed",
+        "rates": {
+          "BTC": 0.6842,
+          "BCH": 0.7368,
+          "BSV": 0.4211,
+          "XEC": 0.7368,
+          "BTG": 0.7368
+        }
+      },
+      {
+        "name": "BSV opcode set individuated",
+        "rationale": "BSV's post-Genesis opcode set is NOT v0.1's: it adds CHECKDATASIG, OP_SPLIT, NUM2BIN/BIN2NUM and still disables OP_2MUL/2DIV/VERIF/VERNOTIF",
+        "rates": {
+          "BTC": 0.6842,
+          "BCH": 0.7368,
+          "BSV": 0.4737,
+          "XEC": 0.7368,
+          "BTG": 0.7368
+        }
+      },
+      {
+        "name": "the two unification cases together",
+        "rationale": "both label unifications applied",
+        "rates": {
+          "BTC": 0.6842,
+          "BCH": 0.7368,
+          "BSV": 0.3684,
+          "XEC": 0.7368,
+          "BTG": 0.7368
+        }
+      }
+    ],
+    "range": {
+      "BTC": [
+        0.6842,
+        0.6842
+      ],
+      "BCH": [
+        0.7368,
+        0.7368
+      ],
+      "BSV": [
+        0.3684,
+        0.4737
+      ],
+      "XEC": [
+        0.7368,
+        0.7368
+      ],
+      "BTG": [
+        0.7368,
+        0.7368
+      ]
+    },
+    "range_exact": {
+      "BTC": [
+        0.6842105263157895,
+        0.6842105263157895
+      ],
+      "BCH": [
+        0.7368421052631579,
+        0.7368421052631579
+      ],
+      "BSV": [
+        0.3684210526315789,
+        0.47368421052631576
+      ],
+      "XEC": [
+        0.7368421052631579,
+        0.7368421052631579
+      ],
+      "BTG": [
+        0.7368421052631579,
+        0.7368421052631579
+      ]
+    }
+  },
+  "note": "reference-relative mismatch counts/rates; NOT a metric and NOT a ranking of which chain 'is' Bitcoin; every cell is source-anchored (see METHOD.md)."
+}

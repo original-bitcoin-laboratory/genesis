@@ -1,0 +1,113 @@
+{
+ "generated_utc": "2026-08-14T22:38:41+00:00",
+ "script": "audit_btc.py",
+ "confirmed": 8,
+ "not_found": 0,
+ "void": 0,
+ "records": [
+  {
+   "chain": "BTC",
+   "axis": "p2sh",
+   "value": "p2sh",
+   "doc": "bip-0016.mediawiki",
+   "url": "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0016.mediawiki",
+   "http": 200,
+   "control_passed": true,
+   "matched": true,
+   "match_text": "Pay to Script Hash",
+   "body_sha256": "9f89c0731bd718ae084802c897c95eb6f85ed2730d01fbc3233ee963b4679feb",
+   "proves": "P2SH is a consensus rule with a special output template"
+  },
+  {
+   "chain": "BTC",
+   "axis": "sig_encoding",
+   "value": "strict-der",
+   "doc": "bip-0066.mediawiki",
+   "url": "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0066.mediawiki",
+   "http": 200,
+   "control_passed": true,
+   "matched": true,
+   "match_text": "Strict DER",
+   "body_sha256": "c42d25a3aa18341212c53065131d415f6ed3bb10166a63def9002f300c98a3be",
+   "proves": "strict-DER signature encoding is enforced"
+  },
+  {
+   "chain": "BTC",
+   "axis": "timelock_opcodes",
+   "value": "cltv+csv",
+   "doc": "bip-0065.mediawiki",
+   "url": "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0065.mediawiki",
+   "http": 200,
+   "control_passed": true,
+   "matched": true,
+   "match_text": "CHECKLOCKTIMEVERIFY",
+   "body_sha256": "717400aef7789a795bbc86a67e0f40ea94966aea13975052e1fc31a047207399",
+   "proves": "CLTV exists as a consensus opcode"
+  },
+  {
+   "chain": "BTC",
+   "axis": "timelock_opcodes",
+   "value": "cltv+csv",
+   "doc": "bip-0112.mediawiki",
+   "url": "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0112.mediawiki",
+   "http": 200,
+   "control_passed": true,
+   "matched": true,
+   "match_text": "CHECKSEQUENCEVERIFY",
+   "body_sha256": "61022872545daeb779ef5d38f769d7a155c0f85333653b20c83b0a2329b523c4",
+   "proves": "CSV exists as a consensus opcode"
+  },
+  {
+   "chain": "BTC",
+   "axis": "segwit",
+   "value": "segwit",
+   "doc": "bip-0141.mediawiki",
+   "url": "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0141.mediawiki",
+   "http": 200,
+   "control_passed": true,
+   "matched": true,
+   "match_text": "Segregated Witness",
+   "body_sha256": "d72409335872a32494f75e7547589abf4b3b23b6beebe6bc6999c7a84b135e2c",
+   "proves": "segwit is a consensus rule"
+  },
+  {
+   "chain": "BTC",
+   "axis": "block_size_rule",
+   "value": "1mb+weight",
+   "doc": "bip-0141.mediawiki",
+   "url": "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0141.mediawiki",
+   "http": 200,
+   "control_passed": true,
+   "matched": true,
+   "match_text": "Block weight",
+   "body_sha256": "d72409335872a32494f75e7547589abf4b3b23b6beebe6bc6999c7a84b135e2c",
+   "proves": "the size rule became a WEIGHT limit, so '1mb+weight' is the right shape"
+  },
+  {
+   "chain": "BTC",
+   "axis": "taproot",
+   "value": "taproot",
+   "doc": "bip-0341.mediawiki",
+   "url": "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0341.mediawiki",
+   "http": 200,
+   "control_passed": true,
+   "matched": true,
+   "match_text": "Taproot",
+   "body_sha256": "463690d4c409587759c0ff6e8b8fc3a2bf6cb2cdda0c06ff193d317e0ed898ec",
+   "proves": "Taproot outputs are a consensus rule"
+  },
+  {
+   "chain": "BTC",
+   "axis": "sig_scheme",
+   "value": "ecdsa+schnorr",
+   "doc": "bip-0340.mediawiki",
+   "url": "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0340.mediawiki",
+   "http": 200,
+   "control_passed": true,
+   "matched": true,
+   "match_text": "Schnorr",
+   "body_sha256": "17d64d6dc6bc97f4ecf178697bf810b92aa2a9e41ef13db809c25bc44a9b8109",
+   "proves": "Schnorr signatures exist alongside ECDSA"
+  }
+ ]
+}

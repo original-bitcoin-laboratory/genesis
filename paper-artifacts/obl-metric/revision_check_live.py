@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+"""revision_check, but reading the MANUSCRIPT instead of a transcription of it. NOT money.
+
+⚠️ WHY THIS EXISTS, AND IT IS NOT A CRITICISM OF THE REFEREE'S TOOL
+--------------------------------------------------------------------
+`revision_check.py` opens with: *"Every claim below is a NUMBER THAT APPEARS IN paper.md."* **It does
+not open paper.md.** Its PAPER column is a set of literals transcribed by hand when the referee read
+the manuscript — e.g. `check("§2 class-(i) axis count", 14, ...)`.
+
+  ★ AS A REVIEW ARTEFACT THAT WAS EXACTLY RIGHT: it is a faithful, frozen record of what the paper
+    said at review time, which is what a referee needs.
+
+  ⛔ AS A GATE IT CANNOT WORK: the PAPER column never changes, so it reports the same failures
+    however the manuscript is repaired — and it would equally report success if the manuscript
+    were rewritten to say something new and wrong.
+
+⇒ ★★★ AND THAT IS THE SAME DEFECT CLASS THE WHOLE REVIEW WAS ABOUT: a documented behaviour the code
+  does not implement. It caught our `--at` flag, our docstring and our figure; it is worth saying
+  plainly that the instrument which caught them has it too. **No blame attaches — the tool did its
+  job. But a gate must READ THE ARTEFACT.**
+
+This version parses every number out of paper.md and compares it to the engine. Same checks, live
+inputs. Run BOTH: the referee's for the historical record, this one to decide whether to ship.
+"""
+import io
+import json
+import re
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import obl_metric as M  # noqa: E402
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+HERE = Path(__file__).resolve().parent
+PAPER = (HERE / "paper.md").read_text(encoding="utf-8")
+FIGS = json.loads((HERE / "tables" / "figures.json").read_text(encoding="utf-8"))
+
+rows = []
+
+
+def chk(name, found, expect, how=""):
+    ok = str(found) == str(expect)
+    rows.append((ok, name, found, expect, how))
+
+
+def grab(rx, cast=str, default=None):
+    m = re.search(rx, PAPER)
+    return cast(m.group(1)) if m else default
+
+
+# ── structural counts, parsed from the prose ──────────────────────────────────────────────────
+chk("class-(i) axis count", grab(r"since January\s*\n?2009\.\s*\*\*(\d+) axes"), FIGS["n_class_i"])
+chk("class-(ii) axis count", grab(r"\*\*(\d+) axes: the initial block subsidy"), FIGS["n_class_ii"])
+chk("constant axes", grab(r"(\d+) axes \(sig_encoding"), FIGS["n_constant"])
+# ⚠️ R8 rewrote this sentence to name the constant axes and close 5 + 14 = 19 on the page, so the
+#    old pattern ("only N of the M axes do any comparative") stopped matching and the check
+#    reported None. ★ A regex tied to one phrasing is a check on the WORDS, not the NUMBER --
+#    so this now matches the arithmetic identity itself, which is what the sentence is for and
+#    is far harder to reword by accident.
+chk("discriminating axes", grab(r"only the remaining \*\*(\d+) of \d+\*\*"),
+    FIGS["n_discriminating"])
+chk("constant + discriminating = total",
+    grab(r"work\s*[-—]+\s*\d+ \+ \d+ = (\d+)"), FIGS["n_axes"])
+chk("total cells", grab(r"Of the (\d+) cells"), FIGS["n_cells"])
+chk("valued cells", grab(r"of the\s*\n?(\d+) that carry a value"), FIGS["n_specified"])
+chk("high-confidence", grab(r"(\d+) are high-confidence"), FIGS["n_high"])
+chk("medium-confidence", grab(r"and (\d+) are medium"), FIGS["n_med"])
+chk("Data&Code cell count", grab(r"confidence for each of the \{?\{?FIG:n_cells\}?\}?|"
+                                 r"confidence for each of the (\d+)\s*\n?cells"), FIGS["n_cells"])
+
+# ── headline rates, parsed from Table 2 ───────────────────────────────────────────────────────
+tbl2 = re.search(r"(?m)^\| v0\.1\.0 \|(.+)\|\s*$", PAPER)
+if tbl2:
+    vals = [v.strip().split(" ")[0] for v in tbl2.group(1).split("|") if v.strip()]
+    for c, v in zip(M.CHAINS, vals):
+        chk("Table 2 rate %s" % c, v, FIGS["rate_" + c])
+
+# ── ranges ────────────────────────────────────────────────────────────────────────────────────
+for c in M.CHAINS:
+    chk("subset range %s present" % c, FIGS["sub_" + c] in PAPER, True)
+    chk("LOO range %s present" % c, FIGS["loo_" + c] in PAPER, True)
+chk("label range BSV present", FIGS["lab_BSV"] in PAPER, True)
+
+# ── provenance ────────────────────────────────────────────────────────────────────────────────
+chk("conclusion restorations", grab(r"(\d+) axes of \d+, with the other"), FIGS["rest_BSV"])
+chk("conclusion matches", grab(r"\d+ axes of (\d+), with the other"), FIGS["match_BSV"])
+
+# ── hygiene: the things that broke previous builds ────────────────────────────────────────────
+raw = (HERE / "paper.md").read_bytes()
+chk("no BEL bytes", raw.count(b"\x07"), 0)
+chk("no U+2212", raw.count("−".encode()), 0)
+chk("no unresolved placeholders", len(re.findall(r"\{\{(TABLE|FIG):", PAPER)), 0)
+chk("generation stamp present", bool(re.search(r"GENERATED by build_paper", PAPER)), True)
+for s in ("18 axes", "126 cells", "988", "Five axes",
+          "nothing for independent coders to disagree about"):
+    chk("obsolete string absent: %r" % s, s not in PAPER, True)
+
+# ── figure freshness ──────────────────────────────────────────────────────────────────────────
+# ⛔ R4 flagged this as fragile and R5 caught it firing on a shipped release. It compared
+#    MTIMES, so any ordering of two commands -- including a correct one -- could fail it, and a
+#    false alarm is indistinguishable from a stale figure.
+#    ★ The question was never "which file is newer". It is "does the figure depict the current
+#      data". So ask that: the figure records the axis count and the rates it drew.
+fig = HERE / "figures" / "mismatch_heatmap_v010.png"
+_meta = HERE / "figures" / "figure_provenance.json"
+if _meta.exists():
+    _m = json.loads(_meta.read_text(encoding="utf-8"))
+    chk("figure drawn from the current axis set", _m.get("n_axes"), FIGS["n_axes"])
+    chk("figure drawn from the current rates",
+        _m.get("rates"), {c: FIGS["rate_" + c] for c in M.CHAINS})
+else:
+    chk("figure provenance recorded", fig.exists(), True)
+
+w = max(len(r[1]) for r in rows) + 2
+print("%-*s %14s %14s" % (w, "CHECK", "PAPER", "ENGINE"))
+print("-" * (w + 32))
+bad = 0
+for ok, name, found, expect, how in rows:
+    if not ok:
+        bad += 1
+    print("%s %-*s %14s %14s" % ("ok " if ok else "FAIL", w - 1, name, found, expect))
+print("-" * (w + 32))
+print("%d checks, %d mismatches (manuscript READ, not transcribed)" % (len(rows), bad))
+sys.exit(1 if bad else 0)

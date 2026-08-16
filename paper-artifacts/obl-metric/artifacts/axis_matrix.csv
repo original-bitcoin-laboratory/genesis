@@ -1,0 +1,20 @@
+axis,whitepaper,nov08,v0.1.0,BTC,BCH,BSV,XEC,BTG,criterion
+fork_choice,most-work,,height,most-work,most-work,most-work,most-work+avalanche,most-work,How the node picks the active tip.
+block_size_rule,,,no-dedicated-cap,1mb+weight,abla-dynamic,no-consensus-cap,32mb,1mb+weight,The dedicated maximum-block-size consensus rule (ignoring the generic serialisation ceiling).
+script_opcodes,,,broad,restricted,partial-restore,broad,partial-restore,restricted,"Status of the broad opcode set v0.1 shipped and 2010 disabled (OP_CAT, OP_MUL, bitwise, etc.)."
+script_number_width,,,unbounded-openssl,4-byte,large-bigint,32mb-limit,8-byte,4-byte,The maximum width of a numeric script operand.
+element_size_limit,,,none,520-byte,10000-byte,none,520-byte,520-byte,The maximum size of a single stack element.
+sig_encoding,,,lenient-openssl,strict-der,strict-der,strict-der,strict-der,strict-der,Whether strict-DER signature encoding is enforced.
+value_range_check,,,none,moneyrange,moneyrange,moneyrange,moneyrange,moneyrange,Whether outputs/sums are bounded by a MoneyRange invariant (vs only nValue < 0).
+sig_scheme,,,ecdsa-only,ecdsa+schnorr,ecdsa+schnorr,ecdsa-only,ecdsa+schnorr,ecdsa-only,Whether a Schnorr scheme is available in consensus in addition to ECDSA.
+p2sh,,,none,p2sh,p2sh,none,p2sh,p2sh,Whether the P2SH special-case output template is a consensus rule.
+segwit,,,none,segwit,none,none,none,segwit,Whether witness data is segregated with a separate commitment (BIP141).
+taproot,,,none,taproot,none,none,none,none,Whether Taproot (BIP341 key/script-path) outputs are a consensus rule.
+timelock_opcodes,,,nops,cltv+csv,cltv+csv,nops,cltv+csv,cltv+csv,Whether CLTV/CSV-style timelock opcodes are active (v0.1 leaves the slots as NOPs).
+difficulty_algorithm,,,2016-block-retarget,2016-block-retarget,asert,daa-cw144,asert+rtt,lwma,"The retarget algorithm governing proof-of-work difficulty, INCLUDING any additional real-time target a block must also satisfy to be accepted."
+replay_protection,,,none,none,forkid,forkid,forkid,forkid,Whether a fork-id is mixed into the signature hash.
+tx_ordering,,,topological,topological,ctor,topological,ctor,topological,Whether non-coinbase transactions must follow a canonical order (CTOR) vs topological.
+subsidy_base,,100,50,50,50,50,50,50,The genesis-era block subsidy (coins per block before the first halving).
+block_spacing,,15-min,10-min,10-min,10-min,10-min,10-min,10-min,The target mean time between blocks.
+coinbase_height,,,not-required,required,required,required,required,required,Whether the block height must appear in the coinbase input (BIP34).
+pow_function,,sha256d,sha256d,sha256d,sha256d,sha256d,sha256d,equihash-btg,The hash function a valid block header must satisfy the target under.

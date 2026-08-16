@@ -1,0 +1,16 @@
+reference,chain,jointly_specified,differing,coverage,mismatch_rate
+whitepaper,BTC,1,0,0.0526,0.0
+whitepaper,BCH,1,0,0.0526,0.0
+whitepaper,BSV,1,0,0.0526,0.0
+whitepaper,XEC,1,1,0.0526,1.0
+whitepaper,BTG,1,0,0.0526,0.0
+nov08,BTC,3,2,0.1579,0.6667
+nov08,BCH,3,2,0.1579,0.6667
+nov08,BSV,3,2,0.1579,0.6667
+nov08,XEC,3,2,0.1579,0.6667
+nov08,BTG,3,3,0.1579,1.0
+v0.1.0,BTC,19,13,1.0,0.6842
+v0.1.0,BCH,19,14,1.0,0.7368
+v0.1.0,BSV,19,8,1.0,0.4211
+v0.1.0,XEC,19,14,1.0,0.7368
+v0.1.0,BTG,19,14,1.0,0.7368
