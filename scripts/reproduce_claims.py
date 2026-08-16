@@ -303,6 +303,11 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
 
     out["complete"] = True
     out["verified_here"] = True
+    # ⚠️ CARRIED, NEVER COMPUTED HERE. finalize_deposit.py resolves the DOI, re-downloads the
+    #    published file and records its digest; this script only passes that receipt through so
+    #    the manifest can distinguish "the local bytes check out" from "those bytes are public".
+    if isinstance(doc.get("public_deposit_receipt"), dict):
+        out["public_deposit_receipt"] = doc["public_deposit_receipt"]
     return out
 
 
@@ -490,7 +495,14 @@ def main() -> int:
     # and this computes True; absent or incomplete (the pre-deposit state) it stays False.
     external_evidence = _external_evidence(args.historical_evidence, args.deposit_archive)
     external_complete = external_evidence["complete"]
-    submission_complete = bool(all_internal and cross_impl_complete and external_complete)
+    # ⛔ THE PUBLICATION RECEIPT IS NOT SOMETHING THIS SCRIPT CAN EARN. finalize_deposit.py writes
+    #    it after resolving the DOI and re-downloading the published bytes; here it is only read.
+    #    Absent receipt -> false, which is the correct pre-publication state.
+    public_deposit = bool(external_evidence.get("public_deposit_receipt"))
+    # ⇒ AND submission completeness now requires the PUBLIC state, not the local one. Previously
+    #   a verified local archive was enough, so "submission evidence complete" could be true with
+    #   nothing published anywhere -- the precise thing the phrase promises a reader.
+    submission_complete = bool(all_internal and cross_impl_complete and public_deposit)
 
     manifest = {
         "schema": 3,   # 3: C1a->auxiliary_checks; historical-binary split into external C1d-C1h
@@ -535,6 +547,19 @@ def main() -> int:
         "external_archive_verified": external_complete,
         "external_claims_complete": external_complete,   # retained: prior schema-3 consumers read it
         "external_evidence": external_evidence,   # derived, not hand-set (see historical-evidence.json)
+        # ⛔ TWO DIFFERENT QUESTIONS, AND CONFLATING THEM WAS THE REMAINING OVERCLAIM.
+        #    A reviewer built an archive of five folders each holding a marker.txt reading
+        #    "not evidence", gave it a self-consistent SHA256SUMS and a DOI of
+        #    10.5281/zenodo.DOES-NOT-EXIST -- and the predicate returned complete. It had to:
+        #    the archive digest and the manifest digest both come from the same descriptor, so
+        #    there is no independent anchor saying "these are the bytes published under this DOI".
+        #
+        #  ★★ THE SPLIT IS THE FIX, NOT A STRONGER CHECK HERE. This script must stay offline:
+        #     a reproducibility artifact whose result depends on DNS is worse than one with an
+        #     honestly narrow name. So it answers only what bytes on disk can answer, and the
+        #     one-time finalizer -- which may legitimately use the network -- writes the receipt
+        #     that answers the other.
+        "public_deposit_verified": public_deposit,
         "submission_evidence_complete": submission_complete,
     }
     args.manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
