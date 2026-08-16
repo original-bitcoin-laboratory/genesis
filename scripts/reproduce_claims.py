@@ -680,12 +680,18 @@ def main() -> int:
         #   different states for a reader deciding whether the deposit is citable.
         "public_deposit": {
             "receipt_wellformed": bool(receipt),
-            # ⚠️ NEVER null. When the descriptor is absent the receipt never reaches validation at
-            #    all, and a bare null there reads as "no reason recorded" -- reintroducing the very
-            #    ambiguity this block exists to remove.
-            "receipt_reason": (external_evidence.get("public_deposit_receipt_reason")
-                               or "receipt never reached validation: %s"
-                               % (external_evidence.get("reason") or "unknown")),
+            # ⚠️ NEVER null, and never CONFIDENTLY WRONG. Three states, and they must not be
+            #    collapsed: validation ran and passed / validation ran and rejected / validation
+            #    never ran because the archive check returned first. A draft of this line used
+            #    `reason or "never reached validation"`, which printed "never reached validation"
+            #    over every SUCCESS -- a null replaced by a false statement is the worse of the two,
+            #    and it took a control that asserted the happy path to show it.
+            "receipt_reason": (
+                (external_evidence["public_deposit_receipt_reason"]
+                 or "receipt is well-formed and binds to this archive")
+                if "public_deposit_receipt_reason" in external_evidence else
+                "receipt never reached validation: %s"
+                % (external_evidence.get("reason") or "unknown")),
             "online_check": online,
         },
         "submission_evidence_complete": submission_complete,
