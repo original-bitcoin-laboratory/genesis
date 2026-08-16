@@ -1,13 +1,15 @@
 {
-  "_comment": "TEMPLATE / schema illustration. reproduce_claims.py reads historical-evidence.json (this shape) to DERIVE external_claims_complete: complete iff doi + archive_sha256 + top_level_manifest_sha256 are set and claim_map covers C1d-C1g. The submission's finalize_deposit.py writes the real file itself (it computes archive_sha256 and top_level_manifest_sha256 from the actual deposit and checks them against deposit/CHECKSUMS.txt), so you normally do not edit this by hand. top_level_manifest_sha256 = sha256 of the deposit's top-level SHA256SUMS (the manifest-of-manifests). doi empty -> external stays incomplete (the correct pre-deposit state).",
+  "_comment": "TEMPLATE ONLY -- not a valid descriptor. finalize_deposit.py writes the real one after the deposit resolves. verified:false here on purpose: the consumer requires verified is True AND re-verifies the archive bytes, so this file cannot make a flag green even if copied into place.",
   "doi": "",
   "archive_name": "obl-historical-binary-evidence.zip",
   "archive_sha256": "",
   "top_level_manifest_sha256": "",
   "claim_map": {
-    "C1d-historical-genesis": "r3-findings/2026-07-31-twonode-mined-block (real genesis, block 0)",
-    "C1e-historical-block-production-and-relay": "r3-findings/2026-07-31-twonode-mined-block + r4-findings/2026-08-01-sustained-relay",
-    "C1f-historical-bidirectional-chain-growth": "r4-findings/2026-08-01-sustained-relay (run-b, run-b-14)",
-    "C1g-historical-reorganisation": "r4-findings/2026-08-02-reorg-partition"
-  }
+    "C1d-historical-genesis": "2026-07-31-twonode-mined-block/ (real genesis, block 0)",
+    "C1e-historical-block-production-and-relay": "2026-07-31-twonode-mined-block/ + 2026-08-01-sustained-relay/",
+    "C1f-historical-bidirectional-chain-growth": "2026-08-01-sustained-relay/run-b-14/",
+    "C1g-historical-reorganisation": "2026-08-02-reorg-partition/",
+    "C1h-historical-relayed-spend": "2026-08-06-relayed-spend/"
+  },
+  "verified": false
 }

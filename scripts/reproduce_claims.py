@@ -517,7 +517,20 @@ def main() -> int:
         # (author-reported) historical claim and from cross-implementation coverage.
         "all_internal_checks_passed": all_internal,
         "cross_implementation_complete": cross_impl_complete,
-        "external_claims_complete": external_complete,
+        # ⛔ THE NAME NOW MATCHES WHAT IS ACTUALLY CHECKED, AND THIS IS A DELIBERATE DOWNGRADE.
+        #    `external_claims_complete` read as "the cited public deposit exists". It never meant
+        #    that: the checker re-verifies a LOCAL archive against the descriptor, and treats the
+        #    DOI only as a non-empty string. A reviewer put it plainly -- a fabricated DOI plus the
+        #    genuine local archive still earns completeness before any Zenodo record exists.
+        #
+        #  ★★ RESOLVING THE DOI WAS THE OBVIOUS FIX AND IS THE WRONG ONE. It would make a
+        #     reproducibility manifest depend on network reachability, so the same bytes would
+        #     verify or not according to DNS -- and an artifact whose result varies with the
+        #     network is a worse artifact than one with an honestly narrower name.
+        #  ⇒ So the state is renamed to what it can prove. The DOI's existence is evidenced by the
+        #    deposit record itself, which a reader can open; it is not something this script knows.
+        "external_archive_verified": external_complete,
+        "external_claims_complete": external_complete,   # retained: prior schema-3 consumers read it
         "external_evidence": external_evidence,   # derived, not hand-set (see historical-evidence.json)
         "submission_evidence_complete": submission_complete,
     }
