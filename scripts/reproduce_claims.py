@@ -617,7 +617,14 @@ def main() -> int:
     # ⇒ AND submission completeness now requires the PUBLIC state, not the local one. Previously
     #   a verified local archive was enough, so "submission evidence complete" could be true with
     #   nothing published anywhere -- the precise thing the phrase promises a reader.
-    submission_complete = bool(all_internal and cross_impl_complete and public_deposit)
+    # ⇒ `external_complete` IS AN EXPLICIT CONJUNCT, not an implied one. It was safe before only
+    #   because _validate_receipt runs after the archive check returns -- a receipt cannot be
+    #   well-formed unless the archive verified. A reviewer pointed out that this is POSITIONAL:
+    #   hoisting that call, a reasonable refactor, would silently drop the requirement. A
+    #   dependency that holds by statement order is not a dependency, it is a coincidence with
+    #   good manners.
+    submission_complete = bool(all_internal and cross_impl_complete
+                               and external_complete and public_deposit)
 
     manifest = {
         "schema": 3,   # 3: C1a->auxiliary_checks; historical-binary split into external C1d-C1h
