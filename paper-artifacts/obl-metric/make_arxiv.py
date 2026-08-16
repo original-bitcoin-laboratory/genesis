@@ -157,6 +157,45 @@ def clean_compile():
     shutil.copytree(OUT, work)
     print("\n  CLEAN-ROOM TeX COMPILE in %s" % work)
     ok = True
+
+    # ⛔⛔ ARXIV CHOOSES THE ENGINE, NOT US — AND IT CHOSE A DIFFERENT ONE.
+    #    Nineteen rounds of verification ran under pdflatex and reported 0 overfull boxes. arXiv's
+    #    scanner auto-selected **xelatex** (the pandoc template loads fontspec/unicode-math in its
+    #    non-pdfTeX branch) and produced an overfull box we had never seen: a 13.34pt overhang on
+    #    `\texttt{https://github.com/original-bitcoin-laboratory/genesis}`, which cannot line-break.
+    #    Different engine, different font metrics, different line breaking.
+    #
+    #  ★★ THE DEFECT EXISTED ONLY IN AN OUTPUT NOBODY HAD BUILT. Every gate was green, both external
+    #     referees compiled cleanly, and the first machine to try the other engine found it
+    #     immediately. ⇒ **"It compiles" is a claim about a toolchain, not about a document.**
+    #
+    #  ⇒ So compile under BOTH and gate on both. Fixed properly at source (the URLs are now
+    #    breakable \url macros rather than \texttt), so the document is engine-independent instead
+    #    of merely pinned to the engine we happen to run.
+    #  ⚠️ A missing engine is reported and skipped, never silently treated as a pass.
+    engines = []
+    for eng in ("pdflatex", "xelatex"):
+        if shutil.which(eng):
+            engines.append(eng)
+        else:
+            print("    ⚠  %s not installed here -- NOT CHECKED (arXiv may still use it)" % eng)
+    for eng in engines[1:]:
+        alt = tmp / ("alt_" + eng)
+        shutil.copytree(OUT, alt)
+        for _ in (1, 2, 3):
+            subprocess.run([eng, "-interaction=batchmode", "paper.tex"], cwd=alt,
+                           capture_output=True)
+        alog = (alt / "paper.log").read_text(encoding="utf-8", errors="replace") \
+            if (alt / "paper.log").exists() else ""
+        aover = [float(x) for x in re.findall(r"Overfull .hbox \((\d+\.\d+)pt", alog)]
+        apages = re.search(r"Output written .*?\((\d+) pages", alog)
+        abad = [x for x in aover if x > 1.0]
+        print("    %s %-9s pages %s   overfull %d %s"
+              % ("ok  " if not abad else "FAIL", eng, apages.group(1) if apages else "?",
+                 len(abad), ("worst %.2fpt" % max(abad)) if abad else ""))
+        if abad:
+            ok = False
+
     for i in (1, 2):
         r = subprocess.run(["pdflatex", "-interaction=nonstopmode", "paper.tex"],
                            cwd=work, capture_output=True, text=True,
@@ -164,7 +203,11 @@ def clean_compile():
         print("    pass %d  exit %s" % (i, r.returncode))
     pdf = work / "paper.pdf"
     log = (work / "paper.log").read_text(encoding="utf-8", errors="replace") if (work / "paper.log").exists() else ""
-    import re
+    # ⚠️ NO `import re` HERE. `re` is imported at module level; a function-local import binds the
+    #    name as a LOCAL for the WHOLE function body, so every earlier use in this same function
+    #    raises UnboundLocalError -- which is exactly what the alternate-engine loop above hit.
+    #    The failure appears at the FIRST use, not at the import, which is why it reads as
+    #    "re is not defined" in code that plainly imports re.
     pages = re.search(r"Output written .*?\((\d+) pages", log)
     undef = len(re.findall(r"Citation .* undefined", log))
     miss = len(re.findall(r"File .* not found|LaTeX Warning: File", log))
@@ -223,9 +266,12 @@ def clean_compile():
         shutil.copy2(pdf, OUT / "paper-arxiv-preview.pdf")
     # ⚠️ `heads is None` (no extractor) does NOT fail the build — an absent tool is not a defect —
     #    but it prints "not checked" rather than passing silently, so the gap is visible.
-    ok = (pdf.exists() and undef == 0 and miss == 0
-          and not hard and raw_rows == 0 and tabulars >= 5 and not big
-          and heads in (None, 1))
+    # ⚠️ `ok and ...`, not `ok = ...`. The alternate-engine loop above may already have set ok
+    #    False; a plain assignment here would discard that result and pass a bundle that fails
+    #    under the engine arXiv actually uses.
+    ok = ok and (pdf.exists() and undef == 0 and miss == 0
+                 and not hard and raw_rows == 0 and tabulars >= 5 and not big
+                 and heads in (None, 1))
     shutil.rmtree(tmp, ignore_errors=True)
     return ok
 

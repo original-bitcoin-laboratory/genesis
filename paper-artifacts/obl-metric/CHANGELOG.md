@@ -7,6 +7,55 @@ compressed to a sentence each. The account of *how* each one was found lives her
 ★ **Nothing is deleted, only relocated.** A finding that cost something to learn is worth keeping;
 it is simply not what a reader of the paper came for.
 
+## Round 19 (16 Aug 2026) — the gate closes, and a claim about my own edit was wrong
+
+The artifacts were published: signed commit `a15e2b60`, signed tag `obl-metric-v1.0.0`,
+DOI 10.5281/zenodo.21964447. For the first time in nineteen rounds a reviewer could check the
+digests the paper prints against bytes a stranger can fetch.
+
+- **★★★ THE ONE CLAIM I COULD NOT TEST MYSELF NOW HOLDS.** Reviewer #1 regenerated
+  `artifacts/comparison.json` on Linux (Python 3.12.3) from a clean clone and obtained
+  `2209d84e…8bcc9` — the published digest, exactly. 3,192 bare LF, zero CR. **Stronger than
+  asked: `diff -r` between the freshly regenerated tree and the published tree was empty** —
+  every artifact and all eight table files reproduce byte for byte. They also confirmed every
+  write in the engine is pinned (`newline="\n"` for JSON and tables, `newline=""` for the two CSV
+  writers) with no unpinned `write_text` surviving.
+  ⇒ *The CRLF repair of round 17 is complete, not partial, and that is now measured rather than
+  reasoned.*
+
+- **⛔ A DEFECT IN MY OWN REPORT OF MY OWN EDIT, found by reviewer #2.** The review prompt said
+  *"DOI, signed tag and commit hash added to Data and Code, **and to the second self-citation**"*.
+  Data and Code had all three; the `saxena_ledger` bibliography entry had **only the DOI**. The
+  reviewer read the rendered `.bbl` rather than the claim and caught the gap.
+  ★★ **The failure mode is exact: I described the intent of an edit rather than its result.**
+  This corpus already records that a claim about one's own instrument is not privileged evidence
+  about it — this is the same error applied to a two-line change. Fixed: the entry now names the
+  DOI, the signed tag and the commit, so a bibliography entry identifies its subject as precisely
+  as the section that discusses it.
+
+- **Dateline advanced to 16 August 2026** to match the submission date (reviewer #1, cosmetic).
+
+> ### ⚠️ RECORDED, DELIBERATELY NOT FIXED: the two audit ledgers are written with bare `write_text`
+> Reviewer #1 noticed that `audit_descendants.py` and `audit_btc.py` still use the unpinned idiom
+> the engine was repaired for. **It is inert today**: `.gitattributes` sets `* -text`, so the CRLF
+> bytes those Windows runs produced are pinned in the blobs and every cloner on every platform
+> receives the identical bytes that were hashed. The ledgers were never regenerable anyway — each
+> embeds a run timestamp.
+>
+> ⛔ **And fixing it now would be actively wrong.** Editing either script changes its SHA-256, and
+> those two digests are printed in the manuscript, recorded in the Zenodo description and frozen
+> in a published archive. **A repair that invalidates the artifact it is meant to protect is not a
+> repair.** ⇒ The forward-looking consequence is recorded instead: *if those audits are ever
+> re-run from a Linux host, the ledger digests will move for a line-ending reason on top of the
+> timestamp reason.* Pin the writers in the same commit that re-runs them, never before.
+
+- **Independently confirmed this round, from the published archive rather than the working tree:**
+  the served zip is 892,677 B / `01adcb09…cd3e`; all twelve digests re-hash correctly out of it;
+  `comparison.json` has zero CR bytes as published; both CSVs are uniformly CRLF. Reviewer #2
+  independently hashed the arXiv bundle and the bundled PNG and matched both, and reconciled the
+  31/29 accounting from the ledgers — identifying the two repeated cells by name
+  (BSV `script_number_width`, BTC `timelock_opcodes` via BIP65 and BIP112).
+
 ## Round 18 (16 Aug 2026) — the last unpinned link, and a self-healing test suite
 
 Both referees returned **GO** with no defects. R18-#2: *"Eighteen rounds; the instrument hasn't been
