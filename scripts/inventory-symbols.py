@@ -226,7 +226,7 @@ def main() -> int:
             case = "—"
         L.append(f"| `{o['name']}` | {hexv} | {o['value']} | {o['category'] or ''} | {decl} | {case} | {note} |")
     L.append("")
-    (OUT_DIR / "OPCODES.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    (OUT_DIR / "OPCODES.md").write_text("\n".join(L) + "\n", encoding="utf-8", newline="\n")
 
     print(f"wrote {OUT_DIR/'OPCODES.md'} and OPCODES.json")
     print(f"  opcodes: {len(real)} distinct (+{len(opcodes)-len(real)} aliases), {impl_count} implemented in EvalScript")

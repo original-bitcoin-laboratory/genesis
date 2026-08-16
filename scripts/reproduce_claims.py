@@ -179,6 +179,95 @@ def _profiles_block():
 EXTERNAL_REQUIRED = {"C1d", "C1e", "C1f", "C1g", "C1h"}
 
 
+_ZENODO_DOI = re.compile(r"^10\.5281/zenodo\.(\d+)$")
+_RECEIPT_FIELDS = ("doi", "record_id", "file_url", "filename",
+                   "archive_sha256", "downloaded_sha256", "downloaded_bytes", "resolved_utc")
+
+
+def _validate_receipt(receipt, archive_sha: str, archive: Path):
+    """Return (receipt, None) only if the receipt is internally consistent AND about THIS archive.
+
+    ⚠️ WELL-FORMED IS NOT THE SAME AS TRUE. Everything checked here is offline and deterministic;
+       none of it shows a Zenodo record exists. It shows that IF one exists at this DOI, this
+       receipt is about the archive in hand -- so a receipt can no longer be a decorative dict.
+       Existence is checked, if at all, by _verify_public_deposit_online() over the network.
+    """
+    if receipt is None:
+        return None, "no publication receipt (the correct pre-publication state)"
+    if not isinstance(receipt, dict):
+        return None, "public_deposit_receipt is not an object"
+    missing = [k for k in _RECEIPT_FIELDS if k not in receipt]
+    if missing:
+        return None, "receipt lacks %s" % ", ".join(missing)
+    m = _ZENODO_DOI.match(str(receipt["doi"]).strip())
+    if not m:
+        return None, "receipt doi %r is not a Zenodo DOI" % receipt["doi"]
+    if str(receipt["record_id"]).strip() != m.group(1):
+        return None, ("receipt record_id %r does not match the DOI's record %s"
+                      % (receipt["record_id"], m.group(1)))
+    if not str(receipt["file_url"]).startswith(
+            "https://zenodo.org/records/%s/files/" % m.group(1)):
+        return None, "receipt file_url does not address record %s" % m.group(1)
+    if str(receipt["filename"]) != archive.name:
+        return None, ("receipt names %r; the archive supplied is %r"
+                      % (receipt["filename"], archive.name))
+    # ⛔ THE BINDING THAT MAKES THE RECEIPT ABOUT THIS ARCHIVE RATHER THAN SOME ARCHIVE. Both the
+    #    deposited digest and the re-downloaded digest must equal the one recomputed here, so a
+    #    receipt for a superseded build -- the archive digest moved five times in this series --
+    #    cannot be reused against a rebuilt one.
+    for k in ("archive_sha256", "downloaded_sha256"):
+        if str(receipt[k]).strip().lower() != archive_sha:
+            return None, ("receipt %s %s != the archive sha256 recomputed here %s"
+                          % (k, receipt[k], archive_sha))
+    try:
+        if int(receipt["downloaded_bytes"]) != archive.stat().st_size:
+            return None, ("receipt downloaded_bytes %s != archive size %d"
+                          % (receipt["downloaded_bytes"], archive.stat().st_size))
+    except (TypeError, ValueError):
+        return None, "receipt downloaded_bytes is not a number"
+    return dict(receipt), None
+
+
+def _verify_public_deposit_online(receipt, archive: Path | None, timeout: float = 90.0) -> dict:
+    """Fetch the published file NOW and compare its bytes to the local archive.
+
+    ⇒ THE ONLY THING THAT CAN EARN `public_deposit_verified`. Existence at a public deposit is a
+      property of the network, not of any local file, so no amount of offline checking substitutes.
+
+    ⚠️ The verdict is the DIGEST OF THE PAYLOAD, never the status line. A host behind a bot wall
+       answers 200 with a challenge page; a redirect to a login form is also a 200. Hashing what
+       came back and requiring it to equal the local archive is what makes that distinction --
+       reading the envelope instead of the letter is how a 200 becomes a false finding.
+    """
+    out = {"attempted": True, "ok": False, "reason": None,
+           "url": None, "sha256": None, "bytes": None,
+           "checked_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(
+               timespec="seconds")}
+    if not receipt:
+        out["reason"] = "no well-formed receipt to check"
+        return out
+    if archive is None or not Path(archive).exists():
+        out["reason"] = "no local archive to compare the published bytes against"
+        return out
+    import urllib.request
+    out["url"] = url = str(receipt["file_url"])
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "obl-reproduce-claims/1.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as r:      # noqa: S310 (https, pinned)
+            body = r.read()
+    except Exception as e:                                           # noqa: BLE001
+        out["reason"] = "fetch failed: %s" % e
+        return out
+    out["sha256"], out["bytes"] = hashlib.sha256(body).hexdigest(), len(body)
+    local = hashlib.sha256(Path(archive).read_bytes()).hexdigest()
+    if out["sha256"] != local:
+        out["reason"] = ("published bytes hash %s, local archive %s -- not the same file"
+                         % (out["sha256"], local))
+        return out
+    out["ok"] = True
+    return out
+
+
 def _external_evidence(path: Path, archive: Path | None = None) -> dict:
     """Derive external-claim (C1d-C1h) completeness by RE-VERIFYING THE DEPOSIT, not by reading fields.
 
@@ -303,11 +392,21 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
 
     out["complete"] = True
     out["verified_here"] = True
-    # ⚠️ CARRIED, NEVER COMPUTED HERE. finalize_deposit.py resolves the DOI, re-downloads the
-    #    published file and records its digest; this script only passes that receipt through so
-    #    the manifest can distinguish "the local bytes check out" from "those bytes are public".
-    if isinstance(doc.get("public_deposit_receipt"), dict):
-        out["public_deposit_receipt"] = doc["public_deposit_receipt"]
+    # ⛔⛔ THE RECEIPT IS VALIDATED HERE, NOT CARRIED -- AND VALIDATION IS STILL NOT ENOUGH.
+    #    The previous version passed any dict straight through and the caller did bool() on it.
+    #    A reviewer replayed that gate with {"anything": "truthy"} beside a descriptor DOI reading
+    #    `10.5281/zenodo.DOES-NOT-EXIST` and earned `public_deposit_verified` with no Zenodo record
+    #    in existence. ★ That is the SAME defect this function was rewritten to close one round
+    #    earlier, reopened one field further out: a consumer inheriting a guarantee by describing
+    #    what the producer usually does. The old comment even said so out loud -- "carried, never
+    #    computed here" -- which named the hole rather than closing it.
+    #  ⇒ Two separate things are now kept apart, because they are separate facts:
+    #      well-formedness (below) is OFFLINE and deterministic -- the receipt is about THIS
+    #        archive, binding its digest, size, filename, DOI and record id together;
+    #      existence is a NETWORK property no offline check can establish, so it is earned only by
+    #        --verify-public-deposit actually fetching the published bytes in this run.
+    out["public_deposit_receipt"], out["public_deposit_receipt_reason"] = _validate_receipt(
+        doc.get("public_deposit_receipt"), got, archive)
     return out
 
 
@@ -341,6 +440,12 @@ def main() -> int:
                          "re-hashed against the descriptor, every SHA256SUMS entry is re-checked, coverage "
                          "is set-differenced for unlisted files, and every claim folder must be present. "
                          "Without it the flag stays false -- descriptor fields alone cannot earn it.")
+    ap.add_argument("--verify-public-deposit", action="store_true",
+                    help="fetch the published deposit named in the receipt and compare its bytes to "
+                         "--deposit-archive. THE ONLY WAY public_deposit_verified becomes true: "
+                         "existence at a public deposit is a network fact, and every other check "
+                         "here is offline. Without this the run stays deterministic and reports "
+                         "false with a reason.")
     ap.add_argument("--historical-evidence", type=Path,
                     default=ROOT / "paper-artifacts" / "historical-evidence.json",
                     help="frozen external-evidence descriptor (DOI + archive_sha256 + top_level_manifest_sha256 "
@@ -495,10 +600,20 @@ def main() -> int:
     # and this computes True; absent or incomplete (the pre-deposit state) it stays False.
     external_evidence = _external_evidence(args.historical_evidence, args.deposit_archive)
     external_complete = external_evidence["complete"]
-    # ⛔ THE PUBLICATION RECEIPT IS NOT SOMETHING THIS SCRIPT CAN EARN. finalize_deposit.py writes
-    #    it after resolving the DOI and re-downloading the published bytes; here it is only read.
-    #    Absent receipt -> false, which is the correct pre-publication state.
-    public_deposit = bool(external_evidence.get("public_deposit_receipt"))
+    # ⛔ EARNED FROM THE NETWORK OR NOT EARNED AT ALL. Two conditions, both required:
+    #      1. the receipt is well-formed and binds to THIS archive (checked offline, above);
+    #      2. the published bytes were fetched IN THIS RUN and hash to the local archive.
+    #    Without --verify-public-deposit the offline run stays deterministic and simply reports
+    #    false with a reason -- it never asserts a network fact it did not observe. The previous
+    #    version granted this flag to any non-empty dict, which a reviewer demonstrated with
+    #    {"anything": "truthy"}; a well-formed receipt alone would still only be a claim.
+    receipt = external_evidence.get("public_deposit_receipt")
+    if args.verify_public_deposit:
+        online = _verify_public_deposit_online(receipt, args.deposit_archive)
+    else:
+        online = {"attempted": False, "ok": False,
+                  "reason": "not requested -- pass --verify-public-deposit to check the network"}
+    public_deposit = bool(receipt) and bool(online.get("ok"))
     # ⇒ AND submission completeness now requires the PUBLIC state, not the local one. Previously
     #   a verified local archive was enough, so "submission evidence complete" could be true with
     #   nothing published anywhere -- the precise thing the phrase promises a reader.
@@ -560,9 +675,18 @@ def main() -> int:
         #     one-time finalizer -- which may legitimately use the network -- writes the receipt
         #     that answers the other.
         "public_deposit_verified": public_deposit,
+        # ⇒ HOW the flag was decided travels with it. A bare false is ambiguous between "nothing
+        #   published yet", "receipt malformed" and "the network check was not run" -- three very
+        #   different states for a reader deciding whether the deposit is citable.
+        "public_deposit": {
+            "receipt_wellformed": bool(receipt),
+            "receipt_reason": external_evidence.get("public_deposit_receipt_reason"),
+            "online_check": online,
+        },
         "submission_evidence_complete": submission_complete,
     }
-    args.manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    args.manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8",
+                             newline="\n")   # LF: the manifest is quoted by digest
     if all_internal and not external_complete:
         print("\nAll internally runnable claims passed; the external historical claims (C1d–C1h) remain "
               "author-reported pending archival deposit — submission evidence is NOT yet complete.")

@@ -111,7 +111,8 @@ def write_artifact() -> pathlib.Path:
     out = _ROOT / "paper-artifacts"
     out.mkdir(exist_ok=True)
     path = out / "height-vs-work.json"
-    path.write_text(json.dumps(scenario(), indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(scenario(), indent=2) + "\n", encoding="utf-8",
+                    newline="\n")   # LF, not the platform default: this file is hashed
     return path
 
 
