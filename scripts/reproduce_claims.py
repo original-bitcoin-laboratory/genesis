@@ -179,12 +179,43 @@ def _profiles_block():
 EXTERNAL_REQUIRED = {"C1d", "C1e", "C1f", "C1g", "C1h"}
 
 
+# ⛔⛔ THE CLAIM -> EVIDENCE MAPPING IS OWNED HERE, NEVER READ FROM THE DESCRIPTOR.
+#    A reviewer removed the entire C1h folder from an archive, resealed it, and supplied a
+#    descriptor whose claim_map listed all five required IDs -- every one of them pointing at the
+#    R3 folder. Each ID was "present", each mapped folder "existed", and external completeness went
+#    TRUE with the capstone claim's evidence absent from the deposit. ★ "All required claim IDs
+#    appear in a dictionary" had been standing in for "each claim's evidence carrier is present and
+#    verifies", which is the same substitution as every previous round: a self-asserted field where
+#    a checked fact belongs. The descriptor may now only AGREE with this table; it cannot define it.
+EXTERNAL_CLAIM_FOLDERS = {
+    "C1d": "2026-07-31-twonode-mined-block",
+    "C1e": "2026-07-31-twonode-mined-block",
+    "C1f": "2026-08-01-sustained-relay",
+    "C1g": "2026-08-02-reorg-partition",
+    "C1h": "2026-08-06-relayed-spend",
+}
+# ⇒ AND THE CARRIERS ARE VERIFIED, NOT MERELY COUNTED. The same four runs finalize_deposit.py
+#   executes. Without this a published archive whose C1h spend is substituted -- its own verifier
+#   returns 1 -- still made submission_evidence_complete true, because the consumer only ever
+#   checked digests and folder names. Digests prove the bytes are the deposited ones; only the
+#   verifiers say whether those bytes substantiate the claims.
+EXTERNAL_VERIFIERS = (
+    ("C1d/C1e", "2026-07-31-twonode-mined-block", "verify_r3.py",
+     ("nodeA/blk0001.dat", "nodeB/blk0001.dat")),
+    ("C1f", "2026-08-01-sustained-relay", "verify_r4.py",
+     ("run-b-14/nodeA_blk0001.dat", "run-b-14/nodeB_blk0001.dat")),
+    ("C1g", "2026-08-02-reorg-partition", "verify_r4.py",
+     ("nodeA_blk0001.dat", "nodeB_blk0001.dat")),
+    ("C1h", "2026-08-06-relayed-spend", "verify_r4c.py",
+     ("nodeA/blk0001.dat", "nodeB/blk0001.dat", "--binding=.")),
+)
+
 _ZENODO_DOI = re.compile(r"^10\.5281/zenodo\.(\d+)$")
 _RECEIPT_FIELDS = ("doi", "record_id", "file_url", "filename",
                    "archive_sha256", "downloaded_sha256", "downloaded_bytes", "resolved_utc")
 
 
-def _validate_receipt(receipt, archive_sha: str, archive: Path):
+def _validate_receipt(receipt, archive_sha: str, archive: Path, descriptor_doi=None):
     """Return (receipt, None) only if the receipt is internally consistent AND about THIS archive.
 
     ⚠️ WELL-FORMED IS NOT THE SAME AS TRUE. Everything checked here is offline and deterministic;
@@ -202,6 +233,13 @@ def _validate_receipt(receipt, archive_sha: str, archive: Path):
     m = _ZENODO_DOI.match(str(receipt["doi"]).strip())
     if not m:
         return None, "receipt doi %r is not a Zenodo DOI" % receipt["doi"]
+    # ⛔ THE RECEIPT MUST BE ABOUT THE DOI THE DESCRIPTOR CITES. Nothing compared these, so a
+    #    descriptor could cite DOI A while the receipt proved bytes published at DOI B -- both
+    #    internally valid, and the record actually verified would not be the record the paper
+    #    names. The manuscript cites one DOI; that is the one the evidence has to be about.
+    if descriptor_doi is not None and str(receipt["doi"]).strip() != str(descriptor_doi).strip():
+        return None, ("receipt doi %s != the descriptor's doi %s -- the published record verified "
+                      "is not the record cited" % (receipt["doi"], descriptor_doi))
     if str(receipt["record_id"]).strip() != m.group(1):
         return None, ("receipt record_id %r does not match the DOI's record %s"
                       % (receipt["record_id"], m.group(1)))
@@ -383,12 +421,52 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
             out["reason"] = "unlisted files in archive: %s" % ", ".join(sorted(unlisted)[:4])
             return out
 
-        # ── every claim's folder must actually be in the archive ────────────────────────────────
-        for cid, val in (doc.get("claim_map") or {}).items():
-            folder = str(val).split("/")[0].strip()
-            if folder and not (root / folder).exists():
-                out["reason"] = "%s maps to '%s/', absent from the archive" % (cid, folder)
+        # ── ⛔ THE OWNED MAPPING, and the descriptor may only AGREE with it ──────────────────────
+        for cid, folder in EXTERNAL_CLAIM_FOLDERS.items():
+            if not (root / folder).is_dir():
+                out["reason"] = ("%s's evidence folder '%s/' is absent from the archive"
+                                 % (cid, folder))
                 return out
+        for cid, val in (doc.get("claim_map") or {}).items():
+            want = EXTERNAL_CLAIM_FOLDERS.get(str(cid).split("-")[0])
+            # ⚠️ NOT `got` -- that name already holds the recomputed archive digest, and binding it
+            #    here silently replaced a sha256 with a folder name. The receipt check twenty lines
+            #    below then compared the receipt against "2026-08-06-relayed-spend" and rejected
+            #    every valid receipt: `public_deposit_verified` could never have become true, which
+            #    would have surfaced on deposit day with the DOI already minted. Caught only
+            #    because a POSITIVE control asserts the receipt path succeeds on good input.
+            mapped = str(val).split("/")[0].strip()
+            if want and mapped != want:
+                out["reason"] = ("descriptor maps %s to '%s/'; this checker requires '%s/'"
+                                 % (cid, mapped, want))
+                return out
+
+        # ── ⇒ RUN THE DEPOSITED VERIFIERS. Digests say the bytes are the deposited ones; only
+        #      these say the bytes substantiate the claims. A published archive whose C1h spend
+        #      was substituted passed every check above and failed only here.
+        #    ⚠️ This executes code from the archive -- the same code finalize_deposit.py runs, in
+        #      a temporary extraction of an archive whose every byte was just re-hashed against a
+        #      manifest whose own digest is pinned in the descriptor.
+        ran = []
+        for cid, folder, script, argv in EXTERNAL_VERIFIERS:
+            d = root / folder
+            if not (d / script).is_file():
+                out["reason"] = "%s: %s missing from '%s/'" % (cid, script, folder)
+                return out
+            try:
+                r = subprocess.run([sys.executable, script, *argv], cwd=str(d),
+                                   capture_output=True, text=True, timeout=600)
+            except (OSError, subprocess.SubprocessError) as e:
+                out["reason"] = "%s: %s could not be run (%s)" % (cid, script, e)
+                return out
+            if r.returncode != 0:
+                tail = [l.strip() for l in (r.stdout or "").splitlines() if "FAILED:" in l]
+                out["reason"] = ("%s: %s returned %d -- %s" % (cid, script, r.returncode,
+                                                               "; ".join(tail[:3]) or "no detail"))
+                out["verifiers_run"] = ran
+                return out
+            ran.append(cid)
+        out["verifiers_run"] = ran
 
     out["complete"] = True
     out["verified_here"] = True
@@ -406,7 +484,7 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
     #      existence is a NETWORK property no offline check can establish, so it is earned only by
     #        --verify-public-deposit actually fetching the published bytes in this run.
     out["public_deposit_receipt"], out["public_deposit_receipt_reason"] = _validate_receipt(
-        doc.get("public_deposit_receipt"), got, archive)
+        doc.get("public_deposit_receipt"), got, archive, doc.get("doi"))
     return out
 
 
