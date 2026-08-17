@@ -179,6 +179,26 @@ def _profiles_block():
 EXTERNAL_REQUIRED = {"C1d", "C1e", "C1f", "C1g", "C1h"}
 
 
+# ⛔⛔⛔ THE ARCHIVE IS PINNED HERE, BECAUSE THE CONSUMER RUNS CODE OUT OF IT.
+#    A reviewer took the deposit, changed both C1h spend values to 1, REPLACED the deposited
+#    verify_r4c.py with a script that always succeeds, resealed every manifest, rebuilt the ZIP,
+#    and supplied a descriptor carrying the new matching digests. This checker extracted that
+#    archive, ran the four verifiers *from inside it*, and reported external_complete = True. The
+#    genuine verify_r4c.py, restored and run against those same block files, returns 1.
+#  ★ So "run the deposited verifiers" -- last round's fix -- was circular: the archive supplied
+#    both the evidence and the judge, and every digest it was checked against came from a
+#    descriptor that travels with it. The online Zenodo fetch does not help; it faithfully proves
+#    the bytes checked are the bytes published, and a bad archive with a lying verifier is exactly
+#    what would have been published.
+#  ⇒ The break in the circle has to come from OUTSIDE the archive and outside the descriptor. The
+#    deposit is final, so its digest is a constant of this study and belongs in the code that
+#    cites it. Any resealed archive -- altered evidence, altered verifier, or both -- now fails
+#    before a single line of it is executed, unless someone breaks SHA-256.
+#  ⚠️ Update this ONLY when the deposit itself is re-cut, and update the paper's cited digest in
+#    the same commit; a pin that drifts from the manuscript is worse than no pin.
+EXPECTED_ARCHIVE_SHA256 = "1b64f2fc3a6a87496accba46a259702d6e3df07696c0bdce398f9db2a4530b5f"
+EXPECTED_TOP_MANIFEST_SHA256 = "49cf34837eb960b2a316dee46c7397383ac88c60b6ca878c25ce17cb2d195ffa"
+
 # ⛔⛔ THE CLAIM -> EVIDENCE MAPPING IS OWNED HERE, NEVER READ FROM THE DESCRIPTOR.
 #    A reviewer removed the entire C1h folder from an archive, resealed it, and supplied a
 #    descriptor whose claim_map listed all five required IDs -- every one of them pointing at the
@@ -306,7 +326,8 @@ def _verify_public_deposit_online(receipt, archive: Path | None, timeout: float 
     return out
 
 
-def _external_evidence(path: Path, archive: Path | None = None) -> dict:
+def _external_evidence(path: Path, archive: Path | None = None,
+                       expected_archive_sha: str | None = None) -> dict:
     """Derive external-claim (C1d-C1h) completeness by RE-VERIFYING THE DEPOSIT, not by reading fields.
 
     ⛔⛔ THIS FUNCTION USED TO TRUST A DESCRIPTOR, AND AN EXTERNAL REVIEWER BROKE IT.
@@ -362,6 +383,20 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
     archive = Path(archive)
     got = hashlib.sha256(archive.read_bytes()).hexdigest()
     out["archive_sha256_recomputed"] = got
+    # ⛔ THE PIN COMES FIRST, BEFORE ANYTHING FROM THE DESCRIPTOR IS BELIEVED AND BEFORE ANY CODE
+    #    FROM THE ARCHIVE IS RUN. Checking against the descriptor only proves the two agree; both
+    #    travel together and an attacker who reseals supplies both.
+    # ⚠️ `expected_archive_sha` exists so the control suite can exercise the checks BELOW this
+    #    one against purpose-built fixtures; production callers never pass it and get the pin.
+    #    A parameter with a safe default is a test affordance, and test affordances in production
+    #    code are how gates get quietly disabled -- so it is deliberately not readable from any
+    #    file, environment variable or descriptor. Only a caller holding the object can set it.
+    want_archive = expected_archive_sha or EXPECTED_ARCHIVE_SHA256
+    if got != want_archive:
+        out["reason"] = ("archive sha256 %s is not this study's deposit %s -- the expected digest "
+                         "is pinned in this checker, not read from the descriptor"
+                         % (got, want_archive))
+        return out
     if got != doc["archive_sha256"]:
         out["reason"] = ("archive sha256 %s does not match the descriptor's %s"
                          % (got, doc["archive_sha256"]))
@@ -386,7 +421,12 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
         if not sums.exists():
             out["reason"] = "archive has no top-level SHA256SUMS"
             return out
-        if hashlib.sha256(sums.read_bytes()).hexdigest() != doc["top_level_manifest_sha256"]:
+        man = hashlib.sha256(sums.read_bytes()).hexdigest()
+        if not expected_archive_sha and man != EXPECTED_TOP_MANIFEST_SHA256:
+            out["reason"] = ("top-level SHA256SUMS %s is not this study's %s (pinned here)"
+                             % (man, EXPECTED_TOP_MANIFEST_SHA256))
+            return out
+        if man != doc["top_level_manifest_sha256"]:
             out["reason"] = "top-level SHA256SUMS does not match the descriptor's hash"
             return out
 
