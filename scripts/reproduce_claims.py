@@ -326,8 +326,7 @@ def _verify_public_deposit_online(receipt, archive: Path | None, timeout: float 
     return out
 
 
-def _external_evidence(path: Path, archive: Path | None = None,
-                       expected_archive_sha: str | None = None) -> dict:
+def _external_evidence(path: Path, archive: Path | None = None) -> dict:
     """Derive external-claim (C1d-C1h) completeness by RE-VERIFYING THE DEPOSIT, not by reading fields.
 
     ⛔⛔ THIS FUNCTION USED TO TRUST A DESCRIPTOR, AND AN EXTERNAL REVIEWER BROKE IT.
@@ -386,16 +385,16 @@ def _external_evidence(path: Path, archive: Path | None = None,
     # ⛔ THE PIN COMES FIRST, BEFORE ANYTHING FROM THE DESCRIPTOR IS BELIEVED AND BEFORE ANY CODE
     #    FROM THE ARCHIVE IS RUN. Checking against the descriptor only proves the two agree; both
     #    travel together and an attacker who reseals supplies both.
-    # ⚠️ `expected_archive_sha` exists so the control suite can exercise the checks BELOW this
-    #    one against purpose-built fixtures; production callers never pass it and get the pin.
-    #    A parameter with a safe default is a test affordance, and test affordances in production
-    #    code are how gates get quietly disabled -- so it is deliberately not readable from any
-    #    file, environment variable or descriptor. Only a caller holding the object can set it.
-    want_archive = expected_archive_sha or EXPECTED_ARCHIVE_SHA256
-    if got != want_archive:
+    # ⇒ NO BYPASS PARAMETER. An earlier version took `expected_archive_sha` so the controls could
+    #    exercise the checks below this one. It was bounded -- unreachable from CLI, environment,
+    #    descriptor or archive -- but the pin is now the root of trust, and a production function
+    #    should have no unpinned call signature at all. It also silently suppressed the manifest
+    #    pin, which the comment did not say. The controls rebind these constants in their own
+    #    process instead, a capability any importer already has.
+    if got != EXPECTED_ARCHIVE_SHA256:
         out["reason"] = ("archive sha256 %s is not this study's deposit %s -- the expected digest "
                          "is pinned in this checker, not read from the descriptor"
-                         % (got, want_archive))
+                         % (got, EXPECTED_ARCHIVE_SHA256))
         return out
     if got != doc["archive_sha256"]:
         out["reason"] = ("archive sha256 %s does not match the descriptor's %s"
@@ -422,7 +421,7 @@ def _external_evidence(path: Path, archive: Path | None = None,
             out["reason"] = "archive has no top-level SHA256SUMS"
             return out
         man = hashlib.sha256(sums.read_bytes()).hexdigest()
-        if not expected_archive_sha and man != EXPECTED_TOP_MANIFEST_SHA256:
+        if man != EXPECTED_TOP_MANIFEST_SHA256:
             out["reason"] = ("top-level SHA256SUMS %s is not this study's %s (pinned here)"
                              % (man, EXPECTED_TOP_MANIFEST_SHA256))
             return out
