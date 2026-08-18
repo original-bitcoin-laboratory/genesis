@@ -384,8 +384,19 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
                          "fields alone")
         return out
     archive = Path(archive)
-    got = hashlib.sha256(archive.read_bytes()).hexdigest()
+    _raw = archive.read_bytes()
+    got = hashlib.sha256(_raw).hexdigest()
     out["archive_sha256_recomputed"] = got
+    # The descriptor's MD5 is not taken on trust either: it is recomputed from the same bytes.
+    #   Zenodo published that value independently, which is the entire reason it is worth carrying
+    #   -- a copied claim would add nothing a reader could check, and would just be one more
+    #   author-written field wearing a corroborated hash's clothes.
+    _md5 = hashlib.md5(_raw).hexdigest()
+    out["archive_md5_recomputed"] = _md5
+    if doc.get("archive_md5") and doc["archive_md5"] != _md5:
+        out["reason"] = ("descriptor states archive_md5 %s; the archive hashes to %s"
+                         % (doc["archive_md5"], _md5))
+        return out
     # ⛔ THE PIN COMES FIRST, BEFORE ANYTHING FROM THE DESCRIPTOR IS BELIEVED AND BEFORE ANY CODE
     #    FROM THE ARCHIVE IS RUN. Checking against the descriptor only proves the two agree; both
     #    travel together and an attacker who reseals supplies both.
