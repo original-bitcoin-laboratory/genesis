@@ -362,8 +362,17 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
     # ⛔ THE FILENAME, NOT THE PATH. This recorded an absolute local path into a manifest that
     #    ships with the submission -- a reviewer found C:\Users\... in the supplement. A
     #    submitted artifact should carry an identifier a reader can act on.
+    # archive_md5 and the per-claim binding levels travel WITH the rest, not only in the
+    #   descriptor. The descriptor is the one supplement file nothing pins by digest, and
+    #   the MD5 is the single value in this chain computed by somebody other than the
+    #   author -- leaving it there put the only independently corroborated link outside
+    #   every pinned object. The MD5 is re-derived below before it is believed; the
+    #   binding levels are carried as a report and earn nothing.
     out = {"complete": False, "source": Path(path).name, "doi": doc.get("doi"),
            "archive_sha256": doc.get("archive_sha256"),
+           "archive_md5": doc.get("archive_md5"),
+           "binding": {str(c): (v.get("binding") if isinstance(v, dict) else None)
+                       for c, v in (doc.get("claim_map") or {}).items()},
            "top_level_manifest_sha256": doc.get("top_level_manifest_sha256"),
            "finalization_log_sha256": doc.get("finalization_log_sha256"),
            "claims_mapped": sorted(mapped), "verified_here": False, "reason": None}
