@@ -478,7 +478,21 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
             #    every valid receipt: `public_deposit_verified` could never have become true, which
             #    would have surfaced on deposit day with the DOI already minted. Caught only
             #    because a POSITIVE control asserts the receipt path succeeds on good input.
-            mapped = str(val).split("/")[0].strip()
+            # ⇒ The descriptor may give either a bare artifact path or a record carrying that
+            #    path under "artifacts" alongside a `binding` level. Read the path; never read the
+            #    binding as evidence -- it is the deposit's own account of itself, and page 8 of
+            #    the paper states the gradient in prose precisely because it cannot be self-earned.
+            #    A record with no "artifacts" is REFUSED, not stringified: str() of a dict would be
+            #    compared as if it were a path and the reason would describe the symptom.
+            if isinstance(val, dict):
+                if "artifacts" not in val:
+                    out["reason"] = ("descriptor's claim_map entry for %s is a record without an "
+                                     "'artifacts' path" % cid)
+                    return out
+                raw = val["artifacts"]
+            else:
+                raw = val
+            mapped = str(raw).split("/")[0].strip()
             if want and mapped != want:
                 out["reason"] = ("descriptor maps %s to '%s/'; this checker requires '%s/'"
                                  % (cid, mapped, want))
