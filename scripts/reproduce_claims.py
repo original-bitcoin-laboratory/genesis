@@ -373,6 +373,13 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
            "archive_md5": doc.get("archive_md5"),
            "binding": {str(c): (v.get("binding") if isinstance(v, dict) else None)
                        for c, v in (doc.get("claim_map") or {}).items()},
+           # The per-folder detail travels too. A claim's level is the WEAKEST among the
+           #   folders evidencing it, so the summary alone cannot show that C1e is recorded
+           #   unbound because one of its two runs has no binding records while the other
+           #   does. Carrying both keeps the reason inside the pinned object.
+           "binding_by_artifact": {str(c): (v.get("binding_by_artifact")
+                                            if isinstance(v, dict) else None)
+                                   for c, v in (doc.get("claim_map") or {}).items()},
            "top_level_manifest_sha256": doc.get("top_level_manifest_sha256"),
            "finalization_log_sha256": doc.get("finalization_log_sha256"),
            "claims_mapped": sorted(mapped), "verified_here": False, "reason": None}
