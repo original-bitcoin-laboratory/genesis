@@ -58,32 +58,33 @@ CLAIMS = {
     "C1d-historical-genesis": (
         "The HISTORICAL January genesis (000000000019d668...) is re-derived by the unmodified 2009 binary "
         "(the historical-binary witness) -- block 0 of its blk0001.dat. EXTERNAL -- author-reported and "
-        "hash-manifested, archival deposit pending; not executed here",
+        "hash-manifested; supporting artifacts public in the cited archival deposit; "
+        "not executed here",
         ("EXTERNAL", "carried by the unmodified 2009 binary (deposited separately) -- block 0 of blk0001.dat; "
-                     "not by the differential C++/OpenSSL port; author-reported, archival deposit pending"),
+                     "not by the differential C++/OpenSSL port; author-reported; deposit public"),
     ),
     "C1e-historical-block-production-and-relay": (
         "Two unmodified 2009 binaries mine at difficulty-1 on the real genesis and relay blocks peer-to-peer "
         "(discovery via a local IRC daemon reproducing the client's hard-coded path); the receiver accepts "
-        "each, leaving byte-identical block files (blk0001.dat). EXTERNAL -- author-reported, archival deposit pending",
+        "each, leaving byte-identical block files (blk0001.dat). EXTERNAL -- author-reported; supporting artifacts public in the cited deposit",
         ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
-                     "evidence manifest (not the differential C++/OpenSSL port); author-reported, archival deposit pending"),
+                     "evidence manifest (not the differential C++/OpenSSL port); author-reported; deposit public"),
     ),
     "C1f-historical-bidirectional-chain-growth": (
         "Both unmodified binaries mine and validate/accept each other's blocks, growing a 14-block chain "
         "including genesis (best-chain height 13) bidirectionally -- byte-identical block files on both and "
         "persisting across an unplanned restart. "
-        "EXTERNAL -- author-reported, archival deposit pending",
+        "EXTERNAL -- author-reported; supporting artifacts public in the cited deposit",
         ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
-                     "evidence manifest (not the differential C++/OpenSSL port); author-reported, archival deposit pending"),
+                     "evidence manifest (not the differential C++/OpenSSL port); author-reported; deposit public"),
     ),
     "C1g-historical-reorganisation": (
         "Deliberately partitioned, the two binaries build divergent valid branches; on reconnection the "
         "shorter node executes the client's REORGANIZE path, orphans its own valid block, and both converge "
         "on the longer branch (the retained orphan a one-block on-disk difference). EXTERNAL -- "
-        "author-reported, archival deposit pending",
+        "author-reported; deposit public",
         ("EXTERNAL", "carried by the unmodified-binary two-node run and its archived logs, block files, and "
-                     "evidence manifest (not the differential C++/OpenSSL port); author-reported, archival deposit pending"),
+                     "evidence manifest (not the differential C++/OpenSSL port); author-reported; deposit public"),
     ),
     # ⛔ C1h WAS MISSING AND THE GAP WAS INVISIBLE. The deposit shipped 2026-08-06-relayed-spend/,
     #    DEPOSIT_README named it C1h and the manuscript claimed it -- while the required set here
@@ -358,7 +359,10 @@ def _external_evidence(path: Path, archive: Path | None = None) -> dict:
                 "reason": "no historical-evidence.json (pre-deposit state)"}
 
     mapped = {str(c).split("-")[0] for c in (doc.get("claim_map") or {})}
-    out = {"complete": False, "source": str(path), "doi": doc.get("doi"),
+    # ⛔ THE FILENAME, NOT THE PATH. This recorded an absolute local path into a manifest that
+    #    ships with the submission -- a reviewer found C:\Users\... in the supplement. A
+    #    submitted artifact should carry an identifier a reader can act on.
+    out = {"complete": False, "source": Path(path).name, "doi": doc.get("doi"),
            "archive_sha256": doc.get("archive_sha256"),
            "top_level_manifest_sha256": doc.get("top_level_manifest_sha256"),
            "finalization_log_sha256": doc.get("finalization_log_sha256"),
@@ -690,6 +694,28 @@ def main() -> int:
 
     ok_git, commit = run(["git", "rev-parse", "HEAD"], ROOT)
 
+    # ⛔ A COMMIT IS NOT A BINDING UNLESS THE TREE MATCHED IT. Until now this recorded
+    #    `git rev-parse HEAD` and stopped there, so a run from a modified working tree produced a
+    #    manifest asserting a commit whose code did not generate it -- and every consumer, the
+    #    paper included, would read that field as if it had. Nothing anywhere would have said so.
+    #    That is the same defect class as a self-asserted oracle field: a value taken on the
+    #    producer's word, with no independent thing tying it to what actually ran.
+    # ⇒ Record the tree state alongside the commit, and name the files when it is dirty. This does
+    #    not refuse the run -- development runs from a dirty tree are legitimate and useful -- it
+    #    refuses to let the result be MISTAKEN for one that reproduces from the recorded commit.
+    ok_st, status = run(["git", "status", "--porcelain"], ROOT)
+    # Split on whitespace; do NOT index by column. Porcelain v1 is "XY<space>path", so ln[3:] looks
+    # right -- but run() strips its output, which removes the leading space of an unstaged " M" and
+    # shifts every path one character left. It reported 'cripts/reproduce_claims.py'. A column
+    # offset is an assumption about a helper two calls away; a field split is not.
+    modified = sorted(ln.split(None, 1)[-1].strip()
+                      for ln in (status or "").splitlines() if ln.strip())
+    tree_clean = bool(ok_git and ok_st and not modified)
+    if not tree_clean and ok_st:
+        print(f"  ** working tree is NOT clean at {commit[:12] if commit else '?'}: "
+              f"{len(modified)} modified path(s) -- this manifest does NOT reproduce from that "
+              f"commit and records itself as dirty")
+
     # Bind the cross-implementation claim (C1b) to the ACTUAL backend results, not the Python check
     # alone: it counts as passed only when Python AND Rust AND C++ all ran and agreed. A Python-only or
     # single-backend run leaves it null (incomplete) — never a false pass on unrun evidence.
@@ -748,6 +774,11 @@ def main() -> int:
         "kind": "claim-scoped reconstruction reproduction",
         "generated": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
         "commit": commit if ok_git else None,
+        # Stated next to the commit, never inferred from it. A reader checking whether this
+        # manifest reproduces from `commit` needs both, and the second one is the half that can
+        # fail silently.
+        "tree_clean": tree_clean,
+        "modified_paths": modified if not tree_clean else [],
         "not_money": True,
         "environment": _environment(),
         "requested_backends": backends,
