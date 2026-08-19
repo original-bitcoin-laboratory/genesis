@@ -601,6 +601,26 @@ def _environment() -> dict:
         env["libsecp_accel"] = getattr(bitcoinx, "__version__", "present")
     except Exception:                                    # noqa: BLE001
         env["libsecp_accel"] = None
+
+    # ⇒ The Python side of the pinning, and an honest label for it. The Rust backend records
+    #   cargo_lock_sha256 -- a RESOLVED transitive graph -- and the C++ backend pins its libcrypto
+    #   by the DLL's own digest. There is no Python lock file here, so pyproject.toml is the
+    #   DECLARED spec, not a resolved one. Recording its digest as if it were equivalent would be
+    #   exactly the false equivalence this reproducer exists to prevent, so the difference is
+    #   stated in the manifest rather than left for a reader to discover.
+    pyproject = ROOT / "pyproject.toml"
+    env["python_deps"] = {
+        "pyproject_sha256": _sha256(pyproject) if pyproject.is_file() else None,
+        "pinning": ("declared spec digested, resolved versions recorded; NOT a digest-pinned "
+                    "transitive lock like the Rust backend's cargo_lock_sha256"),
+        "resolved": {},
+    }
+    for dist in ("cryptography", "bitcoinx", "electrumsv-secp256k1", "base58", "pytest"):
+        try:
+            import importlib.metadata as _md
+            env["python_deps"]["resolved"][dist] = _md.version(dist)
+        except Exception:                                # noqa: BLE001
+            env["python_deps"]["resolved"][dist] = None
     return env
 
 
