@@ -42,12 +42,19 @@ already been wrong once for that exact reason.
 Block 1 was mined by the released client itself and relayed to the seed, which validated and stored
 it with a different implementation. **Mining is open: the next block belongs to whoever finds it.**
 
-**Who holds the coins — stated as the invariant, because the number moves.** **Every block so far has
-been mined by this project, for the plain reason that nobody else has mined yet.** So **every coin
-that exists on this chain is held by the key of the agent that made it.** That is a *concentration*,
-not a premine: no allocation, no sale, no token, nothing set aside. **None of it has ever been spent,
-offered, priced or transferred, and none of it is for sale.** **This paragraph describes a state that
-ends the moment anyone else mines a block** — which requires no permission and nothing from us.
+**Who holds the coins — stated as the invariant, because the number moves.** Through height 220
+every block was mined by this project's own client and every coin was held by keys this project
+minted. **On 19 August 2026 that state half-ended, and the half matters:** heights 221 and 222 were
+mined by a different toolchain — the Chronology Protocol's anchor miner
+([machine-native/chronology-protocol](https://github.com/machine-native/chronology-protocol)), which
+carries a 96-byte checkpoint commitment in each coinbase — **but by the same human operator**, so
+this was the first external *implementation*, not yet the first external *party*
+([findings](../../bitcoin-findings/2026-08-19-external-blocks221-222/FINDINGS.md)). Both of those
+coinbases pay the agent's genesis key; the anchoring project kept nothing. So the concentration
+survives in full: **no third party holds any coin on this chain.** No allocation, no sale, no token,
+nothing set aside. **None of it has ever been spent, offered, priced or transferred, and none of it
+is for sale.** **The first genuinely third-party block remains unmined** — and requires no
+permission and nothing from us.
 
 Blocks cost difficulty-1 work — about 2³² hashes — so the client's own miner takes roughly an hour
 per block on one core. There is nothing to buy, nothing to claim, and nothing owed to whoever mines
