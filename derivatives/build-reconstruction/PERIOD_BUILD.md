@@ -44,9 +44,13 @@ A successful period build should be compared to the released binary structurally
 (entry points, consensus constants, the reproduced genesis `000000000019d668…`) rather than
 by raw byte-equality — the original's exact compiler build id, section layout, and library
 revisions are not all recoverable, so bit-identical reproduction is not claimed. The
-`derivatives/node` headless consensus port already reproduces the genesis block and block-1
-mining against modern OpenSSL; a period build would additionally exercise the GUI/DB/net
-units this reconstruction marks as out of reach on a modern host.
+`derivatives/node` headless consensus port constructs a genesis block and mines block-1 against
+modern OpenSSL — this is the port's own **experimental** genesis, not the historical
+`000000000019d668…`. The historical January genesis is witnessed **only** by the unmodified 2009
+binary (block 0 of its `blk0001.dat`); neither this port nor the Python/Rust nodes is credited with
+it, and the accompanying paper's evidence matrix records an em dash for them on that row. A period
+build would additionally exercise the GUI/DB/net units this reconstruction marks as out of reach on
+a modern host.
 
 ## Status
 

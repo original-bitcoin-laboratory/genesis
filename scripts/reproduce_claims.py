@@ -104,8 +104,20 @@ CLAIMS = {
                      "author-reported, archival deposit"),
     ),
     "C2-broad-interpreter": (
-        "A broad spending-predicate interpreter: opcode vocabulary + escrow/hash-lock/assurance + a marketplace source component",
+        "A broad spending-predicate interpreter: opcode vocabulary + escrow/hash-lock/assurance + a marketplace "
+        "source component -- EXPRESSIBLE on the engine, and not ENFORCEABLE against an adversarial spender: v0.1 "
+        "evaluates scriptSig + OP_CODESEPARATOR + scriptPubKey in one pass and OP_RETURN ends evaluation without "
+        "failing it, so a crafted scriptSig leaves the scriptPubKey unevaluated",
         [("model instruments (escrow/hash-lock/assurance)", DERIV / "model", ["-k", "instrument or multisig"]),
+         # ⛔ Named separately even though `-k instrument` already sweeps it up from
+         #    test_instruments.py. The manuscript calls this mapping COMPLETE and puts the
+         #    enforceability result in its abstract; a reader must be able to find the check behind
+         #    that sentence rather than have it folded silently into an escrow-test count.
+         #    The test asserts the lock WORKS before showing it bypassed -- owner accepted, wrong
+         #    signature rejected, then OP_1 OP_RETURN accepted. Without the first two, "a crafted
+         #    scriptSig was accepted" would be satisfied by an engine that accepted everything.
+         ("script composition: OP_RETURN bypass leaves the scriptPubKey unevaluated (model)",
+          DERIV / "model", ["-k", "op_return_bypass"]),
          ("full-node instruments (ConnectBlock path)", DERIV / "netnode", ["-k", "fullnode or op_notequal"]),
          ("marketplace source component (model)", DERIV / "market", None)],
     ),

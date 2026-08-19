@@ -86,3 +86,31 @@ def test_assurance_anyonecanpay():
     sig1_all = sign_input(p1[0], tx2, 0, scriptcode(spk(p1[1])), SIGHASH_ALL)
     assert verify_spend([sig1_all], spk(p1[1]), tx2, 0) is True
     assert verify_spend([sig1_all], spk(p1[1]), tx3, 0) is False
+
+
+# --- 4. The composition itself: expressible is not enforceable ------------------
+# v0.1 runs VerifySignature as EvalScript(scriptSig + OP_CODESEPARATOR + scriptPubKey) -- ONE pass
+# over the concatenation (script.cpp:1126) -- and OP_RETURN ends evaluation without failing it,
+# `pc = pend` (script.cpp:170). A spender can therefore close the scriptSig with a true value
+# followed by OP_RETURN, and the scriptPubKey is never reached. Every instrument above is expressible
+# on this engine; none of them BINDS an adversarial spender.
+#
+# The first two assertions are the load-bearing ones. "A crafted scriptSig was accepted" is
+# meaningless unless the lock is shown to work first: an engine that accepted everything would pass
+# the third assertion alone.
+
+def test_script_composition_op_return_bypass():
+    tx, _ = demo_tx()
+    owner_priv, owner_pub = new_key()
+    spk = [owner_pub, "OP_CHECKSIG"]                       # an ordinary P2PK lock
+
+    # positive control: the owner can spend
+    assert verify_spend([sign(owner_priv, spk, tx, 0)], spk, tx, 0) is True
+
+    # negative control: a wrong signature is rejected on the merits
+    attacker_priv, _ = new_key()
+    assert verify_spend([sign(attacker_priv, spk, tx, 0)], spk, tx, 0) is False
+
+    # the finding: the same lock is bypassed without any signature at all, because evaluation
+    # terminates inside the scriptSig and the scriptPubKey never runs
+    assert verify_spend(["OP_1", "OP_RETURN"], spk, tx, 0) is True
