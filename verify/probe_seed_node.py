@@ -80,7 +80,20 @@ def read_message(sock):
 
 
 def local_chain():
-    """Every block hash in the newest chain capture we hold, heights 0..n."""
+    """Every block hash on the ACTIVE chain of the newest capture we hold, heights 0..n.
+
+    ⛔ ASSEMBLED BY LINKAGE, NOT BY FILE ORDER. This function used to walk blk0001.dat in file
+       order and call the k-th block "height k". That held for every round through blocks 64-121
+       because those captures had zero blocks off the active chain. The 122-295 capture has two --
+       losing blocks from 19 Aug, when a second miner began competing -- and from the first one
+       onward every height was shifted by one. The probe then reported
+
+           !! FORK: heights [220..224] differ. The seed is NOT on our chain.
+
+       on a capture whose heights 1-295 are identical to the seed's, tip included. A verifier that
+       raises a false alarm about the one property this project most needs to trust is worse than
+       one that stays quiet. Orphans are now excluded from the chain and reported separately.
+    """
     import glob
     import os
     here = os.path.dirname(os.path.abspath(__file__))
@@ -88,29 +101,56 @@ def local_chain():
     cands = glob.glob(os.path.join(ws, "OBL-BACKUP", "04-evidence",
                                    "bitcoin-chain-evidence", "**", "blk0001.dat"), recursive=True)
     if not cands:
-        return None, None
+        return None, None, 0
     path = max(cands, key=os.path.getsize)
     data = open(path, "rb").read()
-    magic, off, hs = data[:4], 0, []
+    off, blocks = 0, []
     while off + 8 <= len(data):
-        if data[off:off + 4] != magic:
-            break
+        if data[off:off + 4] != MAGIC:
+            off += 1
+            continue
         ln = struct.unpack("<I", data[off + 4:off + 8])[0]
-        hs.append(hashlib.sha256(hashlib.sha256(data[off + 8:off + 8 + 80]).digest())
-                  .digest()[::-1].hex())
+        hdr = data[off + 8:off + 88]
+        h = hashlib.sha256(hashlib.sha256(hdr).digest()).digest()[::-1].hex()
+        prev = hdr[4:36][::-1].hex()
+        blocks.append((h, prev))
         off += 8 + ln
-    return os.path.relpath(path, ws), hs
+
+    by_prev = {}
+    for h, prev in blocks:
+        by_prev.setdefault(prev, []).append(h)
+    gen = GENESIS[::-1].hex()
+
+    def depth(h):
+        k = 0
+        while by_prev.get(h):
+            h = by_prev[h][0]
+            k += 1
+        return k
+
+    chain, cur = [gen], gen
+    while by_prev.get(cur):
+        nxt = by_prev[cur]
+        if len(nxt) > 1:
+            nxt = sorted(nxt, key=depth, reverse=True)
+        chain.append(nxt[0])
+        cur = nxt[0]
+    return os.path.relpath(path, ws), chain, len(blocks) - len(chain)
 
 
 def compare(advertised):
     """Is the seed on OUR chain, and how far ahead or behind?"""
-    rel, ours = local_chain()
+    rel, ours, off_chain = local_chain()
     if not ours:
         print("  (no local capture found to compare against)")
         return
     print()
     print("  COMPARED AGAINST OUR NEWEST CAPTURE")
-    print("    %s — %d blocks, heights 0-%d" % (rel, len(ours), len(ours) - 1))
+    print("    %s — %d blocks on the ACTIVE chain, heights 0-%d"
+          % (rel, len(ours), len(ours) - 1))
+    if off_chain:
+        print("    %d block(s) in the file are OFF the active chain and are excluded"
+              % off_chain)
     shared = ours[1:]                       # the seed advertises from height 1
     common = min(len(shared), len(advertised))
     mismatch = [i + 1 for i in range(common) if shared[i] != advertised[i]]
