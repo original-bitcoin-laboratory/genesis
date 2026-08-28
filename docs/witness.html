@@ -289,6 +289,39 @@ grep -n "AcceptTransaction(): accepted f4309c" \n    2026-08-06-relayed-spend/no
 </div>
 
 <!-- shared provenance footer (SNI "established block" + bitaddress "verify" idioms) -->
+<script data-obl-autoevents>
+/* Auto-event tracking. Projects over every anchor instead of listing the ones that existed the
+   day it was written -- a link added tomorrow is tracked without anyone remembering to tag it.
+   Delegated on document in the capture phase, so it does not depend on when count.js binds.
+   An element carrying data-goatcounter-click is left to count.js: hand-written names win. */
+(function () {
+  var DL = /\.(tar\.gz|tgz|zip|asc|sig|ots|txt|pdf|json|patch|dat|exe|whl)$/i;
+  function name_for(el) {
+    if (el.getAttribute('data-goatcounter-click')) return null;
+    var href = el.getAttribute('href') || '';
+    if (!href || href.charAt(0) === '#' || /^(mailto|javascript):/i.test(href)) return null;
+    var path = (href.split('?')[0] || '').split('#')[0];
+    if (DL.test(path)) return 'download-' + (path.split('/').pop() || path);
+    if (/^https?:\/\//i.test(href)) {
+      if (el.hostname && el.hostname !== location.hostname)
+        return 'out-' + el.hostname + (el.pathname || '').replace(/\/$/, '');
+      return null;
+    }
+    if (/\.html?$/i.test(path)) return 'nav-' + (path.split('/').pop() || path);
+    return null;
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target && e.target.closest ? e.target.closest('a') : null;
+    if (!el) return;
+    var n;
+    try { n = name_for(el); } catch (_) { return; }
+    if (!n) return;
+    if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+      window.goatcounter.count({ path: n.slice(0, 100), title: document.title, event: true });
+    }
+  }, true);
+})();
+</script>
 <script data-goatcounter="https://parthod0x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <script src="analytics.js"></script>
 <footer class="lab-footer" aria-label="provenance and license">
