@@ -104,6 +104,18 @@ class ChainState:
             have.append(self.active[0])
         return have
 
+    # ⛔ 28 Aug 2026. This returned the ENTIRE remainder of the chain in one inv, unbounded.
+    #    At 36 bytes per entry a 90,246-block chain is a 3.1 MB single message, and wire.py caps a
+    #    message at MAX_MESSAGE_SIZE = 4 MiB. jan09x was ~9 days from the point where `getblocks`
+    #    from genesis COULD NOT BE SERVED AT ALL -- no new peer could ever sync it, and the status
+    #    probe already could not read it (it timed out and published a height of 0 for a chain at
+    #    90,246, understating a month of mining as nothing).
+    #
+    #    Paging is what the original protocol does for exactly this reason. The cap is a wire
+    #    limit, not a policy: a peer that wants more asks again with the last hash as its locator,
+    #    which is what _request_more_after() on the client side now does immediately.
+    MAX_INV_BLOCKS = 2000                     # 2000 x 36 B = 72 KB per inv -- ~1/58th of the cap
+
     def blocks_after(self, have, hash_stop) -> list[bytes]:
         pos = {h: k for k, h in enumerate(self.active)}
         start = max((pos[h] for h in have if h in pos), default=0)
@@ -112,6 +124,8 @@ class ChainState:
             if h == hash_stop:
                 break
             out.append(h)
+            if len(out) >= self.MAX_INV_BLOCKS:
+                break                          # PAGE: the peer asks again from out[-1]
         return out
 
     # -- connect / disconnect --------------------------------------------------

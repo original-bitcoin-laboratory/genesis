@@ -479,14 +479,24 @@ class Node:
                         await self._send(writer, "inv",
                                          inv_payload([(MSG_BLOCK, h) for h in invs]))
                 elif command == "inv":
-                    want = []
+                    want, block_invs, last_block = [], 0, None
                     for typ, h in parse_inv(payload):
-                        if typ == MSG_BLOCK and not self.chain.have(MSG_BLOCK, h):
-                            want.append((typ, h))
+                        if typ == MSG_BLOCK:
+                            block_invs += 1
+                            last_block = h
+                            if not self.chain.have(MSG_BLOCK, h):
+                                want.append((typ, h))
                         elif typ == MSG_TX and not self.mempool.has(h):
                             want.append((typ, h))
                     if want:
                         await self._send(writer, "getdata", inv_payload(want))
+                    # A FULL page means the peer has more. Ask immediately rather than waiting for
+                    # the resync watchdog: at RESYNC_INTERVAL=30s a 90k-block chain would take an
+                    # hour and a half to sync one page at a time. Locating from the last hash in
+                    # the page is safe even though we have not downloaded it yet -- blocks_after()
+                    # resolves the locator against the SERVER's chain, which does have it.
+                    if last_block is not None and block_invs >= ChainState.MAX_INV_BLOCKS:
+                        await self._send(writer, "getblocks", locator_payload([last_block]))
                 elif command == "getdata":
                     for typ, h in parse_inv(payload):
                         if typ == MSG_BLOCK and h in self.chain.by_hash:
