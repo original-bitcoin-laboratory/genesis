@@ -1,9 +1,10 @@
-# verify/ — check the whitepaper claims yourself
+# verify/ — check this lab's claims yourself
 
-Four scripts. Between them they reproduce every claim this lab makes about `docs/bitcoin.pdf` and its
-earlier versions, from public sources, with no API key and no trust in us.
+Two groups of scripts, and between them they let you re-derive what this lab asserts without
+trusting us: the **whitepaper** claims about `docs/bitcoin.pdf`, and the **signatures** over the
+documents and releases.
 
-Python 3.9+, standard library only.
+Python 3.9+, standard library only. No API key, no network for the signature checks.
 
 ```bash
 python verify/whitepaper_from_chain.py  out.pdf          # carve the paper out of the block chain
@@ -81,6 +82,55 @@ each run with the right table.
 
 ---
 
+## `verify_slhdsa.py` — the post-quantum signature, without OpenSSL
+
+Every release manifest and several protocol documents in `docs/` carry a **second** signature under
+**SLH-DSA-SHA2-128s** (FIPS 205), beside the OpenPGP one. The reason is stated in
+[`docs/PQ-COUNTERSIGNING.md`](../docs/PQ-COUNTERSIGNING.md): elliptic-curve signatures do not
+survive a cryptographically relevant quantum computer, and SHA-256 does. So the post-quantum
+signature is the one intended to still mean something long after the other kind stops meaning
+anything.
+
+⛔ **The published way to check it needed OpenSSL 3.5 or later** — a specific version of one
+program, standing behind the signature whose whole purpose is to outlast the software around it.
+This script removes that dependency:
+
+```bash
+python verify/verify_slhdsa.py docs/agent-pq-successor-pk.pem \
+                               docs/PQ-SUCCESSION-CERTIFICATE.txt \
+                               docs/PQ-SUCCESSION-CERTIFICATE.txt.slhdsa
+```
+
+**Pure Python, `hashlib` only.** No OpenSSL, no build step, no package, no network. It runs from a
+bare directory containing the script, a public key, a signed file and its signature.
+
+### Check the checker
+
+```bash
+python verify/verify_slhdsa.py --selftest --corpus docs
+```
+
+Every SLH-DSA signature in `docs/` must verify under exactly one of the public keys there, every
+other key must refuse it, and eight deliberate mutations must all be rejected — including the bare
+message *without* the FIPS 205 context prefix, which is what proves the domain separator is
+load-bearing rather than decorative.
+
+```bash
+python verify/verify_slhdsa.py --crosscheck --corpus docs     # if you have OpenSSL 3.5+
+```
+
+Runs both implementations over the same inputs and requires them to agree on **every** verdict,
+accepts and rejects alike. Agreement on accepts alone would be satisfied by two permissive
+implementations, which is why the rejects are counted too.
+
+⚠️ **What this has not been checked against: NIST ACVP / FIPS 205 official test vectors.** They were
+not available offline when it was written. The residual risk is a misreading of FIPS 205 that
+OpenSSL also makes — unlikely, since the two were written independently in different languages, but
+that is the gap and it is stated rather than left for a reader to discover.
+
+⚠️ **It verifies; it never signs.** There is no signing path in the file, it needs no secret, and it
+refuses a private key rather than reading one.
+
 ## What these do not establish
 
 **No 2008 cryptographic timestamp exists for any version of the paper.** The earliest recorded hash
@@ -91,3 +141,9 @@ anchored.
 
 **Nothing executable in this lab depends on the paper.** The genesis re-derivation, the patched lines,
 the wire format and the opcode values all rest on the two hash-verified code archives.
+
+**A signature answers WHO, never WHEN.** `verify_slhdsa.py` tells you a key signed those bytes. It
+says nothing about when, and a signature is only as good as the scheme behind it. What dates these
+artifacts is the OpenTimestamps proof (`.ots`) beside each one, anchored in Bitcoin — and an anchor
+made before a scheme breaks keeps its meaning after, which is the whole reason the two are kept
+together.

@@ -51,7 +51,31 @@ security. A stateless scheme has no such failure mode.
 
 ## Verify a release
 
-**Requires OpenSSL 3.5 or later**, which ships SLH-DSA natively — no extra libraries.
+Two routes. **Step 3 is the only one that differs between them**, and they check the same thing.
+
+> ### ⮕ THE ROUTE WITH NO DEPENDENCIES — added 6 September 2026
+>
+> ```bash
+> python verify/verify_slhdsa.py parthod0x-pq-countersign.pem SHA256SUMS SHA256SUMS.slhdsa
+> ```
+>
+> **Pure Python, `hashlib` only.** No OpenSSL, no build step, no package, no network.
+>
+> ⛔ **This exists because the version below made the durable signature depend on the fragile
+> tool.** The whole argument for counter-signing is that SLH-DSA outlives elliptic curves — and
+> the only published way to check it required a particular release of one program. A signature
+> meant to be verifiable in fifty years should not assume what will be installed then.
+>
+> Check the checker with `python verify/verify_slhdsa.py --selftest --corpus docs`, and — while an
+> independent implementation is still available — `--crosscheck`, which requires this file and
+> OpenSSL to agree on **every** verdict, accepts and rejects alike.
+>
+> ⚠️ Not validated against NIST ACVP test vectors; see
+> [`../verify/README.md`](../verify/README.md) for exactly what it has and has not been checked
+> against.
+
+**The OpenSSL route requires OpenSSL 3.5 or later**, which ships SLH-DSA natively — no extra
+libraries.
 
 ```bash
 openssl version                                        # must be 3.5+
