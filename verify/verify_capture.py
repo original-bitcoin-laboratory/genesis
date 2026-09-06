@@ -321,11 +321,22 @@ def main():
                 return v.get("bitcoin.exe")
             return v
         sha_a, sha_b = exe_sha(pre), exe_sha(post)
+        # ⛔ A PID IS NOT A PROCESS IDENTITY. This check compared pid alone, and on the
+        # 2026-09-06-blocks298-731 capture it PASSED while the two records described different
+        # processes: the pre file was a byte-identical copy of the 2026-08-22-blocks296-297 run's,
+        # whose process was created at 17:39:18, against a post whose process was created at
+        # 19:15:13. Both carried pid 7508, so a pid-only comparison could not tell them apart --
+        # and the script printed `fields differing pre->post: ... process, run` in the same breath
+        # as passing the check. The operating system reuses pids; create_time is what does not
+        # move for a given process, and it was already in the same JSON, unread.
+        ct_a, ct_b = g(pre, "create_time", "CreateTime"), g(post, "create_time", "CreateTime")
         print("    pid   pre=%s  post=%s" % (pid_a, pid_b))
+        print("    started   pre=%s  post=%s" % (ct_a, ct_b))
         print("    bitcoin.exe sha256 pre =%s" % sha_a)
         print("    bitcoin.exe sha256 post=%s" % sha_b)
-        chk("the SAME running process is bound at both ends", pid_a is not None and pid_a == pid_b,
-            "%s vs %s" % (pid_a, pid_b))
+        chk("the SAME running process is bound at both ends",
+            pid_a is not None and pid_a == pid_b and ct_a is not None and ct_a == ct_b,
+            "pid %s vs %s, started %s vs %s" % (pid_a, pid_b, ct_a, ct_b))
         chk("the bound binary digest is identical pre and post",
             sha_a is not None and sha_a == sha_b)
         exes = sorted(root.rglob("bitcoin.exe"))
