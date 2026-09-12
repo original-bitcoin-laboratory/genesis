@@ -271,7 +271,10 @@ def build_block_case(name: str, ctx: dict) -> dict:
     (immature) coinbase, mine(prefix76, nbits) -> nonce.
     Returns {raw, expect, stage, reason, needs_pow, consumes: [funding indexes]}."""
     prev, h, nbits, sub = ctx["prev"], ctx["height"], ctx["nbits"], ctx["subsidy"]
-    key, wkey, fund, mine, t = ctx["key"], ctx["wrong_key"], ctx["funding"], ctx["mine"], ctx["ntime"]
+    key, wkey, mine, t = ctx["key"], ctx["wrong_key"], ctx["mine"], ctx["ntime"]
+    if not ctx["funding"]:
+        raise ValueError("no funding outputs")
+    fund = [ctx["funding"][i % len(ctx["funding"])] for i in range(6)]   # six slots; wrap when fewer remain (reruns)
     spk = p2pk(key["sec"])
 
     def signed_spend(k, fi, value_out, script_out=OP_TRUE_SCRIPT, ht=SIGHASH_ALL):
@@ -359,8 +362,8 @@ def build_block_case(name: str, ctx: dict) -> dict:
                    inner="CTransaction::CheckTransaction() : prevout is null")
     if name == "coinbase_overclaim":
         return rej(blk([make_coinbase(h, [(sub + 1, OP_TRUE_SCRIPT)])]), "ConnectBlock",
-                   "SetBestChain() : ConnectBlock failed",
-                   note="main.cpp:953 returns false without its own error line; only SetBestChain's shows")
+                   "AddToBlockIndex() : ConnectBlock failed",
+                   note="main.cpp:953 returns false without its own error line; only AddToBlockIndex's shows")
     if name == "wrong_nbits":
         hb = harder_than(nbits)
         return rej(blk([make_coinbase(h, [(sub, OP_TRUE_SCRIPT)])], nbits=hb), "AcceptBlock",

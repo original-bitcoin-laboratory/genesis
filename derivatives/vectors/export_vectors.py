@@ -466,8 +466,9 @@ def export_blocks() -> dict:
                  "tip; then ConnectBlock (main.cpp:934): each tx via ConnectInputs in order — every input's prevout "
                  "exists and is unspent (outputs of earlier txs in the same block count); a coinbase input is "
                  "spendable only if (height-1) - coinbase_height >= 99; VerifySignature; sum(in) >= sum(out); then "
-                 "vtx[0].GetValueOut() <= (50 COIN >> ((height-1) // 210000)) + fees. A ConnectBlock failure leaves "
-                 "the block in the index with zero work and the tip unchanged. The exported chain uses pow limit "
+                 "vtx[0].GetValueOut() <= (50 COIN >> ((height-1) // 210000)) + fees. A ConnectBlock failure ERASES "
+                 "the block from disk and from the index (main.cpp:1107-1113); the tip is unchanged. Best chain is "
+                 "chosen by height (main.cpp:1097). The exported chain uses pow limit "
                  f"0x{EASY_NBITS:08x} so it can be mined at export time (a NEW-EXP parameter): the 2009 binary would "
                  "reject every one of these headers at 'nBits below minimum work'; replay/ rebuilds the same cases "
                  "at 0x1d00ffff on the live chain. Scripts used: OP_TRUE (0x51) and P2PK."),

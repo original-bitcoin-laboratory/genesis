@@ -177,8 +177,8 @@ class Fake2009:
                     self._flush_log()
                     return
                 self._flush_log()
-                if r["verdict"] in ("accept", "side") or r["stage"] == "ConnectBlock":
-                    self.blocks[r["hash"]] = payload             # in mapBlockIndex even when ConnectBlock failed
+                if r["verdict"] in ("accept", "side"):
+                    self.blocks[r["hash"]] = payload             # a ConnectBlock failure erases the block (main.cpp:1110)
                 if r["verdict"] == "accept":
                     self._broadcast_inv([(MSG_BLOCK, r["hash"])], exclude=c)
 

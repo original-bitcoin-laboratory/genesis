@@ -105,8 +105,11 @@ Everything else is as in A, with `C:\obl\debug.log` as the log path. That applia
   fine up to two hours. Beyond that, fix the guest clock, not the harness.
 - `getdata` for a transaction is served from `mapRelay`, which expires after 15 minutes. The harness asks within a
   second; a manual re-check later says "not served" for everything.
-- Blocks rejected in `ConnectBlock` stay in the node's index with zero work (`AddToBlockIndex` runs before
-  `SetBestChain`). The harness expects `in_index: true, in_main: false` for those. Not a bug on either side.
+- A block rejected in `ConnectBlock` is **erased** by v0.1 (`AddToBlockIndex`, `main.cpp:1107-1113`: from disk
+  and from `mapBlockIndex`), so from outside every rejection looks the same as an orphan: not served, not on
+  the main chain. Only acceptance is distinguishable by the two signals; the *stage* of a rejection is read
+  from `debug.log`. (Later Bitcoin keeps such blocks in the index with zero work; v0.1 does not.)
+- v0.1 picks its best chain by **height**, not accumulated work (`main.cpp:1097`).
 - Every block the harness mines pays `OP_TRUE`. On an isolated clone that matters to nobody; on the public chain it
   would, which is why the clone is not optional.
 - `state.json` is bound to a `--target`; a different target needs a different `--out`.

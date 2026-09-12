@@ -536,8 +536,9 @@ class Chain2009:
 
     `pow_limit_nbits` is bnProofOfWorkLimit: 0x1d00ffff on the 2009 chain; the exported corpus uses
     an easy limit so its blocks can be mined at export time (a NEW-EXP parameter, stated in the JSON).
-    Blocks are connected only when they extend the current tip; equal-work side blocks stay in the
-    index unconnected, exactly as v0.1 leaves a ConnectBlock failure in mapBlockIndex with zero work.
+    Blocks are connected only when they extend the current tip; side blocks of no greater height stay in
+    the index unconnected (v0.1 picks its best chain by height, main.cpp:1097). A block whose ConnectBlock
+    fails is ERASED from the index, as v0.1's AddToBlockIndex erases it from disk and mapBlockIndex.
     """
 
     def __init__(self, pow_limit_nbits: int, genesis_hash: bytes):
@@ -732,7 +733,10 @@ class Chain2009:
             return res
         e = self.connect_block(blk, height)
         if e:
-            self._err("SetBestChain() : ConnectBlock failed")
+            # main.cpp:1107-1113: a ConnectBlock failure erases the block from disk and from mapBlockIndex
+            del self.index[h]
+            self._err("AddToBlockIndex() : ConnectBlock failed")
+            self._err("AcceptBlock() : AddToBlockIndex failed")
             self._err("ProcessBlock() : AcceptBlock FAILED")
             res.update(stage="ConnectBlock", reason=e)
             return res
@@ -762,7 +766,7 @@ class Chain2009:
                 pending[(t, n)] = {"value": o["value"], "script": o["script"], "height": height,
                                    "coinbase": is_coinbase(tx)}
         if value_out(txs[0]) > self.subsidy(self.height) + fees:
-            return "SetBestChain() : ConnectBlock failed"         # main.cpp:953 returns false silently
+            return "AddToBlockIndex() : ConnectBlock failed"      # main.cpp:953 returns false silently; the caller's line shows
         for key, spender in pending_spent.items():
             self.utxo.pop(key, None)
             pending.pop(key, None)

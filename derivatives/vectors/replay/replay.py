@@ -29,6 +29,7 @@ against the exact main.cpp strings. Mining cost: ~112 difficulty-1 blocks. NOT m
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import pathlib
 import sys
@@ -77,6 +78,10 @@ class Replay:
         self.target = a.target
         self.pow_limit = int(a.pow_limit, 16)
         self.chain = spec.Chain2009(self.pow_limit, self.genesis)
+        self.raw_blocks: dict[bytes, bytes] = {}
+        if a.redo:
+            for suite in a.redo.split(","):
+                self.state.get("results", {}).pop(suite, None)
         try:                                       # grade full-vocabulary spends locally too, when the model is here
             from fake2009 import model_spend_verifier
             self.chain.spend_verifier = model_spend_verifier()
@@ -112,20 +117,77 @@ class Replay:
     def ntime_for_next(self) -> int:
         return max(self.chain.median_time_past(self.chain.tip) + 1, self.now())
 
+    def refresh_tip(self) -> int:
+        """Adopt any block the node's main chain has beyond our local tip — its own mined blocks, if its
+        miner is on. Returns how many were adopted. The node is the authority on what its tip is."""
+        adopted = 0
+        while True:
+            after = self.peer.main_chain_after(self.chain.tip, timeout=2.0)
+            new = [h for h in after if h not in self.chain.index]
+            if not new:
+                return adopted
+            for h in new:
+                raw = self.peer.getdata(MSG_BLOCK, h, timeout=10.0)
+                if raw is None:
+                    raise RuntimeError(f"node lists {h[::-1].hex()[:16]} on its chain but did not serve it")
+                r = self.chain.process_block(raw)
+                if r["verdict"] != "accept":
+                    raise RuntimeError(f"the node's own block {h[::-1].hex()[:16]} fails the local validator: {r}")
+                self.raw_blocks[h] = raw
+                adopted += 1
+                self.log(f"  adopted a block the NODE added itself: {h[::-1].hex()[:16]} (height {self.chain.height}) — its miner is on")
+
+    def tip_coinbase(self) -> dict:
+        blk = spec.parse_block(self.raw_blocks[self.chain.tip])
+        cb = blk["txs"][0]
+        return {"txid": spec.txid(cb), "value": spec.value_out(cb), "script": cb["vout"][0]["script"]}
+
+    def unspent_p2pk_funding(self) -> list[dict]:
+        f = self.state["funding"]
+        fid = bytes.fromhex(f["txid"])[::-1]
+        outs = []
+        for i in range(6):
+            n = f["index"][f"p2pk:{i}"]
+            if (fid, n) in self.chain.utxo:
+                outs.append({"txid": fid, "n": n, "value": f["values"][f"p2pk:{i}"]})
+        return outs
+
     def submit_block(self, raw: bytes, expect_accept: bool = True) -> dict:
         """Send a block; read both signals. Also feed the local validator and compare."""
         h = spec.dsha256(raw[:80])
         prev_tip = self.chain.tip
         self.peer.send("block", raw)
         served = self.peer.probe(MSG_BLOCK, h, self.genesis)
-        after = self.peer.main_chain_after(prev_tip, timeout=2.0)
-        in_main = h in after
+        in_main = False
+        for _try in range(4):                     # the node answers getblocks on its SendMessages tick; be patient
+            after = self.peer.main_chain_after(prev_tip, timeout=2.0)
+            if after:
+                in_main = h in after
+                break
+            time.sleep(1.0)
+        # The local validator is a WITNESS, not the authority: it is run on the block for its own verdict,
+        # but the local tip follows the NODE. If the two disagree, the local state is rolled back to what
+        # the node holds, so one divergence cannot orphan every later case on the node's side.
+        snapshot = copy.deepcopy(self.chain)
         try:
             local = self.chain.process_block(raw)
         except spec.Unsupported as e:
             local = {"verdict": None, "stage": None, "reason": f"unsupported locally: {e}"}
+        local_extended = self.chain.tip == h
+        if local_extended != in_main:
+            self.chain = snapshot                       # follow the node
+            self.chain.spend_verifier = snapshot.spend_verifier
+            self.log(f"  local validator {'accepted' if local_extended else 'rejected'} {h[::-1].hex()[:16]} but the node "
+                     f"{'connected' if in_main else 'did not connect'} it — local state reset to the node's; "
+                     f"local reason: {local['reason']}")
         obs = {"hash": h[::-1].hex(), "in_index": served, "in_main": in_main,
-               "local": {"verdict": local["verdict"], "stage": local["stage"], "reason": local["reason"]}}
+               "local": {"verdict": local["verdict"], "stage": local["stage"], "reason": local["reason"]},
+               "local_followed_node": local_extended == in_main}
+        if in_main:
+            self.raw_blocks[h] = raw
+        foreign = [x for x in after if x not in self.chain.index]
+        if foreign:
+            obs["node_added_own_blocks"] = self.refresh_tip()
         if expect_accept and not in_main:
             raise RuntimeError(f"block {h[::-1].hex()[:16]} was expected to extend the chain but did not: {obs}")
         return obs
@@ -149,6 +211,7 @@ class Replay:
         return obs
 
     def mine_block(self, txs: list[dict], nbits: int | None = None, ntime: int | None = None) -> bytes:
+        self.refresh_tip()                        # never build on a tip the node has already moved past
         nbits = nbits or self.chain.index[self.chain.tip]["bits"]
         ntime = ntime or self.ntime_for_next()
         t0 = time.time()
@@ -165,6 +228,7 @@ class Replay:
             r = self.chain.process_block(raw)
             if r["verdict"] != "accept":
                 raise RuntimeError(f"the node's block {r['hash'][::-1].hex()[:16]} fails the from-spec validator: {r}")
+            self.raw_blocks[r["hash"]] = raw
             count[0] += 1
         if self.chain.tip is None:
             # the genesis itself: the node serves it by hash
@@ -257,15 +321,15 @@ class Replay:
 
     def phase_blocks(self) -> None:
         res = self.state.setdefault("results", {}).setdefault("blocks", {})
-        f = self.state["funding"]
-        funding = [{"txid": bytes.fromhex(f["txid"])[::-1], "n": f["index"][f"p2pk:{i}"], "value": f["values"][f"p2pk:{i}"]}
-                   for i in range(6)]
-        lc = self.state["mature"]["last_cb"]
-        last_cb = {"txid": bytes.fromhex(lc["txid"])[::-1], "value": lc["value"]}
         for name in recipes.BLOCK_CASE_ORDER:
             if name in res:
                 continue
             exp = self.blocks_expect[name]
+            self.refresh_tip()
+            funding = self.unspent_p2pk_funding()        # whatever the node still holds unspent, in order
+            if len(funding) < 2:
+                raise RuntimeError("fewer than two unspent P2PK funding outputs remain; mine a new funding block (--redo fund)")
+            last_cb = self.tip_coinbase()                # the newest coinbase is the immature one
             h = self.chain.height + 1
             nbits = self.chain.index[self.chain.tip]["bits"]
             ctx = {"prev": self.chain.tip, "height": h, "mtp": self.chain.median_time_past(self.chain.tip),
@@ -275,8 +339,10 @@ class Replay:
             self.log(f"blocks: {name} (expect {exp['expect']} at {exp['stage']}){' — mining' if exp.get('needs_pow', True) else ''}")
             case = recipes.build_block_case(name, ctx)
             obs = self.submit_block(case["raw"], expect_accept=False)
-            pred = {"accept": (True, True), "orphan": (False, False),
-                    "reject": (exp["stage"] == "ConnectBlock", False)}[exp["expect"]]
+            # v0.1 AddToBlockIndex (main.cpp:1107-1113) ERASES a block whose ConnectBlock fails, from disk and
+            # from mapBlockIndex, so every rejection — whatever its stage — leaves the same two signals as an
+            # orphan: not served, not on the main chain. Only acceptance is distinguishable from outside.
+            pred = {"accept": (True, True), "orphan": (False, False), "reject": (False, False)}[exp["expect"]]
             obs.update(expected=exp["expect"], expected_stage=exp["stage"], expected_reason=exp["reason"],
                        predicted_signals={"in_index": pred[0], "in_main": pred[1]})
             obs["agree"] = (obs["in_index"], obs["in_main"]) == pred
@@ -318,6 +384,7 @@ def main(argv=None) -> int:
     ap.add_argument("--threads", type=int)
     ap.add_argument("--phase", default="all")
     ap.add_argument("--genesis", default="preset", help="'preset' or a genesis hash (display order); test chains only")
+    ap.add_argument("--redo", help="comma-separated result suites to discard and run again, e.g. 'blocks' or 'checksig,blocks'")
     ap.add_argument("--pow-limit", default="1d00ffff")
     a = ap.parse_args(argv)
     r = Replay(a)

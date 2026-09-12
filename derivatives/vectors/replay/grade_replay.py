@@ -45,14 +45,23 @@ def main(argv=None) -> int:
                     report["pending_binary_values"][k] = v["accepted"]
 
     if logs:
+        import re
         blocks = json.loads((CORPUS / "blocks.json").read_text(encoding="ascii"))["vectors"]
         expect = {v["label"]: v for v in blocks}
+
+        def pattern(needle: str) -> str:
+            # v0.1 prints a 6-hex txid after "ConnectInputs() : " (main.cpp:801-850), and a block that fails
+            # ConnectBlock inside a reorganisation is reported by Reorganize(), not AddToBlockIndex()
+            p = re.escape(needle)
+            p = p.replace(re.escape("ConnectInputs() : "), r"ConnectInputs\(\) : (?:[0-9a-f]{6} )?")
+            p = p.replace(re.escape("AddToBlockIndex() : ConnectBlock failed"), r"(?:AddToBlockIndex|Reorganize)\(\) : ConnectBlock failed")
+            return p
         for k, v in res.get("blocks", {}).items():
             e = expect[k]
             for needle in [e["reason"]] + ([e["inner"]] if "inner" in e else []):
                 if e["expect"] == "accept":
                     continue
-                found = needle in logs
+                found = re.search(pattern(needle), logs) is not None
                 report["log_checks"].append({"label": k, "needle": needle, "found": found})
 
     for suite, s in report["suites"].items():
