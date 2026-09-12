@@ -248,6 +248,12 @@ disappears teaches a reader nothing.**
   the same PID and start time in both captures. **It does not prove that this process mined this
   block** — no artifact ties a nonce to a PID. **Block 4's bracket is 39 minutes wide; earlier ones
   are wider, and a wide bracket is weaker evidence, not equal evidence.**
+- ◻ **OPEN — v0.1.5's `RELEASE.txt` names Crypto++ and not OpenSSL.** The OpenSSL 1.0.2u tarball is
+  sha256-pinned in `full_build_wsl.sh` and `period_build_wsl.sh`, but the release text a stranger
+  reads first does not say so, and OpenSSL's ECDSA and BIGNUM behaviour is consensus-relevant.
+  **Corrected forward on 12 September 2026:** the release-text template in `make_release.sh` now
+  carries the library and its hash, so every release from v0.1.6 on will state it. v0.1.5's text
+  is signed and anchored and **will not be re-cut**.
 - ◻ **OPEN — one node, no network.** Every block here was mined by a single node on an isolated
   chain. Nothing in this record measures hashrate, difficulty or peer behaviour, and `nBits` has
   never moved from `0x1d00ffff`. **The intervals between blocks are gaps between sessions, not block

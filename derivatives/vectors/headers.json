@@ -1,0 +1,68 @@
+{
+  "oracle": "the executed 2009 binary reproduces satoshi_2009_genesis (r3-findings/run1, JAN09-EXECUTED); derivatives/bitcoin/net.py re-derives bitcoin_2026_genesis; both re-derived here from hashlib alone",
+  "rule": "header = LE32(nVersion) || hashPrevBlock (internal byte order) || hashMerkleRoot (internal byte order) || LE32(nTime) || LE32(nBits) || LE32(nNonce), 80 bytes. hash = dsha256(header); `hash` is shown in display order (reversed bytes). pow_ok = hash as a little-endian 256-bit integer <= SetCompact(nBits). hashMerkleRoot is shown in display order; reverse it to get the bytes in the header.",
+  "schema": 1,
+  "suite": "headers",
+  "vectors": [
+    {
+      "coinbase_text": "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks",
+      "fields": {
+        "hashMerkleRoot": "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b",
+        "hashPrevBlock": "0000000000000000000000000000000000000000000000000000000000000000",
+        "nBits": "0x1d00ffff",
+        "nNonce": 2083236893,
+        "nTime": 1231006505,
+        "nVersion": 1
+      },
+      "hash": "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+      "header_hex": "0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c",
+      "label": "satoshi_2009_genesis",
+      "pow_ok": true
+    },
+    {
+      "coinbase_text": "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks",
+      "fields": {
+        "hashMerkleRoot": "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b",
+        "hashPrevBlock": "0000000000000000000000000000000000000000000000000000000000000000",
+        "nBits": "0x1d00ffff",
+        "nNonce": 2083236894,
+        "nTime": 1231006505,
+        "nVersion": 1
+      },
+      "hash": "9b227a4a5daa0cbae6874144bc5d7797d0513e320aceadeb3b06304971a41b1c",
+      "header_hex": "0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1eac2b7c",
+      "label": "satoshi_2009_genesis_nonce_plus_1",
+      "pow_ok": false
+    },
+    {
+      "coinbase_text": "The Times 03/Aug/2026 Toll of schooling 'straitjacket'",
+      "fields": {
+        "hashMerkleRoot": "aaa5bdfd6c4075a646db9975aab8515781c67fdd73b02df1773a4e1e21a38085",
+        "hashPrevBlock": "0000000000000000000000000000000000000000000000000000000000000000",
+        "nBits": "0x1d00ffff",
+        "nNonce": 33394338,
+        "nTime": 1785781375,
+        "nVersion": 1
+      },
+      "hash": "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a",
+      "header_hex": "0100000000000000000000000000000000000000000000000000000000000000000000008580a3211e4e3a77f12db073dd7fc6815751b8aa7599db46a675406cfdbda5aa7fdc706affff001da28efd01",
+      "label": "bitcoin_2026_genesis",
+      "pow_ok": true
+    },
+    {
+      "coinbase_text": "The Times 03/Aug/2026 Toll of schooling 'straitjacket'",
+      "fields": {
+        "hashMerkleRoot": "aaa5bdfd6c4075a646db9975aab8515781c67fdd73b02df1773a4e1e21a38085",
+        "hashPrevBlock": "0000000000000000000000000000000000000000000000000000000000000000",
+        "nBits": "0x1d00ffff",
+        "nNonce": 33394339,
+        "nTime": 1785781375,
+        "nVersion": 1
+      },
+      "hash": "7779ed194c85a72f1938fadcc29a0f324e98b4686bb7c577769b20239d45d4e0",
+      "header_hex": "0100000000000000000000000000000000000000000000000000000000000000000000008580a3211e4e3a77f12db073dd7fc6815751b8aa7599db46a675406cfdbda5aa7fdc706affff001da38efd01",
+      "label": "bitcoin_2026_genesis_nonce_plus_1",
+      "pow_ok": false
+    }
+  ]
+}

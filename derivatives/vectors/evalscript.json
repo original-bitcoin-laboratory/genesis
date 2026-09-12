@@ -1,0 +1,1232 @@
+{
+  "oracle": "model/evalscript_model.py (== port/port.cpp on OpenSSL BN == validator-rs)",
+  "rule": "v0.1 EvalScript (script.cpp) run on the scriptSig-free form: `ok` is whether execution completed without error; `valid` is ok AND a non-empty stack AND CastToBool(top); `top_hex` is the top stack element after execution (null if not ok or empty); no CHECKSIG in this suite, so no transaction context is needed.",
+  "schema": 1,
+  "suite": "evalscript",
+  "vectors": [
+    {
+      "label": "push_true",
+      "ok": true,
+      "script_hex": "55",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "05",
+      "valid": true
+    },
+    {
+      "label": "push_false0",
+      "ok": true,
+      "script_hex": "00",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "",
+      "valid": false
+    },
+    {
+      "label": "push_neg1",
+      "ok": true,
+      "script_hex": "4f",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "81",
+      "valid": true
+    },
+    {
+      "label": "push_zerobyte_false",
+      "ok": true,
+      "script_hex": "0100",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "00",
+      "valid": false
+    },
+    {
+      "label": "add",
+      "ok": true,
+      "script_hex": "5253935587",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "sub",
+      "ok": true,
+      "script_hex": "5553945287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "mul",
+      "ok": true,
+      "script_hex": "535495010c87",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "div",
+      "ok": true,
+      "script_hex": "011456965387",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "mod",
+      "ok": true,
+      "script_hex": "011456975287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "abs_neg",
+      "ok": true,
+      "script_hex": "0187905787",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "negate",
+      "ok": true,
+      "script_hex": "578f018787",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "1add",
+      "ok": true,
+      "script_hex": "558b5687",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "1sub",
+      "ok": true,
+      "script_hex": "558c5487",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "2mul",
+      "ok": true,
+      "script_hex": "568d010c87",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "2div",
+      "ok": true,
+      "script_hex": "578e5387",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "0notequal",
+      "ok": true,
+      "script_hex": "5592",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "bignum_lshift",
+      "ok": true,
+      "script_hex": "510140980900000000000000000187",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "bignum_add",
+      "ok": true,
+      "script_hex": "0900000000000000004055930905000000000000004087",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "div_by_zero_err",
+      "ok": false,
+      "script_hex": "550096",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": null,
+      "top_hex": null,
+      "valid": false
+    },
+    {
+      "label": "lessthan",
+      "ok": true,
+      "script_hex": "53559f",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "numequal",
+      "ok": true,
+      "script_hex": "55559c",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "numnotequal",
+      "ok": true,
+      "script_hex": "55569e",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "gte",
+      "ok": true,
+      "script_hex": "5555a2",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "min",
+      "ok": true,
+      "script_hex": "5359a35387",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "max",
+      "ok": true,
+      "script_hex": "5359a45987",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "booland",
+      "ok": true,
+      "script_hex": "51529a",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "within_true",
+      "ok": true,
+      "script_hex": "010201010105a5",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "within_false",
+      "ok": true,
+      "script_hex": "010501010105a5",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "",
+      "valid": false
+    },
+    {
+      "label": "drop",
+      "ok": true,
+      "script_hex": "5152755187",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "dup",
+      "ok": true,
+      "script_hex": "517687",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "swap",
+      "ok": true,
+      "script_hex": "51527c5187",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 2,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "rot",
+      "ok": true,
+      "script_hex": "5152537b5187",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 3,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "nip",
+      "ok": true,
+      "script_hex": "5152775287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "over",
+      "ok": true,
+      "script_hex": "5152785187",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 3,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "tuck",
+      "ok": true,
+      "script_hex": "51527d5287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 3,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "2dup",
+      "ok": true,
+      "script_hex": "51526e5287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 4,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "2swap",
+      "ok": true,
+      "script_hex": "51525354725287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 4,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "2rot",
+      "ok": true,
+      "script_hex": "515253545556715287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 6,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "3dup",
+      "ok": true,
+      "script_hex": "5152536f5387",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 6,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "2over",
+      "ok": true,
+      "script_hex": "51525354705287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 6,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "depth",
+      "ok": true,
+      "script_hex": "525374010287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 3,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "ifdup_true",
+      "ok": true,
+      "script_hex": "55735587",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 2,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "altstack",
+      "ok": true,
+      "script_hex": "576b516c5787",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 2,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "pick",
+      "ok": true,
+      "script_hex": "5152530102795187",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 4,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "roll",
+      "ok": true,
+      "script_hex": "51525301027a5187",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 3,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "pick_neg_err",
+      "ok": false,
+      "script_hex": "51018179",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": null,
+      "top_hex": null,
+      "valid": false
+    },
+    {
+      "label": "cat",
+      "ok": true,
+      "script_hex": "01aa01bb7e02aabb87",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "substr",
+      "ok": true,
+      "script_hex": "031122330001027f02112287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "left",
+      "ok": true,
+      "script_hex": "0311223301028002112287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "right",
+      "ok": true,
+      "script_hex": "0311223301028102223387",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "size",
+      "ok": true,
+      "script_hex": "03aabbcc825387",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 2,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "invert",
+      "ok": true,
+      "script_hex": "01ff83010087",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "and",
+      "ok": true,
+      "script_hex": "01ff010f84010f87",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "or",
+      "ok": true,
+      "script_hex": "01f0010f8501ff87",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "xor",
+      "ok": true,
+      "script_hex": "01ff01ff86010087",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "sha256",
+      "ok": true,
+      "script_hex": "03616263a820ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad87",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "sha1",
+      "ok": true,
+      "script_hex": "00a714da39a3ee5e6b4b0d3255bfef95601890afd8070987",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "ripemd160",
+      "ok": true,
+      "script_hex": "03616263a6148eb208f7e05d987a9b044a8e98c6b087f15a0bfc87",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "hash160",
+      "ok": true,
+      "script_hex": "03616263a914bb1be98c142444d7a56aa3981c3942a978e4dc3387",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "hash256",
+      "ok": true,
+      "script_hex": "03616263aa204f8b42c22dd3729b519ba6f68d2da7cc5b2d606d05daed5ad5128cc03e6c635887",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "if_true",
+      "ok": true,
+      "script_hex": "5163526753685287",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "if_false",
+      "ok": true,
+      "script_hex": "0063526753685387",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "notif",
+      "ok": true,
+      "script_hex": "5164526753685387",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "nested_if",
+      "ok": true,
+      "script_hex": "516351635568685587",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "verify_true",
+      "ok": true,
+      "script_hex": "5169575787",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "verify_false",
+      "ok": true,
+      "script_hex": "0069",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "",
+      "valid": false
+    },
+    {
+      "label": "equalverify_true",
+      "ok": true,
+      "script_hex": "55558851",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "equalverify_false",
+      "ok": true,
+      "script_hex": "55568851",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "",
+      "valid": false
+    },
+    {
+      "label": "return_stops",
+      "ok": true,
+      "script_hex": "516a00",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "underflow_add_err",
+      "ok": false,
+      "script_hex": "93",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": null,
+      "top_hex": null,
+      "valid": false
+    },
+    {
+      "label": "underflow_drop_err",
+      "ok": false,
+      "script_hex": "75",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": null,
+      "top_hex": null,
+      "valid": false
+    },
+    {
+      "label": "stray_endif_err",
+      "ok": false,
+      "script_hex": "68",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": null,
+      "top_hex": null,
+      "valid": false
+    },
+    {
+      "label": "codeseparator_nop",
+      "ok": true,
+      "script_hex": "51ab5187",
+      "source": "validator-rs/tools/gen_eval_vectors.py",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "port_01",
+      "ok": true,
+      "script_hex": "0106010795",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "2a",
+      "valid": true
+    },
+    {
+      "label": "port_02",
+      "ok": true,
+      "script_hex": "0114010696",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "03",
+      "valid": true
+    },
+    {
+      "label": "port_03",
+      "ok": true,
+      "script_hex": "0114010697",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "02",
+      "valid": true
+    },
+    {
+      "label": "port_04",
+      "ok": true,
+      "script_hex": "0194010696",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "83",
+      "valid": true
+    },
+    {
+      "label": "port_05",
+      "ok": true,
+      "script_hex": "0194010697",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "82",
+      "valid": true
+    },
+    {
+      "label": "port_06",
+      "ok": true,
+      "script_hex": "0114018696",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "83",
+      "valid": true
+    },
+    {
+      "label": "port_07",
+      "ok": true,
+      "script_hex": "0114018697",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "02",
+      "valid": true
+    },
+    {
+      "label": "port_08",
+      "ok": true,
+      "script_hex": "0194018696",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "03",
+      "valid": true
+    },
+    {
+      "label": "port_09",
+      "ok": true,
+      "script_hex": "0194018697",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "82",
+      "valid": true
+    },
+    {
+      "label": "port_10",
+      "ok": true,
+      "script_hex": "01838e",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "81",
+      "valid": true
+    },
+    {
+      "label": "port_11",
+      "ok": true,
+      "script_hex": "0101010898",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "0001",
+      "valid": true
+    },
+    {
+      "label": "port_12",
+      "ok": true,
+      "script_hex": "020001010499",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "10",
+      "valid": true
+    },
+    {
+      "label": "port_13",
+      "ok": true,
+      "script_hex": "020081010499",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "90",
+      "valid": true
+    },
+    {
+      "label": "port_14",
+      "ok": true,
+      "script_hex": "01158d",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "2a",
+      "valid": true
+    },
+    {
+      "label": "port_15",
+      "ok": true,
+      "script_hex": "01058f",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "85",
+      "valid": true
+    },
+    {
+      "label": "port_16",
+      "ok": true,
+      "script_hex": "018590",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "05",
+      "valid": true
+    },
+    {
+      "label": "port_17",
+      "ok": true,
+      "script_hex": "0091",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "port_18",
+      "ok": true,
+      "script_hex": "010791",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "",
+      "valid": false
+    },
+    {
+      "label": "port_19",
+      "ok": true,
+      "script_hex": "017f8b",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "8000",
+      "valid": true
+    },
+    {
+      "label": "port_20",
+      "ok": true,
+      "script_hex": "0280008c",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "7f",
+      "valid": true
+    },
+    {
+      "label": "port_21",
+      "ok": true,
+      "script_hex": "02dead02beef7e",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "deadbeef",
+      "valid": true
+    },
+    {
+      "label": "port_22",
+      "ok": true,
+      "script_hex": "06616263646566010101037f",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "626364",
+      "valid": true
+    },
+    {
+      "label": "port_23",
+      "ok": true,
+      "script_hex": "06616263646566010280",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "6162",
+      "valid": true
+    },
+    {
+      "label": "port_24",
+      "ok": true,
+      "script_hex": "06616263646566010281",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "6566",
+      "valid": true
+    },
+    {
+      "label": "port_25",
+      "ok": true,
+      "script_hex": "0361626382",
+      "source": "port/vectors.txt",
+      "stack_depth": 2,
+      "top_hex": "03",
+      "valid": true
+    },
+    {
+      "label": "port_26",
+      "ok": true,
+      "script_hex": "010f83",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "f0",
+      "valid": true
+    },
+    {
+      "label": "port_27",
+      "ok": true,
+      "script_hex": "01f0013c84",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "30",
+      "valid": true
+    },
+    {
+      "label": "port_28",
+      "ok": true,
+      "script_hex": "01f0013c85",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "fc",
+      "valid": true
+    },
+    {
+      "label": "port_29",
+      "ok": true,
+      "script_hex": "01f0013c86",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "cc",
+      "valid": true
+    },
+    {
+      "label": "port_30",
+      "ok": true,
+      "script_hex": "01050101010aa5",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "port_31",
+      "ok": true,
+      "script_hex": "010a0101010aa5",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "",
+      "valid": false
+    },
+    {
+      "label": "port_32",
+      "ok": true,
+      "script_hex": "010301059f",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "port_33",
+      "ok": true,
+      "script_hex": "01050103a3",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "03",
+      "valid": true
+    },
+    {
+      "label": "port_34",
+      "ok": true,
+      "script_hex": "01050103a4",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "05",
+      "valid": true
+    },
+    {
+      "label": "port_35",
+      "ok": true,
+      "script_hex": "0106010795012a9c",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "port_36",
+      "ok": false,
+      "script_hex": "01050096",
+      "source": "port/vectors.txt",
+      "stack_depth": null,
+      "top_hex": null,
+      "valid": false
+    },
+    {
+      "label": "port_37",
+      "ok": true,
+      "script_hex": "03616263a8",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+      "valid": true
+    },
+    {
+      "label": "port_38",
+      "ok": true,
+      "script_hex": "03616263aa",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "4f8b42c22dd3729b519ba6f68d2da7cc5b2d606d05daed5ad5128cc03e6c6358",
+      "valid": true
+    },
+    {
+      "label": "port_39",
+      "ok": true,
+      "script_hex": "0100a7",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "5ba93c9db0cff93f52b521d7420e43f6eda2784f",
+      "valid": true
+    },
+    {
+      "label": "port_41",
+      "ok": true,
+      "script_hex": "010163010b67011668",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "0b",
+      "valid": true
+    },
+    {
+      "label": "port_42",
+      "ok": true,
+      "script_hex": "0063010b67011668",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "16",
+      "valid": true
+    },
+    {
+      "label": "port_43",
+      "ok": true,
+      "script_hex": "010164010b67011668",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "16",
+      "valid": true
+    },
+    {
+      "label": "port_44",
+      "ok": true,
+      "script_hex": "010563006301016701026867010968",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "02",
+      "valid": true
+    },
+    {
+      "label": "port_45",
+      "ok": true,
+      "script_hex": "01aaa801aaa887690107",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "07",
+      "valid": true
+    },
+    {
+      "label": "port_46",
+      "ok": true,
+      "script_hex": "00690107",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "",
+      "valid": false
+    },
+    {
+      "label": "port_47",
+      "ok": true,
+      "script_hex": "0101690107",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "07",
+      "valid": true
+    },
+    {
+      "label": "port_48",
+      "ok": true,
+      "script_hex": "01036a0109",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "03",
+      "valid": true
+    },
+    {
+      "label": "port_49",
+      "ok": true,
+      "script_hex": "00630163680108",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "08",
+      "valid": true
+    },
+    {
+      "label": "port_51",
+      "ok": true,
+      "script_hex": "0101010201037b",
+      "source": "port/vectors.txt",
+      "stack_depth": 3,
+      "top_hex": "01",
+      "valid": true
+    },
+    {
+      "label": "port_52",
+      "ok": true,
+      "script_hex": "010101026e",
+      "source": "port/vectors.txt",
+      "stack_depth": 4,
+      "top_hex": "02",
+      "valid": true
+    },
+    {
+      "label": "port_53",
+      "ok": true,
+      "script_hex": "010101020103010472",
+      "source": "port/vectors.txt",
+      "stack_depth": 4,
+      "top_hex": "02",
+      "valid": true
+    },
+    {
+      "label": "port_54",
+      "ok": true,
+      "script_hex": "010101020103010470",
+      "source": "port/vectors.txt",
+      "stack_depth": 6,
+      "top_hex": "02",
+      "valid": true
+    },
+    {
+      "label": "port_55",
+      "ok": true,
+      "script_hex": "01010102010301040105010671",
+      "source": "port/vectors.txt",
+      "stack_depth": 6,
+      "top_hex": "02",
+      "valid": true
+    },
+    {
+      "label": "port_56",
+      "ok": true,
+      "script_hex": "010101027d",
+      "source": "port/vectors.txt",
+      "stack_depth": 3,
+      "top_hex": "02",
+      "valid": true
+    },
+    {
+      "label": "port_57",
+      "ok": true,
+      "script_hex": "0101010277",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "02",
+      "valid": true
+    },
+    {
+      "label": "port_58",
+      "ok": true,
+      "script_hex": "010973",
+      "source": "port/vectors.txt",
+      "stack_depth": 2,
+      "top_hex": "09",
+      "valid": true
+    },
+    {
+      "label": "port_59",
+      "ok": true,
+      "script_hex": "0073",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "",
+      "valid": false
+    },
+    {
+      "label": "port_60",
+      "ok": true,
+      "script_hex": "01010102010374",
+      "source": "port/vectors.txt",
+      "stack_depth": 4,
+      "top_hex": "03",
+      "valid": true
+    },
+    {
+      "label": "port_61",
+      "ok": true,
+      "script_hex": "01aa01bb01cc010279",
+      "source": "port/vectors.txt",
+      "stack_depth": 4,
+      "top_hex": "aa",
+      "valid": true
+    },
+    {
+      "label": "port_62",
+      "ok": true,
+      "script_hex": "01aa01bb01cc01027a",
+      "source": "port/vectors.txt",
+      "stack_depth": 3,
+      "top_hex": "aa",
+      "valid": true
+    },
+    {
+      "label": "port_63",
+      "ok": true,
+      "script_hex": "010101026b756c",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "02",
+      "valid": true
+    },
+    {
+      "label": "port_64",
+      "ok": true,
+      "script_hex": "01077693",
+      "source": "port/vectors.txt",
+      "stack_depth": 1,
+      "top_hex": "0e",
+      "valid": true
+    },
+    {
+      "label": "port_65",
+      "ok": true,
+      "script_hex": "01010102010301046d",
+      "source": "port/vectors.txt",
+      "stack_depth": 2,
+      "top_hex": "02",
+      "valid": true
+    }
+  ]
+}

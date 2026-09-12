@@ -1,0 +1,182 @@
+{
+  "constants": {
+    "bnProofOfWorkLimit_nbits": "0x1d00ffff",
+    "intervals_measured": 2015,
+    "nInterval": 2016,
+    "nTargetSpacing": 600,
+    "nTargetTimespan": 1209600
+  },
+  "nbits_codec": [
+    {
+      "expected_hashes": "4295032833",
+      "nbits": "0x1d00ffff",
+      "negative": false,
+      "overflow": false,
+      "roundtrip_nbits": "0x1d00ffff",
+      "target_hex": "00000000ffff0000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "expected_hashes": "1099528405248",
+      "nbits": "0x1c00ffff",
+      "negative": false,
+      "overflow": false,
+      "roundtrip_nbits": "0x1c00ffff",
+      "target_hex": "0000000000ffff00000000000000000000000000000000000000000000000000"
+    },
+    {
+      "expected_hashes": "70040908352512",
+      "nbits": "0x1b0404cb",
+      "negative": false,
+      "overflow": false,
+      "roundtrip_nbits": "0x1b0404cb",
+      "target_hex": "00000000000404cb000000000000000000000000000000000000000000000000"
+    },
+    {
+      "expected_hashes": "4295098372",
+      "nbits": "0x1d00fffe",
+      "negative": false,
+      "overflow": false,
+      "roundtrip_nbits": "0x1d00fffe",
+      "target_hex": "00000000fffe0000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "expected_hashes": "1766847064778384329583297500742918515827483896875618958121606201292619776",
+      "nbits": "0x0300ffff",
+      "negative": false,
+      "overflow": false,
+      "roundtrip_nbits": "0x0300ffff",
+      "target_hex": "000000000000000000000000000000000000000000000000000000000000ffff"
+    },
+    {
+      "expected_hashes": "8589935616",
+      "nbits": "0x1c7fffff",
+      "negative": false,
+      "overflow": false,
+      "roundtrip_nbits": "0x1c7fffff",
+      "target_hex": "000000007fffff00000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "oracle": "retarget/retarget.py (line-for-line port of main.cpp:685-728)",
+  "rule": "times[i] = t0 + i*spacing for i in [0, count), then times[count-1] = last_override if not null. nActualTimespan = times[-1] - times[-nInterval]; clamp to [nTargetTimespan/4, nTargetTimespan*4]; new = old_target * nActualTimespan / nTargetTimespan (integer division); if new > pow_limit then new = pow_limit; report GetCompact(new).",
+  "schema": 1,
+  "suite": "retarget",
+  "vectors": [
+    {
+      "label": "exact_600s_is_not_fixed_point",
+      "n_actual_timespan": 1209000,
+      "new_nbits": "0x1c3ff79f",
+      "note": "2015 measured intervals vs a 2016-interval budget: 600 s blocks read as slightly fast, target shrinks",
+      "old_nbits": "0x1c3fffc0",
+      "window": {
+        "count": 2016,
+        "last_override": null,
+        "spacing": 600,
+        "t0": 1700000000
+      }
+    },
+    {
+      "label": "d1_600s_goes_slightly_harder",
+      "n_actual_timespan": 1209000,
+      "new_nbits": "0x1d00ffde",
+      "note": "at difficulty 1 the same 600 s window computes a slightly harder target (0x1d00ffde); the pow-limit cap only bounds easing, so exact ten-minute blocks leave the floor",
+      "old_nbits": "0x1d00ffff",
+      "window": {
+        "count": 2016,
+        "last_override": null,
+        "spacing": 600,
+        "t0": 1700000000
+      }
+    },
+    {
+      "label": "d1_3900s_stays_d1",
+      "n_actual_timespan": 7858500,
+      "new_nbits": "0x1d00ffff",
+      "note": "65-minute blocks (the 2026 chain's observed rate): timespan > target, adjustment DOWN, clamped at the floor",
+      "old_nbits": "0x1d00ffff",
+      "window": {
+        "count": 2016,
+        "last_override": null,
+        "spacing": 3900,
+        "t0": 1700000000
+      }
+    },
+    {
+      "label": "d1_1200s_stays_d1",
+      "n_actual_timespan": 2418000,
+      "new_nbits": "0x1d00ffff",
+      "note": "any chain slower than 600 s per block at difficulty 1 stays at 0x1d00ffff after every retarget",
+      "old_nbits": "0x1d00ffff",
+      "window": {
+        "count": 2016,
+        "last_override": null,
+        "spacing": 1200,
+        "t0": 1700000000
+      }
+    },
+    {
+      "label": "d4_150s_quadruple_clamp",
+      "n_actual_timespan": 302250,
+      "new_nbits": "0x1c0ffff0",
+      "note": "4x too fast: timespan clamped to nTargetTimespan/4, target divides by 4 exactly",
+      "old_nbits": "0x1c3fffc0",
+      "window": {
+        "count": 2016,
+        "last_override": null,
+        "spacing": 150,
+        "t0": 1700000000
+      }
+    },
+    {
+      "label": "d4_2400s_fencepost_misses_the_clamp",
+      "n_actual_timespan": 4836000,
+      "new_nbits": "0x1d00ffde",
+      "note": "nominally 4x too slow, but 2015 measured intervals give 4,836,000 s, just under the 4x clamp of 4,838,400 s, so the target eases by 2015/2016 * 4, not 4",
+      "old_nbits": "0x1c3fffc0",
+      "window": {
+        "count": 2016,
+        "last_override": null,
+        "spacing": 2400,
+        "t0": 1700000000
+      }
+    },
+    {
+      "label": "d8_2500s_quarter_clamp",
+      "n_actual_timespan": 5037500,
+      "new_nbits": "0x1c7fff80",
+      "note": "4x+ too slow: timespan clamped to 4*nTargetTimespan, target multiplies by 4 exactly (d8 -> d2)",
+      "old_nbits": "0x1c1fffe0",
+      "window": {
+        "count": 2016,
+        "last_override": null,
+        "spacing": 2500,
+        "t0": 1700000000
+      }
+    },
+    {
+      "label": "d4_60s_still_only_4x",
+      "n_actual_timespan": 120900,
+      "new_nbits": "0x1c0ffff0",
+      "note": "10x too fast still clamps to 4x",
+      "old_nbits": "0x1c3fffc0",
+      "window": {
+        "count": 2016,
+        "last_override": null,
+        "spacing": 60,
+        "t0": 1700000000
+      }
+    },
+    {
+      "label": "timewarp_forged_boundary_forces_4x_drop",
+      "n_actual_timespan": 6046800,
+      "new_nbits": "0x1d00ffff",
+      "note": "boundary-only measurement (main.cpp:706): one forged last timestamp forces the maximal 4x easing; nothing binds period boundaries together",
+      "old_nbits": "0x1c3fffc0",
+      "window": {
+        "count": 2016,
+        "last_override": 1706046800,
+        "spacing": 600,
+        "t0": 1700000000
+      }
+    }
+  ]
+}

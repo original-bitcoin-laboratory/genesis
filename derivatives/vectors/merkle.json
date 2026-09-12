@@ -1,0 +1,103 @@
+{
+  "oracle": "p2p/p2p.py merkle_root (== validator-rs/src/lib.rs, == node/node_port.cpp)",
+  "rule": "leaves are 32-byte hashes in list order (byte order as given, i.e. internal/LE uint256 order). While more than one node remains: if the count is odd, append a copy of the last node; then replace the list with dsha256(node[2i] || node[2i+1]). The single remaining node is the root. dsha256 = SHA-256(SHA-256(x)).",
+  "schema": 1,
+  "suite": "merkle",
+  "vectors": [
+    {
+      "label": "n1",
+      "leaves_hex": [
+        "d2dbf006f96dd05044a8f63d8f118f23925ba4cc5750f8b6c8e287fd506c8188"
+      ],
+      "root_hex": "d2dbf006f96dd05044a8f63d8f118f23925ba4cc5750f8b6c8e287fd506c8188"
+    },
+    {
+      "label": "n2",
+      "leaves_hex": [
+        "d2dbf006f96dd05044a8f63d8f118f23925ba4cc5750f8b6c8e287fd506c8188",
+        "4140bf0e8569ed03ec838871ff2f190e9b3ea86bc083d7e9901049f75f00e855"
+      ],
+      "root_hex": "b1f030ab187805ad2aecca44133ab5b61c57918651e4ba846127d5f475dea6c9"
+    },
+    {
+      "label": "n3",
+      "leaves_hex": [
+        "d2dbf006f96dd05044a8f63d8f118f23925ba4cc5750f8b6c8e287fd506c8188",
+        "4140bf0e8569ed03ec838871ff2f190e9b3ea86bc083d7e9901049f75f00e855",
+        "649837ddcb7e1967086d7d35aaef7b975c513815d96fc6e70015e93a2bfe0f9a"
+      ],
+      "root_hex": "47b3d4c5c4d9b2fb20fdba28790ca2a7b786971c19d607592ce0d32d610134e4"
+    },
+    {
+      "label": "n4",
+      "leaves_hex": [
+        "d2dbf006f96dd05044a8f63d8f118f23925ba4cc5750f8b6c8e287fd506c8188",
+        "4140bf0e8569ed03ec838871ff2f190e9b3ea86bc083d7e9901049f75f00e855",
+        "649837ddcb7e1967086d7d35aaef7b975c513815d96fc6e70015e93a2bfe0f9a",
+        "9fde56c376760bd399b82eb8569229a2dff19219411ac71154dfeab2cf502454"
+      ],
+      "root_hex": "a549a122552b625be4ba8a3d9a6299b237cfd3d1d6d253914c0812701bd4320f"
+    },
+    {
+      "label": "n5",
+      "leaves_hex": [
+        "d2dbf006f96dd05044a8f63d8f118f23925ba4cc5750f8b6c8e287fd506c8188",
+        "4140bf0e8569ed03ec838871ff2f190e9b3ea86bc083d7e9901049f75f00e855",
+        "649837ddcb7e1967086d7d35aaef7b975c513815d96fc6e70015e93a2bfe0f9a",
+        "9fde56c376760bd399b82eb8569229a2dff19219411ac71154dfeab2cf502454",
+        "697f943b9ec5f90eddda8ae7473f5eb688187e3467f312fefa8677dde255042c"
+      ],
+      "root_hex": "7efca5b3f9c1634af1f6b958e94222b02be6a609a4ca61de05d56d76a0c39221"
+    },
+    {
+      "label": "n6",
+      "leaves_hex": [
+        "d2dbf006f96dd05044a8f63d8f118f23925ba4cc5750f8b6c8e287fd506c8188",
+        "4140bf0e8569ed03ec838871ff2f190e9b3ea86bc083d7e9901049f75f00e855",
+        "649837ddcb7e1967086d7d35aaef7b975c513815d96fc6e70015e93a2bfe0f9a",
+        "9fde56c376760bd399b82eb8569229a2dff19219411ac71154dfeab2cf502454",
+        "697f943b9ec5f90eddda8ae7473f5eb688187e3467f312fefa8677dde255042c",
+        "fb1ec199d052a3ce6d141a28c2d706a51b99f09c2a8d61243062a046f06b68f1"
+      ],
+      "root_hex": "081cab0485bfd509a44d667ba6cd2db11d6e2b967350fcaa9012a7164c0150c5"
+    },
+    {
+      "label": "n7",
+      "leaves_hex": [
+        "d2dbf006f96dd05044a8f63d8f118f23925ba4cc5750f8b6c8e287fd506c8188",
+        "4140bf0e8569ed03ec838871ff2f190e9b3ea86bc083d7e9901049f75f00e855",
+        "649837ddcb7e1967086d7d35aaef7b975c513815d96fc6e70015e93a2bfe0f9a",
+        "9fde56c376760bd399b82eb8569229a2dff19219411ac71154dfeab2cf502454",
+        "697f943b9ec5f90eddda8ae7473f5eb688187e3467f312fefa8677dde255042c",
+        "fb1ec199d052a3ce6d141a28c2d706a51b99f09c2a8d61243062a046f06b68f1",
+        "add4b896cb06bf0d24fd68948f1e9f7e0084b19f7b37f3fbc0f4b5d0d58ae277"
+      ],
+      "root_hex": "53720d1fa70945bcef3423ee1a38c72a3efce4f8d7c2fe8a62a19a8faa299940"
+    },
+    {
+      "label": "n8",
+      "leaves_hex": [
+        "d2dbf006f96dd05044a8f63d8f118f23925ba4cc5750f8b6c8e287fd506c8188",
+        "4140bf0e8569ed03ec838871ff2f190e9b3ea86bc083d7e9901049f75f00e855",
+        "649837ddcb7e1967086d7d35aaef7b975c513815d96fc6e70015e93a2bfe0f9a",
+        "9fde56c376760bd399b82eb8569229a2dff19219411ac71154dfeab2cf502454",
+        "697f943b9ec5f90eddda8ae7473f5eb688187e3467f312fefa8677dde255042c",
+        "fb1ec199d052a3ce6d141a28c2d706a51b99f09c2a8d61243062a046f06b68f1",
+        "add4b896cb06bf0d24fd68948f1e9f7e0084b19f7b37f3fbc0f4b5d0d58ae277",
+        "3c9bcfc57bee1ac26ef0036b1fe72d119a78f09c42bff115d79fc8c212538581"
+      ],
+      "root_hex": "ae030b89c2f4826622e6693cc8d331fbd48c2b2249d59063bf8d192def6b939d"
+    },
+    {
+      "label": "cve_2012_2459_abc_equals_abcc",
+      "leaves_hex": [
+        "d2dbf006f96dd05044a8f63d8f118f23925ba4cc5750f8b6c8e287fd506c8188",
+        "4140bf0e8569ed03ec838871ff2f190e9b3ea86bc083d7e9901049f75f00e855",
+        "649837ddcb7e1967086d7d35aaef7b975c513815d96fc6e70015e93a2bfe0f9a",
+        "649837ddcb7e1967086d7d35aaef7b975c513815d96fc6e70015e93a2bfe0f9a"
+      ],
+      "note": "same root as n3: [A,B,C] and [A,B,C,C] are indistinguishable by root",
+      "root_hex": "47b3d4c5c4d9b2fb20fdba28790ca2a7b786971c19d607592ce0d32d610134e4"
+    }
+  ]
+}

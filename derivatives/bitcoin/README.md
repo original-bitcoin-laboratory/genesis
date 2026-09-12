@@ -100,6 +100,17 @@ safe here only because there is nothing to steal. Run the client in a VM.
 
 ## Provenance
 
+**Not a notary.** This chain's own proof-of-work is difficulty 1 and stays there: the retarget only
+rises for a chain that sustains faster than ten-minute blocks, and this one does not, so every
+retarget clamps at the proof-of-work floor. Its whole history is rewritable in seconds by one mining
+ASIC. The integrity of the record is therefore **derivative, not native**: each published batch of
+blocks is hashed into a `SHA256SUMS` whose OpenTimestamps proof anchors into Satoshi's 2009 chain,
+the one carrying the most SHA-256d work (see [`bitcoin-findings/`](../../bitcoin-findings/)). What
+that proves is that the blocks existed before the anchoring block, and nothing more. This chain is
+not a timestamp ledger, and no proof should treat its `nTime` or its accumulated work as evidence
+of when anything happened. The fidelity that makes it useless as a notary is exactly what makes it
+useful as a reconstruction.
+
 [`CHRONOLOGY.md`](CHRONOLOGY.md) — every dated fact about this chain and the agent that authored it,
 **with what each timestamp is actually worth.** The genesis and block-1 times are bound into
 proof-of-work and paired with a newspaper printed that morning, so they cannot be backdated; GPG and

@@ -136,6 +136,13 @@ net.h and irc.cpp.
 The binary is cross-compiled by full_build_wsl.sh against the period libraries (OpenSSL 1.0.2u,
 wxWidgets 2.8.12, Berkeley DB 4.8, Boost 1.42), statically linked, so it ships no DLLs.
 
+OpenSSL is named with its hash because its behaviour is consensus-relevant: v0.1 does ECDSA and
+all Script arithmetic through OpenSSL, and lenient, version-dependent signature parsing in that
+library is what forced BIP66 on Bitcoin mainnet in 2015. The build verifies the tarball before it is
+compiled:
+
+  openssl-1.0.2u.tar.gz  sha256 ecd0c6ffb493dd06707d38b14bb4d8c2288bb7033735606569d8f90f89669d16
+
 Consensus rules, script, difficulty, serialization, wallet and UI carry no guardrails: no
 MoneyRange, no script limits, and no 1 MB block cap -- that arrives in July 2010. The one ceiling
 that does exist is MAX_SIZE, 32 MiB, enforced by CheckBlock. Safe here for one reason only --
