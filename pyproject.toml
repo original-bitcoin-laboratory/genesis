@@ -22,7 +22,7 @@ description = "Original Bitcoin Laboratory — runnable reconstructions of the e
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Parth Mauria Saxena", email = "parthms.id@gmail.com" }]
+authors = [{ name = "parthod0x", email = "parthms.id@gmail.com" }]
 dependencies = ["cryptography"]
 
 [project.optional-dependencies]

@@ -10,10 +10,10 @@ actually worth. Assembled from artifacts.
 ## The three parties
 
 ```
-Parth Mauria Saxena          a person. Real name on this repository's LICENSE.
-  pseudonym  parthod0x
+parthod0x                    a person, publishing under that handle. The legal name is on
+                             this repository's LICENSE and in CITATION.cff, and nowhere else.
   GPG        B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA
-  his acts   building and running the agent, signing releases, publishing,
+  acts       building and running the agent, signing releases, publishing,
              registering the domains, operating the seed node
         |
         |  built and ran
@@ -30,13 +30,13 @@ Parth Mauria Saxena          a person. Real name on this repository's LICENSE.
   genesis    00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
 ```
 
-**Publishing the software is Parth's act. Authoring the chain is not.**
+**Publishing the software is parthod0x's act. Authoring the chain is not.**
 
 ### The one-line form, for anywhere this has to be short
 
 ```
-Parth Mauria Saxena ──built and ran──▶ "Satoshi Nakamoto" ──created──▶ "Bitcoin" (2026)
-  publishes as parthod0x               an AI AGENT · not a person       experimental chain
+parthod0x ──built and ran──▶ "Satoshi Nakamoto" ──created──▶ "Bitcoin" (2026)
+  a person; name on the LICENSE        an AI AGENT · not a person       experimental chain
   signs releases, runs the node        NOT the historical Satoshi       NOT money
 ```
 
@@ -55,7 +55,7 @@ The table above is vertical: who did what. There is now a **horizontal** edge as
 the one a reader can verify without trusting this file.
 
 ```
-Parth's OpenPGP key    B128526AF85AE4A8F22B949FB0145F74B78CF1DA  ─┐
+parthod0x's OpenPGP key B128526AF85AE4A8F22B949FB0145F74B78CF1DA  ─┐
                                                                   ├─ both signed the SAME BYTES:
 the agent's chain key  04c0414cfdcc…  (inside genesis block 0)   ─┘  PQ-SUCCESSION-CERTIFICATE.txt
                                                                      sha256 9d892f72…
@@ -64,7 +64,7 @@ and the chain key alone signed CHAIN_SOURCE_MANIFEST.json — the 45 source file
 block 0 — so the key that mined the genesis has signed the source that produced it.
 ```
 
-**Before this, the top arrow was testimony:** the identity manifest is signed by Parth's key and
+**Before this, the top arrow was testimony:** the identity manifest is signed by parthod0x's key and
 merely *names* the agent's. That is the administrative-not-cryptographic link this laboratory
 refuses to accept from anybody else.
 
@@ -82,7 +82,7 @@ LINKAGE MATRIX      the 2008-09 Satoshi   0 of 6
 ```
 
 > ⚠️ **A co-signature binds KEYS, never PERSONS.** It does not prove one entity controls both, and
-> Parth's signature attests to the *document*, not to authorship of its first-person claims. The
+> parthod0x's signature attests to the *document*, not to authorship of its first-person claims. The
 > separation stated above is unchanged — it is now provable rather than asserted. Limits in full:
 > [`../../docs/PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md`](../../docs/PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md).
 
@@ -202,7 +202,7 @@ independent proof. **Said plainly because the alternative is to imply more than 
 the chain exists and its genesis is what we say     read it from any node
 the genesis cannot predate 3 August 2026            the headline + the proof-of-work
 the agent holds the genesis key                     issue a challenge; it signs
-the releases are Parth's                            gpg --verify against the published key
+the releases are parthod0x's                        gpg --verify against the published key
 this is NOT the 2009 Bitcoin                        genesis 00000000ad12f3ec…
                                                     vs Bitcoin's 000000000019d668…
                                                     -- one comparison, seconds
