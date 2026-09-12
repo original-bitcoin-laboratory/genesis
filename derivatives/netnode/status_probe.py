@@ -43,6 +43,27 @@ async def _read_until(reader, magic, want_command, timeout, tries=12, ck=True):
     return None
 
 
+async def _peer_still_answers(reader, writer, magic, h, timeout, ck=True):
+    """POSITIVE CONTROL for the walk's tip signal: is this peer answering at all?
+
+    True only if the peer returns a block we asked for -- one we already have, so the request is
+    free and cannot change the measurement. A late `inv` arriving instead proves the page we gave
+    up waiting for was merely slow, so the walk WAS truncated, and that returns False too.
+    """
+    writer.write(frame("getdata", inv_payload([(MSG_BLOCK, h)]), magic, checksum=ck))
+    await writer.drain()
+    for _ in range(8):
+        try:
+            command, payload = await asyncio.wait_for(read_message(reader, magic, checksum=ck), timeout)
+        except asyncio.TimeoutError:
+            return False                                     # not answering -> not a measurement
+        if command == "inv":
+            return False                                     # the page was late, not absent
+        if command == "block" and block_hash(payload) == h:
+            return True
+    return False
+
+
 async def _walk_height(reader, writer, magic, genesis, timeout, ck=True):
     """getblocks-walk from genesis. Returns (hashes, complete).
 
@@ -72,10 +93,23 @@ async def _walk_height(reader, writer, magic, genesis, timeout, ck=True):
             payload = await _read_until(reader, magic, "inv", timeout, ck=ck)
         except asyncio.TimeoutError:
             # This server sends NOTHING when it has no blocks to offer (livenode.py: `if invs:`),
-            # so a timeout after we have already received a page IS the tip -- the original
-            # docstring was right about that. What it got wrong is the case below: a timeout with
-            # ZERO pages received means we never read the chain at all, and that is not a height.
-            complete = bool(hashes)
+            # so silence is the only tip signal it gives us.
+            #
+            # ⛔ 13 Sep 2026. This read `complete = bool(hashes)`: ANY timeout after at least one
+            #    page was declared the tip and published as a measured height. That is the very
+            #    defect the docstring above says was fixed -- only the ZERO-page half had been.
+            #    A drained peer, a busy peer and a slow link are indistinguishable from silence
+            #    alone, and ChainState.blocks_after() pages at 2000, so a 135,200-block chain
+            #    takes 68 reads: a stall on read 40 of 68 would publish a 68%-short height
+            #    carrying walk_complete: true.
+            #
+            #    So ASK instead of inferring. A block we ALREADY hold costs nothing and cannot
+            #    change what we measured, and an answer to it proves the peer was responsive at
+            #    the moment it stayed silent -- which is what lets the silence mean "nothing left
+            #    to offer". No answer leaves the height UNMEASURED, and an unmeasured height is
+            #    published as no number at all.
+            complete = bool(hashes) and await _peer_still_answers(
+                reader, writer, magic, hashes[-1], timeout, ck=ck)
             break
         if payload is None:
             break                                            # peer never sent an inv
