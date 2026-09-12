@@ -216,13 +216,25 @@ def header(version: int, prev: bytes, merkle: bytes, ntime: int, nbits: int, non
 
 
 def assemble_block(prev: bytes, txs: list[dict], ntime: int, nbits: int, mine, merkle_override: bytes | None = None,
-                   nonce_override: int | None = None) -> bytes:
-    mr = merkle_override if merkle_override is not None else merkle_root([txid(t) for t in txs])
-    prefix = le(1, 4) + prev + mr + le(ntime, 4) + le(nbits, 4)
-    nonce = nonce_override if nonce_override is not None else mine(prefix, nbits)
-    if nonce is None:
-        raise RuntimeError("miner returned no nonce")
-    return prefix + le(nonce, 4) + varint(len(txs)) + b"".join(ser_tx(t) for t in txs)
+                   nonce_override: int | None = None, max_tries: int = 32) -> bytes:
+    """Build the block and find its nonce. The 32-bit nonce space holds no solution with probability
+    about 1/e per search at any target, so when a search comes back empty the header is varied and
+    searched again — through the coinbase's extra nonce (scriptSig gets one more byte), as v0.1's
+    own miner does, or through nTime when the merkle root is pinned by the caller. At an easy target
+    the first search always succeeds, so exported vectors are unaffected."""
+    for attempt in range(max_tries):
+        mr = merkle_override if merkle_override is not None else merkle_root([txid(t) for t in txs])
+        prefix = le(1, 4) + prev + mr + le(ntime, 4) + le(nbits, 4)
+        nonce = nonce_override if nonce_override is not None else mine(prefix, nbits)
+        if nonce is not None:
+            return prefix + le(nonce, 4) + varint(len(txs)) + b"".join(ser_tx(t) for t in txs)
+        cb = txs[0] if txs else None
+        if merkle_override is None and cb is not None and cb["vin"][0]["prevhash"] == ZERO32 \
+                and len(cb["vin"][0]["script"]) < 100:
+            cb["vin"][0]["script"] += bytes([attempt & 0xFF])         # extra nonce, coinbase stays 2..100 bytes
+        else:
+            ntime += 1
+    raise RuntimeError(f"miner found no nonce in {max_tries} searches")
 
 
 def easy_mine(prefix76: bytes, nbits: int) -> int:
