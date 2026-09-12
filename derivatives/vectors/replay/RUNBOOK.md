@@ -40,8 +40,17 @@ Everything below is on the mini-PC host, in PowerShell, except the two steps mar
    `obl-replay-clone`. Then restart `bitcoin.exe` in the **original** VM so public mining continues.
 5. **Isolate the clone:** clone → Settings → Network → Adapter 1 → *Host-only Adapter*. No NAT, no bridge.
    The clone must not be able to reach `bitcoin.bitcoin-lab.org` or `chat.freenode.net`.
-6. **Boot the clone.** Start `bitcoin.exe` from `c:\bitcoin\bitcoin-0.1.3\`. It will fail to reach IRC and
-   keep retrying; that is fine. ***In the guest:*** Options → **uncheck Generate Coins**; allow inbound
+6. **Boot the clone and give it a name to resolve.** ***In the guest***, before starting the client, add to
+   `C:\Windows\System32\drivers\etc\hosts` (as administrator):
+   ```
+   127.0.0.1   chat.freenode.net
+   ```
+   then `ipconfig /flushdns`. **Without this the client crashes about one second after start** (exception
+   c0000005): `irc.cpp` calls `gethostbyname("chat.freenode.net")` and dereferences the result with no NULL
+   check, so a guest with no DNS takes an access violation in the IRC thread. That is 2009 behaviour, kept
+   as written; the hosts entry makes the name resolve to a port nobody answers, the IRC thread logs
+   `IRC connect failed` and returns, and the node runs. Then start `bitcoin.exe` from `c:\bitcoin\bitcoin-0.1.3\`.
+   Options → **uncheck Generate Coins**; allow inbound
    TCP 18026 (admin prompt: `netsh advfirewall firewall add rule name="bitcoin 18026" dir=in action=allow protocol=TCP localport=18026`);
    `ipconfig` for the clone's `192.168.56.x` address (CLONE_IP). Check the guest clock is within two hours of the host's.
 7. **Connection test** from the host, in `C:\obl-replay\derivatives\vectors`:
@@ -68,8 +77,9 @@ Everything below is on the mini-PC host, in PowerShell, except the two steps mar
 ## B. The 2009 binary — import the appliance
 
 Only when the OpenSSL 0.9.8 answer is wanted. Verify `obl-r4-nodes.ova` against `5C37A79E…`, import it
-(both guests), snapshot, give node A a second *Host-only* adapter, boot A then B, turn Generate Coins off
-in both, open TCP 8333 in each guest's firewall, and run:
+(both guests), snapshot, give node A a second *Host-only* adapter, boot A then B (their hosts files already
+map `chat.freenode.net` to node A's `mini_ircd`, which is what keeps the 2009 client from the crash in A.6),
+turn Generate Coins off in both, open TCP 8333 in each guest's firewall, and run:
 
 ```
 python replay\replay.py --chain 2009 --target 2009-fbcac071-openssl-0.9.8 --node A_IP --witness B_IP --out replay\results\2026-09-DD-2009

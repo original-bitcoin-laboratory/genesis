@@ -178,6 +178,15 @@ so the only lever is the client's own /proxy option, which leaves addrLocalHost 
 it fall back to a random nickname. Everything else in the client is equally period-accurate: no
 encryption, no authentication, and a wallet.dat written in the clear.
 
+And if chat.freenode.net does not resolve at all, the client crashes about one second after start
+(exception c0000005, in ThreadIRCSeed): irc.cpp dereferences the result of gethostbyname with no
+NULL check. So on a machine with no DNS -- an isolated VM, a host-only network -- add a hosts-file
+line mapping chat.freenode.net to any address (127.0.0.1 will do) and it runs: the IRC thread logs
+"IRC connect failed" and gives up. This is 2009 behaviour, preserved as written, and recorded here
+because it looks like a network problem and is not one. Found 13 September 2026 while isolating a
+clone of the mining node; confirmed against the binary at offset 0x5378 (mov eax,[eax+0xc] on the
+hostent pointer, i.e. h_addr_list of NULL).
+
 NOT MONEY. Nothing is sold, offered, priced or traded by the maintainers. No premine of value, no token.
 Experimental research artifact.
 Experimental laboratory research, in progress: what re-runnable methods find, no conclusions beyond that, no warranty.
