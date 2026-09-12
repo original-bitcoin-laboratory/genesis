@@ -27,24 +27,37 @@ from wire01 import (MAGIC_2009, MSG_BLOCK, MSG_TX, frame, getblocks_payload, inv
 
 
 def model_spend_verifier():
-    """The lab's full-vocabulary EvalScript (../model) as a VerifySignature hook, when importable; None
-    otherwise, in which case the from-spec subset applies and full-vocabulary spends are rejected as
-    'unsupported' rather than graded."""
+    """A VerifySignature hook: the from-spec interpreter for everything it covers (P2PK, multisig, the
+    plain opcodes), and the lab's full-vocabulary model (../model) for the rest, when importable.
+
+    The from-spec engine goes first on purpose. The model's signature check imports `cryptography`
+    lazily inside the call, so on a host without that package a P2PK spend would raise ImportError at
+    verification time; an earlier version of this hook swallowed every exception as "invalid" and the
+    replay's local validator then refused a perfectly good fee block (first live run, 13 Sep 2026).
+    Now a model failure that is not a verdict raises Unsupported, which callers record as "unknown".
+    Returns None if the model cannot be imported at all."""
     try:
         sys.path.insert(0, str(HERE.parent.parent / "model"))
         import cscript                                                  # noqa: E402
+        from evalscript_model import ScriptError                        # noqa: E402
         from spend import verify_spend as model_verify_spend            # noqa: E402
         from tx_sighash import Tx, TxIn, TxOut                          # noqa: E402
     except Exception:                                                   # noqa: BLE001
         return None
 
     def verifier(script_sig: bytes, script_pubkey: bytes, tx: dict, n_in: int) -> bool:
+        try:
+            return spec.verify_spend(script_sig, script_pubkey, tx, n_in)
+        except spec.Unsupported:
+            pass
         ltx = Tx(tx["version"], [TxIn(v["prevhash"], v["n"], v["script"], v["seq"]) for v in tx["vin"]],
                  [TxOut(o["value"], o["script"]) for o in tx["vout"]], tx["locktime"])
         try:
             return bool(model_verify_spend(cscript.parse(script_sig), cscript.parse(script_pubkey), ltx, n_in))
-        except Exception:                                               # noqa: BLE001 — a parse failure is "invalid"
+        except (ValueError, ScriptError, IndexError):                   # a real script/parse verdict: invalid
             return False
+        except Exception as e:                                          # noqa: BLE001 — missing package etc.: not a verdict
+            raise spec.Unsupported(f"model engine unavailable for this spend: {e.__class__.__name__}: {e}")
     return verifier
 
 
