@@ -13,6 +13,7 @@
 /r3-evidence/
 /r4-stage/
 /r4-evidence/
+/r5-evidence/
 # Bitcoin chain: same rule -- raw captured bytes never enter the repo, only their hashes
 /bitcoin-evidence/
 

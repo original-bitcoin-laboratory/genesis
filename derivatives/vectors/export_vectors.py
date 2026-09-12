@@ -378,10 +378,16 @@ def export_checksig() -> dict:
                         "script_sig_hex": ss.hex(), "script_pubkey_hex": v["script_pubkey"].hex(),
                         "tx_hex": spec.ser_tx(tx).hex(), "n_in": 0,
                         "expected_strict_der": v["expected_strict_der"], "expected_model": model,
-                        "expected_binary": v["expected_binary"]})
+                        "expected_binary": v["expected_binary"],
+                        "witnessed": {t: w["verdicts"].get(v["label"]) for t, w in recipes.WITNESSED.items()}})
+    for t, w in recipes.WITNESSED.items():
+        for v in vectors:
+            if v["expected_binary"] is not None:
+                assert v["witnessed"][t] == v["expected_binary"], (t, v["label"])   # a witnessed value never contradicts a stated one
     return {
         "schema": SCHEMA,
         "suite": "checksig",
+        "witnessed_targets": {t: {k: w[k] for k in ("binary_sha256", "openssl", "run")} for t, w in recipes.WITNESSED.items()},
         "rule": ("VerifySignature (script.cpp:1126): EvalScript(scriptSig || OP_CODESEPARATOR || scriptPubKey) with "
                  "the spending tx and nIn; valid iff execution completes and CastToBool(top). OP_CHECKSIG "
                  "(script.cpp:881 CheckSig, nHashType 0): sig empty -> false; hashType = last byte; DER = the rest; "
@@ -391,7 +397,9 @@ def export_checksig() -> dict:
                  "EXTRA element; each signature is matched against the keys in order without backtracking. "
                  "The three expected_* columns: expected_strict_der = this rule with a strict DER parser; "
                  "expected_model = the lab's Python model (OpenSSL 3 via `cryptography`); expected_binary = the "
-                 "frozen 2009 bitcoin.exe (OpenSSL 0.9.8), null until recorded by replay/."),
+                 "frozen 2009 bitcoin.exe (OpenSSL 0.9.8), null until recorded by replay/. `witnessed` holds the "
+                 "verdict each named binary actually gave when the vector was replayed against it (see "
+                 "witnessed_targets)."),
         "oracle": "model/spend.py + tx_sighash.SigChecker (== port/checksig_e2e.cpp); the binary column is the VM's",
         "test_keys": {k["label"]: {"priv_hex": f"{k['priv']:064x}", "pub_sec_hex": k["sec"].hex()}
                       for k in (key, wrong, kb)},

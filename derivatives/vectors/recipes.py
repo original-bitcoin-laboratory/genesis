@@ -128,6 +128,24 @@ def _der_negative_r(der: bytes) -> bytes:
     return b"\x30" + bytes([len(body)]) + body
 
 
+# Verdicts WITNESSED on a running binary, by target label. Written into checksig.json beside the
+# authored columns; never authored by hand. Source: replay/results/<run>/results.json, graded.
+WITNESSED = {
+    "release-v0.1.3-openssl-1.0.2u": {
+        "binary_sha256": "c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d",
+        "openssl": "1.0.2u",
+        "run": "2026-09-13, isolated full clone of the mining VM, chain 2026 at height 963",
+        "verdicts": {
+            "canonical_low_s": True, "high_s": True, "wrong_key": False, "hashtype_byte_mismatch": False,
+            "hashtype_zero": True, "sighash_none": True, "sighash_single": True, "sighash_all_anyonecanpay": True,
+            "empty_signature": False, "compressed_pubkey": True, "der_trailing_byte": False,
+            "der_long_form_length": False, "der_r_extra_leading_zero": False, "der_negative_r": False,
+            "multisig_1of2": True, "multisig_2of2_in_order": True, "multisig_2of2_reversed": False,
+        },
+    },
+}
+
+
 def build_sig_variants(key: dict, wrong_key: dict, key_b: dict) -> list[dict]:
     """Each entry: label, note, script_pubkey, scriptsig(tx, n_in) -> bytes, expected_strict_der,
     expected_binary (None = pending), and 'kind'."""
