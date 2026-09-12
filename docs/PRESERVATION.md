@@ -216,6 +216,12 @@ independently arrive at.
 |  | `bitcoin-0.1.3.tar.gz.asc` | `Qmev6Bn9dNL56cfdHcC26s412BJkpFDbRnVD2Rrth4TjXp` |
 |  | `SHA256SUMS` | `QmUk5XkdxWzaLcBvPXrsUfX2bXFjzgeFSxJZMMhreBoLYB` |
 |  | `SHA256SUMS.asc` | `QmTkA1rbhDcxhdfW4tPuAoQmVFQcY3fv6iMrpStHhjDxn6` |
+|  | `bitcoin-0.1.3.tar.gz.ots` | `QmRDaTwaGgVKv4GZjyydTN3sXLVW5oLVQCDwqFmTG9UMcd` |
+|  | `bitcoin-0.1.3.tar.gz.asc.ots` | `QmcTfGnmBAtLsAEWoAGcWD25sf4UZ7AM5hcvnxESdQVx3z` |
+|  | `SHA256SUMS.ots` | `QmfJtFBo13P2KeV4rRmrVY4ddrWAYAGinzWNNuF8njt35Y` |
+|  | `SHA256SUMS.asc.ots` | `QmUqmn6C9VKDpXGreowKSM65WFTJCezoFt3P1nosqoo9Q5` |
+|  | `SHA256SUMS.slhdsa` | `QmWstZvX9AdD9pFNM9H7CMgDaQoR859SP1skrwWNLVX4zR` |
+|  | `SHA256SUMS.slhdsa.ots` | `QmeYBM3q6gUqxaZMfq31mCPtJ8nuePVU18XuuswNhBe3j8` |
 
 
 | release | file | CID |
@@ -238,11 +244,15 @@ independently arrive at.
 |  | `obl-genesis-0.5.0.tar.gz.asc` | `QmdiYoPYcNACEvQCVVjNgyc8D54WHHcgMFVxnTAbRwysB1` |
 |  | `SHA256SUMS` | `QmeuSjNdCeT7VUiwSPKFLk8wiPEztJDhH3rT6cyrmLUzVE` |
 |  | `SHA256SUMS.asc` | `QmdEUSgAAC2mEjW5jdsxLpdUQYGoSGvHLJkuVLByKKRchC` |
+|  | `SHA256SUMS.slhdsa` | `QmPSTU89jUsUY2AEheWV4WusmpiMA8635htGuR3GLfzTTM` |
+|  | `SHA256SUMS.slhdsa.ots` | `QmUV9Gq1Cbd1viptYdNSdj4u8Zf2KkseWDqmmqQc9P3xwF` |
 | v0.4.0-experimental | `obl-genesis-0.4.0.tar.gz` | `QmYCW5TQffpasTKJbBAh7hppcmgkTVPXuS736d36ZXpxhE` |
 |  | `obl-genesis-0.4.0.tar.gz.asc` | `QmcFX3hULEMK5Fwfw9WLyGi2qKPLLpnakPWc8z5NKwov1S` |
 |  | `SHA256SUMS` | `QmUawqV9FfeZ6yaAuuQRiTuvhZf6q62uGUr8K2SqFkMVS1` |
 |  | `SHA256SUMS.asc` | `QmTNKkBUtm6vn1tpKUwjQuqeQtzp4AQA3fJfqD6iv2oAVS` |
 |  | `parthod0x-signing-key.asc` | `QmZ9oh6Gd4tstDorAdWdC2EJ1Jak2rwaVpfg3rUzCZhNio` |
+|  | `SHA256SUMS.slhdsa` | `QmccLdbnpvEfwWmGJZWvcJvfELz3jjwHHhu1Rn1vTYAEgr` |
+|  | `SHA256SUMS.slhdsa.ots` | `QmWPfV9dfQJgp8Hwjjg5sZdz7xq4ctr9b1cER53C9AZt5Z` |
 
 *(the table below continues with earlier releases)*
 
@@ -269,6 +279,8 @@ gateway — then check what comes back against `SHA256SUMS` from the release its
 |  | `bitcoin-0.1.1.tar.gz.asc` | `QmTQRrGbexanc14C7ygRQeCGXwXnCW55wYjLNXEmy3EWS9` |
 |  | `SHA256SUMS` | `QmS7cgPswk63jYJtZYbewvVwTXEMx44WciAjqEV3pzBfT4` |
 |  | `SHA256SUMS.asc` | `QmQ53LWCPWwzyJmEq44pHerv2wuAA5gTfu3ofCFbWubpbF` |
+|  | `SHA256SUMS.slhdsa` | `QmRaF2CxN7NkGUDJwP6MqGKJoJ9c4arS4ViXarSdMZkQFx` |
+|  | `SHA256SUMS.slhdsa.ots` | `QmaNLvBq89Jkm4cUqZiy2KCRe7FFNyKqx4157xYZ8cZKph` |
 | Bitcoin-v0.1.0 | `bitcoin-0.1.0.tar.gz` — withdrawn from the release and unpinned (its binary embedded the build machine's directory layout); hash and signatures stand | `QmXGG3KsrnTqFwvbDtZgsPncoAn4hRrNxN3tGiHKiXgwsW` |
 |  | `bitcoin-0.1.0.tar.gz.asc` | `Qmf5ov9Z4PNM9bTHAhcE5YpSu6wHyApXc3ptEEzca4bjuc` |
 |  | `SHA256SUMS` | `Qmaf8bxgYaVRCKuPhjLYjNKsJo2w83ZLkYfSgYJzqhuw2z` |
@@ -277,8 +289,9 @@ gateway — then check what comes back against `SHA256SUMS` from the release its
 The v0.5.0 and v0.4.0 rows above, and the Bitcoin-v0.1.3 rows, were added on 12 September 2026 after a
 reconciliation of the pinning account against this record: every CID was re-derived from the release bytes
 with a standard-library CIDv0 calculator that was first validated against four pins recorded here earlier.
-The `.ots` and `.slhdsa` files of releases before v0.7.0 (and satoshi-onchain before v1.2.0) were never pinned;
-they are being re-pinned by re-running the preservation workflow per tag, and will be recorded when done.
+The `.ots` and `.slhdsa` files of releases before v0.7.0 had never been pinned; they were pinned on 12 September
+2026 by re-running the preservation workflow per tag, and every CID the workflow reported equalled the one
+computed locally from the same bytes beforehand. The rows above include them.
 
 Everything preserved is **hash-anchored**, which is what makes redundancy safe: a mirror cannot silently
 drift, because the genesis, the release tarballs, and the evidence bundles all carry digests that a copy
