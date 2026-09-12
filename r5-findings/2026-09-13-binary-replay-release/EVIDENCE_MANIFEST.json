@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "evidence_level": "EXECUTED on the release client c3f15fc5 (v0.1 source + nine chain-separation substitutions, OpenSSL 1.0.2u) - NOT JAN09-EXECUTED",
+  "run": "2026-09-13-binary-replay-release",
+  "generated": "2026-09-13",
+  "evidence_dir": "r5-evidence/2026-09-13-binary-replay-release (gitignored)",
+  "file_count": 11,
+  "files": [
+    {
+      "path": "bitcoin.exe",
+      "size": 15529604,
+      "sha256": "c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d"
+    },
+    {
+      "path": "run1/clone-blk0001.dat",
+      "size": 217594,
+      "sha256": "b585b93f3f280f977d23f3e8b51467f7b9c85302501360c7e7bea9bc0e10e8eb"
+    },
+    {
+      "path": "run1/clone-debug.log",
+      "size": 27670305,
+      "sha256": "51c4531fbf53b5ffed201ead4c512a62e8b7bb9e455b7c5a2586be91a4bb938d"
+    },
+    {
+      "path": "run1/replay.log",
+      "size": 25482,
+      "sha256": "6fbbff8cff11b8ba78567b6a8e70acba1d55d69c8fcf53c2e87c74b07aa16dba"
+    },
+    {
+      "path": "run1/results.json",
+      "size": 60091,
+      "sha256": "3835efc6a71e2166b046bcd2a8727928e65bb4ce96bfbe663cb61dd1f2948ee1"
+    },
+    {
+      "path": "run1/state.json",
+      "size": 67173,
+      "sha256": "9b3a7b71c8abb0f21c05ef99fd320c006cb6ad5bc04bef061e9d3c6bba549a91"
+    },
+    {
+      "path": "run2/clone-blk0001.dat",
+      "size": 219830,
+      "sha256": "2f6b68b2c406d7d51a9d77ae4afcc929a3fa6b28e437c1c825592ea9cf26af9d"
+    },
+    {
+      "path": "run2/clone-debug.log",
+      "size": 27867013,
+      "sha256": "027fa81bd5ddcc5c35c999c978f04a979bd90834ed0f6968f8553c048dde7d2a"
+    },
+    {
+      "path": "run2/replay.log",
+      "size": 28657,
+      "sha256": "c20dc725f9d36f3c5698897dcf81bb3a1fe6b977f3910482bfe186077ac05b73"
+    },
+    {
+      "path": "run2/results.json",
+      "size": 60689,
+      "sha256": "eb2a5c7347a24509b09d29d453b2b7663a03c54c043e421b6a86f8fe04440b93"
+    },
+    {
+      "path": "run2/state.json",
+      "size": 67771,
+      "sha256": "224da855a8728d65a02c72593b6409d39ac38e306850c73628a1e81440b52110"
+    }
+  ],
+  "binary_under_test": {
+    "sha256": "c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d",
+    "openssl": "1.0.2u",
+    "target": "release-v0.1.3-openssl-1.0.2u"
+  }
+}
