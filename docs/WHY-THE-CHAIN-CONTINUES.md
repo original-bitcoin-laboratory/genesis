@@ -39,10 +39,10 @@ chain reaches that height, the code path has never executed outside a test harne
 in it has never run.** The laboratory's standard is `EXECUTED`, not `MODELLED` — that distinction is
 the reason this project exists rather than being a description of somebody else's software.
 
-⚠️ **And it is a genuine question, not a formality.** The retarget reads timestamps from the chain
+**It is a genuine question, not a formality.** The retarget reads timestamps from the chain
 and computes a new target from them. On a chain mined by a single node at wildly irregular intervals
 — our observed gaps run from minutes to hours — **the inputs are far outside anything the 2009
-network produced.** What v0.1 does with them is not obvious from reading it, and the honest way to
+network produced.** What v0.1 does with them is not obvious from reading it, and the way to
 find out is to run it.
 
 ## The cost, stated plainly
@@ -52,39 +52,39 @@ current height                64
 target                        2016
 blocks needed                 1,952
 observed cadence              ~105 min/block
-                              ⚠️ NOT A MEASUREMENT -- 10 exponential samples carry ~32% standard
+                              not a measurement: 10 exponential samples carry ~32% standard
                               error. It is an order-of-magnitude figure and nothing more.
-implied duration              roughly 4-5 MONTHS of continuous mining
+implied duration              roughly 4-5 months of continuous mining
 ```
 
 > **This is why the decision needed making rather than drifting.** Four months of a VM running
 > unattended is a real commitment, and it is only worth making for a stated result. **It now has
 > one.**
 
-## ⚠️ What "stopping" means, stated so it cannot be misread in twenty years
+## What "stopping" means
 
-**THE EXPERIMENT ends at 2016. THE MINING is not constrained by anything in this document.**
+**The experiment ends at height 2016. Mining is not constrained by this document.**
 
 ```
-THE EXPERIMENT    ends when the retarget fires. After that, further height is NOT a result,
-                  NOT evidence, and must not be presented as either.
+the experiment   ends when the retarget fires. After that, further height is not a result,
+                  not evidence, and must not be presented as either.
 
-THE MINING        is free. It may continue forever, stop tomorrow, pause for a year and
+the mining       is free. It may continue, stop tomorrow, pause for a year and
                   resume. Nothing here obliges it to run, and nothing here forbids it.
 ```
 
-> ★ **Naming a hypothesis constrains what may be CLAIMED, never what may be DONE.** The experiment
+> **Naming a hypothesis constrains what may be claimed, never what may be done.** The experiment
 > is a subset of the operator's freedom to run the chain, not a limit on it. **A chain that keeps
 > growing after its last hypothesis is answered is perfectly fine — it is simply not evidence, and
-> the honest word for it is maintenance rather than experiment.**
+> the word for it is maintenance rather than experiment.**
 
 **If the VM stops before 2016 for any reason, that is not a failure.** Every existing result stands
 — the append-only proof, the cross-validation, the custody separation, every binding. **This target
 adds one result; it does not put the others at risk.**
 
-## ★★ THE PREDICTION, pre-registered before the experiment runs
+## The prediction, stated before the run
 
-**Naming the hypothesis forced a calculation nobody had done, and the expected answer is a surprise
+**Naming the hypothesis forced a calculation we had not done, and the expected answer is a surprise
 worth stating in advance: the retarget will execute and change nothing.**
 
 ```
@@ -105,7 +105,7 @@ at ~105 min/block the chain is ~10.5x SLOWER than the 10-minute target, so the r
 **So the predicted result is a no-op**, and the cadence after 2016 stays ~105 min/block — which also
 means height 4032 is another ~147 days, not a cheap follow-on.
 
-> ### ⇒ What the experiment is worth, honestly, now that the answer is predictable
+> ### What the experiment is worth, now that the answer is predictable
 >
 > **Less than it looked, and still worth having.** What executing it proves:
 >
@@ -116,23 +116,19 @@ means height 4032 is another ~147 days, not a cheap follow-on.
 > the proof-of-work-limit clamp behaves -- the branch that makes this a no-op
 > ```
 >
-> ★★ **And the prediction is the valuable part.** A stated-in-advance expectation that is then
+> **The prediction is the valuable part.** A stated-in-advance expectation that is then
 > checked is stronger than any observation made afterwards. **If `nBits` is anything other than
-> `0x1d00ffff` at height 2016, this prediction is wrong and THAT is a significant finding** — far
+> `0x1d00ffff` at height 2016, this prediction is wrong and that is a significant finding** — far
 > more interesting than the expected pass.
->
-> ⚠️ **This is also why the target is worth keeping even though the outcome is dull:** the
-> calculation only happened because the hypothesis was named. **Momentum would never have produced
-> it.**
 
-## ⚠️ Nothing was watching for it — fixed 13 August 2026
+
+## Nothing was watching for it — fixed 13 August 2026
 
 **This document pre-registered a prediction and named a boundary, and then nothing observed either.**
 `retarget.py` is a MODEL — a line-for-line port of `GetNextWorkRequired` — not a monitor, and no
 scheduled job mentioned height 2016.
 
-> ★ **A pre-registered prediction that nobody is present to score is not an experiment. It is a
-> hope.** The chain mines at roughly 105 min/block, so the boundary is months out and the moment it
+> Nothing was scheduled to observe the boundary; that is fixed below. The chain mines at roughly 105 min/block, so the boundary is months out and the moment it
 > matters is a moment nobody would have been looking at.
 
 **`derivatives/retarget/retarget_watch.py`** now reads the published status feed, reports the
@@ -152,7 +148,7 @@ whether that computation matches an independent implementation of the same rule
 the binary binding across the boundary -- pre and post, same process if possible
 ```
 
-**And the honest negative:** if the retarget produces something surprising on a single-miner chain
+**And the negative:** if the retarget produces something surprising on a single-miner chain
 with irregular timestamps, **that is the finding**, and it gets published exactly as readily as a
 clean pass. A laboratory that only publishes the results it expected is not measuring anything.
 
@@ -160,12 +156,12 @@ clean pass. A laboratory that only publishes the results it expected is not meas
 
 ## The rule this makes explicit
 
-> ★ **A chain that keeps growing without a stated hypothesis is activity, not evidence.** Height by
+> **A chain that keeps growing without a stated hypothesis is activity, not evidence.** Height by
 > itself proves nothing after the first few blocks — it is the *specific rule that height unlocks*
 > that is worth waiting for.
 >
 > **Every future round of mining should be able to name what it is evidence for. Until height 2016,
-> the answer is "the difficulty retarget". After it, the honest answer is "nothing further", and the
+> the answer is "the difficulty retarget". After it, the answer is "nothing further", and the
 > mining should be described as maintenance rather than as an experiment.**
 
 **Not money.** No premine, no token, no sale, no price. Reaching height 2016 changes none of that.

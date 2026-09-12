@@ -68,10 +68,9 @@ keys gained since the block-4 backup   24     -- exactly blocks 5 to 28
 
 ```
 committed here          FINDINGS.md, the two binding JSONs, SHA256SUMS
-raw evidence            OBL-BACKUP/04-evidence/bitcoin-chain-evidence/2026-08-10-blocks5-28/
+raw evidence            offline cold backup (not published), evidence set 2026-08-10-blocks5-28
                         (datadir, debug.log, capture script, 33 screenshots) -- 45 files, sealed
-wallets  TIER-1         OBL-BACKUP/01-keys-SECRET/bitcoin-chain-wallets/
-                        wallet-clean-blk28-20260809.dat, bitcoin-node-1-wallet-live-blk28-20260809.dat
+wallets  TIER-1         offline key store (never published)
 binary                  not duplicated -- c3f15fc5... is already in derivatives/bitcoin/dist/
 ```
 
@@ -94,13 +93,13 @@ longer true, and closing it took one run:**
 ```
 the 2009 C++ client, in the VM          29 blocks   blk0001.dat 6,522 B
 netnode (Python), on a THIRD machine    29 blocks   blocks.dat  6,406 B
-                                        synced from the seed, 168.144.27.117:18026
+                                        synced from the seed, bitcoin.bitcoin-lab.org:18026
 identical block hashes                  29 / 29     mismatches: 0
 height 0   00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
 height 28  000000009b6d2e544e07e799362bd62d4a83dfb6146aa7d3be43ee16d800a4a8
 ```
 
-**Three machines, two implementations, one chain.** The VM mined it; the DigitalOcean seed relayed
+**Three machines, two implementations, one chain.** The VM mined it; the project's seed relayed
 and stored it; a Python node elsewhere pulled it from the seed and **independently validated every
 block, including the tip.** The Python node also **minted the genesis itself from the chain
 parameters** and arrived at the same hash before syncing anything.

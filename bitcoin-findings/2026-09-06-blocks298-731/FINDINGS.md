@@ -117,7 +117,7 @@ error lines                258        241 send error (peer dropped socket)
 
 ## Cross-check against the public seed
 
-The DigitalOcean seed `bitcoin.bitcoin-lab.org:18026` was asked for its inventory over the wire. It
+The seed `bitcoin.bitcoin-lab.org:18026` was asked for its inventory over the wire. It
 advertised **734 block hashes, heights 1–734**:
 
 ```
@@ -154,7 +154,7 @@ and no claim rests on which it is.
 ## Files
 
 The evidence set is sealed under
-`OBL-BACKUP/04-evidence/bitcoin-chain-evidence/2026-09-06-blocks298-731/SHA256SUMS` (137 files).
+the cold backup's own `SHA256SUMS` for evidence set "2026-09-06-blocks298-731" (137 files).
 This directory carries the two binding records — **including the mis-copied `pre`, kept exactly as
 it shipped so the defect stays visible** — this document, and their own `SHA256SUMS`.
 

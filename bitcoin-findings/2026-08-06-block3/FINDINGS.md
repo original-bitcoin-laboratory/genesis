@@ -1,6 +1,6 @@
 # Block 3 — the Bitcoin chain (genesis 00000000ad12f3ec…)
 
-Mined **2026-08-06 01:40:22 UTC** (07:10 IST). Verified from the raw `blk0001.dat`.
+Mined **2026-08-06 01:40:22 UTC**. Verified from the raw `blk0001.dat`.
 
 ```
 height 0  00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a  nonce   33394338

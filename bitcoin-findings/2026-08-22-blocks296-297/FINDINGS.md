@@ -82,7 +82,7 @@ touches consensus.
 
 ## Cross-check against the public seed
 
-The DigitalOcean seed `bitcoin.bitcoin-lab.org:18026` was asked for its inventory over the wire
+The seed `bitcoin.bitcoin-lab.org:18026` was asked for its inventory over the wire
 (version handshake → `getblocks` from a genesis-only locator → count the `inv`). It advertised
 **734 block hashes** and **heights 1–297 are identical to this capture** — same chain, no fork.
 
@@ -94,7 +94,7 @@ datadir/wallet.dat                       286,720 B   61d37063...   NOT identical
 ```
 
 **Every previous round's clean copy was byte-identical to the live file. This one is not** — the
-clean copy was taken at 00:36 local and the live file moved on until 00:41.
+clean copy was taken about five minutes before the live file's last write.
 
 ⇒ `wallet_custody.py` reads **the same key material from both**: 4,175 candidate 65-byte blobs,
 **294 valid points on secp256k1**, 293 of them coinbase payees, covering heights 1–297 in each file
@@ -121,7 +121,10 @@ externally-mined CHRN blocks that pay it.
 ## Files
 
 The evidence set is sealed under
-`OBL-BACKUP/04-evidence/bitcoin-chain-evidence/2026-08-22-blocks296-297/SHA256SUMS` (19 files).
+the cold backup's own `SHA256SUMS` for evidence set "2026-08-22-blocks296-297" (19 files).
 This directory carries the two binding records, this document, and their own `SHA256SUMS`.
 
 **NOT money.**
+
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

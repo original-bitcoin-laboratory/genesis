@@ -88,7 +88,7 @@ debug log is cumulative across sessions and ACCEPTED also counts blocks received
 
 ## Cross-check against the public seed, asked over the wire
 
-`bitcoin.bitcoin-lab.org:18026` → `168.144.27.117`, v0.1 handshake then `getblocks` from the genesis
+`bitcoin.bitcoin-lab.org:18026`, v0.1 handshake then `getblocks` from the genesis
 locator:
 
 ```
@@ -151,3 +151,7 @@ this repository                   FINDINGS.md, SHA256SUMS, the two binding JSONs
 
 Related: [previous round](../2026-08-12-blocks61-63/FINDINGS.md) ·
 [`CORRECTIONS.md`](../CORRECTIONS.md) · `verify/probe_seed_node.py`
+
+**NOT money.** No sale by us, no price set, we solicit no market; the units are counters, not BTC.
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

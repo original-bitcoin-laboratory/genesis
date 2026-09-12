@@ -98,7 +98,7 @@ exactly), but the *process* is not — so the binding pair here brackets the fin
 the one that produced the spend, and does not reach back over R4a/R4b. Those retain their own
 earlier binding. **A `pre`/`post` pair is only meaningful across one uninterrupted process.**
 
-**Clock note:** the guests run ~4–5 hours behind the host, so `debug.log` timestamps and the wallet
+**Clock note:** the guests' clocks are offset from the host's, so `debug.log` timestamps and the wallet
 dates are in guest time, while the binding JSONs record UTC. **A future reader comparing a screenshot
 clock against a log line should expect the offset and not read it as an inconsistency.**
 
@@ -124,7 +124,7 @@ grep -n "AcceptTransaction(): accepted f4309c" nodeA/debug.log nodeB/debug.log
 sha256sum -c SHA256SUMS
 ```
 
-**Raw bytes are gitignored** (`r4-evidence/`, cold copy in `OBL-BACKUP/04-evidence/r4-evidence/`).
+**Raw bytes are gitignored** (`r4-evidence/`, with an offline cold copy).
 `EVIDENCE_MANIFEST.json` and `SHA256SUMS` here hash all 104 captured files, including both
 `wallet.dat` — **the hashes are published; the bytes never are.** Same discipline as R3.
 

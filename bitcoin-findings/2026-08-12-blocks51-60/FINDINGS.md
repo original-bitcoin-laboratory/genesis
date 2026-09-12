@@ -94,11 +94,11 @@ sending: block            60      this node relayed ITS chain outward
 ```
 
 **All ten new blocks were mined locally. Nothing was accepted from a peer.** The peer remains the
-project's own DigitalOcean seed, confirmed live from the host at the time of writing:
+project's own seed, confirmed live from the host at the time of writing:
 
 ```
-bitcoin.bitcoin-lab.org  ->  168.144.27.117        DNS
-168.144.27.117:18026         TcpTestSucceeded True  (ICMP filtered, as expected on a droplet)
+bitcoin.bitcoin-lab.org  ->  (resolved)            DNS
+bitcoin.bitcoin-lab.org:18026         TcpTestSucceeded True  (ICMP filtered)
 ```
 
 ### Mining cadence — reported, and deliberately not over-read
@@ -126,7 +126,7 @@ long time. One VM at difficulty-1 finds a block when it finds one.
 validated every one of them.**
 
 ```
-python -m netnode --chain bitcoin --datadir <EMPTY> --no-listen --connect 168.144.27.117:18026
+python -m netnode --chain bitcoin --datadir <EMPTY> --no-listen --connect bitcoin.bitcoin-lab.org:18026
 ```
 
 ```

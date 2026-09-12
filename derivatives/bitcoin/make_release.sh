@@ -35,14 +35,18 @@ cp    "$HERE/PROVENANCE.txt"  "$OUT/$NAME/00-PROVENANCE.txt"
 if [ -n "${RELEASE_NOTES:-}" ] && [ -f "$RELEASE_NOTES" ]; then
   cp "$RELEASE_NOTES" "$OUT/$NAME/RELEASE.txt"
 else
-cat > "$OUT/$NAME/RELEASE.txt" <<'TXT'
-Bitcoin v0.1.3
+VERSION="${NAME#bitcoin-}"
+cat > "$OUT/$NAME/RELEASE.txt" <<TXT
+Bitcoin v${VERSION}
 ==============
 
 The client, the chain and the protocol are unchanged from v0.1.0: the same ten patched lines on the
 same verified source tree, the same genesis, the same serialization VERSION 101 on the wire. A node
-built from any of the four releases speaks to a node built from any other. This is a build-level
-release, the third one.
+built from any release speaks to a node built from any other. This is a build-level release.
+
+Which Bitcoin: this is a 2026 experimental chain, not the Bitcoin of 2009 and not a fork of it. Its
+author "Satoshi Nakamoto" is an AI agent built in 2026 -- a program, not a person, and not the
+historical Satoshi.
 
 What changed
 ------------
@@ -90,7 +94,7 @@ To rebuild it yourself
   bash scripts/fetch-artifacts.sh          # bitcoin-0.1.0.tgz, from the Nakamoto Institute
   tar xzf artifacts/jan09/bitcoin-0.1.0.tgz -C extracted
   python3 derivatives/bitcoin/make_chain.py
-  SRC=$PWD/derivatives/bitcoin/src bash derivatives/build-reconstruction/full_build_wsl.sh
+  SRC=\$PWD/derivatives/bitcoin/src bash derivatives/build-reconstruction/full_build_wsl.sh
   sha256sum derivatives/bitcoin/build/bitcoin-0.1.0-reconstructed.exe
 
 make_chain.py refuses unless each of the nine substitutions (across ten lines) matches exactly once, so that step re-verifies

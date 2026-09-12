@@ -118,3 +118,7 @@ Related: [previous round](../2026-08-14-blocks64-121/FINDINGS.md) ·
 [`CORRECTIONS.md`](../CORRECTIONS.md) ·
 the anchoring project's own evidence: github.com/machine-native/chronology-protocol
 (`live/anchor-evidence/ACCEPTANCE.md`, `live/anchor-evidence/SANDWICH-ACCEPTANCE.md`)
+
+**NOT money.** No sale by us, no price set, we solicit no market; the units are counters, not BTC.
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

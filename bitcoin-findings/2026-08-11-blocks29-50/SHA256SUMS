@@ -1,9 +1,9 @@
 05713adb1b592a24b324211df96a84837d573f04ec8136750b4d826823bf341d *EXECUTED_BINARY_BINDING_bitcoin-node-1_post.json
 fb5cabe0147d9d74c420e4929e078ad61092ac64cdabe8f6885cb835d99abae3 *EXECUTED_BINARY_BINDING_bitcoin-node-1_pre.json
-413bc28295562955c1c70f835e2cdb394ad35cf465a298adbd645820bd1c36a2 *FINDINGS.md
+b8396eeee62bf8cf85638097e7d311cd3a22b50b697f54c93314300a11310037 *FINDINGS.md
 
 # Held in the cold backup only -- raw bytes never enter this repository.
-# OBL-BACKUP/04-evidence/bitcoin-chain-evidence/2026-08-11-blocks29-50/
+# Held in the offline cold backup only -- raw bytes never enter this repository.
 # 28ef7ebfa9c9d19aebf1de14a25a2ffcff463e677fbf973638c7e619fcd33e99  block28onward/Annotation 2026-08-11 030450.png
 # 8fb10c8ab7091b2bb31fc41a488db0e46fc71f6e69ad82f999e24c44961dd4f6  block28onward/Annotation 2026-08-11 030510.png
 # 04513181fdd5a992b8600a88ab7c73443b2568588f8935b693cc64d83c5ddbfa  block28onward/blk0001-blk28onward-20260809.dat
@@ -63,3 +63,5 @@ fb5cabe0147d9d74c420e4929e078ad61092ac64cdabe8f6885cb835d99abae3 *EXECUTED_BINAR
 # d4640b4b302b595d2eb09ce68cdf337c7abff877229d66c27f22d977f757fe0d  screenshots/Screenshot 2026-08-11 030829.png
 # 651c4350d83fc9087b3e3f551e869c6d003b086f01bf2c43f9803d2cb46f17c3  screenshots/Screenshot 2026-08-11 030832.png
 # e5c47ec337330874e57111df657816215bd091c63a461b868023681cefb8181d  screenshots/Screenshot 2026-08-11 031056.png
+
+f2a1279f5011853240ae601cd574269964504fc7cecd35c151893d899fd9c52f *REVISION.txt

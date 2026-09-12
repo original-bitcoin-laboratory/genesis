@@ -1,6 +1,6 @@
 # Block 2 — the Bitcoin chain (genesis 00000000ad12f3ec…)
 
-Mined **2026-08-06 00:23:51 UTC** (05:53:51 IST) by `bitcoin-node-1`, after an unclean shutdown on
+Mined **2026-08-06 00:23:51 UTC** by `bitcoin-node-1`, after an unclean shutdown on
 5 August interrupted the first attempt. Verified here from the raw `blk0001.dat`, not from the
 client's display.
 
@@ -39,7 +39,7 @@ the first block on this chain minted by a binary a stranger can rebuild.**
 
 That is the 2009 source's own `VERSION = 101` (`serialize.h:22`), unchanged deliberately so nodes
 built from any release interoperate. It is not our release number. See
-`machine-satoshi/LICENCE-AND-ATTRIBUTION.md` (local).
+`derivatives/bitcoin/PROVENANCE.txt` in this repository.
 
 ## Files
 
@@ -47,8 +47,8 @@ built from any release interoperate. It is not our release number. See
 |---|---|
 | `blk0001.dat` | the chain at height 2, 724 bytes |
 | `EXECUTED_BINARY_BINDING_…_pre.json` / `_post.json` | the live-process bindings bracketing the block |
-| `screenshots/` | 11 captures, 06:04–06:16 IST: the post binding, clean exit, capture, relaunch, and the block-3 pre binding |
-| *(wallet held separately)* | `01-keys-SECRET/bitcoin-chain-wallets/wallet-clean-blk2-20260806.dat` — **Tier 1, never publish** |
+| `screenshots/` | 11 captures over twelve minutes: the post binding, clean exit, capture, relaunch, and the block-3 pre binding |
+| *(wallet held separately)* | held in the project's offline key store — **Tier 1, never published** |
 
 The earlier phase of the same day — the crash, the cold copy, the 0.1.1→0.1.3 switch, and block 2
 being found at 05:53 — is in the sibling folder `2026-08-06-crash-recovery/` (44 screenshots).

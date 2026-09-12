@@ -1,8 +1,10 @@
 # Corrections to the block findings
 
 **Each findings directory is sealed** — its `SHA256SUMS` covers its own contents, including its
-`FINDINGS.md`. **Nothing in them is edited.** Where something in a sealed set turns out to be wrong,
-the correction is recorded here instead, so the seal keeps verifying and the error stays visible.
+`FINDINGS.md`. **Nothing in them is edited in place.** Where something in a sealed set turns out to be
+wrong, the correction is recorded here instead, so the seal keeps verifying and the error stays
+visible. Where wording must change, the set is *revised*: the old manifest and proof stay beside the
+new ones and the edit is listed here (`docs/EVIDENCE_POLICY.md`, "Sealed sets and revisions").
 
 > **Editing a sealed record to make it right destroys the only thing that made it worth sealing.**
 
@@ -206,6 +208,13 @@ here rather than edited in place**, exactly as the policy at the top of this fil
   incidental and will not be named in future sets.
 - **Local-clock times** appear in two early sets and in one later capture note, as already recorded
   above; UTC is the only time this project writes from here on.
+- **Revised the same day, under the revision rule adopted for it** (`docs/EVIDENCE_POLICY.md`): every set
+  named above was re-sealed as revision 2 by `scripts/revise_findings.py`, whose edit table is the exact
+  list of changes — internal folder labels, local-clock times and the hosting provider removed; the
+  seed named by hostname; the no-value line and the agent statement added where they were missing;
+  an unverifiable remark about a third party's tool removed; one pronoun. Revision 1's manifest and
+  proof remain in each set as `SHA256SUMS.r1` / `SHA256SUMS.r1.ots`. Block data, bindings and figures
+  are byte-identical between revisions.
 - **The r4 host-desktop screenshots** were removed from the repository on 12 September 2026, in line
   with the policy stated in `2026-08-05-block1/FINDINGS.md` (host captures are local evidence, not
   published deposits). Their `SHA256SUMS` and `INDEX.md` remain, so the frames stay identifiable and

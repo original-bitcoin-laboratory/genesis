@@ -76,8 +76,8 @@ Raw bytes in `bitcoin-evidence/2026-08-05-block1/` (gitignored). Hashes in `SHA2
 ### Screenshots
 
 28 desktop captures span the whole session, `21:13Z` to `22:46Z` — 19 before block 1 and 9 after.
-Their filenames carry local time (UTC+05:30); the manifest records each one's UTC instant, so the
-sequence is legible without knowing the operator's timezone. They corroborate the binding records
+Their filenames carry the capture host's local clock; the manifest records each one's UTC instant, so the
+sequence is legible from UTC alone. They corroborate the binding records
 from a second, independent direction:
 
 ```

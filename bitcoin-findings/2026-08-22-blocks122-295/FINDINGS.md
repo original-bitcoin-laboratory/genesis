@@ -143,7 +143,7 @@ derived from the file.** The log is a narrative; the chain is the record.
 
 ## Cross-check against the public seed — and a verifier that cried fork
 
-`bitcoin.bitcoin-lab.org:18026` → `168.144.27.117`, v0.1 handshake then `getblocks` from the genesis
+`bitcoin.bitcoin-lab.org:18026`, v0.1 handshake then `getblocks` from the genesis
 locator:
 
 ```
@@ -245,3 +245,6 @@ Related: [previous round](../2026-08-14-blocks64-121/FINDINGS.md) ·
 [the first reorganization](../2026-08-21-first-reorganization/FINDINGS.md) ·
 [`CORRECTIONS.md`](../CORRECTIONS.md) · `verify/verify_capture.py` · `verify/wallet_custody.py` ·
 `verify/probe_seed_node.py`
+
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

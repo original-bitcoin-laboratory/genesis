@@ -1,7 +1,7 @@
 # An invitation to run the earliest Bitcoin — and the chain built from it
 
 **Experimental. Educational. Not money.** This is an invitation to *operators*, not an offering. There
-is nothing here to buy, sell, or hold, and there never will be. Read [why](#the-one-rule-that-makes-all-of-this-safe) before deciding it's worth your time.
+is nothing here to buy, sell, or hold, and the maintainers will not offer any. Read [why](#the-one-rule-that-makes-all-of-this-safe) before deciding it's worth your time.
 
 ## What these are
 
@@ -10,7 +10,7 @@ is nothing here to buy, sell, or hold, and there never will be. Read [why](#the-
 - **Bitcoin** — **not a reconstruction.** It runs Satoshi’s released **January 2009 client itself**,
   on a genesis of its own, mined at the original difficulty‑1, its coinbase carrying the front page
   of the day it was mined. Its own network, its own signed release (`Bitcoin-v0.1.5`), and a chain it is
-  **still mining** — **every block after block 1 has been mined by the released client itself.** It does **not** interoperate
+  mined intermittently — **every block after block 1 has been mined by the released client itself.** It does **not** interoperate
   with the two below, and it has its own seed rather than sharing the crawler.
 
 **NOV08‑X** and **JAN09‑X** are faithful, executable **reconstructions** of the earliest Bitcoin —
@@ -27,7 +27,7 @@ The reconstructions are released as **candidates** — *a* Bitcoin, not *the* Bi
 distinction is the whole point, and it is made carefully in [`../../common/WHAT_IS_BITCOIN.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/WHAT_IS_BITCOIN.md)
 and [`../../common/RELEASE_AS_CANDIDATES.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/RELEASE_AS_CANDIDATES.md).
 
-## The honest claim (and the honest non‑claim)
+## The claim, and the non-claim
 
 - **We do not claim these are "the real Bitcoin."** "Which chain *is* Bitcoin" has **no factual
   answer** — BTC, BCH, BSV, and XEC all share one genesis and diverge by social convention, not by any
@@ -182,8 +182,7 @@ node's `SECURITY.md`.)
 
 - **Asking:** inspect the code, verify the genesis, run a node or a seed, and — if it interests you —
   keep it up and invite someone else.
-- **Not asking:** money, speculation, belief, or that you call it "the real Bitcoin." Logic and
-  science care about definition and truth, not popularity.
+- **Not asking:** money, speculation, belief, or that you call it "the real Bitcoin."
 
 A tool, never authority ([`../../common/AUTHORITY.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).
 **Not money.**

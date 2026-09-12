@@ -1,0 +1,5 @@
+Revision 2, 12 September 2026. Wording revised under the revision rule in docs/EVIDENCE_POLICY.md: internal folder
+labels, local-clock times and the hosting provider removed; no-value and agent statements made explicit
+where absent. Every edit is listed in bitcoin-findings/CORRECTIONS.md. Revision 1's manifest and proof
+are kept beside this one as SHA256SUMS.r1 and SHA256SUMS.r1.ots and still verify; block data, bindings and
+every figure are unchanged.

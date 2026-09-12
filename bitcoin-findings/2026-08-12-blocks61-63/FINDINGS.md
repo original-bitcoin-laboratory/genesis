@@ -16,7 +16,7 @@ magic                 f00ba726    unchanged
 links verified        63 of 63    each block's prev == the previous block's double-SHA256
 proof-of-work         64 of 64    every hash below the 0x1d00ffff target
 coinbase pubkeys      64 distinct one key per block -- v0.1 has NO keypool
-supply                3,200 BTC   50 x 64, no halving before 210,000
+supply                3,200 units  50 x 64 (no value assigned), no halving before 210,000
 tip (height 63)       000000001b3089823e7f7cf60a5f61167e2636a97443a219d24ea04da29d06eb
 ```
 
@@ -97,7 +97,7 @@ The capture arrived without a `netnode-crossvalidation/` directory, which every 
 can sync from the public seed.**
 
 ```
-python -m netnode --chain bitcoin --datadir <empty> --no-listen --connect 168.144.27.117:18026
+python -m netnode --chain bitcoin --datadir <empty> --no-listen --connect bitcoin.bitcoin-lab.org:18026
 ```
 
 **It minted the genesis ITSELF from the chain parameters before connecting to anything**, arriving
@@ -128,7 +128,7 @@ confirming the two blocks the seed advertised.
 
 ## The wallet — and the custody separation, re-verified
 
-Archived to `01-keys-SECRET/bitcoin-chain-wallets/wallet-clean-blk63-20260812.dat` (90,112 B,
+Archived to the offline key store (90,112 B,
 sha256 `7d477243cbd127fccab59bf828dfec5b41e133f980efcb6c35a84f3e82959bf9`). **Tier 1 — it stays in
 the backup and never enters a repository.** *(Confirmed by `git ls-files`: zero wallet or datadir
 files are tracked in either repo.)*
@@ -151,11 +151,11 @@ wallet keys not yet used                        1   v0.1 mints a key at find-tim
 
 ## The public seed, asked over the wire
 
-The DigitalOcean seed is the one component this project *operates* rather than publishes, so it is
+The seed is the one component this project *operates* rather than publishes, so it is
 queried rather than assumed — `verify/probe_seed_node.py`, a v0.1 handshake plus `getblocks`.
 
 ```
-bitcoin.bitcoin-lab.org  ->  168.144.27.117:18026     connected
+bitcoin.bitcoin-lab.org:18026     connected
 version reply             protocol 101, services 1     on magic f00ba726 -- our network
 inventory advertised      65 block hashes              heights 1-65 (re-probed after ingest)
 ```
@@ -184,16 +184,20 @@ cadence                   NOT reported. Three inter-block gaps carry far too muc
 ## Files
 
 ```
-OBL-BACKUP/04-evidence/bitcoin-chain-evidence/2026-08-12-blocks61-63/    34 files, all re-hashed
+cold backup, evidence set "2026-08-12-blocks61-63"    34 files, all re-hashed
   block61onward/datadir/            blk0001.dat, blkindex.dat, addr.dat, wallet.dat, database/
   block61onward/bitcoin-0.1.3/      bitcoin.exe, debug.log, db.log, the two binding JSONs
   block61onward/                    blk0001-blk61onward-*.dat, wallet-clean-*, pre/post JSON
   netnode-crossvalidation/          blocks.dat (66 blocks), peers.json -- added after ingest
   screenshots/                      19 PNGs
-OBL-BACKUP/01-keys-SECRET/bitcoin-chain-wallets/wallet-clean-blk63-20260812.dat
+offline key store (Tier 1, never published)
 ```
 
 **34 of 34 files re-hashed after the copy, 0 mismatches** (plus the 2 cross-validation files added here).
 
 Related: [previous round](../2026-08-12-blocks51-60/FINDINGS.md) ·
 [`CORRECTIONS.md`](../CORRECTIONS.md) · `verify/probe_seed_node.py`
+
+**NOT money.** No sale by us, no price set, we solicit no market; the units are counters, not BTC.
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

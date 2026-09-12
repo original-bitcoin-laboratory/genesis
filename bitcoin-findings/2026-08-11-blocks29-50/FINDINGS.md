@@ -87,12 +87,6 @@ if (-not $proc) { Write-Error "no running bitcoin.exe found in this guest"; exit
 no binding that looks complete and attests to nothing. **The capture refused to manufacture evidence
 it could not substantiate, and said so.**
 
-> **Contrast it with what this laboratory measured the same day in a third party's tooling**
-> (recorded in this project's internal research corpus, which is not published): a
-> verifier that checks its inputs against its own unvalidated input file and prints
-> `ALL CHECKS PASSED` while thirteen of them are provably spent.
->
-> **Two instruments, two failures to have the thing they wanted. One stopped. One reported success.**
 > An error message from a tool that should have data is worth more than a green tick from a tool
 > that never looked.
 
@@ -110,7 +104,7 @@ sending: block            52      this node relayed ITS chain outward
 
 **All twenty-two new blocks were mined locally. Nothing was accepted from a peer.**
 
-The peer is `168.144.27.117:18026` — **the project's own DigitalOcean seed**, already named in the
+The peer is `bitcoin.bitcoin-lab.org:18026` — **the project's own seed**, already named in the
 blocks 5–28 cross-validation. 4,424 log lines of repeated connect/disconnect.
 
 ### ★ A live demonstration of why the 2009 client adjusts network time carefully
@@ -168,13 +162,13 @@ Freenode simply gone — put a file called `addr.txt` next to…"*.
 validated every one of them.**
 
 ```
-python -m netnode --chain bitcoin --datadir <EMPTY> --no-listen --connect 168.144.27.117:18026
+python -m netnode --chain bitcoin --datadir <EMPTY> --no-listen --connect bitcoin.bitcoin-lab.org:18026
 ```
 
 ```
 the 2009 C++ client, in the VM       51 blocks   blk0001.dat  11,428 B
 netnode (Python), on the host        51 blocks   blocks.dat   11,224 B
-                                     synced from the seed, 168.144.27.117:18026
+                                     synced from the seed, bitcoin.bitcoin-lab.org:18026
 identical block hashes               51 / 51     mismatches: 0
 heights 29-50 (this run's new work)  22 / 22     validated independently
 height 0    00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
