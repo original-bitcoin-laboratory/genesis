@@ -279,7 +279,12 @@ BLOCK_CASE_ORDER = [
     "double_spend", "inflation", "immature", "bad_sig", "bad_merkle", "bad_pow", "two_coinbases",
     "first_tx_not_coinbase", "timestamp_too_early", "negative_output", "coinbase_script_too_short",
     "prevout_null_in_noncoinbase", "coinbase_overclaim", "wrong_nbits", "nbits_below_minimum", "orphan",
+    # added 13 Sep 2026: the wall-clock rule, transaction finality, and reorganisation
+    "timestamp_too_far_in_future", "v_nonfinal_locktime_accepted",
+    "side_branch_1", "side_branch_2_reorganizes", "side_branch_3_on_side_1", "side_branch_4_invalid_reorg_fails",
 ]
+# how many funding outputs the accepting cases consume (v_spend_with_fee, v_chain_in_block, v_nonfinal_locktime_accepted)
+FUNDING_OUTPUTS_CONSUMED = 3
 
 
 def build_block_case(name: str, ctx: dict) -> dict:
@@ -295,15 +300,15 @@ def build_block_case(name: str, ctx: dict) -> dict:
     fund = [ctx["funding"][i % len(ctx["funding"])] for i in range(6)]   # six slots; wrap when fewer remain (reruns)
     spk = p2pk(key["sec"])
 
-    def signed_spend(k, fi, value_out, script_out=OP_TRUE_SCRIPT, ht=SIGHASH_ALL):
+    def signed_spend(k, fi, value_out, script_out=OP_TRUE_SCRIPT, ht=SIGHASH_ALL, locktime=0, seq=0xFFFFFFFF):
         f = fund[fi]
-        tx = spend(f["txid"], f["n"], value_out, script_out)
+        tx = make_tx([(f["txid"], f["n"], b"", seq)], [(value_out, script_out)], locktime=locktime)
         der, _ = sign_p2pk(k, tx, 0, spk, ht)
         tx["vin"][0]["script"] = push(der + bytes([ht]))
         return tx
 
     def blk(txs, **kw):
-        return assemble_block(prev, txs, kw.pop("ntime", t), kw.pop("nbits", nbits), mine, **kw)
+        return assemble_block(kw.pop("prev", prev), txs, kw.pop("ntime", t), kw.pop("nbits", nbits), mine, **kw)
 
     def ok(raw, **extra):
         return {"raw": raw, "expect": "accept", "stage": "ConnectBlock", "reason": "ProcessBlock: ACCEPTED",
@@ -396,6 +401,40 @@ def build_block_case(name: str, ctx: dict) -> dict:
         raw = assemble_block(nowhere, [make_coinbase(h, [(sub, OP_TRUE_SCRIPT)])], t, nbits, mine)
         return {"raw": raw, "expect": "orphan", "stage": "ProcessBlock", "reason": "ProcessBlock: ORPHAN BLOCK",
                 "needs_pow": True}
+    if name == "timestamp_too_far_in_future":
+        # main.cpp:1164, the only wall-clock rule; checked before the coinbase and proof-of-work rules
+        return rej(blk([make_coinbase(h, [(sub, OP_TRUE_SCRIPT)])], ntime=ctx["now"] + 3 * 60 * 60, nonce_override=0),
+                   "CheckBlock", "CheckBlock() : block timestamp too far in the future", needs_pow=False, now=ctx["now"],
+                   note="nTime = now + 3h (the rule is > now + 2h; the extra hour absorbs clock drift between the harness "
+                        "and the node); the vector carries `now`, the clock the verifier must use")
+    if name == "v_nonfinal_locktime_accepted":
+        # v0.1 consults IsFinal only in CreateNewBlock and the wallet (main.cpp:2246, 2397, 2425), never in
+        # AcceptTransaction or ConnectBlock: a non-final transaction inside a block is accepted
+        s = signed_spend(key, 2, fund[2]["value"], locktime=999_999_999, seq=0)
+        return ok(blk([make_coinbase(h, [(sub, OP_TRUE_SCRIPT)]), s]), consumes=[2],
+                  note="nLockTime far in the future and nSequence 0 (not final by v0.1's own IsFinal); accepted anyway")
+    if name == "side_branch_1":
+        # same height as the tip, built on the tip's parent: indexed, not best (main.cpp:1097 compares heights)
+        parent = ctx["parent_of_tip"]
+        return {"raw": blk([make_coinbase(h - 1, [(ctx["subsidy_prev"], OP_TRUE_SCRIPT)], b"side-1")], prev=parent),
+                "expect": "side", "stage": "AddToBlockIndex", "reason": "not higher than the best chain", "needs_pow": True,
+                "note": "a competing block at the tip's own height; v0.1 keeps it in the index and does nothing else"}
+    if name == "side_branch_2_reorganizes":
+        # one higher than the tip, on the side branch: Reorganize disconnects the tip and connects the branch
+        return ok(blk([make_coinbase(h, [(sub, OP_TRUE_SCRIPT)], b"side-2")], prev=ctx["hashes"]["side_branch_1"]),
+                  note="height tip+1 on the side branch: *** REORGANIZE *** — the old tip is disconnected, side_branch_1 and this block connect")
+    if name == "side_branch_3_on_side_1":
+        # after the reorganisation the tip is side_branch_2 (parent side_branch_1); another block on side_branch_1 is a side block
+        return {"raw": blk([make_coinbase(h - 1, [(ctx["subsidy_prev"], OP_TRUE_SCRIPT)], b"side-3")], prev=ctx["hashes"]["side_branch_1"]),
+                "expect": "side", "stage": "AddToBlockIndex", "reason": "not higher than the best chain", "needs_pow": True}
+    if name == "side_branch_4_invalid_reorg_fails":
+        # one higher, on side_branch_3, carrying a double spend: Reorganize connects side_branch_3, fails on this block,
+        # rolls everything back and erases THIS block (main.cpp:1025-1037); side_branch_3 stays in the index; tip unchanged
+        s1 = signed_spend(key, 3, fund[3]["value"] - 1)
+        s2 = signed_spend(key, 3, fund[3]["value"] - 2)
+        return rej(blk([make_coinbase(h, [(sub, OP_TRUE_SCRIPT)], b"side-4"), s1, s2], prev=ctx["hashes"]["side_branch_3_on_side_1"]),
+                   "ConnectBlock", "Reorganize() : ConnectBlock failed", inner="ConnectInputs() : prev tx already used",
+                   note="the reorganisation is attempted and aborted; the previous tip stands")
     raise KeyError(name)
 
 

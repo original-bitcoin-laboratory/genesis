@@ -2,7 +2,7 @@
   "genesis_hash": "2d8c7536978c4aa7425da4dafa59962ec0f542cae3a040ece052e69c61af80b1",
   "oracle": "verify_vectors.Chain2009, written from main.cpp; agrees with ledger/, netnode/chainstate.py and validator-rs on the shared cases; the binary column comes from replay/",
   "pow_limit_nbits": "0x207fffff",
-  "rule": "Process the vectors in order against one state. ProcessBlock (main.cpp:1236): duplicate -> 'already have'. CheckBlock (main.cpp:1154), in this order: size limits; [nTime <= now+2h, a wall-clock rule not replayed]; vtx[0] must be coinbase (one input, null prevout = 32 zero bytes + n 0xffffffff); no other coinbase; every tx passes CheckTransaction (vin/vout non-empty, no negative nValue, coinbase scriptSig 2..100 bytes, non-coinbase inputs have non-null prevout); SetCompact(nBits) <= pow limit; hash <= SetCompact(nBits); hashMerkleRoot == BuildMerkleTree. Then: prev not in index -> ORPHAN (held, not rejected). AcceptBlock (main.cpp:1192): nTime > median of the last 11 block times ending at prev; nBits == GetNextWorkRequired(prev) (== prev.nBits below height 2016). The block enters the index. It becomes the best chain only if it extends the tip; then ConnectBlock (main.cpp:934): each tx via ConnectInputs in order \u2014 every input's prevout exists and is unspent (outputs of earlier txs in the same block count); a coinbase input is spendable only if (height-1) - coinbase_height >= 99; VerifySignature; sum(in) >= sum(out); then vtx[0].GetValueOut() <= (50 COIN >> ((height-1) // 210000)) + fees. A ConnectBlock failure ERASES the block from disk and from the index (main.cpp:1107-1113); the tip is unchanged. Best chain is chosen by height (main.cpp:1097). The exported chain uses pow limit 0x207fffff so it can be mined at export time (a NEW-EXP parameter): the 2009 binary would reject every one of these headers at 'nBits below minimum work'; replay/ rebuilds the same cases at 0x1d00ffff on the live chain. Scripts used: OP_TRUE (0x51) and P2PK.",
+  "rule": "Process the vectors in order against one state. ProcessBlock (main.cpp:1236): duplicate -> 'already have'. CheckBlock (main.cpp:1154), in this order: size limits; [nTime <= now+2h, a wall-clock rule not replayed]; vtx[0] must be coinbase (one input, null prevout = 32 zero bytes + n 0xffffffff); no other coinbase; every tx passes CheckTransaction (vin/vout non-empty, no negative nValue, coinbase scriptSig 2..100 bytes, non-coinbase inputs have non-null prevout); SetCompact(nBits) <= pow limit; hash <= SetCompact(nBits); hashMerkleRoot == BuildMerkleTree. Then: prev not in index -> ORPHAN (held, not rejected). AcceptBlock (main.cpp:1192): nTime > median of the last 11 block times ending at prev; nBits == GetNextWorkRequired(prev) (== prev.nBits below height 2016). The block enters the index. It becomes the best chain only if it extends the tip; then ConnectBlock (main.cpp:934): each tx via ConnectInputs in order \u2014 every input's prevout exists and is unspent (outputs of earlier txs in the same block count); a coinbase input is spendable only if (height-1) - coinbase_height >= 99; VerifySignature; sum(in) >= sum(out); then vtx[0].GetValueOut() <= (50 COIN >> ((height-1) // 210000)) + fees. A ConnectBlock failure ERASES the block from disk and from the index (main.cpp:1107-1113); the tip is unchanged. Best chain is chosen by height (main.cpp:1097): a block not higher than the best is indexed and left ('side'); a higher block whose parent is not the best goes through Reorganize (main.cpp:974-1053) \u2014 disconnect back to the fork, connect the new branch in order; a ConnectBlock failure there rolls everything back and erases the failing block and the rest of the branch. A vector may carry `now`, the wall clock for CheckBlock's nTime <= now + 2h rule (main.cpp:1164); without it that rule is not applied. IsFinal is never consulted on acceptance (only main.cpp:2246, 2397, 2425). The exported chain uses pow limit 0x207fffff so it can be mined at export time (a NEW-EXP parameter): the 2009 binary would reject every one of these headers at 'nBits below minimum work'; replay/ rebuilds the same cases at 0x1d00ffff on the live chain. Scripts used: OP_TRUE (0x51) and P2PK.",
   "schema": 1,
   "suite": "blocks",
   "test_keys": {
@@ -1375,6 +1375,85 @@
       "needs_pow": true,
       "reason": "ProcessBlock: ORPHAN BLOCK",
       "stage": "ProcessBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c30000919771099ee3210a79f481ab602963d55ee3e45d3c58dab07b0e73ba608ce7f97178c48115565ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "reject",
+      "label": "timestamp_too_far_in_future",
+      "needs_pow": false,
+      "note": "nTime = now + 3h (the rule is > now + 2h; the extra hour absorbs clock drift between the harness and the node); the vector carries `now`, the clock the verifier must use",
+      "now": 1700063000,
+      "reason": "CheckBlock() : block timestamp too far in the future",
+      "stage": "CheckBlock"
+    },
+    {
+      "after": {
+        "tip_height": 105,
+        "utxo_count": 111
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c3000091977bd093cf49645d10940a234634a54d1a0bbc54ee69b26b74af01db4c0ebbe422918e75465ffff7f20000000000201000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000010000000178a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc020000004847304402204703c6bc1bc38fa82651ad4dd95fcae1f53c2b000a9d29e134917f112223fe5e02202c3b4fba0080d0a1e109c990a968906c0d124a8d7b231aa45db9b969ab4d50760100000000010008af2f000000000151ffc99a3b",
+      "expect": "accept",
+      "label": "v_nonfinal_locktime_accepted",
+      "needs_pow": true,
+      "note": "nLockTime far in the future and nSequence 0 (not final by v0.1's own IsFinal); accepted anyway",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 105,
+        "utxo_count": 111
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c3000091977949b2ae19242b58f6f53c7bea27ae571565d6d030e2e09f41b8bea67080ba15e70e95465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff086900736964652d31ffffffff0100f2052a01000000015100000000",
+      "expect": "side",
+      "label": "side_branch_1",
+      "needs_pow": true,
+      "note": "a competing block at the tip's own height; v0.1 keeps it in the index and does nothing else",
+      "reason": "not higher than the best chain",
+      "stage": "AddToBlockIndex"
+    },
+    {
+      "after": {
+        "tip_height": 106,
+        "utxo_count": 112
+      },
+      "block_hex": "01000000fc1bc1327f1636cca7e8203cf3826024b3fbef27ab0af4078b502aff18b3882554e1d2ef7f67375d7b901e4801786ec4dd15a399dafc61a656d1349983b7069c70e95465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff086a00736964652d32ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "side_branch_2_reorganizes",
+      "needs_pow": true,
+      "note": "height tip+1 on the side branch: *** REORGANIZE *** \u2014 the old tip is disconnected, side_branch_1 and this block connect",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 106,
+        "utxo_count": 112
+      },
+      "block_hex": "01000000fc1bc1327f1636cca7e8203cf3826024b3fbef27ab0af4078b502aff18b38825fca10a27593257883f9eebee3aff3b3df26f6560dbc3f8c25700accc1195e34ec8eb5465ffff7f20030000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff086a00736964652d33ffffffff0100f2052a01000000015100000000",
+      "expect": "side",
+      "label": "side_branch_3_on_side_1",
+      "needs_pow": true,
+      "reason": "not higher than the best chain",
+      "stage": "AddToBlockIndex"
+    },
+    {
+      "after": {
+        "tip_height": 106,
+        "utxo_count": 112
+      },
+      "block_hex": "010000002ddcb8c987e104d5eaf2ef7ed1957efd90207c03b84e0db7b71db044f9aa8b53a57d180fde15cdbc5d31dc17addd524393c10db8ed0b3a5cd8586259b26c550ec8eb5465ffff7f20010000000301000000010000000000000000000000000000000000000000000000000000000000000000ffffffff086b00736964652d34ffffffff0100f2052a01000000015100000000010000000178a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc03000000484730440220766961e6b6e0f39badcabdc011bb549614f8a3ad7307cb4ac7360e6863e1ee9602207c02fcca0885636258747824132c728483cb9c49eec7f12da700455b25afe4fb01ffffffff01ff07af2f00000000015100000000010000000178a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc0300000048473044022055a1f3ab3f8fb5766ffcbbe68c30d587760bc9f8bd7560f8c7618eaec14369600220778fb57ddcadc23ab474300e58bc545849409e6909cf7e8a06a8cfebe3dcde0801ffffffff01fe07af2f00000000015100000000",
+      "expect": "reject",
+      "inner": "ConnectInputs() : prev tx already used",
+      "label": "side_branch_4_invalid_reorg_fails",
+      "needs_pow": true,
+      "note": "the reorganisation is attempted and aborted; the previous tip stands",
+      "reason": "Reorganize() : ConnectBlock failed",
+      "stage": "ConnectBlock"
     }
   ]
 }

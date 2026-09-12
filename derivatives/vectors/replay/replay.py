@@ -156,11 +156,12 @@ class Replay:
         """Send a block; read both signals. Also feed the local validator and compare."""
         h = spec.dsha256(raw[:80])
         prev_tip = self.chain.tip
+        locator = list(reversed(self.chain.main[-12:]))      # newest first; survives a reorganisation on the node
         self.peer.send("block", raw)
         served = self.peer.probe(MSG_BLOCK, h, self.genesis)
         in_main = False
         for _try in range(4):                     # the node answers getblocks on its SendMessages tick; be patient
-            after = self.peer.main_chain_after(prev_tip, timeout=2.0)
+            after = self.peer.main_chain_after(locator, timeout=2.0)
             if after:
                 in_main = h in after
                 break
@@ -170,11 +171,13 @@ class Replay:
         # the node holds, so one divergence cannot orphan every later case on the node's side.
         snapshot = copy.deepcopy(self.chain)
         try:
-            local = self.chain.process_block(raw)
+            local = self.chain.process_block(raw, now=self.now())
         except spec.Unsupported as e:
             local = {"verdict": None, "stage": None, "reason": f"unsupported locally: {e}"}
         local_extended = self.chain.tip == h
-        if local_extended != in_main:
+        local_verdict_side = local.get("verdict") == "side"
+        node_side = served and not in_main
+        if local_extended != in_main and not (local_verdict_side and node_side):
             self.chain = snapshot                       # follow the node
             self.chain.spend_verifier = snapshot.spend_verifier
             self.log(f"  local validator {'accepted' if local_extended else 'rejected'} {h[::-1].hex()[:16]} but the node "
@@ -182,8 +185,8 @@ class Replay:
                      f"local reason: {local['reason']}")
         obs = {"hash": h[::-1].hex(), "in_index": served, "in_main": in_main,
                "local": {"verdict": local["verdict"], "stage": local["stage"], "reason": local["reason"]},
-               "local_followed_node": local_extended == in_main}
-        if in_main:
+               "local_followed_node": local_extended == in_main or (local_verdict_side and node_side)}
+        if served:
             self.raw_blocks[h] = raw
         foreign = [x for x in after if x not in self.chain.index]
         if foreign:
@@ -321,28 +324,34 @@ class Replay:
 
     def phase_blocks(self) -> None:
         res = self.state.setdefault("results", {}).setdefault("blocks", {})
+        hashes: dict[str, bytes] = {k: bytes.fromhex(v["hash"])[::-1] for k, v in res.items()}
         for name in recipes.BLOCK_CASE_ORDER:
             if name in res:
                 continue
             exp = self.blocks_expect[name]
             self.refresh_tip()
             funding = self.unspent_p2pk_funding()        # whatever the node still holds unspent, in order
-            if len(funding) < 2:
-                raise RuntimeError("fewer than two unspent P2PK funding outputs remain; mine a new funding block (--redo fund)")
+            if len(funding) < recipes.FUNDING_OUTPUTS_CONSUMED:
+                raise RuntimeError(f"fewer than {recipes.FUNDING_OUTPUTS_CONSUMED} unspent P2PK funding outputs remain; "
+                                   "mine a new funding block (--redo fund)")
             last_cb = self.tip_coinbase()                # the newest coinbase is the immature one
             h = self.chain.height + 1
             nbits = self.chain.index[self.chain.tip]["bits"]
             ctx = {"prev": self.chain.tip, "height": h, "mtp": self.chain.median_time_past(self.chain.tip),
-                   "ntime": self.ntime_for_next(), "nbits": nbits, "pow_limit_nbits": self.pow_limit,
-                   "subsidy": self.chain.subsidy(self.chain.height), "key": self.bkey, "wrong_key": self.bwrong,
+                   "ntime": self.ntime_for_next(), "now": self.now(), "nbits": nbits, "pow_limit_nbits": self.pow_limit,
+                   "subsidy": self.chain.subsidy(self.chain.height), "subsidy_prev": self.chain.subsidy(self.chain.height - 1),
+                   "parent_of_tip": self.chain.index[self.chain.tip]["prev"], "hashes": hashes,
+                   "key": self.bkey, "wrong_key": self.bwrong,
                    "funding": funding, "last_cb": last_cb, "mine": self.mine}
             self.log(f"blocks: {name} (expect {exp['expect']} at {exp['stage']}){' — mining' if exp.get('needs_pow', True) else ''}")
             case = recipes.build_block_case(name, ctx)
             obs = self.submit_block(case["raw"], expect_accept=False)
+            hashes[name] = bytes.fromhex(obs["hash"])[::-1]
             # v0.1 AddToBlockIndex (main.cpp:1107-1113) ERASES a block whose ConnectBlock fails, from disk and
             # from mapBlockIndex, so every rejection — whatever its stage — leaves the same two signals as an
-            # orphan: not served, not on the main chain. Only acceptance is distinguishable from outside.
-            pred = {"accept": (True, True), "orphan": (False, False), "reject": (False, False)}[exp["expect"]]
+            # orphan: not served, not on the main chain. A 'side' block (not higher than the best) is indexed
+            # and served but not on the main chain. Only those three patterns are visible from outside.
+            pred = {"accept": (True, True), "orphan": (False, False), "reject": (False, False), "side": (True, False)}[exp["expect"]]
             obs.update(expected=exp["expect"], expected_stage=exp["stage"], expected_reason=exp["reason"],
                        predicted_signals={"in_index": pred[0], "in_main": pred[1]})
             obs["agree"] = (obs["in_index"], obs["in_main"]) == pred

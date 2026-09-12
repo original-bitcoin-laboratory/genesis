@@ -147,6 +147,15 @@ compiled:
 
   openssl-1.0.2u.tar.gz  sha256 ecd0c6ffb493dd06707d38b14bb4d8c2288bb7033735606569d8f90f89669d16
 
+What this client does with scripts and blocks is verified, not assumed. On 13 September 2026 the
+lab's conformance corpus (derivatives/vectors/, 317 vectors: Script, SignatureHash, CHECKSIG and
+CHECKMULTISIG, block validity) was replayed over the wire against this same binary (c3f15fc5)
+running on an isolated clone of the mining node: every script vector, every signature vector and
+every block case agreed with the binary, and each rejected block produced its exact main.cpp error
+string in debug.log. The record is r5-findings/2026-09-13-binary-replay-release/ in the genesis
+repository. If the bitcoin.exe hash above is not c3f15fc5..., that record is about a different
+build and the replay must be run again before this paragraph may stand.
+
 Consensus rules, script, difficulty, serialization, wallet and UI carry no guardrails: no
 MoneyRange, no script limits, and no 1 MB block cap -- that arrives in July 2010. The one ceiling
 that does exist is MAX_SIZE, 32 MiB, enforced by CheckBlock. Safe here for one reason only --

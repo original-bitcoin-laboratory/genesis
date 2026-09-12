@@ -59,7 +59,7 @@ def main(argv=None) -> int:
         for k, v in res.get("blocks", {}).items():
             e = expect[k]
             for needle in [e["reason"]] + ([e["inner"]] if "inner" in e else []):
-                if e["expect"] == "accept":
+                if e["expect"] in ("accept", "side"):
                     continue
                 found = re.search(pattern(needle), logs) is not None
                 report["log_checks"].append({"label": k, "needle": needle, "found": found})

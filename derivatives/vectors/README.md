@@ -1,7 +1,7 @@
 # Conformance vectors — the lab's differential corpus, exported as language-neutral JSON
 
 **Evidence level: `MODEL`, and EXECUTED against the release client.** On 13 September 2026 the
-corpus was replayed over the wire against this lab's release `bitcoin.exe` (`c3f15fc5…`, the v0.1
+corpus (then 317 vectors) was replayed over the wire against this lab's release `bitcoin.exe` (`c3f15fc5…`, the v0.1
 source with the nine chain-separation substitutions, OpenSSL 1.0.2u), running on an isolated full
 clone of the mining node with its chain at height 963: **136/136 script vectors, 17/17 signature
 vectors and 19/19 block cases agreed with the binary, and every one of the 19 rejected blocks
@@ -47,7 +47,7 @@ full-vocabulary EvalScript suite needs a complete Script interpreter, so it is r
 | `headers.json` | 80-byte header serialization, `dsha256`, `hash <= SetCompact(nBits)` | 4: both genesis headers (2009 and this lab's 2026 chain), each with a nonce+1 negative control | the executed 2009 binary (`r3-findings/run1`); `derivatives/bitcoin/net.py` |
 | `sighash.json` | `SignatureHash` (`script.cpp:818`): every hash type on both inputs, the two `return 1` cases, `OP_CODESEPARATOR` removal | 15 | `model/tx_sighash.py` == `port/sighash.cpp` (OpenSSL) |
 | `checksig.json` | `VerifySignature` / `CheckSig` / `OP_CHECKMULTISIG` (`script.cpp:881, 727, 1126`): canonical, high-S, wrong key, hash-type byte cases, compressed key, empty sig, three non-strict DER probes, three multisig layouts | 17, three verdict columns each | strict-DER rule; `model/spend.py`; the 2009 binary (via `replay/`) |
-| `blocks.json` | `CheckBlock` → orphan → `AcceptBlock` → `ConnectBlock` (`main.cpp:1154-1260, 772-870, 934-953`), in order, with `main.cpp`'s strings | 121: genesis, a funding block, 100 maturity blocks, 3 valid cases, 16 rejected cases | `verify_vectors.Chain2009`; agrees with `ledger/`, `netnode/chainstate.py`, `validator-rs` on the shared cases |
+| `blocks.json` | `CheckBlock` → orphan → `AcceptBlock` → `AddToBlockIndex` / `ConnectBlock` / `Reorganize` (`main.cpp:1154-1260, 772-870, 934-953, 1072-1149, 974-1053`), in order, with `main.cpp`'s strings; the wall-clock rule with a supplied clock; finality never consulted | 127: genesis, a funding block, 100 maturity blocks, 5 accepted, 2 side and 18 rejected cases, including a reorganisation that succeeds and one that is rolled back | `verify_vectors.Chain2009`; agrees with `ledger/`, `netnode/chainstate.py`, `validator-rs` on the shared cases |
 | `MANIFEST.sha256` | the seven files above | — | — |
 
 Every rule string inside the JSON is the complete statement needed to replay that file. Test keys are
@@ -94,9 +94,10 @@ This is what a second implementation written from the text is for.
 - **Not yet replayed against the frozen `bitcoin.exe`.** The binary is the oracle only for the two genesis
   headers, which it reproduces (`JAN09-EXECUTED`). Everything else is `MODEL`-level, agreed across the
   reimplementations. `replay/` is built and tested against a stand-in; the VM run is the remaining human step.
-- **The wall-clock rules** (`nTime <= now + 2h`) are not replayed from data.
-- **Retarget boundaries inside a block chain**, reorganisations, and the `nLockTime`/`IsFinal` rules are not
-  in `blocks.json`; the retarget arithmetic has its own suite.
+- **Retarget boundaries inside a block chain** and reorganisations between branches of *equal* height are
+  not in `blocks.json`; the retarget arithmetic has its own suite. (The wall-clock rule is replayed with the
+  clock the vector carries; a successful and a failed reorganisation, and the fact that v0.1 never consults
+  `IsFinal` on acceptance, have been in the corpus since 13 September 2026.)
 - **Full Script inside blocks.** `blocks.json` spends only `OP_TRUE` and P2PK outputs; the full vocabulary is
   `evalscript.json`'s job, and the replay spends every one of those scripts on the live chain.
 

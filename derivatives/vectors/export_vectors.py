@@ -427,10 +427,15 @@ def export_blocks() -> dict:
     gh = spec.dsha256(genesis[:80])
     chain = spec.Chain2009(EASY_NBITS, gh)
 
+    hashes: dict[str, bytes] = {}
+
     def submit(label: str, raw: bytes, expect: str, stage: str, reason: str, **extra):
-        r = chain.process_block(raw)
+        r = chain.process_block(raw, now=extra.get("now"))
         got = (r["verdict"], r["stage"], r["reason"])
         assert got == (expect, stage, reason), (label, got)
+        if "inner" in extra:
+            assert r.get("inner", "").startswith(extra["inner"]) or extra["inner"] in "".join(chain.log[-6:]), (label, r.get("inner"))
+        hashes[label] = r["hash"]
         v = {"label": label, "block_hex": raw.hex(), "expect": expect, "stage": stage, "reason": reason,
              "after": {"tip_height": chain.height, "utxo_count": len(chain.utxo)}, **extra}
         vectors.append(v)
@@ -451,10 +456,12 @@ def export_blocks() -> dict:
     for name in recipes.BLOCK_CASE_ORDER:
         h = chain.height + 1
         ctx = {"prev": chain.tip, "height": h, "mtp": chain.median_time_past(chain.tip), "ntime": ntime(h),
-               "nbits": EASY_NBITS, "pow_limit_nbits": EASY_NBITS, "subsidy": chain.subsidy(chain.height),
+               "now": ntime(h), "nbits": EASY_NBITS, "pow_limit_nbits": EASY_NBITS,
+               "subsidy": chain.subsidy(chain.height), "subsidy_prev": chain.subsidy(chain.height - 1),
+               "parent_of_tip": chain.index[chain.tip]["prev"], "hashes": hashes,
                "key": key, "wrong_key": wrong, "funding": funding, "last_cb": last_cb, "mine": recipes.easy_mine}
         case = recipes.build_block_case(name, ctx)
-        extra = {k: case[k] for k in ("note", "inner") if k in case}
+        extra = {k: case[k] for k in ("note", "inner", "now") if k in case}
         submit(name, case["raw"], case["expect"], case["stage"], case["reason"], needs_pow=case["needs_pow"], **extra)
     return {
         "schema": SCHEMA,
@@ -476,7 +483,12 @@ def export_blocks() -> dict:
                  "spendable only if (height-1) - coinbase_height >= 99; VerifySignature; sum(in) >= sum(out); then "
                  "vtx[0].GetValueOut() <= (50 COIN >> ((height-1) // 210000)) + fees. A ConnectBlock failure ERASES "
                  "the block from disk and from the index (main.cpp:1107-1113); the tip is unchanged. Best chain is "
-                 "chosen by height (main.cpp:1097). The exported chain uses pow limit "
+                 "chosen by height (main.cpp:1097): a block not higher than the best is indexed and left ('side'); a "
+                 "higher block whose parent is not the best goes through Reorganize (main.cpp:974-1053) — disconnect "
+                 "back to the fork, connect the new branch in order; a ConnectBlock failure there rolls everything back "
+                 "and erases the failing block and the rest of the branch. A vector may carry `now`, the wall clock for "
+                 "CheckBlock's nTime <= now + 2h rule (main.cpp:1164); without it that rule is not applied. IsFinal is "
+                 "never consulted on acceptance (only main.cpp:2246, 2397, 2425). The exported chain uses pow limit "
                  f"0x{EASY_NBITS:08x} so it can be mined at export time (a NEW-EXP parameter): the 2009 binary would "
                  "reject every one of these headers at 'nBits below minimum work'; replay/ rebuilds the same cases "
                  "at 0x1d00ffff on the live chain. Scripts used: OP_TRUE (0x51) and P2PK."),

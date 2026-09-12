@@ -60,7 +60,10 @@ def test_replay_end_to_end_against_fake_node(node):
                         "--log", str(d / "debug.log")], capture_output=True, text=True)
     assert g.returncode == 0, g.stdout + g.stderr
     assert "MISSING" not in g.stdout, g.stdout
-    assert results["final_height"] == 3 + 1 + 100 + 3           # history + funding + maturity + 3 valid cases
+    # history + funding + maturity + whatever the block cases add to the tip in the exported corpus
+    vecs = json.loads((HERE / "blocks.json").read_text())["vectors"]
+    pre = next(v for v in vecs if v["label"] == "mature_101")["after"]["tip_height"]
+    assert results["final_height"] == 3 + 1 + 100 + (vecs[-1]["after"]["tip_height"] - pre)
 
 
 def test_replay_is_resumable(node):

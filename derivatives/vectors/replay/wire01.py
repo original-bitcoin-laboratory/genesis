@@ -193,10 +193,12 @@ class Peer:
                 self.queue.append(m)
         raise TimeoutError("sentinel block was not served")
 
-    def main_chain_after(self, locator_hash: bytes, timeout: float = 3.0, stop: bytes = b"\x00" * 32) -> list[bytes]:
-        """getblocks from a locator holding one main-chain hash: the node answers with `inv`s of the
-        main-chain blocks after it (sent on its next SendMessages tick). Returns them in order."""
-        self.send("getblocks", getblocks_payload([locator_hash], stop))
+    def main_chain_after(self, locator, timeout: float = 3.0, stop: bytes = b"\x00" * 32) -> list[bytes]:
+        """getblocks from a locator (one hash, or a list newest-first): the node takes the first hash that is
+        on ITS main chain and answers with `inv`s of the main-chain blocks after it (sent on its next
+        SendMessages tick). Returns them in order. A list survives a reorganisation on the node's side."""
+        hashes_in = [locator] if isinstance(locator, (bytes, bytearray)) else list(locator)
+        self.send("getblocks", getblocks_payload(hashes_in, stop))
         hashes: list[bytes] = []
         deadline = time.time() + timeout
         while time.time() < deadline:

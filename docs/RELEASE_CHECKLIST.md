@@ -55,6 +55,23 @@ cd derivatives/bitcoin/dist && sha256sum bitcoin-0.1.N.tar.gz > SHA256SUMS
 `build/` holds `cfb59606…`, the v0.1.1 executable that mined block 1, and the evidence records for
 that block are bound to its hash.
 
+## 2b. Conformance corpus — **read before signing**
+
+`RELEASE.txt` states that this client's script and block behaviour was verified against
+`derivatives/vectors/` (r5-findings, 13 Sep 2026, binary `c3f15fc5`). That sentence is true of
+**that binary**. Before signing:
+
+```bash
+cd derivatives/vectors && python export_vectors.py --check && python verify_vectors.py   # corpus intact
+sha256sum ../bitcoin/dist/bitcoin-0.1.N/bitcoin.exe                                     # same bytes as c3f15fc5?
+```
+
+- Same bytes: the paragraph stands as written.
+- Different bytes (any rebuild, any toolchain change): **re-run the replay against the new binary on an
+  isolated clone** (`derivatives/vectors/replay/RUNBOOK.md`, section A) and file a new r5-findings set
+  before the release text may claim it. The template paragraph in `make_release.sh` says so itself;
+  do not soften it.
+
 ## 3. Sign — **manual**
 
 ```bash

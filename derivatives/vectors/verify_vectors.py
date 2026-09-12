@@ -551,6 +551,8 @@ class Chain2009:
         self.spent: dict[tuple, bytes] = {}       # outpoint -> spending txid (for "already used")
         self.mempool: dict[bytes, dict] = {}      # txid -> tx
         self.mempool_spends: dict[tuple, bytes] = {}
+        self.raw: dict[bytes, bytes] = {}         # hash -> raw block, for every indexed block (Reorganize re-reads them)
+        self.undo: dict[bytes, dict] = {}         # hash -> what ConnectBlock did, so DisconnectBlock can undo it
         self.log: list[str] = []
         # VerifySignature hook: None = the from-spec subset interpreter above; replay/fake2009.py plugs the
         # lab's full-vocabulary model in so it can grade every evalscript spend locally.
@@ -668,11 +670,13 @@ class Chain2009:
         return True, "accepted"
 
     # ---- CBlock::CheckBlock (main.cpp:1154) ----------------------------------------------------
-    def check_block(self, blk: dict) -> str | None:
+    def check_block(self, blk: dict, now: int | None = None) -> str | None:
         txs, f = blk["txs"], blk["fields"]
         if not txs or len(txs) > MAX_SIZE or len(blk["raw"]) > MAX_SIZE:
             return "CheckBlock() : size limits failed"
-        # nTime > GetAdjustedTime() + 2h is a wall-clock rule and is not replayed from data
+        # main.cpp:1164 — a wall-clock rule; replayed only when the caller supplies the clock
+        if now is not None and f["nTime"] > now + 2 * 60 * 60:
+            return "CheckBlock() : block timestamp too far in the future"
         if not is_coinbase(txs[0]):
             return "CheckBlock() : first tx is not coinbase"
         for tx in txs[1:]:
@@ -693,14 +697,14 @@ class Chain2009:
         return None
 
     # ---- ProcessBlock / AcceptBlock / ConnectBlock -----------------------------------------------
-    def process_block(self, raw: bytes) -> dict:
+    def process_block(self, raw: bytes, now: int | None = None) -> dict:
         blk = parse_block(raw)
         h, f = blk["hash"], blk["fields"]
         res = {"hash": h, "verdict": "reject", "stage": None, "reason": None}
         if h in self.index:
             res.update(verdict="duplicate", reason="ProcessBlock() : already have block")
             return res
-        e = self.check_block(blk)
+        e = self.check_block(blk, now)
         if e:
             self._err(e)
             self._err("ProcessBlock() : CheckBlock FAILED")
@@ -726,26 +730,93 @@ class Chain2009:
                 return res
         height = 0 if prev is None else self.index[prev]["height"] + 1
         self.index[h] = {"height": height, "prev": prev, "time": f["nTime"], "bits": f["nBits"], "main": False}
-        # AddToBlockIndex -> SetBestChain only for more work; with uniform nBits that means "extends the tip"
-        if prev is not None and prev != self.tip:
-            res.update(verdict="side", stage="AddToBlockIndex", reason="not more work than the best chain")
+        self.raw[h] = raw
+        # AddToBlockIndex (main.cpp:1097): a new best only if HIGHER than the current best
+        if height <= self.height:
+            res.update(verdict="side", stage="AddToBlockIndex", reason="not higher than the best chain")
             self.log.append("ProcessBlock: ACCEPTED")
             return res
-        e = self.connect_block(blk, height)
-        if e:
-            # main.cpp:1107-1113: a ConnectBlock failure erases the block from disk and from mapBlockIndex
-            del self.index[h]
-            self._err("AddToBlockIndex() : ConnectBlock failed")
-            self._err("AcceptBlock() : AddToBlockIndex failed")
-            self._err("ProcessBlock() : AcceptBlock FAILED")
-            res.update(stage="ConnectBlock", reason=e)
-            return res
-        self.index[h]["main"] = True
-        self.main.append(h)
-        self.log.append(f"SetBestChain: new best={h[::-1].hex()[:16]}  height={height}")
+        if prev is None or prev == self.tip:
+            e = self.connect_block(blk, height)
+            if e:
+                # main.cpp:1107-1113: a ConnectBlock failure erases the block from disk and from mapBlockIndex
+                del self.index[h]
+                del self.raw[h]
+                self._err("AddToBlockIndex() : ConnectBlock failed")
+                self._err("AcceptBlock() : AddToBlockIndex failed")
+                self._err("ProcessBlock() : AcceptBlock FAILED")
+                res.update(stage="ConnectBlock", reason=e)
+                return res
+            self.index[h]["main"] = True
+            self.main.append(h)
+        else:
+            e, inner = self.reorganize(h)
+            if e:
+                self._err("AddToBlockIndex() : Reorganize failed")
+                self._err("AcceptBlock() : AddToBlockIndex failed")
+                self._err("ProcessBlock() : AcceptBlock FAILED")
+                res.update(stage="ConnectBlock", reason=e, inner=inner)
+                return res
+        self.log.append(f"AddToBlockIndex: new best={h[::-1].hex()[:14]}  height={height}")
         self.log.append("ProcessBlock: ACCEPTED")
         res.update(verdict="accept", stage="ConnectBlock", reason="ProcessBlock: ACCEPTED")
         return res
+
+    def disconnect_block(self, h: bytes) -> None:
+        """DisconnectBlock (main.cpp): restore what the block spent, remove what it created."""
+        u = self.undo.pop(h)
+        for key in u["created"]:
+            self.utxo.pop(key, None)
+        for key, coin in u["spent"].items():
+            self.utxo[key] = coin
+            self.spent.pop(key, None)
+        for t in u["txids"]:
+            self.txindex.pop(t, None)
+        self.index[h]["main"] = False
+        assert self.main and self.main[-1] == h
+        self.main.pop()
+
+    def reorganize(self, h_new: bytes) -> tuple[str | None, str | None]:
+        """Reorganize (main.cpp:974-1053): find the fork, disconnect the current branch, connect the new
+        one in order. On a ConnectBlock failure the whole thing is rolled back (TxnAbort) and the failing
+        block and everything after it on the new branch are erased from the index. Returns (error, inner)."""
+        import copy as _copy
+        self.log.append("*** REORGANIZE ***")
+        pfork, plonger = self.tip, h_new
+        while pfork != plonger:
+            pfork = self.index[pfork]["prev"]
+            while self.index[plonger]["height"] > self.index[pfork]["height"]:
+                plonger = self.index[plonger]["prev"]
+        disconnect = []
+        cur = self.tip
+        while cur != pfork:
+            disconnect.append(cur)
+            cur = self.index[cur]["prev"]
+        connect = []
+        cur = h_new
+        while cur != pfork:
+            connect.append(cur)
+            cur = self.index[cur]["prev"]
+        connect.reverse()
+        snapshot = _copy.deepcopy((self.utxo, self.txindex, self.spent, self.main, self.undo, self.mempool,
+                                   self.mempool_spends, {k: v["main"] for k, v in self.index.items()}))
+        for hb in disconnect:
+            self.disconnect_block(hb)
+        for i, hb in enumerate(connect):
+            blk = parse_block(self.raw[hb])
+            e = self.connect_block(blk, self.index[hb]["height"])
+            if e:
+                self._err(e)
+                self.utxo, self.txindex, self.spent, self.main, self.undo, self.mempool, self.mempool_spends, mains = snapshot
+                for k, m in mains.items():
+                    self.index[k]["main"] = m
+                for hb2 in connect[i:]:
+                    del self.index[hb2]
+                    self.raw.pop(hb2, None)
+                return self._err("Reorganize() : ConnectBlock failed"), e
+            self.index[hb]["main"] = True
+            self.main.append(hb)
+        return None, None
 
     def connect_block(self, blk: dict, height: int) -> str | None:
         """ConnectBlock (main.cpp:934): every tx through ConnectInputs in order (fBlock), then the
@@ -767,18 +838,23 @@ class Chain2009:
                                    "coinbase": is_coinbase(tx)}
         if value_out(txs[0]) > self.subsidy(self.height) + fees:
             return "AddToBlockIndex() : ConnectBlock failed"      # main.cpp:953 returns false silently; the caller's line shows
+        undo = {"spent": {}, "created": [], "txids": []}
         for key, spender in pending_spent.items():
-            self.utxo.pop(key, None)
+            if key in self.utxo:
+                undo["spent"][key] = self.utxo.pop(key)
             pending.pop(key, None)
             self.spent[key] = spender
         for key, coin in pending.items():
             self.utxo[key] = coin
+            undo["created"].append(key)
         for tx in txs:
             t = txid(tx)
             self.txindex[t] = height
+            undo["txids"].append(t)
             self.mempool.pop(t, None)
             for vi in tx["vin"]:
                 self.mempool_spends.pop((vi["prevhash"], vi["n"]), None)
+        self.undo[blk["hash"]] = undo
         return None
 
 
@@ -893,7 +969,7 @@ def check_blocks() -> tuple[int, list[str]]:
     for v in d["vectors"]:
         n += 1
         try:
-            r = chain.process_block(bytes.fromhex(v["block_hex"]))
+            r = chain.process_block(bytes.fromhex(v["block_hex"]), now=v.get("now"))
         except Unsupported as e:
             fails.append(f"blocks {v['label']}: {e}")
             continue

@@ -184,7 +184,7 @@ class Fake2009:
                     self._broadcast_inv([(MSG_TX, h)], exclude=c)
             elif cmd == "block":
                 try:
-                    r = self.chain.process_block(payload)
+                    r = self.chain.process_block(payload, now=int(time.time()))   # GetAdjustedTime ~ the node's clock
                 except spec.Unsupported as e:
                     self.chain.log.append(f"ERROR: fake2009 cannot evaluate this block ({e})")
                     self._flush_log()
