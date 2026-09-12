@@ -22,14 +22,25 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 DERIV = HERE.parent
+sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(DERIV / "model"))
 sys.path.insert(0, str(DERIV / "retarget"))
 
 import cscript                                   # noqa: E402
 from evalscript_model import cast_to_bool, num, run   # noqa: E402
 import retarget                                  # noqa: E402
+import verify_vectors as spec                    # noqa: E402  (the from-spec primitives; cross-checked, never trusted alone)
+import recipes                                   # noqa: E402
+from tx_sighash import Tx, TxIn, TxOut, signature_hash as model_sighash   # noqa: E402
+from spend import verify_spend as model_verify_spend                        # noqa: E402
 
 SCHEMA = 1
+
+
+def _lab_tx(tx: dict) -> Tx:
+    """A from-spec tx dict as the lab model's Tx object."""
+    return Tx(tx["version"], [TxIn(v["prevhash"], v["n"], v["script"], v["seq"]) for v in tx["vin"]],
+              [TxOut(o["value"], o["script"]) for o in tx["vout"]], tx["locktime"])
 
 
 def dsha256(b: bytes) -> bytes:
@@ -295,12 +306,185 @@ def export_headers() -> dict:
 
 
 # ---------------------------------------------------------------------------------------------
+# 5. SignatureHash — script.cpp:818, every hash type, both inputs, and the two `return 1` cases
+# ---------------------------------------------------------------------------------------------
+
+def export_sighash() -> dict:
+    ka, kb = recipes.key_from_label("sighash-a"), recipes.key_from_label("sighash-b")
+    tx = recipes.make_tx([(hashlib.sha256(b"prev0").digest(), 0, b"", 0xFFFFFFFF),
+                          (hashlib.sha256(b"prev1").digest(), 1, b"", 0xFFFFFFFE)],
+                         [(50 * spec.COIN, recipes.p2pk(ka["sec"])), (10 * spec.COIN, recipes.OP_TRUE_SCRIPT)])
+    code = recipes.p2pk(kb["sec"])
+    names = {1: "ALL", 2: "NONE", 3: "SINGLE", 0x81: "ALL|ANYONECANPAY", 0x82: "NONE|ANYONECANPAY",
+             0x83: "SINGLE|ANYONECANPAY"}
+    cases = []
+    for n_in in (0, 1):
+        for ht in (1, 2, 3, 0x81, 0x82, 0x83):
+            cases.append((f"in{n_in}_{names[ht].lower().replace('|', '_')}", tx, code, n_in, ht, None))
+    one_out = recipes.make_tx([(v["prevhash"], v["n"], v["script"], v["seq"]) for v in tx["vin"]],
+                              [(tx["vout"][0]["value"], tx["vout"][0]["script"])])
+    cases.append(("in1_single_out_of_range_returns_1", one_out, code, 1, 3,
+                  "SIGHASH_SINGLE with nOut >= vout.size(): SignatureHash returns the integer 1 (script.cpp:851)"))
+    cases.append(("in2_out_of_range_returns_1", tx, code, 2, 1,
+                  "nIn >= vin.size(): SignatureHash returns the integer 1 (script.cpp:824)"))
+    code_sep = spec.push(kb["sec"]) + bytes([spec.OP_CODESEPARATOR, spec.OP_CHECKSIG])
+    cases.append(("codeseparator_removed_from_scriptcode", tx, code_sep, 0, 1,
+                  "OP_CODESEPARATOR inside the scriptCode is deleted before hashing, so this equals in0_all"))
+    vectors = []
+    for label, t, c, n_in, ht, note in cases:
+        got = spec.signature_hash(c, t, n_in, ht)
+        ref = model_sighash(c, _lab_tx(t), n_in, ht)
+        assert got == ref, label                          # from-spec == the lab model (== the C++ port)
+        v = {"label": label, "tx_hex": spec.ser_tx(t).hex(), "script_code_hex": c.hex(), "n_in": n_in,
+             "hash_type": ht, "digest_hex": got.hex()}
+        if note:
+            v["note"] = note
+        vectors.append(v)
+    assert vectors[-1]["digest_hex"] == vectors[0]["digest_hex"]
+    return {
+        "schema": SCHEMA,
+        "suite": "sighash",
+        "rule": ("SignatureHash(scriptCode, tx, nIn, nHashType) (script.cpp:818): if nIn >= vin.size() return 1 "
+                 "(as a 32-byte little-endian integer). Copy tx; delete every OP_CODESEPARATOR byte from "
+                 "scriptCode at opcode boundaries; set every input's scriptSig empty, then vin[nIn].scriptSig = "
+                 "scriptCode. If (nHashType & 0x1f) == SIGHASH_NONE (2): vout = [], and nSequence = 0 for every "
+                 "input except nIn. If == SIGHASH_SINGLE (3): if nIn >= vout.size() return 1; keep vout[0..nIn], "
+                 "set vout[k] for k < nIn to (nValue = -1, empty script), nSequence = 0 for inputs != nIn. If "
+                 "nHashType & 0x80 (ANYONECANPAY): vin = [vin[nIn]]. digest = dsha256(serialize(tx) || "
+                 "LE32(nHashType)). ECDSA signs/verifies digest as a big-endian integer."),
+        "oracle": "model/tx_sighash.py == port/sighash.cpp (OpenSSL, run_sighash.sh); re-derived here from the rule",
+        "vectors": vectors,
+    }
+
+
+# ---------------------------------------------------------------------------------------------
+# 6. CheckSig / VerifySignature — P2PK and CHECKMULTISIG spends, with the DER-leniency probes
+# ---------------------------------------------------------------------------------------------
+
+def export_checksig() -> dict:
+    key, wrong, kb = (recipes.key_from_label(x) for x in ("checksig-a", "checksig-wrong", "checksig-b"))
+    variants = recipes.build_sig_variants(key, wrong, kb)
+    vectors = []
+    for v in variants:
+        tx = recipes.spend(hashlib.sha256(b"funding:" + v["label"].encode()).digest(), 0, 1000, recipes.OP_TRUE_SCRIPT)
+        ss = v["scriptsig"](tx, 0)
+        if ss is None:
+            continue
+        tx["vin"][0]["script"] = ss
+        strict = spec.verify_spend(ss, v["script_pubkey"], tx, 0)
+        assert strict == v["expected_strict_der"], v["label"]          # the authored expectation vs the from-spec verifier
+        model = bool(model_verify_spend(cscript.parse(ss), cscript.parse(v["script_pubkey"]), _lab_tx(tx), 0))
+        vectors.append({"label": v["label"], "kind": v["kind"], "note": v["note"],
+                        "script_sig_hex": ss.hex(), "script_pubkey_hex": v["script_pubkey"].hex(),
+                        "tx_hex": spec.ser_tx(tx).hex(), "n_in": 0,
+                        "expected_strict_der": v["expected_strict_der"], "expected_model": model,
+                        "expected_binary": v["expected_binary"]})
+    return {
+        "schema": SCHEMA,
+        "suite": "checksig",
+        "rule": ("VerifySignature (script.cpp:1126): EvalScript(scriptSig || OP_CODESEPARATOR || scriptPubKey) with "
+                 "the spending tx and nIn; valid iff execution completes and CastToBool(top). OP_CHECKSIG "
+                 "(script.cpp:881 CheckSig, nHashType 0): sig empty -> false; hashType = last byte; DER = the rest; "
+                 "scriptCode = script from the last executed OP_CODESEPARATOR, with the pushed signature deleted "
+                 "(FindAndDelete); verify ECDSA over SignatureHash(scriptCode, tx, nIn, hashType) as a big-endian "
+                 "integer; any s in [1, n-1] is accepted. OP_CHECKMULTISIG: pop nKeys, keys, nSigs, sigs, then ONE "
+                 "EXTRA element; each signature is matched against the keys in order without backtracking. "
+                 "The three expected_* columns: expected_strict_der = this rule with a strict DER parser; "
+                 "expected_model = the lab's Python model (OpenSSL 3 via `cryptography`); expected_binary = the "
+                 "frozen 2009 bitcoin.exe (OpenSSL 0.9.8), null until recorded by replay/."),
+        "oracle": "model/spend.py + tx_sighash.SigChecker (== port/checksig_e2e.cpp); the binary column is the VM's",
+        "test_keys": {k["label"]: {"priv_hex": f"{k['priv']:064x}", "pub_sec_hex": k["sec"].hex()}
+                      for k in (key, wrong, kb)},
+        "vectors": vectors,
+    }
+
+
+# ---------------------------------------------------------------------------------------------
+# 7. Block validity — the 2009 acceptance rules on a small chain, with main.cpp's error strings
+# ---------------------------------------------------------------------------------------------
+
+EASY_NBITS = 0x207FFFFF
+T0 = 1_700_000_000
+
+
+def export_blocks() -> dict:
+    key, wrong = recipes.key_from_label("blocks-a"), recipes.key_from_label("blocks-wrong")
+
+    def ntime(h: int) -> int:
+        return T0 + 600 * h
+
+    vectors = []
+    gen_cb = recipes.make_coinbase(0, [(50 * spec.COIN, recipes.OP_TRUE_SCRIPT)], b"obl-vectors genesis")
+    genesis = recipes.assemble_block(recipes.ZERO32, [gen_cb], ntime(0), EASY_NBITS, recipes.easy_mine)
+    gh = spec.dsha256(genesis[:80])
+    chain = spec.Chain2009(EASY_NBITS, gh)
+
+    def submit(label: str, raw: bytes, expect: str, stage: str, reason: str, **extra):
+        r = chain.process_block(raw)
+        got = (r["verdict"], r["stage"], r["reason"])
+        assert got == (expect, stage, reason), (label, got)
+        v = {"label": label, "block_hex": raw.hex(), "expect": expect, "stage": stage, "reason": reason,
+             "after": {"tip_height": chain.height, "utxo_count": len(chain.utxo)}, **extra}
+        vectors.append(v)
+
+    submit("genesis", genesis, "accept", "ConnectBlock", "ProcessBlock: ACCEPTED",
+           note="the test chain's genesis; the validator takes it on its hash, as v0.1 takes hashGenesisBlock")
+    fund_cb = recipes.make_coinbase(1, [(8 * spec.COIN, recipes.p2pk(key["sec"]))] * 6)
+    submit("funding", recipes.assemble_block(chain.tip, [fund_cb], ntime(1), EASY_NBITS, recipes.easy_mine),
+           "accept", "ConnectBlock", "ProcessBlock: ACCEPTED",
+           note="six P2PK outputs to the test key; spendable once 100 blocks deep")
+    funding = [{"txid": spec.txid(fund_cb), "n": i, "value": 8 * spec.COIN} for i in range(6)]
+    last_cb = None
+    for h in range(2, 102):
+        cb = recipes.make_coinbase(h, [(50 * spec.COIN, recipes.OP_TRUE_SCRIPT)])
+        submit(f"mature_{h:03d}", recipes.assemble_block(chain.tip, [cb], ntime(h), EASY_NBITS, recipes.easy_mine),
+               "accept", "ConnectBlock", "ProcessBlock: ACCEPTED")
+        last_cb = {"txid": spec.txid(cb), "value": 50 * spec.COIN}
+    for name in recipes.BLOCK_CASE_ORDER:
+        h = chain.height + 1
+        ctx = {"prev": chain.tip, "height": h, "mtp": chain.median_time_past(chain.tip), "ntime": ntime(h),
+               "nbits": EASY_NBITS, "pow_limit_nbits": EASY_NBITS, "subsidy": chain.subsidy(chain.height),
+               "key": key, "wrong_key": wrong, "funding": funding, "last_cb": last_cb, "mine": recipes.easy_mine}
+        case = recipes.build_block_case(name, ctx)
+        extra = {k: case[k] for k in ("note", "inner") if k in case}
+        submit(name, case["raw"], case["expect"], case["stage"], case["reason"], needs_pow=case["needs_pow"], **extra)
+    return {
+        "schema": SCHEMA,
+        "suite": "blocks",
+        "pow_limit_nbits": f"0x{EASY_NBITS:08x}",
+        "genesis_hash": gh[::-1].hex(),
+        "test_keys": {k["label"]: {"priv_hex": f"{k['priv']:064x}", "pub_sec_hex": k["sec"].hex()} for k in (key, wrong)},
+        "rule": ("Process the vectors in order against one state. ProcessBlock (main.cpp:1236): duplicate -> "
+                 "'already have'. CheckBlock (main.cpp:1154), in this order: size limits; [nTime <= now+2h, a "
+                 "wall-clock rule not replayed]; vtx[0] must be coinbase (one input, null prevout = 32 zero bytes + "
+                 "n 0xffffffff); no other coinbase; every tx passes CheckTransaction (vin/vout non-empty, no "
+                 "negative nValue, coinbase scriptSig 2..100 bytes, non-coinbase inputs have non-null prevout); "
+                 "SetCompact(nBits) <= pow limit; hash <= SetCompact(nBits); hashMerkleRoot == BuildMerkleTree. "
+                 "Then: prev not in index -> ORPHAN (held, not rejected). AcceptBlock (main.cpp:1192): nTime > "
+                 "median of the last 11 block times ending at prev; nBits == GetNextWorkRequired(prev) (== prev.nBits "
+                 "below height 2016). The block enters the index. It becomes the best chain only if it extends the "
+                 "tip; then ConnectBlock (main.cpp:934): each tx via ConnectInputs in order — every input's prevout "
+                 "exists and is unspent (outputs of earlier txs in the same block count); a coinbase input is "
+                 "spendable only if (height-1) - coinbase_height >= 99; VerifySignature; sum(in) >= sum(out); then "
+                 "vtx[0].GetValueOut() <= (50 COIN >> ((height-1) // 210000)) + fees. A ConnectBlock failure leaves "
+                 "the block in the index with zero work and the tip unchanged. The exported chain uses pow limit "
+                 f"0x{EASY_NBITS:08x} so it can be mined at export time (a NEW-EXP parameter): the 2009 binary would "
+                 "reject every one of these headers at 'nBits below minimum work'; replay/ rebuilds the same cases "
+                 "at 0x1d00ffff on the live chain. Scripts used: OP_TRUE (0x51) and P2PK."),
+        "oracle": ("verify_vectors.Chain2009, written from main.cpp; agrees with ledger/, netnode/chainstate.py and "
+                   "validator-rs on the shared cases; the binary column comes from replay/"),
+        "vectors": vectors,
+    }
+
 
 SUITES = {
     "evalscript.json": export_evalscript,
     "retarget.json": export_retarget,
     "merkle.json": export_merkle,
     "headers.json": export_headers,
+    "sighash.json": export_sighash,
+    "checksig.json": export_checksig,
+    "blocks.json": export_blocks,
 }
 
 

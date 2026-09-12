@@ -1,0 +1,1380 @@
+{
+  "genesis_hash": "2d8c7536978c4aa7425da4dafa59962ec0f542cae3a040ece052e69c61af80b1",
+  "oracle": "verify_vectors.Chain2009, written from main.cpp; agrees with ledger/, netnode/chainstate.py and validator-rs on the shared cases; the binary column comes from replay/",
+  "pow_limit_nbits": "0x207fffff",
+  "rule": "Process the vectors in order against one state. ProcessBlock (main.cpp:1236): duplicate -> 'already have'. CheckBlock (main.cpp:1154), in this order: size limits; [nTime <= now+2h, a wall-clock rule not replayed]; vtx[0] must be coinbase (one input, null prevout = 32 zero bytes + n 0xffffffff); no other coinbase; every tx passes CheckTransaction (vin/vout non-empty, no negative nValue, coinbase scriptSig 2..100 bytes, non-coinbase inputs have non-null prevout); SetCompact(nBits) <= pow limit; hash <= SetCompact(nBits); hashMerkleRoot == BuildMerkleTree. Then: prev not in index -> ORPHAN (held, not rejected). AcceptBlock (main.cpp:1192): nTime > median of the last 11 block times ending at prev; nBits == GetNextWorkRequired(prev) (== prev.nBits below height 2016). The block enters the index. It becomes the best chain only if it extends the tip; then ConnectBlock (main.cpp:934): each tx via ConnectInputs in order \u2014 every input's prevout exists and is unspent (outputs of earlier txs in the same block count); a coinbase input is spendable only if (height-1) - coinbase_height >= 99; VerifySignature; sum(in) >= sum(out); then vtx[0].GetValueOut() <= (50 COIN >> ((height-1) // 210000)) + fees. A ConnectBlock failure leaves the block in the index with zero work and the tip unchanged. The exported chain uses pow limit 0x207fffff so it can be mined at export time (a NEW-EXP parameter): the 2009 binary would reject every one of these headers at 'nBits below minimum work'; replay/ rebuilds the same cases at 0x1d00ffff on the live chain. Scripts used: OP_TRUE (0x51) and P2PK.",
+  "schema": 1,
+  "suite": "blocks",
+  "test_keys": {
+    "blocks-a": {
+      "priv_hex": "a4adf01a00a8fe9c9ca3187fb385b7ba7e3d00918403437e83f2ea989c2c45bf",
+      "pub_sec_hex": "04e13c98daa8df95784e0ef1b384c8a85ac109775bb3c84aa8efe55e16f07cdffab9d4ca69f00d6c53e1f885b876571538706ff37ffa63a6d6676bc82e4b8dec6a"
+    },
+    "blocks-wrong": {
+      "priv_hex": "a1b2a92b40937cecce6ec584e8504ba07b9ca3b630b4141175e578ee158e6c1d",
+      "pub_sec_hex": "04c878116d7d08a6da4f90e4f41fecd42550dafaa399f5770fa1991bb4351c9f4d13533f79989ea335c308eef739ca1022f2ae55c5d4819c83feae1f9c7a23e73f"
+    }
+  },
+  "vectors": [
+    {
+      "after": {
+        "tip_height": 0,
+        "utxo_count": 1
+      },
+      "block_hex": "01000000000000000000000000000000000000000000000000000000000000000000000079729d2130acaf31192e74f4fb99bba15427b3394efc15b105cf04b00883875300f15365ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff1500006f626c2d766563746f72732067656e65736973ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "genesis",
+      "note": "the test chain's genesis; the validator takes it on its hash, as v0.1 takes hashGenesisBlock",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 1,
+        "utxo_count": 7
+      },
+      "block_hex": "01000000b180af619ce652e0ec40a0e3ca42f5c02e9659fadaa45d42a74a8c9736758c2d78a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc58f35365ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d01006f626c2d766563746f7273ffffffff060008af2f00000000434104e13c98daa8df95784e0ef1b384c8a85ac109775bb3c84aa8efe55e16f07cdffab9d4ca69f00d6c53e1f885b876571538706ff37ffa63a6d6676bc82e4b8dec6aac0008af2f00000000434104e13c98daa8df95784e0ef1b384c8a85ac109775bb3c84aa8efe55e16f07cdffab9d4ca69f00d6c53e1f885b876571538706ff37ffa63a6d6676bc82e4b8dec6aac0008af2f00000000434104e13c98daa8df95784e0ef1b384c8a85ac109775bb3c84aa8efe55e16f07cdffab9d4ca69f00d6c53e1f885b876571538706ff37ffa63a6d6676bc82e4b8dec6aac0008af2f00000000434104e13c98daa8df95784e0ef1b384c8a85ac109775bb3c84aa8efe55e16f07cdffab9d4ca69f00d6c53e1f885b876571538706ff37ffa63a6d6676bc82e4b8dec6aac0008af2f00000000434104e13c98daa8df95784e0ef1b384c8a85ac109775bb3c84aa8efe55e16f07cdffab9d4ca69f00d6c53e1f885b876571538706ff37ffa63a6d6676bc82e4b8dec6aac0008af2f00000000434104e13c98daa8df95784e0ef1b384c8a85ac109775bb3c84aa8efe55e16f07cdffab9d4ca69f00d6c53e1f885b876571538706ff37ffa63a6d6676bc82e4b8dec6aac00000000",
+      "expect": "accept",
+      "label": "funding",
+      "note": "six P2PK outputs to the test key; spendable once 100 blocks deep",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 2,
+        "utxo_count": 8
+      },
+      "block_hex": "01000000898f9cd4f41ae9fdf6cadf7db5d8b28f8e66d1353cb3e6f432f23f7bbf728d2f2ed9192a4e323660e45de1d4c6e94e997fbe42def5e4c67cd2e7cfdcd35fe610b0f55365ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d02006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_002",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 3,
+        "utxo_count": 9
+      },
+      "block_hex": "01000000a8c138a9623eafab611bb9150b83dc31647ed676b1de29a3f242ae91fab79f39a29279c8215be8ae680c31264ce462eede5c8fa58316dd33b48bb734b5033ab808f85365ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d03006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_003",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 4,
+        "utxo_count": 10
+      },
+      "block_hex": "010000006b62b14fa3ffbb0d417a3587e2b636026dd0377967fe39e895ecb3e5d487fb69f0b7bc6d0b193705a3c879aa536551f21a32efbcf6927740cb6646d2f6242b0e60fa5365ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d04006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_004",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 5,
+        "utxo_count": 11
+      },
+      "block_hex": "01000000a92e211e280645cd76696c4c7c157c7263d238b2417f2e3a9fe0667daacd5a0bb4b52eb9106acbf4334b5850a97d6d173d02d7b0478780f0e0b9127e3f051892b8fc5365ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d05006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_005",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 6,
+        "utxo_count": 12
+      },
+      "block_hex": "01000000e4a2d1f4f08875e0e604cb4818178dec555d20238bd52d125d6cb01f56186d64d2e21c4be9094184bd4135040878abfe1186fedfcd1c4ad7ae7d510a82844b4310ff5365ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d06006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_006",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 7,
+        "utxo_count": 13
+      },
+      "block_hex": "01000000e094527fcc2c4cd532b9d8c2bbca57eeb4fc2eb66c7ac7dc895a0cd3a7a2bb2eb6bb0cd8cfbb338215ff9408e67f8261f475f4154b2737582dd74aa84d72ffb668015465ffff7f20070000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d07006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_007",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 8,
+        "utxo_count": 14
+      },
+      "block_hex": "010000004a0d0617676097579b91020c6df18410b3a33cbae6940a66056106f66acb476af5932148fe0914dac13bf9e2eb92f19500f70e739c617ebb9dd9df2bbf5e3eadc0035465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d08006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_008",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 9,
+        "utxo_count": 15
+      },
+      "block_hex": "010000008cbf66490888428c9d88688e586f7738e2e2e2a18313146c15c6eaca76a81f5fcabf0add74ddf0c0ed64fd7abba478e03636a9741367ed6abeb5e1a385826f4018065465ffff7f20050000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d09006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_009",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 10,
+        "utxo_count": 16
+      },
+      "block_hex": "01000000f2ddde65a7e45460a6e752c3e8a1ed36390e97107f83d130b2c7649813fc36418cb07fa659bf53260b194e2ba9f46d3d36de00426bc3d1894237b76f7ded10b570085465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d0a006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_010",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 11,
+        "utxo_count": 17
+      },
+      "block_hex": "010000004e0b165dfb547ad233cf057aac14f14fc8461c8d469935dd261fa624c85ec82a4ede4920290212fa85c87ac3a9b3da519a4aa99da25c31208351fb63c9d26452c80a5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d0b006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_011",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 12,
+        "utxo_count": 18
+      },
+      "block_hex": "010000004643591b752d7677043eed34cce0a8f88749510fff0b030a32e4e972728aa03e1b19b9658e6d8be707411abe4025870b5bc6d3e66e4b708025a946f3b7326445200d5465ffff7f20040000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d0c006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_012",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 13,
+        "utxo_count": 19
+      },
+      "block_hex": "010000005298a5acbeff7cd998d39d75c602f835fa4e97483f560567c5ffa76eafadef745272dd75a8fc743cbeb4880fcacdfaffa943984ffdfc0976e47d9e8ab725c9d7780f5465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d0d006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_013",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 14,
+        "utxo_count": 20
+      },
+      "block_hex": "010000005fec6025698df73e6464a87ce89339878fe8bc52877a8bf7c7a127412123db14f5efed86bebe7c248fa5a979cb887f4718c0a9894c6803f5bfc1161625f24845d0115465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d0e006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_014",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 15,
+        "utxo_count": 21
+      },
+      "block_hex": "01000000b2f3fc31ebdf5ae20b946e192c042dac71fedd14d98e8312ef34cc45a9c8a42a3b411f07d78945e904b2ecc16fca26600afef43216d449d16de0d39b2da707dc28145465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d0f006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_015",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 16,
+        "utxo_count": 22
+      },
+      "block_hex": "0100000041ad12e26358525cb74763e80cae8a36ce65b99fbb4aad77026774ab9e4742026d077a9802e7b814fa4fedfd18013566d2d4750060cef755052dd0d2e3dc59ff80165465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d10006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_016",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 17,
+        "utxo_count": 23
+      },
+      "block_hex": "0100000072e198e20df0b28c60759d8e745f24a557b63edf51d9b3788247a30a991a0b3ae26774f7bd0fbeb203f2ad23069e487c265802b2fb282f72a8d860a2810e3895d8185465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d11006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_017",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 18,
+        "utxo_count": 24
+      },
+      "block_hex": "01000000b6cda9f585d58a07141390abdc086d6bec92477dbe7189b603c7a85bf4d13255318cc5c7b2479f6652dd3426a83da4662b712c09358cbce162e0de36b95f851a301b5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d12006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_018",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 19,
+        "utxo_count": 25
+      },
+      "block_hex": "01000000a85072c32c1ec16361befd35c7b056bc4c64a1077c5d4ecc1eb117c3ea337d5e8470cf8198e96b3d5f6dd3a8a9131995293735d420b41ebd8c259a659fb69dbe881d5465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d13006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_019",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 20,
+        "utxo_count": 26
+      },
+      "block_hex": "01000000b3395ab6247af5abe8d7a2d40d41c9afd059a1bc38ef28605f08f6c5db70460f6d4141c9a6aee54037fed89d65e37fa5f2e5e660aaa4d5a07f2c6e7182ab6fade01f5465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d14006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_020",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 21,
+        "utxo_count": 27
+      },
+      "block_hex": "01000000fe23c5c44d00953e78fa8c1d35cee8d81fb1a84b4edbf525b4e5c5701130b51e5e52399fa373c1f84b3b9326aba6a8c4ee6ae66f938c6527445a7bb33c5885b938225465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d15006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_021",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 22,
+        "utxo_count": 28
+      },
+      "block_hex": "01000000f581cc6846414dcbc841da394ae2ec9a241a9f0c1de6d9020a7d1cdd27cae3761d43578e6c97e5de0c7453c1cc3eca80e3e5157b26d0dd3683972ac90446472190245465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d16006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_022",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 23,
+        "utxo_count": 29
+      },
+      "block_hex": "01000000798c157a1a548fb8849783bbdf51c9aa132cfe9ab4d63572b2d219b67503cf4a4ba11cae835ff6f98a69496002664445d67abd0f7bdbb82dc2e5430cdc54b99de8265465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d17006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_023",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 24,
+        "utxo_count": 30
+      },
+      "block_hex": "01000000dd4c9a872c38d724470e0e0d5f1d77195c6345a5a15425d8bd673889b1cbd97ccb194df5c09de4e944209f07df766532c1a0d7b935dec2bab662f62e3cfc680f40295465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d18006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_024",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 25,
+        "utxo_count": 31
+      },
+      "block_hex": "01000000a3b020ee438876097a2a60065d735676cdc336193e1b1c279f291c430820c46fd3d9f8208a305076fb90cab69fc0e3c0ac5b823374142b35b1e41646af342e43982b5465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d19006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_025",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 26,
+        "utxo_count": 32
+      },
+      "block_hex": "0100000065688f588afbb44992fb914bf23464e7695543e72c68f1fbad99ac660cbedd30b32c8ff00bab07cabaad5b418b61efa2fe513664daa8d7e753216264e54d0a30f02d5465ffff7f20030000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d1a006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_026",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 27,
+        "utxo_count": 33
+      },
+      "block_hex": "01000000dbc431415af8d43ed5b2a519ae717922c0b35425b6f580ba776ff2ac0fa4252d8f7f2b379f69bbf46fcc3c909bc489d89daab9f5f88731684e9b84af18284f1748305465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d1b006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_027",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 28,
+        "utxo_count": 34
+      },
+      "block_hex": "010000001d8e6a48f40c818dbd6c029eb45636176cadcfe417b16a16102f122ff2a1031a81fdfe60cbc782145a188f774a75b6d5d9e56847f859005d18674af94fb0474ca0325465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d1c006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_028",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 29,
+        "utxo_count": 35
+      },
+      "block_hex": "0100000031047892020ed39d15669bb4245bd968199c8f2f0d65dd677ef3e8c4e3b7fa6db70702bd9a5fb91ad588f4e6c6bc31fd7970aee3ffb5713e29f7b34b39a7a647f8345465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d1d006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_029",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 30,
+        "utxo_count": 36
+      },
+      "block_hex": "01000000408d7c76a855e9e06dc494a238fb388c71ff5c58a2a7c3269e5aa07770974504f85005cd36248cca5c83ea1d776794e7d1980268da15277c1d1817e587307a4e50375465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d1e006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_030",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 31,
+        "utxo_count": 37
+      },
+      "block_hex": "0100000075cd8745594f372a8322779b8b4bf29892a6c9e9a88b89be7cf3c6de65b3c919ee2b84aa0b772bf2dc14355c60ae0bf932ce871618d1315ec1f7863cbd84a482a8395465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d1f006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_031",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 32,
+        "utxo_count": 38
+      },
+      "block_hex": "010000002063415113e1ad35f0bcffcd72a6e59042f973392fd0d2b24fa0d87e20dee547ea5aac1af16760e3ae472e116e0aec3d968d2748e5eb83a06c137d099f93c99e003c5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d20006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_032",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 33,
+        "utxo_count": 39
+      },
+      "block_hex": "0100000047f1450126c15c0bbb26ac227592aadc2e3ec21934bed7c30dbfc3b540b4964878d9f03eabafc23b54f2beb6ebf1c751364bcff67039063b2d312d33223e9ed6583e5465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d21006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_033",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 34,
+        "utxo_count": 40
+      },
+      "block_hex": "010000003d9ffc0e74b9a5b514de7d4bffea38ce75bc370eabbe8c200e173bd08eb40363220ae35598f3d4bcf62cfda1bf52e672eae039ba253c1211fc9d7564e5ade052b0405465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d22006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_034",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 35,
+        "utxo_count": 41
+      },
+      "block_hex": "0100000063ba02ed0add5010726fafff3e1ce0100c9c23a476ecbb93546245af2c0e86093cb14ee675159c40b54b79bd9b388e354b0c4f11626bc7c24fa75c444ba70aee08435465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d23006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_035",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 36,
+        "utxo_count": 42
+      },
+      "block_hex": "01000000992666a9d76eba0ce8b415eac2986b1f67f107bdb41a8ab278b568d78b075f4bc562b5a9337027ac8df5e492e438fbc2f7eebc193d0a9be71c98cd8bff9d5d7160455465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d24006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_036",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 37,
+        "utxo_count": 43
+      },
+      "block_hex": "01000000fb401b295a942ec41763c51ce4e62fd55cc778dbd9ab086d52c99bd9698f3e4467a617efbdd54bd88fae60b4e51aaddaec9482e0a87d9656481c26c03fca0244b8475465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d25006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_037",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 38,
+        "utxo_count": 44
+      },
+      "block_hex": "010000003c2f479909c3bb48764b018b7c6baffbfe1747a0d6b3fe8b62f06d46105a5b7f38c102ac323fddb81763a9a8ed3324535de70df744dd6c62ff5a415671fbf28f104a5465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d26006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_038",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 39,
+        "utxo_count": 45
+      },
+      "block_hex": "010000007872b01ade19ef7484dfaceed803a24479389162339c09b434c1191b128b6264dfde37319a7a905484a1287a33b96e39cf98b28c743948bb52a3be35d61e339f684c5465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d27006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_039",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 40,
+        "utxo_count": 46
+      },
+      "block_hex": "0100000073d8e02f98c653fa6814c423b5b1abdc7ead3af9d5c5f93fcdd0ac0ef1cef3550a556db3b303f0c4ca34a264541abe6b50942ebbcc8ab00b14cf6f448df46683c04e5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d28006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_040",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 41,
+        "utxo_count": 47
+      },
+      "block_hex": "010000002e7aaadd3483c59ac5e505122ffc929bc0ce5002fb2f94d16dfcca6a1a296732638fcefe635a8bd1c8a9aad645ddf996d89913f710b6cfe4f70b5286b9c7b4f318515465ffff7f20040000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d29006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_041",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 42,
+        "utxo_count": 48
+      },
+      "block_hex": "01000000feb79a371dcfdc922d5fc6edf6135f2acfedfd0100a075b58582c822d936a6168b9dc26856f852c25ca995b78dd0dae05ce1595fc89a1e99e65d222be4b7e78470535465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d2a006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_042",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 43,
+        "utxo_count": 49
+      },
+      "block_hex": "01000000585d50b4dfd031b68a08dee48eda3e41906bbfe20f96ab4d2e8a3ebc93d9da6a481bcdfc70619fe907d0d9912af86b3c187cfcdfc38fb2ddffd0c849edb92463c8555465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d2b006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_043",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 44,
+        "utxo_count": 50
+      },
+      "block_hex": "0100000033baf0dcae6c5921b8fcded1519ca3ebcdc453c49ae8ef38e0eb00631f142b7db84da943f7fc0220d3331962cbe9d5510d32beea93e37b82cd20ca19a40bbe2120585465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d2c006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_044",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 45,
+        "utxo_count": 51
+      },
+      "block_hex": "0100000079d0cb6fde10a3e5cac2233c47d9c5f9ed2f0bda3cfff7c92a16ad8aea826d7c8a932a1f75046a8281531426829c8b0082e194c0b04644d828782b112ffd7b63785a5465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d2d006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_045",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 46,
+        "utxo_count": 52
+      },
+      "block_hex": "01000000184b4f98d3502f9f53f33ae489349b5baf876e99d031d1a7d69202ba720268166a79b1d0e1b4e172aee25ce3fa8550d2b3cce5f6a4b35930669eae604224b43cd05c5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d2e006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_046",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 47,
+        "utxo_count": 53
+      },
+      "block_hex": "01000000c8d98d77eb7c92955f8f8d16c35d50a6cbd72b21bd7bfb1f6282af5168e25c15368f64bbd9137f98b202eaad1d0875ad7954d38a5ef3108183c7d8fbbd261ebe285f5465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d2f006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_047",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 48,
+        "utxo_count": 54
+      },
+      "block_hex": "01000000a97907f3f413a1e145fe5e53acc59d2b15de7bb3727cde2685ea2873a897a370f4a8cf981a206145f95b558c9b16e49e6fd112e3360e9d166332d9a8234e788880615465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d30006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_048",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 49,
+        "utxo_count": 55
+      },
+      "block_hex": "01000000c3d60fed0a5e2a143807a2aee13eee26d4c1372f9e9fcb4675a198f602202e243ace0127fda7de3f9df4f9cfae8c41a35ecef36c0980205b5f33427c1fd28230d8635465ffff7f20040000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d31006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_049",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 50,
+        "utxo_count": 56
+      },
+      "block_hex": "01000000ac4a7f61ecada3783f42ebbdf0ebba47814ac841633022f8409be1566808b636813a1e9fc3ee4b16f96e13bb96df88c0ef5a5b2b0ee74e13ee574cfd1c35e01430665465ffff7f20030000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d32006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_050",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 51,
+        "utxo_count": 57
+      },
+      "block_hex": "01000000d06a3a649d86a6f4acfff0d828b54c50469f871447c950b00cff169362d6fb3a2945acc7d1708178581f95e07e97a0ff6d3bfe49772c7e700affcb4ccb3db01288685465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d33006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_051",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 52,
+        "utxo_count": 58
+      },
+      "block_hex": "010000006736673baeb64d78908ef8a06f87bd5afbc1c52e9ec82fa2b34a90cd0027566c24484b92a5ce3c3154e1552789bd0f9001556bc106ffb5744313b42f228b4be4e06a5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d34006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_052",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 53,
+        "utxo_count": 59
+      },
+      "block_hex": "010000009ebda040b32305414ba0968c2b923a92a5719a43faa4a6de51d43665b456f6201f9d4c782319e28b1ce3f37dd7cc95fb633f31572808acf2c8cefd855f8e3dfe386d5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d35006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_053",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 54,
+        "utxo_count": 60
+      },
+      "block_hex": "01000000d8b94e8add597fec0fb8781fb3c5606444dd8d84651df342a9ba6d41a78db856eefeb2be9ad1230fd17c22f430c95674191009168f7c906f1fb1bc37b03a4f56906f5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d36006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_054",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 55,
+        "utxo_count": 61
+      },
+      "block_hex": "0100000005f2d7652d6a46eb3647849c02228a0d6fe495f994d8d5792b2869c8c261d158fde4321faa85c30bcf4a14ea29209a4f0b576ec68b7dace18493fc9dda9471b1e8715465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d37006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_055",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 56,
+        "utxo_count": 62
+      },
+      "block_hex": "01000000d792cab8ff818fe20b8af3826959aa03382b8f66e47d90e0eec7a7393fc8e853b77b351a9092eb8e7f50fd75ba1fadb96821b77f1682afe3de1e13dcfed238df40745465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d38006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_056",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 57,
+        "utxo_count": 63
+      },
+      "block_hex": "010000003dc3a56bbf8ccae9ec2fd2c36dfcbcdb829a01e5f5f17073df246accbb479d12a42c4b046df2d0b2913c065deb16e1771995849468d23e736e0369a8e880342298765465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d39006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_057",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 58,
+        "utxo_count": 64
+      },
+      "block_hex": "01000000000dc97da3c420367fc1e61760fba147d56505eb0d6ab4b2d5cac85f9f64937d2dd34607c3b2e369fa687a0872288cf77794c194700b3a206b45c3e2f046726df0785465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d3a006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_058",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 59,
+        "utxo_count": 65
+      },
+      "block_hex": "010000000e5c454bfaecc377708adbd679b316ed318b93222d190fa565e26d5a03b62456a3300a21f14c3816f0a4dc7c93150f2ed1b20de10abdf5d9f6e9748988f7f27f487b5465ffff7f20040000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d3b006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_059",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 60,
+        "utxo_count": 66
+      },
+      "block_hex": "01000000f26fc816ed9e2cd11d5e045129390adba6f78bd546ca03ffb9d7d52974e16e0846cbc2c2db0ea71638e955c557a7ffc7d1c23e78d16ab66484493910fd76c5fca07d5465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d3c006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_060",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 61,
+        "utxo_count": 67
+      },
+      "block_hex": "01000000a700bc9fc1f7c5afb4636ee3de3f0dfc39bf9b26ed417150d92d730418539454277367920f00978c539988dbfd9a6c4552b0d32c82ae2dd77a86f44e5908004df87f5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d3d006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_061",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 62,
+        "utxo_count": 68
+      },
+      "block_hex": "01000000ebc7b3d33eb403b5211dd3f3486ce229841321de83d2daec7e2fa810fbcb0860e2783197782a649d7403b2ed78b3254c3944261a570f783b1f8c07a56898f06e50825465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d3e006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_062",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 63,
+        "utxo_count": 69
+      },
+      "block_hex": "010000004a82ff6f6f29dbac491263789dd9df0731ddb09fb6f1a70df4e208e9931ce663a44a51b6fb94b360356b5ea481f2a2b5e556400122a7d1079302e3b8b3e34f3da8845465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d3f006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_063",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 64,
+        "utxo_count": 70
+      },
+      "block_hex": "01000000277f7540d041e3bdc1848c351de4f49b16a4af114a44e0c2446b19728246e0199cc49262a2d7c271ee85601ff0cc6357d5cc758cbbdbaac29659e22d6fcb8e4200875465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d40006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_064",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 65,
+        "utxo_count": 71
+      },
+      "block_hex": "01000000e4dab04a68ce0242c3451502f145785ea11b5f67b064e7a0f58f21c30cb29174b69b261ac018fd4fa768e24fd4499993ccaf24022fcb8fbaf6882cf03b3e425f58895465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d41006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_065",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 66,
+        "utxo_count": 72
+      },
+      "block_hex": "01000000bbad68e944fd40dc28922ee69190058e3607271b67ec5b637b59b910a36fcf0b6e213efee96b5b4f725e14cb8d3a5278bf4ad44cb907045702abccf9c0bf820eb08b5465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d42006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_066",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 67,
+        "utxo_count": 73
+      },
+      "block_hex": "010000007aaba8d286d21b5bfe5f829df669a3447d68e4db004faa68b8c1a180bea94934a7538c7f1dcf6295b4f8ce3a112cafc6169f59c1b0048f779a15aae10e8aa3ed088e5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d43006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_067",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 68,
+        "utxo_count": 74
+      },
+      "block_hex": "0100000052c82c52aa5fd3b2695dd9eba1bdae827cd641caa19c473335aad99037290f6ddf1260979581f2230a56bee1e72dfcf6152026c1752a5cc6e5eeb4d0f894c19f60905465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d44006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_068",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 69,
+        "utxo_count": 75
+      },
+      "block_hex": "01000000b8c7439a50ac8a7965b75da2ebfdecde523720c6c6db75925654b94378e121707847a4b738cced8115ec8e48d649defaaec08e27a27a126743456ea1fd8ce334b8925465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d45006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_069",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 70,
+        "utxo_count": 76
+      },
+      "block_hex": "010000007bc94bd265d003b6bea0ad7c064bc46f9627aae8c6d64ad3aa698c2175cf646cc2398071477bdd8ee2a91ffe7b618389f0f1de69f7ce515ef740a2a6829f33c910955465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d46006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_070",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 71,
+        "utxo_count": 77
+      },
+      "block_hex": "0100000045d3647a88210884a3be61d63e9dbd607c713bc5b4dd553d9bd3befeb568ea32b31dc64cdf304b3b4cb74a12b7d4335a05a39912ef5dcc05c2ce72bf0367650668975465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d47006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_071",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 72,
+        "utxo_count": 78
+      },
+      "block_hex": "010000006cf2b02d3d3f9c357554e8cfe54f9a0e23fc6e0818fa759a3727e9dfccbe3a021872c4ee8517d6750ba1845b8ecbf434d198b1c27b29a98ecc53bef2f64481bbc0995465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d48006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_072",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 73,
+        "utxo_count": 79
+      },
+      "block_hex": "010000005c2f50ff0da37baf3121081e424fe0d3dee359c44ac8b32dbb222b672df607613bf1fa283358df474e13ba80efda670b3c89f5c6e567dda64562cd6b9d64d716189c5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d49006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_073",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 74,
+        "utxo_count": 80
+      },
+      "block_hex": "01000000248514f9449748768c2c84dff44f5b7f07f85c4aab7d4141d6ec6a243059095e55b1c5bcc7609e55ede01f930098358a32164317f0b43684ab2abdb0fbfbbf74709e5465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d4a006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_074",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 75,
+        "utxo_count": 81
+      },
+      "block_hex": "010000009c5d0aa2af1750b4c8152bae4e360fa5f469bf315a352343014a7756bb64bc7e685f3100a072045f8e9f78f1fa5d6ed15188b62da3ab8408222dbc1b6fd5de9dc8a05465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d4b006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_075",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 76,
+        "utxo_count": 82
+      },
+      "block_hex": "01000000b20da479ef59e3c67536ff7289a663218f903f9304f95a8e08f4bbc03a3c493990b081b5b6607d68abb07a127c519f9bc630d500bf2e06ac5ba02c551f3ef2bf20a35465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d4c006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_076",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 77,
+        "utxo_count": 83
+      },
+      "block_hex": "010000002661cab3c30bd4719f97dd8db08b7c5d611b0b74275edb51f3cbae52f0bf1765bc4eb8e781ea3858e1da9f2b5d4e7636c0d20ae587145945004f2fe2402902bb78a55465ffff7f20060000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d4d006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_077",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 78,
+        "utxo_count": 84
+      },
+      "block_hex": "010000004ca63a79aeb28c97906259a79f8731f3bffc01ab5f6d134ce635e4b6731a7d126d50220328198e765d059cf3cb9a438554c055dddfb08fa4b5d57ce85a36cc53d0a75465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d4e006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_078",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 79,
+        "utxo_count": 85
+      },
+      "block_hex": "01000000b805cd8cd00d2b43f7cf2059e729bdff3d18f9901991070bbd29f0ecafdcc712f224042203e709416414bd82185b57d5eb3703f16a0d512a70a7a3ef240d4bb028aa5465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d4f006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_079",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 80,
+        "utxo_count": 86
+      },
+      "block_hex": "01000000f8ad14a853104695ffbbf66732cce7b81135e361876a30a0c33722528f28197b8a0d62b34728db4fd6556b0c0bbd686b43fbe7e402d8363369c654719f1c905580ac5465ffff7f20040000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d50006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_080",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 81,
+        "utxo_count": 87
+      },
+      "block_hex": "01000000e618001fa538c33a075cc1d344edb556eceacfd021024b29c38248d58cfce00e09a28a99d840bac3f0a8a437422138ee65cc88a2e24a6dfda9ec99da51480faad8ae5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d51006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_081",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 82,
+        "utxo_count": 88
+      },
+      "block_hex": "010000006bf6dfcc0527b9a6d302202d03366c30b9d0d5db3a30143117aa912f7cf0f654485cf8eb0d84ac77477356650e8ee98bd6cd09b4fac6d8613c7f33785059492330b15465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d52006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_082",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 83,
+        "utxo_count": 89
+      },
+      "block_hex": "01000000d220f062035c28f3c85a8de1aaa714cca4afcc351db2a5d6819ca13f53922b451238d0586ef7d755c6db1a06c966c744a97e9a9d4da042c2abf9f8190a9c844688b35465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d53006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_083",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 84,
+        "utxo_count": 90
+      },
+      "block_hex": "010000002825e999442bb5a04ab0742159ef664ac1a1019f5654c1471a71627966f8da0d03dd3018872f2de826cbd704e19e205ffcb0d6fb4e9398a81c6c73e9f0cd54c2e0b55465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d54006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_084",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 85,
+        "utxo_count": 91
+      },
+      "block_hex": "010000006ec9c3117bca70c3d768e14e4c67c2e322e122b87bc2f402f63b7a30e16e6a51a55a532d76e258ae68fd1d0e5f8b323933fefc31e554c8d85754af500c1ba5f938b85465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d55006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_085",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 86,
+        "utxo_count": 92
+      },
+      "block_hex": "010000006597a3324c84f020147ef55b6efc60d8bc8c2ff3c99439710e0be646f6fa2f479d1a8f585be01e8cdc1680da37b6cff5dc3df36d67e8d878cef8563a07b3400890ba5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d56006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_086",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 87,
+        "utxo_count": 93
+      },
+      "block_hex": "01000000a3413cf45c08648636ff2d234194aa4db6a803d523b8661bbe8acbd705e49f49e0c607f8bb50843ec9cee898786227ef3ce7fe41f8d76babc28c23414ca65154e8bc5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d57006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_087",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 88,
+        "utxo_count": 94
+      },
+      "block_hex": "010000009350a1c37ab721e75dd58ce659870afade1b45512f4c0131d58357faf09f0c65549c3fb81e6625ebc6e444e1fe30dafee2cbcefec8d3c5eca9ffd0cf45e8539a40bf5465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d58006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_088",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 89,
+        "utxo_count": 95
+      },
+      "block_hex": "010000001e401e16e60018663e3ac3635b44b3b9476652a5b6da5c69ca88a291d745311e15c4f8f4ea86b08d615ca2c203051809af54e187d476fefbda76905824f89cbd98c15465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d59006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_089",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 90,
+        "utxo_count": 96
+      },
+      "block_hex": "01000000824f25804141addcbc7c729502d3ce1427b0c18506934cf1520875965d85714196d163e30601533907f3eeee1c93fceee3a242474cd2c8f1d53109efcf548ff9f0c35465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d5a006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_090",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 91,
+        "utxo_count": 97
+      },
+      "block_hex": "010000000c7ea69cf651b1b79e05ac0b8ab0116af715907a5df7afbe89e80afa286e762737fe8518e09623f3274bf044d4ad96863c9852121169cd5e79e1bf77756470a148c65465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d5b006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_091",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 92,
+        "utxo_count": 98
+      },
+      "block_hex": "01000000f988319676bd745046059d25228de31fc2158d9dd59d3ea9aae630ab4b31da131508b73ca3e6558f8b6d5db73d93f18dee07761be5b473d93a82d75fe33877bba0c85465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d5c006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_092",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 93,
+        "utxo_count": 99
+      },
+      "block_hex": "01000000132197d1dd1f4deed7a48b37110900048acdddd7e75d7a7fa19bc69ab092d546486076c1bef4e0cebd28073ec2681864e6093f2764c49ce95fa81ac1ce0365c0f8ca5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d5d006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_093",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 94,
+        "utxo_count": 100
+      },
+      "block_hex": "01000000bb44416af8b9901a923f5867c59b330df24a5be2fd949fb042787502d91337500af39a5b901f40c07d79e1ca82849f58393e6f3df0edcec8c0b1c6dcd2e3c55150cd5465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d5e006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_094",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 95,
+        "utxo_count": 101
+      },
+      "block_hex": "0100000006ccf80e04b19af3dbebae8f9f7a6a6057ad932a7dbaefd7557c2285f6c64977b57231e267f353494e8735a44427cc0335c8b24d7faf4a32fed3eea6583800c7a8cf5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d5f006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_095",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 96,
+        "utxo_count": 102
+      },
+      "block_hex": "01000000b19adcdd423f570798e93b6c932579130894cc91952dfb8279d47c7b663fbc148d456cdbe26846b0c341cfcb79d4d0097c0c0537b2a0864326b76fda34df0e5c00d25465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d60006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_096",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 97,
+        "utxo_count": 103
+      },
+      "block_hex": "010000008a15a184527315bb665b8cd07716aa7247bb09d670edef8376187a7a8fd560321d845eb9c028e1aab8ffc9ad2fe78abefe9b95366a575b930adfe6d7dc3024df58d45465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d61006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_097",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 98,
+        "utxo_count": 104
+      },
+      "block_hex": "01000000141451665ef41c6841bdffda1c03d50de41708a02dd787c4bbcdc167d643ae01fd8b74ed14488a9a76007e0b08a0dd4b8b45f27805b0b791f95f1020884e0da3b0d65465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d62006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_098",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 99,
+        "utxo_count": 105
+      },
+      "block_hex": "0100000058424d74ea895a93e174078eededaffe4deb7cc1b4550fd326f09544cc94ba25108d924934d1f9b860d7c21d8afcc3c170d09789cfd74d3ec1930a0ca334c90808d95465ffff7f20040000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d63006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_099",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 100,
+        "utxo_count": 106
+      },
+      "block_hex": "010000001e0549a558cefd4a17eccde234c4adb4b6c2a21521514f42191e8d3b08ecc037892c560823873a902ea15e22f95b8bd515abca991ca76f771ebaaec6dfe612fc60db5465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d64006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_100",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 101,
+        "utxo_count": 107
+      },
+      "block_hex": "01000000b3745c7f06ab9574bf677c0b3ffe1a06697087f579d7edb036a6e00075d1f57020f1fcc824ed8789ecb55983a40ce067bbcece38ae6ee5f899b99f55f362b837b8dd5465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d65006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "accept",
+      "label": "mature_101",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 102,
+        "utxo_count": 108
+      },
+      "block_hex": "01000000191a86f0c9ac4d80036bbd497784b2ab27e1e45d7458a2fbb502a52af05f476cf715ba65535c55b0246687570876f279bb49bbf5bcb4af7cacead26878b6bba110e05465ffff7f20020000000201000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d66006f626c2d766563746f7273ffffffff01e8f5052a01000000015100000000010000000178a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc0000000049483045022100ab53a06de645e4922a3f28039a8656838884648151fb69fae7326476790b208902202ade849c98df078e2b534f040a3eef56a68e7260c145e18d9c41c9938cdf406301ffffffff011804af2f00000000015100000000",
+      "expect": "accept",
+      "label": "v_spend_with_fee",
+      "needs_pow": true,
+      "note": "a signed P2PK spend paying a fee; the coinbase claims subsidy + fee exactly",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 103,
+        "utxo_count": 109
+      },
+      "block_hex": "01000000e6a963fe42b1681c49b836f31ff7a2a610bb7f873e988cf76527580746119031279bbb6e63cfb92d8be8d116882ef38c4082bccc5a7c3f35c6d875b1f1fe3fd668e25465ffff7f20010000000301000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d67006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000010000000178a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc0100000049483045022100fb202efdeb2f63e3256340ff924641350a28f0bb62765ebff734c34769765d850220667f976c634424a10e301cc3b4a0cc371c3f61c8d97ac333eeca0e4a209aa0de01ffffffff010008af2f000000000151000000000100000001e650a133ef76fae423df8e7f471746514a63d40df6573643527a91a3520fa7b00000000000ffffffff010008af2f00000000015100000000",
+      "expect": "accept",
+      "label": "v_chain_in_block",
+      "needs_pow": true,
+      "note": "a transaction spending an output created earlier in the same block",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "01000000a4a5d2bb87f697aed93f632603a78ec5031f6da2c53ea6c4b16520c447acd26ccc521043467ed2ed48304541888795dd3024b344c0d280923bb2db2b97655b0ac0e45465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d68006f626c2d766563746f7273ffffffff01fff1052a01000000015100000000",
+      "expect": "accept",
+      "label": "v_coinbase_underclaim",
+      "needs_pow": true,
+      "note": "the coinbase may claim less than the subsidy (the rule is <=)",
+      "reason": "ProcessBlock: ACCEPTED",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c30000919778c272dcc4dba12c020c8fc7c021d010ded144947713696988619d568bbefbb5018e75465ffff7f20010000000301000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000010000000178a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc02000000484730440220638b163fd50f6cdee93d3aab1c1ec1ef7bd116dad7cfecfbd8bf615259a52f40022013472462199c6813c2a2e7d75d4d60c202eb342330fd557ab9cc5f1110e4afbf01ffffffff01ff07af2f00000000015100000000010000000178a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc0200000049483045022100e8929826927cb94b54c094aad8cac200b7729c269191a7a4f09118d3c4c471740220475b126cfeba7142b98eaf0311844c145c88ddf000464f829cd18ca8de5b7c2e01ffffffff01fe07af2f00000000015100000000",
+      "expect": "reject",
+      "label": "double_spend",
+      "needs_pow": true,
+      "reason": "ConnectInputs() : prev tx already used",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c3000091977596c910467afaf84c7b1e275f4b9570f30cadd5246d050f996059529061dd92518e75465ffff7f20010000000201000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000010000000178a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc0300000049483045022100d4a5ae96dfd9f294d1ade642d29f343882c58f2c77389a10374f335539905e2e022019510aae5dc4354b9e7fd46e34ac7037765e5224bdd2e21361a5c0bc0b8c5ac301ffffffff0100286bee00000000015100000000",
+      "expect": "reject",
+      "label": "inflation",
+      "needs_pow": true,
+      "reason": "ConnectInputs() : nTxFee < 0",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c30000919776fba12c7f66f0ede036f4b7f036e532a4f318f97c787b4c24a91a955d400314c18e75465ffff7f20010000000201000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000010000000120f1fcc824ed8789ecb55983a40ce067bbcece38ae6ee5f899b99f55f362b8370000000000ffffffff0100f2052a01000000015100000000",
+      "expect": "reject",
+      "label": "immature",
+      "needs_pow": true,
+      "reason": "ConnectInputs() : tried to spend coinbase at depth",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c3000091977fbdf855324e03e5b54fac4a87a64027a947c36a2a5d6bfc41bdbd3069d45c3fc18e75465ffff7f20050000000201000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000010000000178a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc04000000484730440220670629319fe21e7ea50f59ac49e47eff496b866ba3e5a21f514d696791e6c3da0220210c873e00ee1567ccef5ac3b4805ec5b975ec54923519bbcd2970534c36802d01ffffffff010008af2f00000000015100000000",
+      "expect": "reject",
+      "label": "bad_sig",
+      "needs_pow": true,
+      "reason": "ConnectInputs() : VerifySignature failed",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c3000091977ef6611cdef5860b7e549fd69c2aa11c1ba2c3a7254f84f18c459f7318068e87318e75465ffff7f20010000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "reject",
+      "label": "bad_merkle",
+      "needs_pow": true,
+      "reason": "CheckBlock() : hashMerkleRoot mismatch",
+      "stage": "CheckBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c30000919771099ee3210a79f481ab602963d55ee3e45d3c58dab07b0e73ba608ce7f97178c18e75465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "reject",
+      "label": "bad_pow",
+      "needs_pow": false,
+      "reason": "CheckBlock() : hash doesn't match nBits",
+      "stage": "CheckBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c30000919778e1cc9debdd82094335b1ed17e46b66dc079540343e0f0e30d9177a71d26fad718e75465ffff7f20000000000201000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a0100000001510000000001000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0869007365636f6e64ffffffff010100000000000000015100000000",
+      "expect": "reject",
+      "label": "two_coinbases",
+      "needs_pow": false,
+      "reason": "CheckBlock() : more than one coinbase",
+      "stage": "CheckBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c3000091977be927c3ed29e63a7f4feb0209a826afe375285ace272248cfb7b7281b595d90018e75465ffff7f200000000002010000000178a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc05000000494830450221009e0ae0cc19f01a0115b19ede7c752948417ad6c88c15bd89dfb7ac46eefd92840220512c668a901468c703c49873669131fba0f35c83407bac66e5f5fa2fc45cffe901ffffffff010008af2f0000000001510000000001000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "reject",
+      "label": "first_tx_not_coinbase",
+      "needs_pow": false,
+      "reason": "CheckBlock() : first tx is not coinbase",
+      "stage": "CheckBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c30000919771099ee3210a79f481ab602963d55ee3e45d3c58dab07b0e73ba608ce7f97178c08d95465ffff7f20020000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "reject",
+      "label": "timestamp_too_early",
+      "needs_pow": true,
+      "reason": "AcceptBlock() : block's timestamp is too early",
+      "stage": "AcceptBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c300009197731dc68b16254b2b957732b2af5e19cb6c6519a8cca8db6a71c5be017d3f3754d18e75465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff01ffffffffffffffff015100000000",
+      "expect": "reject",
+      "inner": "CTransaction::CheckTransaction() : txout.nValue negative",
+      "label": "negative_output",
+      "needs_pow": false,
+      "reason": "CheckBlock() : CheckTransaction failed",
+      "stage": "CheckBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c30000919777a2a8368540e57221842123e8618c0913115ef6cd363a555d5de4045f621048c18e75465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0101ffffffff0100f2052a01000000015100000000",
+      "expect": "reject",
+      "inner": "CTransaction::CheckTransaction() : coinbase script size",
+      "label": "coinbase_script_too_short",
+      "needs_pow": false,
+      "reason": "CheckBlock() : CheckTransaction failed",
+      "stage": "CheckBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c3000091977856a3ed88c4172dc3cf28ab661b6174729ef92afb2ed0776634a221fc1c266e918e75465ffff7f20000000000201000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000010000000278a249bb4b750d85c4a3537535014fd48bf67e291a05c98e8085c308aed964dc0500000000ffffffff0000000000000000000000000000000000000000000000000000000000000000ffffffff00ffffffff010100000000000000015100000000",
+      "expect": "reject",
+      "inner": "CTransaction::CheckTransaction() : prevout is null",
+      "label": "prevout_null_in_noncoinbase",
+      "needs_pow": false,
+      "reason": "CheckBlock() : CheckTransaction failed",
+      "stage": "CheckBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c3000091977c99377a8ff830795eff7cba1d0a86ffa8ef68e94d3140b67aebbdbe17b518a0018e75465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0101f2052a01000000015100000000",
+      "expect": "reject",
+      "label": "coinbase_overclaim",
+      "needs_pow": true,
+      "note": "main.cpp:953 returns false without its own error line; only SetBestChain's shows",
+      "reason": "SetBestChain() : ConnectBlock failed",
+      "stage": "ConnectBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c30000919771099ee3210a79f481ab602963d55ee3e45d3c58dab07b0e73ba608ce7f97178c18e75465feff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "reject",
+      "label": "wrong_nbits",
+      "needs_pow": true,
+      "note": "mined at the next-harder target so CheckBlock passes and AcceptBlock's nBits comparison is what fails",
+      "reason": "AcceptBlock() : incorrect proof of work",
+      "stage": "AcceptBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "010000003a0e8f10da4f775d80d4fb5bf5fde881b14f1db1608c1db9d8bb8c30000919771099ee3210a79f481ab602963d55ee3e45d3c58dab07b0e73ba608ce7f97178c18e75465ffff0021000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "reject",
+      "label": "nbits_below_minimum",
+      "needs_pow": true,
+      "reason": "CheckBlock() : nBits below minimum work",
+      "stage": "CheckBlock"
+    },
+    {
+      "after": {
+        "tip_height": 104,
+        "utxo_count": 110
+      },
+      "block_hex": "0100000020aeff0494e828d188c704e1f488a589b15ae01d11f6cb129f62129caa6cc5431099ee3210a79f481ab602963d55ee3e45d3c58dab07b0e73ba608ce7f97178c18e75465ffff7f20000000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0d69006f626c2d766563746f7273ffffffff0100f2052a01000000015100000000",
+      "expect": "orphan",
+      "label": "orphan",
+      "needs_pow": true,
+      "reason": "ProcessBlock: ORPHAN BLOCK",
+      "stage": "ProcessBlock"
+    }
+  ]
+}

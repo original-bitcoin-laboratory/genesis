@@ -74,9 +74,12 @@ def serialize(tx: Tx) -> bytes:
 
 
 def _find_and_delete_codeseparator(script: bytes) -> bytes:
-    # Simplified: strip standalone OP_CODESEPARATOR bytes (matches v0.1 for the
-    # scripts used here, which contain no 0xab data pushes).
-    return bytes(b for b in script if b != OP_CODESEPARATOR)
+    """scriptCode.FindAndDelete(CScript(OP_CODESEPARATOR)) (script.cpp:829): delete the opcode at opcode
+    boundaries only. An earlier version of this function stripped EVERY 0xab byte, including bytes inside
+    pushed data; a public key containing 0xab then hashed to the wrong digest, and OP_CHECKMULTISIG spends
+    against such a key verified as invalid. Caught by derivatives/vectors/checksig.json (12 Sep 2026)."""
+    from cscript import find_and_delete
+    return find_and_delete(script, bytes([OP_CODESEPARATOR]))
 
 
 def signature_hash(script_code: bytes, tx: Tx, n_in: int, hash_type: int) -> bytes:

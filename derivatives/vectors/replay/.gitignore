@@ -1,0 +1,4 @@
+# build output of the native miner (rebuild with `cargo build --release` in miner-rs/)
+miner-rs/target/
+# replay runs are captured into sealed findings sets, never committed from here
+results/

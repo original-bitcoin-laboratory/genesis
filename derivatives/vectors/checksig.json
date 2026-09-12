@@ -1,0 +1,226 @@
+{
+  "oracle": "model/spend.py + tx_sighash.SigChecker (== port/checksig_e2e.cpp); the binary column is the VM's",
+  "rule": "VerifySignature (script.cpp:1126): EvalScript(scriptSig || OP_CODESEPARATOR || scriptPubKey) with the spending tx and nIn; valid iff execution completes and CastToBool(top). OP_CHECKSIG (script.cpp:881 CheckSig, nHashType 0): sig empty -> false; hashType = last byte; DER = the rest; scriptCode = script from the last executed OP_CODESEPARATOR, with the pushed signature deleted (FindAndDelete); verify ECDSA over SignatureHash(scriptCode, tx, nIn, hashType) as a big-endian integer; any s in [1, n-1] is accepted. OP_CHECKMULTISIG: pop nKeys, keys, nSigs, sigs, then ONE EXTRA element; each signature is matched against the keys in order without backtracking. The three expected_* columns: expected_strict_der = this rule with a strict DER parser; expected_model = the lab's Python model (OpenSSL 3 via `cryptography`); expected_binary = the frozen 2009 bitcoin.exe (OpenSSL 0.9.8), null until recorded by replay/.",
+  "schema": 1,
+  "suite": "checksig",
+  "test_keys": {
+    "checksig-a": {
+      "priv_hex": "47df3b18d9f13d547a2c4e8a87f92758a1a5266bdf9bbd46e29276f261b55fae",
+      "pub_sec_hex": "04925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249f"
+    },
+    "checksig-b": {
+      "priv_hex": "a14b406a0f7c8aa883fbbbc3968a9c83aba919b639c61161340624284faf01a7",
+      "pub_sec_hex": "049eee3b44095dabe757f8be52a0aaa3a65d52e4601364661085a1bd2e9ea2664b9a204f042da2e18492bf5adac53ecc21337998e510f55b83422210eaf25d2cd6"
+    },
+    "checksig-wrong": {
+      "priv_hex": "be3dadf6841976a75d1e7783649c1d487a987a5fb70841df306dada9018f0427",
+      "pub_sec_hex": "041e6ad6372ce18358ad59e6b71d6a498cd5d7854c85777c27784f72b5d162475d9aa009067c4888b31e85dfa0e31a3fe9b1bdf733ff0cb7cc06019b2321014d58"
+    }
+  },
+  "vectors": [
+    {
+      "expected_binary": true,
+      "expected_model": true,
+      "expected_strict_der": true,
+      "kind": "p2pk",
+      "label": "canonical_low_s",
+      "n_in": 0,
+      "note": "a correct signature in canonical DER with low S; SIGHASH_ALL",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "47304402204a8277828b15acab46a86ab4aa7fd733e8eb48d3fc79583ac8ee77764937b1910220075139151d7b2b5d4ad4c7b6d042dbda33fdfb7bcc962cf742450d45319e8f1301",
+      "tx_hex": "01000000016b5f84ed21df15749f3e96e0753da851042fd4e1d559bdbc300ea7007d879c0a000000004847304402204a8277828b15acab46a86ab4aa7fd733e8eb48d3fc79583ac8ee77764937b1910220075139151d7b2b5d4ad4c7b6d042dbda33fdfb7bcc962cf742450d45319e8f1301ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": true,
+      "expected_model": true,
+      "expected_strict_der": true,
+      "kind": "p2pk",
+      "label": "high_s",
+      "n_in": 0,
+      "note": "same signature with s -> n-s: mathematically valid; OpenSSL accepts (the malleability descendants later closed)",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "493046022100fbb750c01ed03ca62e4864c549a647190f16e3a5f70325a475579304b7a23d2e0221008a11de545efc81c33536a1f6b91ac068a5a62272977fa23832edbde0ac10236801",
+      "tx_hex": "010000000162c5701b0f926b2643aa2a34491396836c4038602a3b9f18c38bac3ae1b99990000000004a493046022100fbb750c01ed03ca62e4864c549a647190f16e3a5f70325a475579304b7a23d2e0221008a11de545efc81c33536a1f6b91ac068a5a62272977fa23832edbde0ac10236801ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": false,
+      "expected_model": false,
+      "expected_strict_der": false,
+      "kind": "p2pk",
+      "label": "wrong_key",
+      "n_in": 0,
+      "note": "signed by a different key",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "483045022100bc74609daa6f8fb909f455adf6d4af84e38d96e4e59117375177c7d61cfbd0e0022078e0977e547ea89fa840cc2a37f8b1e0aae98414aede9efacceb488763e562f601",
+      "tx_hex": "01000000013336b17ad915b3eb1d3e55b9a800741ca1d645292302817e275f6201e5a20ff50000000049483045022100bc74609daa6f8fb909f455adf6d4af84e38d96e4e59117375177c7d61cfbd0e0022078e0977e547ea89fa840cc2a37f8b1e0aae98414aede9efacceb488763e562f601ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": false,
+      "expected_model": false,
+      "expected_strict_der": false,
+      "kind": "p2pk",
+      "label": "hashtype_byte_mismatch",
+      "n_in": 0,
+      "note": "digest signed as SIGHASH_ALL, trailing byte says SIGHASH_NONE: CheckSig recomputes the NONE digest, fails",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "4830450221008942068064f1eacc6a6ce5be221c3589783fa8c070e8e0ced51ddba6596d6fdd02207b3ea10e8f70697db75ad71e22d621db7e869dd4816ea0f2c37a1f6d8557b1f802",
+      "tx_hex": "01000000016cd670ed0c8928c4c8cc3bbdd11490370c4f0c3dc98a7493712fdd14e5c07ba600000000494830450221008942068064f1eacc6a6ce5be221c3589783fa8c070e8e0ced51ddba6596d6fdd02207b3ea10e8f70697db75ad71e22d621db7e869dd4816ea0f2c37a1f6d8557b1f802ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": true,
+      "expected_model": true,
+      "expected_strict_der": true,
+      "kind": "p2pk",
+      "label": "hashtype_zero",
+      "n_in": 0,
+      "note": "hash type byte 0x00: v0.1 CheckSig takes the byte as-is and SignatureHash treats 0 like ALL, so it verifies",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "473044022076e8277264eb26fa756395ff8891f96130cfc3d5c3db1af2506f81c56cdc04a102200b1eb747500cc12e1a5d0d86f641f8bf5407fbd94b9f9c609d27bd5c7b11d6d800",
+      "tx_hex": "010000000134de4696c4da8bf0b54509fb45a6fc4414651c8dc52f0f791616b56ae8bf06c60000000048473044022076e8277264eb26fa756395ff8891f96130cfc3d5c3db1af2506f81c56cdc04a102200b1eb747500cc12e1a5d0d86f641f8bf5407fbd94b9f9c609d27bd5c7b11d6d800ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": true,
+      "expected_model": true,
+      "expected_strict_der": true,
+      "kind": "p2pk",
+      "label": "sighash_none",
+      "n_in": 0,
+      "note": "SIGHASH_NONE: outputs are not committed",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "48304502210087e7a976ade6d74c3c45621906ea870c9d7e66180ebea3b0cc7e42f83133fd7202201730783bb14e70057c7eb3aa0f7dfebd806517f65898f909df37d8201497925602",
+      "tx_hex": "010000000121da573a7a337a66edea211ed4786beedd6f3aa954ec0982b060a6cc275c61c4000000004948304502210087e7a976ade6d74c3c45621906ea870c9d7e66180ebea3b0cc7e42f83133fd7202201730783bb14e70057c7eb3aa0f7dfebd806517f65898f909df37d8201497925602ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": true,
+      "expected_model": true,
+      "expected_strict_der": true,
+      "kind": "p2pk",
+      "label": "sighash_single",
+      "n_in": 0,
+      "note": "SIGHASH_SINGLE with n_in < vout.size()",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "47304402200ca840ee7df83574886e0b8dbb249321d18bbe5dc3d601af534aae1b2fe776430220521e3a2f1908f8901bd7137e7905069d01757c986fa7309f302dcd5a93bef0d703",
+      "tx_hex": "01000000014b0909eace60dd92713d86da8ff0c91edf1f594c78ba06607850f8495e9c0215000000004847304402200ca840ee7df83574886e0b8dbb249321d18bbe5dc3d601af534aae1b2fe776430220521e3a2f1908f8901bd7137e7905069d01757c986fa7309f302dcd5a93bef0d703ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": true,
+      "expected_model": true,
+      "expected_strict_der": true,
+      "kind": "p2pk",
+      "label": "sighash_all_anyonecanpay",
+      "n_in": 0,
+      "note": "ANYONECANPAY: only this input is committed",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "47304402203ffefc39b1c74b22883c4ccbc87d52c4a02afd7b51adff3498ddd2db75f98bb30220746c0e850888451354f944ba0a7e063429a974de44cbd2702411a65c5d8e89cb81",
+      "tx_hex": "01000000018bfc4ee5bfe97f4352230d6e7de37cc117b0e347367b8aa13897660a509e90a0000000004847304402203ffefc39b1c74b22883c4ccbc87d52c4a02afd7b51adff3498ddd2db75f98bb30220746c0e850888451354f944ba0a7e063429a974de44cbd2702411a65c5d8e89cb81ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": false,
+      "expected_model": false,
+      "expected_strict_der": false,
+      "kind": "p2pk",
+      "label": "empty_signature",
+      "n_in": 0,
+      "note": "empty vchSig: CheckSig returns false before parsing",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "00",
+      "tx_hex": "0100000001b904716df5c90be91bdf3f2816cd080d5b194971b03baf39f9640a619cb1b8fb000000000100ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": true,
+      "expected_model": true,
+      "expected_strict_der": true,
+      "kind": "p2pk",
+      "label": "compressed_pubkey",
+      "n_in": 0,
+      "note": "the same key in 33-byte compressed SEC form; o2i_ECPublicKey accepts it",
+      "script_pubkey_hex": "2103925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd07023ac",
+      "script_sig_hex": "47304402204644155ac47f65f197fbb8e5b94dd1c6bb66540804b824314b387085fddaa67902207e58089eb59c1f4a0c263e7b64ca9476d6a98cec1d67784c102a968692dfddda01",
+      "tx_hex": "010000000137868cf34dc5d475c1a383e141405b293ae17738e227e55b00dd147c0a10ebc0000000004847304402204644155ac47f65f197fbb8e5b94dd1c6bb66540804b824314b387085fddaa67902207e58089eb59c1f4a0c263e7b64ca9476d6a98cec1d67784c102a968692dfddda01ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": null,
+      "expected_model": false,
+      "expected_strict_der": false,
+      "kind": "p2pk",
+      "label": "der_trailing_byte",
+      "n_in": 0,
+      "note": "one 0x00 byte between the DER and the hash type: strict verifiers reject; OpenSSL 0.9.8's d2i is not known to",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "493045022100b56856a034d24e772eb1e65aa13aa70159744c39e13769056903f10b74c330200220229e45f5088651890126b4521ad3e88ff60c5fdcec44ec7419a7461964a70d9e0001",
+      "tx_hex": "01000000012060a115d8c2105b066bb27c3e4a8ea84724269175c6553aed2be6823e3895ed000000004a493045022100b56856a034d24e772eb1e65aa13aa70159744c39e13769056903f10b74c330200220229e45f5088651890126b4521ad3e88ff60c5fdcec44ec7419a7461964a70d9e0001ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": null,
+      "expected_model": false,
+      "expected_strict_der": false,
+      "kind": "p2pk",
+      "label": "der_long_form_length",
+      "n_in": 0,
+      "note": "outer length in BER long form (81 LL): strict DER rejects; BER-tolerant parsers accept",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "48308144022064f464225b6d02783f781b305b2671d3512cbb43f8bda8c46f2d17b4dc632580022028e6f6528fa8190b1d1cbcb8e1db6f104295fcbadddf78a45440fa616a0d76dc01",
+      "tx_hex": "0100000001086edca98f7a4cf5d2187eb7657ac6e18b0ac5c5cbaa4345e1443aee7c359542000000004948308144022064f464225b6d02783f781b305b2671d3512cbb43f8bda8c46f2d17b4dc632580022028e6f6528fa8190b1d1cbcb8e1db6f104295fcbadddf78a45440fa616a0d76dc01ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": null,
+      "expected_model": false,
+      "expected_strict_der": false,
+      "kind": "p2pk",
+      "label": "der_r_extra_leading_zero",
+      "n_in": 0,
+      "note": "r with a redundant 0x00 pad: non-minimal integer, strict DER rejects; BER-tolerant parsers accept",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "4830450221002f5522c66bbe392a10984b7921fceac053501991ffdc7b31ae9811137c632a8f022062d8b16e3198b4fe5c59adab18108a415b7880a6b40913daba0e2820212da63c01",
+      "tx_hex": "0100000001046f4a5d351530aeb22515a2066da57aa7fc699e951013d5dc7b7296f80e126200000000494830450221002f5522c66bbe392a10984b7921fceac053501991ffdc7b31ae9811137c632a8f022062d8b16e3198b4fe5c59adab18108a415b7880a6b40913daba0e2820212da63c01ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": false,
+      "expected_model": false,
+      "expected_strict_der": false,
+      "kind": "p2pk",
+      "label": "der_negative_r",
+      "n_in": 0,
+      "note": "r's sign pad removed so it parses as negative: rejected on the arithmetic, whatever the parser",
+      "script_pubkey_hex": "4104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249fac",
+      "script_sig_hex": "4730440220ac26a72cdc649c1a67b0dfe92e4c116b10028e9405db45ca2964ea04996a6da202206a8c29544cb5586a97b1549a249d6dffb4efdc3349a43b04152ca6876a7f754801",
+      "tx_hex": "0100000001bd9a3a3611f9a21308a2e3d6fb1ca738b94182d5d563dcc3d33b5776310c09f200000000484730440220ac26a72cdc649c1a67b0dfe92e4c116b10028e9405db45ca2964ea04996a6da202206a8c29544cb5586a97b1549a249d6dffb4efdc3349a43b04152ca6876a7f754801ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": true,
+      "expected_model": true,
+      "expected_strict_der": true,
+      "kind": "multisig",
+      "label": "multisig_1of2",
+      "n_in": 0,
+      "note": "OP_1 <A> <B> OP_2 OP_CHECKMULTISIG spent with OP_0 <sigA>: the leading dummy is what the off-by-one pop eats",
+      "script_pubkey_hex": "514104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249f41049eee3b44095dabe757f8be52a0aaa3a65d52e4601364661085a1bd2e9ea2664b9a204f042da2e18492bf5adac53ecc21337998e510f55b83422210eaf25d2cd652ae",
+      "script_sig_hex": "00483045022100a1340147fcbd8bcdc25b630b1ea0e46591da0dd05f5d38089b111714cadb5f4d0220083e1191387f8f34c8a0f93d15f7a25eca425107c27dccd2119e024c3a83b55e01",
+      "tx_hex": "01000000010f7207449002bbcfbc4bec37caaa811a221288feb33160633f629bed7044f316000000004a00483045022100a1340147fcbd8bcdc25b630b1ea0e46591da0dd05f5d38089b111714cadb5f4d0220083e1191387f8f34c8a0f93d15f7a25eca425107c27dccd2119e024c3a83b55e01ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": true,
+      "expected_model": true,
+      "expected_strict_der": true,
+      "kind": "multisig",
+      "label": "multisig_2of2_in_order",
+      "n_in": 0,
+      "note": "signatures in key order; each key is tried once, in order",
+      "script_pubkey_hex": "524104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249f41049eee3b44095dabe757f8be52a0aaa3a65d52e4601364661085a1bd2e9ea2664b9a204f042da2e18492bf5adac53ecc21337998e510f55b83422210eaf25d2cd652ae",
+      "script_sig_hex": "00483045022100fa24607d8a7310c9bba356502976e1a38338e9a19dd53473a1f75ae6884873f3022078dfe4a56fee746b5e3a8e4291569f3000187e6f2b4bccb162b595b71a174be901483045022100a335da959d99416470fbb6301a65b338e93c6b9bbbe550e1d7aedb8436948aa502204d33e4201fab6404b756a68cea6f1a855e457979e81ebac3ee4be837e89b3ea501",
+      "tx_hex": "01000000014d7d15504b1d65a2f03189fb11e71e2999f149263a5c71ae1bec660f9b5d030d000000009300483045022100fa24607d8a7310c9bba356502976e1a38338e9a19dd53473a1f75ae6884873f3022078dfe4a56fee746b5e3a8e4291569f3000187e6f2b4bccb162b595b71a174be901483045022100a335da959d99416470fbb6301a65b338e93c6b9bbbe550e1d7aedb8436948aa502204d33e4201fab6404b756a68cea6f1a855e457979e81ebac3ee4be837e89b3ea501ffffffff01e803000000000000015100000000"
+    },
+    {
+      "expected_binary": false,
+      "expected_model": false,
+      "expected_strict_der": false,
+      "kind": "multisig",
+      "label": "multisig_2of2_reversed",
+      "n_in": 0,
+      "note": "signatures out of key order: key A is skipped past, so the second signature has no key left",
+      "script_pubkey_hex": "524104925fd62e1a131feda299565bdee5507014ae9b2c54e5cfd5b781230b4cd0702383fcb73f9298a9bfe384eb3565285d84d4b0f0bd7206b2f890f59f789cde249f41049eee3b44095dabe757f8be52a0aaa3a65d52e4601364661085a1bd2e9ea2664b9a204f042da2e18492bf5adac53ecc21337998e510f55b83422210eaf25d2cd652ae",
+      "script_sig_hex": "00483045022100e3759e1a7520675a3a98152f08acdab4a2870d8420a8e8d4bdd848ff18115d2e02200badac0eb5f1bd58996648c62ab6c6c6d9be5946c4693968e2ec18c79c1c8cc70148304502210081ae4bf70d77ad50e3df3bed1f6e9af287e97f1ef78d9042407a69cea2c2f13a02204aee2db2e373df73145a80e10b61a66c25118b65ed1ebeffe420a419095417c001",
+      "tx_hex": "0100000001744464f9b6d6380977861873ae027573f6863ce2f3281e4a388b99c68e058656000000009300483045022100e3759e1a7520675a3a98152f08acdab4a2870d8420a8e8d4bdd848ff18115d2e02200badac0eb5f1bd58996648c62ab6c6c6d9be5946c4693968e2ec18c79c1c8cc70148304502210081ae4bf70d77ad50e3df3bed1f6e9af287e97f1ef78d9042407a69cea2c2f13a02204aee2db2e373df73145a80e10b61a66c25118b65ed1ebeffe420a419095417c001ffffffff01e803000000000000015100000000"
+    }
+  ]
+}
