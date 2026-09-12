@@ -109,7 +109,8 @@ calendars, into the chain whose genesis is `000000000019d668…` — identified 
 that proves is that the blocks existed before the anchoring block, and nothing more. This chain is
 not a timestamp ledger, and no proof should treat its `nTime` or its accumulated work as evidence
 of when anything happened. The fidelity that makes it useless as a notary is exactly what makes it
-useful as a reconstruction.
+useful as a reconstruction. A change to this chain's consensus rules would not be a change to this chain
+but a different chain, with its own genesis.
 
 [`CHRONOLOGY.md`](CHRONOLOGY.md) — every dated fact about this chain and the agent that authored it,
 **with what each timestamp is actually worth.** The genesis and block-1 times are bound into
