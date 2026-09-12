@@ -25,7 +25,9 @@ def main(argv=None) -> int:
     ap.add_argument("--log", action="append", default=[])
     ap.add_argument("--json")
     a = ap.parse_args(argv)
-    res = json.loads(pathlib.Path(a.results).read_text())["results"]
+    whole = json.loads(pathlib.Path(a.results).read_text())
+    res = whole["results"]
+    print(f"target: {whole.get('target', '?')}   chain: {whole.get('chain', '?')}   node: {whole.get('node', '?')}")
     logs = "\n".join(pathlib.Path(p).read_text(encoding="utf-8", errors="replace") for p in a.log)
     report = {"suites": {}, "disagreements": [], "pending_binary_values": {}, "log_checks": []}
 
@@ -58,7 +60,8 @@ def main(argv=None) -> int:
     for d in report["disagreements"]:
         print(f"  DISAGREE {d['suite']}/{d['label']}: {json.dumps(d['observed'])[:200]}")
     if report["pending_binary_values"]:
-        print("binary verdicts recorded for pending checksig vectors:")
+        print(f"verdicts of target '{whole.get('target', '?')}' on the pending checksig vectors "
+              f"(they belong to THAT binary's OpenSSL; the 2009 column is only the 2009 binary's):")
         for k, v in report["pending_binary_values"].items():
             print(f"  {k:30s} {v}")
     if report["log_checks"]:

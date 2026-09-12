@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Replay the corpus against a running January 2009 bitcoin.exe, over its own wire protocol.
+"""Replay the corpus against a running v0.1 bitcoin.exe, over its own wire protocol.
 
-    python replay.py --node 192.168.56.101 [--witness 192.168.56.102] [--out results/2026-09-20]
-                     [--miner PATH] [--threads N] [--phase all|sync|fund|mature|scripts|checksig|blocks]
-                     [--genesis 2009|<hash>] [--pow-limit 1d00ffff] [--port 8333]
+    python replay.py --chain 2026 --target release-v0.1.3-openssl-1.0.2u --node CLONE_IP --out results/<date>-release
+    python replay.py --chain 2009 --target 2009-fbcac071-openssl-0.9.8  --node A_IP --witness B_IP --out results/<date>-2009
+        [--miner PATH] [--threads N] [--phase all|sync|fund|mature|scripts|checksig|blocks]
+        [--port N] [--magic hex] [--genesis preset|<hash>] [--pow-limit 1d00ffff]
+
+--chain selects magic, port and genesis (identification is by genesis, never by version number). ONLY ever
+point this at an ISOLATED node: it mines ~112 blocks, pays their coinbases to OP_TRUE and spends test
+outputs, which must never reach the public 2026 chain (see RUNBOOK.md).
 
 What it does, in order (each phase resumes from --out/state.json):
   sync     fetch the node's whole main chain with getblocks/getdata and validate it locally with the
@@ -42,6 +47,17 @@ GENESIS_2009 = bytes.fromhex("000000000019d6689c085ae165831e934ff763ae46a2a6c172
 CORPUS = HERE.parent
 OUT_VALUE = 1000
 
+# The two chains the same v0.1 code runs on. Identification is by the coinbase of block 0, never by the
+# version number (derivatives/bitcoin/00-PROVENANCE.txt); here by genesis hash, magic and port.
+CHAINS = {
+    "2009": {"magic": "f9beb4d9", "port": 8333,
+             "genesis": "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+             "note": "Satoshi's chain; the frozen 2009 bitcoin.exe (OpenSSL 0.9.8) in the R4 appliance"},
+    "2026": {"magic": "f00ba726", "port": 18026,
+             "genesis": "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a",
+             "note": "this lab's Bitcoin (2026); the release client (OpenSSL 1.0.2u) — replay on an ISOLATED clone only"},
+}
+
 
 def load(name: str) -> dict:
     return json.loads((CORPUS / name).read_text(encoding="ascii"))
@@ -54,7 +70,11 @@ class Replay:
         self.out.mkdir(parents=True, exist_ok=True)
         self.state_path = self.out / "state.json"
         self.state = json.loads(self.state_path.read_text()) if self.state_path.exists() else {}
-        self.genesis = GENESIS_2009 if a.genesis == "2009" else bytes.fromhex(a.genesis)[::-1]
+        preset = CHAINS[a.chain]
+        self.genesis = bytes.fromhex(preset["genesis"] if a.genesis == "preset" else a.genesis)[::-1]
+        self.magic = bytes.fromhex(a.magic or preset["magic"])
+        self.port = a.port or preset["port"]
+        self.target = a.target
         self.pow_limit = int(a.pow_limit, 16)
         self.chain = spec.Chain2009(self.pow_limit, self.genesis)
         try:                                       # grade full-vocabulary spends locally too, when the model is here
@@ -63,14 +83,18 @@ class Replay:
         except Exception:                          # noqa: BLE001
             pass
         self.mine = minerlib.make_miner(a.miner, a.threads, self.log)
-        self.peer = Peer(a.node, a.port)
-        self.witness = Peer(a.witness, a.port) if a.witness else None
+        self.peer = Peer(a.node, self.port, self.magic)
+        self.witness = Peer(a.witness, self.port, self.magic) if a.witness else None
         self.key, self.wrong, self.kb = (recipes.key_from_label(x) for x in ("checksig-a", "checksig-wrong", "checksig-b"))
         self.bkey, self.bwrong = recipes.key_from_label("blocks-a"), recipes.key_from_label("blocks-wrong")
         self.evalscript = load("evalscript.json")["vectors"]
         self.variants = recipes.build_sig_variants(self.key, self.wrong, self.kb)
         self.blocks_expect = {v["label"]: v for v in load("blocks.json")["vectors"]}
-        self.log(f"node {a.node}:{a.port} version {self.peer.their_version}; miner: {self.mine.backend}")
+        self.log(f"target '{self.target}': chain {a.chain} magic {self.magic.hex()} node {a.node}:{self.port} "
+                 f"version {self.peer.their_version}; miner: {self.mine.backend}")
+        self.state.setdefault("target", self.target)
+        if self.state["target"] != self.target:
+            raise RuntimeError(f"state.json belongs to target '{self.state['target']}', not '{self.target}' — use another --out")
 
     # ---- plumbing ------------------------------------------------------------------------------
     def log(self, msg: str) -> None:
@@ -271,7 +295,8 @@ class Replay:
         self.finish()
 
     def finish(self) -> None:
-        results = {"node": self.a.node, "genesis": self.genesis[::-1].hex(), "finished": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        results = {"target": self.target, "chain": self.a.chain, "magic": self.magic.hex(), "port": self.port,
+                   "node": self.a.node, "genesis": self.genesis[::-1].hex(), "finished": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                    "miner": self.mine.backend, "results": self.state.get("results", {}), "funding": self.state.get("funding"),
                    "final_height": self.chain.height}
         (self.out / "results.json").write_text(json.dumps(results, indent=1, sort_keys=True))
@@ -282,12 +307,17 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--node", required=True)
     ap.add_argument("--witness")
-    ap.add_argument("--port", type=int, default=8333)
+    ap.add_argument("--chain", choices=sorted(CHAINS), default="2009",
+                    help="which chain the node runs: sets magic, port and genesis (2009 = Satoshi's; 2026 = this lab's)")
+    ap.add_argument("--target", default="unlabelled",
+                    help="label for the binary under test, e.g. '2009-fbcac071-openssl-0.9.8' or 'release-v0.1.3-openssl-1.0.2u'")
+    ap.add_argument("--port", type=int, help="override the chain preset's port")
+    ap.add_argument("--magic", help="override the chain preset's 4-byte magic (hex)")
     ap.add_argument("--out", default="results/latest")
     ap.add_argument("--miner", help="path to the native miner (default: replay/miner-rs/target/release/miner[.exe] if built)")
     ap.add_argument("--threads", type=int)
     ap.add_argument("--phase", default="all")
-    ap.add_argument("--genesis", default="2009", help="'2009' or a genesis hash (display order)")
+    ap.add_argument("--genesis", default="preset", help="'preset' or a genesis hash (display order); test chains only")
     ap.add_argument("--pow-limit", default="1d00ffff")
     a = ap.parse_args(argv)
     r = Replay(a)
