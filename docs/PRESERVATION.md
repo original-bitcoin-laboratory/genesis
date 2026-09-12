@@ -212,6 +212,10 @@ independently arrive at.
 |  | `bitcoin-0.1.4.tar.gz.asc` | `QmZ3pHMbpbs3gUHWqZevm3YQJSWLXkAC41MyFRqAaTsDFr` |
 |  | `SHA256SUMS` | `QmQN1W5tBW9Rxd6bjrRpJA8qhrY3SFMWTaVEyMHZ58U9Rz` |
 |  | `SHA256SUMS.asc` | `QmZcdo8aa4zXzWnktzU1JH2vSog77PhbwXEXc8AXiEbxsQ` |
+| Bitcoin-v0.1.3 | `bitcoin-0.1.3.tar.gz` | `QmW5MRVigVZgawTE2tAHjSjbSvnhd4dNBXhGuJ9FTLjKWQ` |
+|  | `bitcoin-0.1.3.tar.gz.asc` | `Qmev6Bn9dNL56cfdHcC26s412BJkpFDbRnVD2Rrth4TjXp` |
+|  | `SHA256SUMS` | `QmUk5XkdxWzaLcBvPXrsUfX2bXFjzgeFSxJZMMhreBoLYB` |
+|  | `SHA256SUMS.asc` | `QmTkA1rbhDcxhdfW4tPuAoQmVFQcY3fv6iMrpStHhjDxn6` |
 
 
 | release | file | CID |
@@ -230,6 +234,15 @@ independently arrive at.
 |  | `obl-genesis-0.6.0.tar.gz.asc` | `Qmdqiokepjo4TGCY92ZZkrxQoUQnWcfrpE2djr1QPFnySu` |
 |  | `SHA256SUMS` | `QmdmnsHfq65Thdzdqax3K7edfNKUDHy5hAxKt7TUveLcJg` |
 |  | `SHA256SUMS.asc` | `Qmd5cdEULtuJu2cxqyAPsqNgBhGSTtTkgkgQivWfJjW53r` |
+| v0.5.0-experimental | `obl-genesis-0.5.0.tar.gz` | `QmVSNMtK2yKSSyqgTQrig1zSf6qP62QuCiaMRTppQbo7BZ` |
+|  | `obl-genesis-0.5.0.tar.gz.asc` | `QmdiYoPYcNACEvQCVVjNgyc8D54WHHcgMFVxnTAbRwysB1` |
+|  | `SHA256SUMS` | `QmeuSjNdCeT7VUiwSPKFLk8wiPEztJDhH3rT6cyrmLUzVE` |
+|  | `SHA256SUMS.asc` | `QmdEUSgAAC2mEjW5jdsxLpdUQYGoSGvHLJkuVLByKKRchC` |
+| v0.4.0-experimental | `obl-genesis-0.4.0.tar.gz` | `QmYCW5TQffpasTKJbBAh7hppcmgkTVPXuS736d36ZXpxhE` |
+|  | `obl-genesis-0.4.0.tar.gz.asc` | `QmcFX3hULEMK5Fwfw9WLyGi2qKPLLpnakPWc8z5NKwov1S` |
+|  | `SHA256SUMS` | `QmUawqV9FfeZ6yaAuuQRiTuvhZf6q62uGUr8K2SqFkMVS1` |
+|  | `SHA256SUMS.asc` | `QmTNKkBUtm6vn1tpKUwjQuqeQtzp4AQA3fJfqD6iv2oAVS` |
+|  | `parthod0x-signing-key.asc` | `QmZ9oh6Gd4tstDorAdWdC2EJ1Jak2rwaVpfg3rUzCZhNio` |
 
 *(the table below continues with earlier releases)*
 
@@ -261,7 +274,11 @@ gateway — then check what comes back against `SHA256SUMS` from the release its
 |  | `SHA256SUMS` | `Qmaf8bxgYaVRCKuPhjLYjNKsJo2w83ZLkYfSgYJzqhuw2z` |
 |  | `SHA256SUMS.asc` | `QmSBaJArg2Hr1u1FBCjacbhvo2WBYU3Wp4j3vmBBjoozXp` |
 
-`v0.5.0-experimental`: `obl-genesis-0.5.0.tar.gz` → `QmVSNMtK2yKSSyqgTQrig1zSf6qP62QuCiaMRTppQbo7BZ`.
+The v0.5.0 and v0.4.0 rows above, and the Bitcoin-v0.1.3 rows, were added on 12 September 2026 after a
+reconciliation of the pinning account against this record: every CID was re-derived from the release bytes
+with a standard-library CIDv0 calculator that was first validated against four pins recorded here earlier.
+The `.ots` and `.slhdsa` files of releases before v0.7.0 (and satoshi-onchain before v1.2.0) were never pinned;
+they are being re-pinned by re-running the preservation workflow per tag, and will be recorded when done.
 
 Everything preserved is **hash-anchored**, which is what makes redundancy safe: a mirror cannot silently
 drift, because the genesis, the release tarballs, and the evidence bundles all carry digests that a copy
