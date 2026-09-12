@@ -65,7 +65,7 @@ next.
 ```bash
 python make_chain.py                      # derive the client source
 SRC=$PWD/src bash ../build-reconstruction/full_build_wsl.sh
-bash make_release.sh                      # -> dist/bitcoin-0.1.2.tar.gz
+NAME=bitcoin-0.1.x bash make_release.sh   # -> dist/bitcoin-0.1.x.tar.gz
 ```
 
 `make_chain.py` composes the client source from two inputs: the v0.1.0 source tree, SHA256

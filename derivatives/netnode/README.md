@@ -148,4 +148,4 @@ libsecp256k1 verifier), and — the part no code delivers — **other operators.
 "eternal" once independent people choose to keep running it. **Not money.**
 
 Provenance: consensus is `chainsync.Chain` (faithful to v0.1); the transport, persistence, and CLI
-are **NEW‑EXP**. A tool, never authority (`../../../common/AUTHORITY.md`).
+are **NEW‑EXP**. A tool, never authority ([AUTHORITY.md](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).

@@ -10,7 +10,7 @@ is nothing here to buy, sell, or hold, and there never will be. Read [why](#the-
 - **Bitcoin** — **not a reconstruction.** It runs Satoshi’s released **January 2009 client itself**,
   on a genesis of its own, mined at the original difficulty‑1, its coinbase carrying the front page
   of the day it was mined. Its own network, its own signed release (`Bitcoin-v0.1.5`), and a chain it is
-  **still mining** — **blocks 2–4 were mined by the released client itself.** It does **not** interoperate
+  **still mining** — **every block after block 1 has been mined by the released client itself.** It does **not** interoperate
   with the two below, and it has its own seed rather than sharing the crawler.
 
 **NOV08‑X** and **JAN09‑X** are faithful, executable **reconstructions** of the earliest Bitcoin —
@@ -36,8 +36,9 @@ and [`../../common/RELEASE_AS_CANDIDATES.md`](https://github.com/original-bitcoi
   whose design sits at **distance 0** from the origin (see the interactive tracker at
   [`tracker.html`](https://bitcoin-lab.org/)). BTC and BSV are
   **continuity candidates** — branches of the launched chain. Both *kinds* are candidates; which lens
-  counts (continuity vs fidelity) is itself a choice. So these stand as **equal contenders**, not
-  lesser ones — they just haven't been *run by anyone but us yet.* That is what this invitation is for.
+  counts (continuity vs fidelity) is itself a choice. So these are candidates under a different lens —
+  ranked neither above nor below the continuity chains here — and they have not yet been *run by anyone
+  but us.* That is what this invitation is for.
 - **Distance is not identity, and not probability.** The tracker measures conformance to a chosen
   origin, nothing more.
 
@@ -110,7 +111,7 @@ verifier. Full steps: [`../derivatives/netnode/RUN.md`](../derivatives/netnode/R
 
 This anchor is a **convenience, not an authority**: it can disappear tomorrow and nothing is lost —
 the genesis is reproducible forever from `scripts/verify_genesis.py`, and any node you run is an equal
-peer. The name `seed.bitcoin-lab.org` resolves to the anchor (`143.110.255.205` today); if the anchor
+peer. The name `seed.bitcoin-lab.org` resolves to the anchor; if the anchor
 ever moves, the name follows it — so prefer the name, and the reproducible recipe over both. **Not money.**
 
 ### Or join Bitcoin with the released 2009 client
@@ -139,7 +140,7 @@ you.
 `bitcoin.exe`** containing one address per line:
 
 ```
-168.144.27.117
+<the current IPv4 of bitcoin.bitcoin-lab.org — look it up with nslookup>
 ```
 
 `CAddrDB::LoadAddresses` reads it before anything else, and `CAddress`'s string constructor defaults
@@ -150,7 +151,7 @@ No switch, no eleventh line, no dependency on a third party outliving the chain.
 and nothing else — `Test-NetConnection 1.1.1.1 -Port 53` failed, so `chat.freenode.net` was
 unreachable by construction and no IRC bootstrap was possible. With a 16-byte `addr.txt` containing
 the bare address beside `bitcoin.exe`, the client opened and held a session to the seed, observed
-from the seed side as an established connection to `168.144.27.117:18026`. `addr.txt` is therefore
+from the seed side as an established connection to the seed's address on port 18026. `addr.txt` is therefore
 the only path by which it could have learned that address.)*
 
 **It announces itself the same way.** Its nickname is `EncodeAddress(addrLocalHost)`: your own routable
@@ -161,7 +162,7 @@ so the nickname falls back to a random value. There is no transport encryption, 
 `wallet.dat` is written in the clear. **Run it in an isolated VM.**
 
 ```
-verify first:  sha256  d24469a4894ad40554fab111b823faf2aa57a42d901f38089a1bb87753c93c9b
+verify first:  sha256  e6cf0b13ea1177733a46fbf263e83458f6fcdd03a9cd1b0a35f9528079c6adc4   # bitcoin-0.1.5.tar.gz
 then:          bitcoin.exe          # add /gen to mine
 ```
 

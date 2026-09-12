@@ -22,8 +22,8 @@ one NS delegation away from taking over the moment that's true.
 
 ## The live crawler (deployed, verified)
 
-Crawling DNS seeds run as `obl-dnsseed.service` on **both anchors** — `143.110.255.205` (Box 1) and
-`178.62.236.102` (Box 2) — each bound to its public IP on **:53** (systemd-resolved keeps only the
+Crawling DNS seeds run as `obl-dnsseed.service` on **both anchors** — `143.110.255.205` (anchor A) and
+`178.62.236.102` (anchor B) — each bound to its public IP on **:53** (systemd-resolved keeps only the
 `127.0.0.53` stub, so the public `:53` is free). Each connects to every known node over the real
 netnode wire, does the `version` handshake — proving the node is **reachable and on jan09x** — harvests
 the peers it gossips, and answers `A` queries for `seed.bitcoin-lab.org` with the live **healthy** set.
@@ -41,10 +41,10 @@ Resolve-DnsName -Server 178.62.236.102 seed.bitcoin-lab.org -Type A
 Deploy/redeploy: [`../netnode/deploy/obl-dnsseed.service`](../netnode/deploy/obl-dnsseed.service)
 (`ufw allow 53/udp` first).
 
-## To activate crawling (delegate the zone) — Namecheap
+## To activate crawling (delegate the zone)
 
 Both nameservers are live and **redundant**, so the delegation is ready to flip whenever you want a
-fully dynamic seed. In **Namecheap → Domain List → bitcoin-lab.org → Manage → Advanced DNS**:
+fully dynamic seed. In the registrar's zone editor for bitcoin-lab.org:
 
 1. **Remove** the two `A` records for host `seed` (the current static anchors).
 2. **Add** two `A` records — the nameservers' own addresses (glue):

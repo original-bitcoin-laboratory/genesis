@@ -236,8 +236,8 @@
   <h2 class="sec">Verify it yourself</h2>
   <p class="lede" style="font-size:14px;max-width:70ch">Each verifier re-derives its result <b>from the raw block bytes</b> — it reads the
     <code style="font-family:var(--mono)">blk0001.dat</code> files named on its command line, checks the genesis, proof-of-work,
-    linkage, best chain, and (for the reorg) the retained orphan. Get the block files + verifiers from the archival deposit
-    (or the findings folders in the repo):</p>
+    linkage, best chain, and (for the reorg) the retained orphan. Get the block files + verifiers from the findings folders in the repo
+    (<code style="font-family:var(--mono)">r4-findings/</code>, <code style="font-family:var(--mono)">r3-findings/</code>):</p>
   <pre class="cmd"><span class="c"># every file in the deposit</span>
 sha256sum -c SHA256SUMS
 
@@ -283,8 +283,8 @@ grep -n "AcceptTransaction(): accepted f4309c" \n    2026-08-06-relayed-spend/no
     re-run the verifiers on the bytes, and reproduce the runs from the released binary and the runbook. What
     they show is behaviour: an <i>unmodified</i> 2009 client still boots on its real genesis and does the
     full job of a node — mine, relay, sustain a chain, and reorganise. They do not, and cannot, decide which
-    live network today "is" Bitcoin — that is convention, not fact, and this lab privileges none. The archival
-    deposit (with DOI) makes the evidence citable; it is <b>not money</b> — isolated networks, no premine, no
+    live network today "is" Bitcoin — that is convention, not fact, and this lab privileges none. The sealed, hashed and
+    Bitcoin-anchored findings sets make the evidence citable; it is <b>not money</b> — isolated networks, no premine, no
     value assigned.</p>
 </div>
 
@@ -309,8 +309,8 @@ grep -n "AcceptTransaction(): accepted f4309c" \n    2026-08-06-relayed-spend/no
        title="the same key from a keyserver, so the key and the release do not come from one host">keyserver</a>
   </p>
   <p class="lf-related">Related · <a href="https://satoshioncha.in">Satoshi On-Chain</a> — the verifiable
-    on-chain footprint of the original Satoshi. This lab gets to the bottom of <i>Bitcoin</i>; that one
-    gets to the bottom of <i>Satoshi</i>. ·
+    on-chain footprint of the original Satoshi. This lab studies <i>Bitcoin</i> by making the earliest code run; that one
+    measures what the chain records about <i>Satoshi</i>. ·
     <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> — which version is which,
     and how to tell from the bytes. &middot;
     <a href="/docs.html">all documents</a></p>

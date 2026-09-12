@@ -12,10 +12,16 @@ these images corroborate that record and show the operator's-eye view (both VMs'
 Both nodes are unmodified 2009 `bitcoin.exe` (sha256 `fbcac071…`) in Oracle VirtualBox VMs
 (`obl-r4-node-a` left, `obl-r4-node-b` right) on the network-isolated Internal Network `172.20.0.0/24`.
 
+> **The image files are not in this repository.** They are full host-desktop captures and, per the
+> policy in `bitcoin-findings/2026-08-05-block1/FINDINGS.md`, host captures are local evidence rather
+> than published deposits. They were removed on 12 September 2026; `SHA256SUMS` below still names
+> every frame, so the offline copies remain checkable.
+
 ## Reading the timestamps
 
-**File names carry the host clock, which is authoritative and monotonic** (`YYYY-MM-DD_HHMMSS`). The two
-guests run **≈4.5 h behind** the host (a guest showing `23:15 31-07` was captured at host `03:45 01-08`),
+**File names carry the host clock, which is authoritative and monotonic** (`YYYY-MM-DD_HHMMSS`). The
+guests' clocks are offset from the host clock by several hours, so a time inside a window does not
+match the file name;
 and the v0.1 wallet also shows each block's own `nTime`. So order the run by the filename, not by the
 clock inside a window. The wallet "matures in *N* blocks" text is v0.1's coinbase-maturity countdown (100
 confirmations), not a difficulty or value figure.

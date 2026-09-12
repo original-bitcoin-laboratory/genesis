@@ -72,7 +72,7 @@ checks, long after anyone is watching.
 
 ```bash
 openssl pkeyutl -sign -rawin -in SHA256SUMS \
-  -inkey <OBL-BACKUP>/01-keys-SECRET/pq-counter-signing/pq-countersign-sk.pem \
+  -inkey <path-to-the-offline-pq-secret-key> \
   -out SHA256SUMS.slhdsa                                    # 7,856 B
 
 openssl pkeyutl -verify -pubin -rawin -in SHA256SUMS \
@@ -120,8 +120,8 @@ Four things that are easy to get wrong:
   `LoadLibrary() argument 1 must be str, not None` — `ots` imports python-bitcoinlib, which loads an
   OpenSSL DLL at import time for *wallet* code an upgrade never touches. **Every subcommand dies
   before parsing its arguments.**
-  > ★ **Preferred: `python _ots_upgrade.py` at the workspace root** (`--dry-run` to report only). It
-  > reaches the calendars through the pure-python `opentimestamps` library, needs no WSL, and decides
+  > ★ **Preferred: a short script over the pure-python `opentimestamps` library** (with a dry-run mode). It
+  > reaches the calendars directly, needs no WSL, and decides
   > pending-vs-anchored by **parsing the proof** rather than by reading console output or file size.
   > It also writes **no `.bak`**, so the trap two bullets down cannot arm itself.
   >
@@ -218,8 +218,8 @@ anchor, and none of those expire.
 
 ### ★ This is no longer your job to remember
 
-**Run `python _verify_self_sufficient.py`.** Section 4 walks every `.ots` in the workspace, and
-**FAILS** on any proof inside `OBL-BACKUP/` or `archives/` that carries no
+**Run a proof sweep.** Walk every `.ots` you hold, and
+**FAIL** on any proof that carries no
 `BitcoinBlockHeaderAttestation`. It also reports stray `.ots.bak` files, which are the other half of
 the same hazard.
 

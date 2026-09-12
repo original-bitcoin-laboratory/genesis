@@ -29,7 +29,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 HEX64 = re.compile(r"\b([0-9a-f]{64})\b")
 DOCEXT = (".md", ".html", ".txt")
-SKIP_DIRS = {".git", "node_modules", "__pycache__", "OBL-BACKUP"}
+SKIP_DIRS = {".git", "node_modules", "__pycache__"}
 
 argv = sys.argv[1:]
 if "--artifacts" in argv:

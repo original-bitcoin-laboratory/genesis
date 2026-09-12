@@ -16,7 +16,7 @@ recalled** — it will be mirrored within hours and content-addressed forever.
 ## ⚠️ FIRST, A CORRECTION TO THIS FILE'S OWN PREMISE — added the day it was written
 
 **The existing appliance is NOT a candidate for publication, and that was already decided before
-this checklist was drafted.** `OBL-BACKUP/05-vm/OVA-RECORD.md`, written 8 August 2026, records:
+this checklist was drafted.** An internal record written 8 August 2026 states:
 
 ```
 obl-r4-nodes.ova   23.8 GiB   sha256 5C37A79ED31F53BD4D6AB6D5C645777C0869B309C4A59F25EB90E9EDEC249983

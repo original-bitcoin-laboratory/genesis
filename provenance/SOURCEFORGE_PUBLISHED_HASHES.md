@@ -68,7 +68,7 @@ laboratory anchors to reproduction rather than to a published digest.
 **The archive circulated as `bitcoin-0.1.0.rar` is v0.1.1.** Its size, 2,132,686 bytes, is precisely
 the figure Satoshi states for **`bitcoin-0.1.1.rar`** in a 10 January 2009 message; its shipped
 `bitcoin.exe` carries a PE `TimeDateStamp` of 2009-01-10, two days after v0.1.0 was announced. See
-[`../../common/VERSION_LABEL.md`](../../common/VERSION_LABEL.md).
+[`common/VERSION_LABEL.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md).
 
 **Neither correction changes any consensus result** — the v0.1.0→v0.1.1 delta is confined to
 `irc.cpp` and `serialize.h`, and `main.cpp` is untouched. **What changes is what may be claimed about

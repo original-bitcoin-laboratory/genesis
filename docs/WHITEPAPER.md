@@ -9,8 +9,8 @@ to every other document:
 > **A SHA-256 is not a reproduction.** We publish findings *about* documents — hashes, sizes, page
 > counts, metadata, provenance, searched negatives — and we point at sources other people published.
 
-The whitepaper carries **no licence and no copyright notice**. It is not public domain and it is not
-MIT. Copyright in it subsists automatically and vests in its author, who has never been identified.
+The whitepaper carries **no licence and no copyright notice**, and its author has never been
+identified. This laboratory does not redistribute it; it identifies it by hash and points at copies others publish.
 **Serving a copy of a work whose owner we cannot name, while telling everyone else that a hash beats
 a copy, was the weaker position.** So we stopped.
 
@@ -47,6 +47,7 @@ PRE-RELEASE    3 Oct 2008    183,697 B   8 pages
 11 NOVEMBER 2008 — NOT HELD BY ANYONE PUBLIC
   sha256  e6cc7c952c688b234f9872c3e2f50060ae6556fd27925cba503c6460048e50a9
   md5     3e5e11e1e3208d2829e887fb1c86bd05
+  source  Patrick Madden, Appendix PM3 §§42–52, COPA v Wright [2024] EWHC 1198 (Ch)
   Larger than 182,801 bytes. Eight archives searched, all controlled — it is in none of them.
 ```
 

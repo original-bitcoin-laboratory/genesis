@@ -460,7 +460,7 @@ def test_K():
     ws = HERE.parent.parent
     clones = {}
     for gitdir in ws.rglob(".git"):
-        if not gitdir.is_dir() or "OBL-BACKUP" in gitdir.parts:
+        if not gitdir.is_dir() or any("backup" in p.lower() for p in gitdir.parts):
             continue
         r = _sp.run(["git", "remote", "get-url", "origin"], cwd=gitdir.parent,
                     capture_output=True, text=True, encoding="utf-8", errors="replace")

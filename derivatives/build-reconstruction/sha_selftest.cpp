@@ -2,7 +2,7 @@
 // A test DRIVER, original to this laboratory, 2026. It reproduces no Satoshi-authored code: it
 // links against the UNMODIFIED src/sha.cpp and src/sha.h, which are Crypto++ by Wei Dai (public
 // domain, from Steve Reid's sha1.c) and carry no Satoshi notice in the 2009 release either.
-// Executes Satoshi's ORIGINAL sha.cpp (the Crypto++-derived SHA-256) on a modern
+// Executes the 2009 release's ORIGINAL sha.cpp (the Crypto++-derived SHA-256, Wei Dai) on a modern
 // 64-bit toolchain and checks it against NIST/known-answer vectors.
 //
 // This file is a DRIVER only: it links against the unmodified src/sha.cpp and

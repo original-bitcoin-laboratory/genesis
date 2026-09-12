@@ -2,9 +2,9 @@
 
 WHY
 ---
-The DigitalOcean seed at bitcoin.bitcoin-lab.org:18026 is the one piece of this project that is
+The public seed at bitcoin.bitcoin-lab.org:18026 is the one piece of this project that is
 OPERATED rather than merely published. After each mining round the honest question is not "is the
-droplet up" but "is it serving the blocks we just captured".
+host up" but "is it serving the blocks we just captured".
 
 A TCP connect cannot answer that, and neither can a version handshake: v0.1's `version` message
 carries nVersion, nServices, nTime and addrMe -- and NO block height. nBestHeight was added to the
@@ -97,9 +97,10 @@ def local_chain():
     import glob
     import os
     here = os.path.dirname(os.path.abspath(__file__))
-    ws = os.path.normpath(os.path.join(here, "..", "..", "..", ".."))
-    cands = glob.glob(os.path.join(ws, "OBL-BACKUP", "04-evidence",
-                                   "bitcoin-chain-evidence", "**", "blk0001.dat"), recursive=True)
+    # Where the captured chain files live. Defaults to this directory; point OBL_EVIDENCE_DIR at a
+    # folder of findings sets to use a longer chain.
+    root = os.environ.get("OBL_EVIDENCE_DIR", here)
+    cands = glob.glob(os.path.join(root, "**", "blk0001.dat"), recursive=True)
     if not cands:
         return None, None, 0
     path = max(cands, key=os.path.getsize)

@@ -16,7 +16,7 @@
 # The exception is executable scripts, normalised the other way -- forced to LF -- because a CRLF
 # shell script does not merely hash differently, it fails to run: bash never matches a heredoc
 # terminator written as `TXT\r` and reports only "unexpected end of file". Pinning them means a
-# script committed from Windows still runs when it lands on a droplet, and pins them identically
+# script committed from Windows still runs when it lands on a Linux host, and pins them identically
 # on every platform so the checksums above stay stable either way.
 *.sh   text eol=lf
 *.py   text eol=lf

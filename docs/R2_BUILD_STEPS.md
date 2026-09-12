@@ -88,9 +88,8 @@ classed like the NOV08‑X ledger (`ORIGINAL` / `PORT‑COMPAT` / `PLATFORM`). A
 needed 30 logged patches is honest; a silently‑edited tree is not.
 
 ### 6. Report back
-Paste me `build.log` (or the first error block) and I'll give you the exact next patch.
-This is genuinely iterative — early Bitcoin is finicky — but each error has a known fix,
-and we converge.
+Open an issue with `build.log` (or the first error block). Early Bitcoin builds are finicky,
+but each error met so far has a known fix, recorded in `BUILD_NOTES.md`.
 
 ## Goal A — reproducing the exact `bitcoin.exe` (later, harder)
 

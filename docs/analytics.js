@@ -15,8 +15,8 @@
  *   Asked in August 2026 to "track as much detail as possible", the tempting answer was a tool
  *   with per-visitor identity -- journeys, funnels, retention, returning-visitor counts. Every
  *   one of those needs to know that two events came from the SAME PERSON, and this project
- *   refuses to publish its own IPFS PeerID precisely because it would manufacture a link between
- *   an identity and a residential IP. Applying a weaker standard to READERS than to ourselves
+ *   refuses to publish its own node identifiers precisely because they would manufacture a link
+ *   between an identity and a network address. Applying a weaker standard to READERS than to ourselves
  *   would be indefensible.
  *
  *   So the expansion below adds only things that are true of a VISIT and never of a VISITOR:

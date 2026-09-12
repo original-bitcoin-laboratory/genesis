@@ -26,8 +26,8 @@ this server with an `NS` record so port‑53 resolvers reach it; binding `:53` d
 privileges). Swap `jan09x`↔`nov08x` — each chain has its own magic/port, so the seed only reports
 nodes actually on that chain.
 
-> **Live deployment.** A crawling seed for `seed.bitcoin-lab.org` runs now on Box 2
-> (`178.62.236.102:53`); today the hostname uses static A records to both anchors, with the crawler
+> **Live deployment.** Crawling seeds for `seed.bitcoin-lab.org` run on both anchors
+> (see `ACTIVATION.md`); today the hostname uses static A records to both anchors, with the crawler
 > ready to take over via one NS delegation once independent nodes exist. The decision, the live
 > details, and the exact registrar records are in [`ACTIVATION.md`](ACTIVATION.md).
 
@@ -50,4 +50,4 @@ magic, **rejects a wrong‑magic node**, harvests its gossiped address, and repo
 python -m pytest        # 3 passed
 ```
 
-**Not money.** A tool, never authority (`../../../common/AUTHORITY.md`).
+**Not money.** A tool, never authority ([AUTHORITY.md](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).

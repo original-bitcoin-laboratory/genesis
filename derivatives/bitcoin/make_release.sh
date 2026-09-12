@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# make_release.sh -- assemble bitcoin-0.1.3.tar.gz: the client binary, license.txt, readme.txt,
+# make_release.sh -- assemble bitcoin-<version>.tar.gz (set NAME): the client binary, license.txt, readme.txt,
 # src/, and RELEASE.txt. The binary is statically linked, so it ships no DLLs.
 #
 # Run:  bash make_release.sh          (after make_chain.py and the build)
@@ -93,7 +93,7 @@ To rebuild it yourself
   SRC=$PWD/derivatives/bitcoin/src bash derivatives/build-reconstruction/full_build_wsl.sh
   sha256sum derivatives/bitcoin/build/bitcoin-0.1.0-reconstructed.exe
 
-make_chain.py refuses unless each of the ten edits matches exactly once, so that step re-verifies
+make_chain.py refuses unless each of the nine substitutions (across ten lines) matches exactly once, so that step re-verifies
 the extracted tree as a side effect. Full working: docs/BUILD_NOTES.md.
 
 v0.1.0, v0.1.1 and v0.1.2 remain published and their signatures remain valid. Nothing about the

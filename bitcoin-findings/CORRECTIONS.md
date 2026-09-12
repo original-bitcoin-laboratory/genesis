@@ -115,9 +115,8 @@ attestations, the genesis constants, every findings header. **Two sealed sets al
 timezone in parentheses, and they should not have.**
 
 ```
-2026-08-06-block2/FINDINGS.md   "2026-08-06 00:23:51 UTC (05:53:51 IST)"
-                                "11 captures, 06:04-06:16 IST"
-2026-08-06-block3/FINDINGS.md   "2026-08-06 01:40:22 UTC (07:10 IST)"
+2026-08-06-block2/FINDINGS.md   two times rendered in a local timezone beside the UTC value
+2026-08-06-block3/FINDINGS.md   one such time
 ```
 
 **The UTC figure in each is correct and is the one every other record cross-checks against.** The
@@ -168,7 +167,7 @@ learns it was reconsidered.**
 unprovable by any available means."*
 
 **That is stronger than anything this laboratory has established, and stronger than its own closure
-ledger.** `CLOSURE-LEDGER.md` Q2 records the opposite: **a living key holder could sign one fresh
+ledger.** The project's own records show the opposite: **a living key holder could sign one fresh
 challenge with the genesis key and the PGP key and prove common control, now, machine-verifiably.**
 It has never been done — which makes the identity **unproven**, not **unprovable**. What is closed
 by proof is *authorship of a document*, which is a different question.
@@ -183,3 +182,31 @@ chain"*. The pseudonym is what the public collateral uses, and the real name is 
 `LICENSE` and `CITATION`. **A gendered pronoun attached to the pseudonym re-links it to the legal
 person the separation exists to keep apart** — so the pronoun is simply gone, which costs the
 sentence nothing.
+
+## ★ 12 September 2026 — a public-surface review, and what it found in the sealed sets
+
+A full review of every public surface was run on 12 September 2026. Several findings sets are
+sealed — their `SHA256SUMS` are signed and Bitcoin-anchored — so the items below are **recorded
+here rather than edited in place**, exactly as the policy at the top of this file requires.
+
+- **Internal folder labels.** Some sealed sets name the offline backup's folder layout (a cold-backup
+  path, a key-store path, a wallet filename) when saying where raw bytes and wallets are held. These
+  are labels for material that is deliberately not published; they disclose no content and no key.
+  Newer sets say "held offline" instead, and that is the wording going forward.
+- **The no-value statement.** Four sets — `2026-08-12-blocks61-63`, `2026-08-14-blocks64-121`,
+  `2026-08-19-external-blocks221-222` and `2026-08-21-first-reorganization` — carry no explicit
+  "not money" line, and one prints the chain's units with a currency ticker. The statement applies
+  to every set without exception: **NOT money.** No sale by us, no price set, we solicit no market,
+  and the units are counters, not BTC.
+- **The agent.** Wherever a set says "the agent" or "the chain's author", it means the AI agent
+  described in `derivatives/bitcoin/CHRONOLOGY.md`: a program built in 2026, not a person, and not
+  the author of the 2009 Bitcoin. The disclaimer is stated once there and applies to every set.
+- **Provider and address.** Some sets name the hosting provider of the seed node and its raw IPv4
+  address. The hostname `bitcoin.bitcoin-lab.org:18026` is the durable identifier; the provider is
+  incidental and will not be named in future sets.
+- **Local-clock times** appear in two early sets and in one later capture note, as already recorded
+  above; UTC is the only time this project writes from here on.
+- **The r4 host-desktop screenshots** were removed from the repository on 12 September 2026, in line
+  with the policy stated in `2026-08-05-block1/FINDINGS.md` (host captures are local evidence, not
+  published deposits). Their `SHA256SUMS` and `INDEX.md` remain, so the frames stay identifiable and
+  the anchored manifest still verifies against the offline copies.

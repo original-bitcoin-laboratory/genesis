@@ -44,8 +44,8 @@ WS = LAB.parent.parent
 #    one would put a file on bitcoin-lab.org that looks authoritative and proves nothing. The
 #    signature is the entire content. The signing key lives ONLY in the cold backup and is
 #    deliberately absent from the working keyring, so this step is author-gated by design.
-#  ⇒ Sign it, THEN copy it into docs/. `_pending-signature/README.md` carries the exact commands.
-OUT = Path(__file__).resolve().parents[4] / "_pending-signature" / "TAG-ATTESTATION.txt"
+#  ⇒ Sign it, THEN copy it into docs/. The signing commands are in docs/RELEASE_SIGNING.md.
+OUT = Path(os.environ.get("OBL_ATTESTATION_OUT", Path(__file__).resolve().parent / "TAG-ATTESTATION.txt"))
 
 REPOS = [("genesis", GENESIS),
          ("pre-genesis", LAB / "pre-genesis"),

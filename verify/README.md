@@ -1,14 +1,14 @@
 # verify/ — check this lab's claims yourself
 
 Two groups of scripts, and between them they let you re-derive what this lab asserts without
-trusting us: the **whitepaper** claims about `docs/bitcoin.pdf`, and the **signatures** over the
+trusting us: the **whitepaper** claims about the canonical PDF (sha256 `b1674191…`; carve it from the chain with `whitepaper_from_chain.py`, or fetch it from bitcoin.org), and the **signatures** over the
 documents and releases.
 
 Python 3.9+, standard library only. No API key, no network for the signature checks.
 
 ```bash
 python verify/whitepaper_from_chain.py  out.pdf          # carve the paper out of the block chain
-python verify/pdf_text.py               docs/bitcoin.pdf out.txt
+python verify/pdf_text.py               out.pdf out.txt
 python verify/whitepaper_body_in_mail.py  <mbox-dir> <pdf>   # which of the paper survives in 2008 mail
 python verify/whitepaper_quoted_passages.py <mbox-dir> <pdf>
 ```
@@ -28,7 +28,7 @@ The canonical file is embedded in mainnet transaction
 ```
 block   230009        2013-04-06 20:28:10 UTC
 carved  184,292 bytes  %PDF-1.4 … %%EOF
-sha256  b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553   -- matches docs/bitcoin.pdf
+sha256  b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553   -- matches the canonical PDF
 ```
 
 Exits non-zero if the hash does not match. Uses a public API so no node is needed; the same thing

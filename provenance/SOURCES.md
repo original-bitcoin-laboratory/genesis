@@ -17,7 +17,7 @@ The January 8, 2009 announcement identifies `bitcoin-0.1.0.rar`, says the open-s
 ## Whitepaper
 
 - `https://bitcoin.org/bitcoin.pdf`
-- Local captured copy: `bitcoin-whitepaper.pdf`, sha256
+- Captured copy (removed 8 August 2026, see `WHITEPAPER.md`; identity retained), sha256
   `b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553`
 
 Full working, with the archive-dated evidence that the text was revised between 31 Jan and

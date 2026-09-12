@@ -59,7 +59,7 @@ case "$BUILD" in debug|release) ;; *) BUILD=debug ;; esac
 #   with -g here     54,860,743 bytes   + 8 .debug_* sections
 # gcc 3.x-era -g did not survive into what he published. Carrying DWARF we know his binary does
 # not have would be matching the flag and missing the artifact -- and DWARF is precisely where
-# absolute build paths live, which is why the leak gate below fires on /home/xyoga when -g is on.
+# absolute build paths live, which is why the leak gate below fires on the builder's home directory when -g is on.
 # __WXDEBUG__ is kept: it is the half that has observable behaviour (debug.log, wxASSERT).
 if [ "$BUILD" = debug ]; then DEBUGFLAGS="-D__WXDEBUG__"; WXDBG="--enable-debug"
 else DEBUGFLAGS=""; WXDBG="--disable-debug"; fi

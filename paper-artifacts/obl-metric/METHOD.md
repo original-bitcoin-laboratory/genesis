@@ -1,5 +1,8 @@
 # Reference-relative protocol-profile comparison — method
 
+> **Historical record, 14 August 2026.** Figures below (four chains, 17 + 2 axes) predate the published
+> 19-axis / 5-chain artifacts; `tables/figures.json` and `CHANGELOG.md` are current.
+
 **Regenerated 14 August 2026.** ⚠️ **This file had drifted badly** — it still described a one-class
 axis rule and an 18-axis enumeration after both were replaced, and carried retracted provenance
 figures and a `988 of 988` result. **A correction not propagated to every file that states the

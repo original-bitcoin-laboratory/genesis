@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# provision.sh -- stand up a public Bitcoin (Aug 2026) node on a fresh Ubuntu 24.04 droplet.
+# provision.sh -- stand up a public Bitcoin (Aug 2026) node on a fresh Ubuntu 24.04 VPS.
 #
-# Run as root on the droplet:
-#     ssh root@168.144.27.117
-#     curl -fsSL https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/main/derivatives/bitcoin/deploy/provision.sh | bash -s -- 168.144.27.117
+# Run as root on the host:
+#     ssh root@<public-ip>
+#     curl -fsSL https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/main/derivatives/bitcoin/deploy/provision.sh | bash -s -- <public-ip>
 # or, if the repo is not pushed yet, scp this file over and:
-#     bash provision.sh 168.144.27.117
+#     bash provision.sh <public-ip>
 #
 # Idempotent: safe to re-run. Everything it does is listed here; nothing is hidden.
 #   - unprivileged service account (systemd DynamicUser), node state in /var/lib/bitcoin-node

@@ -47,7 +47,7 @@ Every rule string inside the JSON is the complete statement needed to replay tha
 - **Not replayed against the frozen `bitcoin.exe` directly.** The binary is the oracle only for the two
   genesis headers, which it reproduces (`JAN09-EXECUTED`). Everything else is `MODEL`-level, agreed
   across the reimplementations. Running the corpus through the 2009 binary itself would require driving
-  it inside the archived VM (`OBL-BACKUP/05-vm/`), which is possible and not done.
+  it inside the archived VM image (the exported .ova, which is not published), which is possible and not done.
 
 ## A note for anyone building a timestamp proof on a chain like this
 

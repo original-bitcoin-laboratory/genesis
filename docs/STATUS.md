@@ -200,7 +200,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   boundary: a **byte‑exact** reproduction of `fbcac071…` is **not** claimed (structural, not
   bit‑for‑bit). Behavioural intent also met by the C++ PORT + the run binary (`r3-findings/run1`,
   `…/2026-07-31-twonode-mined-block`); NOV08 ceiling established (= NOV08-Minimal). reproduce.py
-  now **11 suites / 177 tests** (13/13 steps).
+  at that date **11 suites / 177 tests** (13/13 steps); the current count is whatever `scripts/reproduce.py` reports.
 - [~] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
   unmodified v0.1.0 `bitcoin.exe` (sha256 `fbcac071…`, verified pre-run) was run and
   **reconstructed the exact genesis block** — hash `000000000019d668…`, merkle

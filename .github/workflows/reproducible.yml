@@ -76,7 +76,7 @@ jobs:
 
       - name: Derive the chain source
         run: |
-          # make_chain.py refuses unless each of the ten edits matches exactly once, so this also
+          # make_chain.py refuses unless each of the nine substitutions (across ten lines) matches exactly once, so this also
           # re-verifies that the extracted tree is the one those edits were written against.
           python3 derivatives/bitcoin/make_chain.py
           test -f derivatives/bitcoin/src/main.cpp

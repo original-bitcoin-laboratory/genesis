@@ -1,5 +1,8 @@
 # The audit ledger — verified findings, held for ONE controlled application
 
+> **Historical record, 14 August 2026 (17-axis / 4-chain dataset).** Superseded by the published
+> 19-axis / 5-chain artifacts; the figures below are not current.
+
 **14 August 2026.** ⛔ **NOTHING HERE HAS BEEN APPLIED TO THE DATASET, DELIBERATELY.**
 
 > ### ★★★ WHY A LEDGER INSTEAD OF EDITS

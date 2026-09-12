@@ -90,7 +90,7 @@ cd derivatives/validator-rs && cargo test   # 30 passed
 
 ## The post-quantum counter-signature
 
-**Since v1.2.0 the `SHA256SUMS` manifest carries a second signature**, under `SLH-DSA-SHA2-128s`
+**Since 10 August 2026 every published `SHA256SUMS` manifest — earlier releases retroactively — carries a second signature**, under `SLH-DSA-SHA2-128s`
 (NIST FIPS 205). The key above is **Ed25519 and does not survive a quantum break**; this one rests
 only on hash functions, and so does the timestamp that dates it.
 

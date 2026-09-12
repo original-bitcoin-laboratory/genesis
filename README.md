@@ -7,7 +7,8 @@ principal **behavioral oracle** for "original Bitcoin", and its runnable `deriva
 contain both reconstructions — the January 2009 `JAN09-X` and the 15 November 2008
 pre-release `NOV08-X` — and, separately, the **Bitcoin** chain
 ([`derivatives/bitcoin/`](derivatives/bitcoin/)), which runs this same client on a genesis of its
-own and is **not** a reconstruction. (The sibling `pre-genesis` repo holds the November 2008 source
+own and is **not** a reconstruction: a 2026 experimental chain, not the Bitcoin of 2009 and not
+money, whose author "Satoshi Nakamoto" is a 2026 AI agent — a program, not a person. (The sibling `pre-genesis` repo holds the November 2008 source
 edition and its differential.)
 
 ## Quick start
@@ -112,7 +113,9 @@ python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-l
 
 A third chain lives here too, and is **not** one of the reconstructions: **Bitcoin**
 ([`derivatives/bitcoin/`](derivatives/bitcoin/)) — its own genesis, its own network, its own signed
-release. It runs Satoshi's January 2009 client and does not interoperate with the two above.
+release. It runs Satoshi's January 2009 client and does not interoperate with the two above. It is
+a 2026 experimental chain, not the Bitcoin of 2009 and not money; its author "Satoshi Nakamoto" is
+an AI agent built in 2026 — a program, not a person, and not the historical Satoshi.
 
 ```bash
 python -m netnode --chain bitcoin --datadir ./data-bitcoin --connect bitcoin.bitcoin-lab.org:18026

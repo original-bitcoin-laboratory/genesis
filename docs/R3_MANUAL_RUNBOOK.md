@@ -104,15 +104,15 @@ lab/genesis/r3-evidence/<run>/B/…       # from VM-B
 13. Fill in `r3-findings/<run>/FINDINGS.md` (the 7-row checklist: pass/fail + which
     file/screenshot supports each), and note anything surprising.
 
-### Hand back to me
-Give me any of these and I'll take it from there:
+### Report back
+Open an issue with any of these:
 - the generated `r3-findings/<run>/` (manifest + your filled `FINDINGS.md`), **and/or**
 - the two `debug.log` files (or excerpts) + your screenshots, **and/or**
 - just a plain description of what happened at each of the 11 steps.
 
-I'll verify the manifest, reconcile what the **released binary actually did**
-against our `JAN09-SOURCE`/`MODEL`/`PORT` expectations, flag any divergences, write
-the conclusion, and commit the results with the same provenance discipline.
+The manifest is verified, what the **released binary actually did** is reconciled
+against the `JAN09-SOURCE`/`MODEL`/`PORT` expectations, divergences are flagged, and
+the conclusion is committed with the same provenance discipline.
 
 ## If something snags
 - **exe won't start / missing DLL:** use a Windows XP guest; keep `bitcoin.exe` next

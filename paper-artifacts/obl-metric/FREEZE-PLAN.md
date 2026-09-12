@@ -1,5 +1,7 @@
 # The controlled freeze — and why more patching would make it worse
 
+> **Historical planning note, 14 August 2026.** Every item below was closed by round 19; see `CHANGELOG.md`.
+
 **14 August 2026. Round-2 referees: NO-GO, both.** This file answers the two questions actually
 asked: *what to do about the unaudited cells*, and *what to do about the paper*.
 

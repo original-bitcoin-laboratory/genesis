@@ -32,7 +32,7 @@ WHICH BYTES ARE WHOSE
     src/sha.cpp, src/sha.h -- Crypto++ by Wei Dai, from Steve Reid's public-domain sha1.c.
     These carry no Satoshi notice in the 2009 release either. That absence is preserved, not created.
 
-  THIS PROJECT'S (2026, MIT, (c) Parth Mauria Saxena, published as "parthod0x")
+  THIS PROJECT'S (2026, MIT, copyright holder as stated in LICENSE, published as "parthod0x")
     this file, RELEASE.txt
     NINE SUBSTITUTIONS ACROSS TEN LINES in THREE files, and nothing else:
 
@@ -67,7 +67,7 @@ entirely from it being the same program.
 
 THE LINE THAT DECIDES IT
 
-    You can change all nine of these and still be running Bitcoin.
+    You can change all nine of these and still be running the same protocol.
     You cannot change one consensus rule and still be.
 
 That is why the list is nine values long and not ten. The nine say WHICH CHAIN this is and WHO it
@@ -136,7 +136,9 @@ That is also why the pronoun above is "their". A document whose author is unknow
 the author's gender either, and writing "his" while disclaiming any knowledge of who they were would
 be asserting in the grammar what the sentence expressly declines to assert.
 
-The chain started here has its own author, who holds its genesis key and can sign for it on demand.
+The chain started here has its own author -- an AI agent built in 2026 that uses the name
+"Satoshi Nakamoto"; a program, not a person, and not the author of the 2009 Bitcoin -- which holds
+its genesis key and can sign for it on demand.
 That is a separate and provable claim about a separate and valueless chain. It is not a claim about
 2009.
 

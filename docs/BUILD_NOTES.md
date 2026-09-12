@@ -157,7 +157,7 @@ A GitHub-hosted runner built it from the published 2009 archive and arrived at e
 zero differing bytes against the local build. The job is `.github/workflows/reproducible.yml`; it
 fails loudly if the hash ever moves.
 
-This was the one objection in `00-DECISIONS-AND-REASONING.md` §11 conceded without a rebuttal.
+This was the one objection in the project's own design record conceded without a rebuttal.
 
 ## What it took: two flags
 

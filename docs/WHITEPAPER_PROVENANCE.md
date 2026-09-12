@@ -2,7 +2,7 @@
 
 **5 August 2026**
 
-This lab ships `docs/bitcoin.pdf`. This note records exactly what that file is, because the ordinary
+This lab identifies, and since 8 August 2026 no longer serves, the canonical whitepaper `b1674191…`. This note records exactly what that file is, because the ordinary
 label — *"the Bitcoin whitepaper, 2008"* — is not accurate about the file, and this project does not
 get to be imprecise about its own artifacts.
 
@@ -10,7 +10,7 @@ Every claim below is checkable by anyone, from public sources, without trusting 
 
 ---
 
-## The file we ship
+## The file identified here
 
 ```
 bitcoin.pdf   184,292 bytes
@@ -26,7 +26,6 @@ sha256        b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553
 | **SourceForge mirror, 2009-11-28** — earliest archived **bytes** | `web.archive.org/web/20091128185352if_/http://voxel.dl.sourceforge.net:80/project/bitcoin/Research%20Paper/bitcoin.pdf/bitcoin.pdf` — an actual archived PDF, not a listing. Download it and it hashes to `b1674191…f4f553`, **byte-identical to this file**. This is the capture COPA's expert verified as hash-identical to the control copy |
 | Internet Archive, **2010-07-04 21:36:49** | `web.archive.org/web/20100704213649if_/http://www.bitcoin.org:80/bitcoin.pdf` |
 | Internet Archive, a later capture | same method |
-| this repository | `docs/bitcoin.pdf` |
 
 As *"the file bitcoin.org has served since at least 2010"*, the provenance is solid.
 
@@ -200,7 +199,7 @@ proposed transaction fees *on the mailing list*:
 > input value."*
 > — [`cryptography@metzdowd.com`, 9 Nov 2008](https://www.metzdowd.com/pipermail/cryptography/2008-November/014842.html)
 
-The next day he refers back to *"the transaction fee based incentive system I recently posted"*, and
+The next day they refer back to *"the transaction fee based incentive system I recently posted"*, and
 by 14 November states it in wording close to the published Section 6.
 
 **So the draft's content places it before 9 November 2008** — argued from a dated third-party archive
@@ -208,7 +207,7 @@ rather than from a metadata field. And it is not something a forger could recons
 abstract says nothing about fees, so there is no public source from which "remove the Section 6 fee
 paragraph" could be derived.
 
-**The early bound — a citation Satoshi did not yet have.** On 22 August 2008 he wrote to Wei Dai
+**The early bound — a citation Satoshi did not yet have.** On 22 August 2008 they wrote to Wei Dai
 asking for the publication year of b-money, and *guessed*:
 
 > *"It'll look like: [1] W. Dai, "b-money," http://www.weidai.com/bmoney.txt, **(2006?)**."*
@@ -230,7 +229,7 @@ the file's own date, 3 Oct 2008, falls inside that window and does none of the w
 
 That is the point: **the date is established without trusting the artifact.** A backdated clock can
 write any `CreationDate`; it cannot put a citation into a document before its author learned it, nor
-remove a paragraph he had not yet written.
+remove a paragraph they had not yet written.
 
 The file's internal date of 3 October 2008 is *consistent* with the bracket. It is corroboration, not
 proof — a creation date is writable, which is exactly how four fabricated copies were caught.
@@ -483,10 +482,10 @@ registrant      not recorded -- no name in RDAP, and no historical registrant da
 
 The domain was registered through an anonymising service. **There is no machine-verifiable link
 between bitcoin.org and Satoshi Nakamoto at any date.** The association is the conventional account,
-resting on his own statements and on later transfer accounts, not on a third-party record.
+resting on their own statements and on later transfer accounts, not on a third-party record.
 
 So the edit appeared on a site whose operator, at that moment, is not established by any anchor
-available to us. It reads as an author refining his own paper — it improves the text technically and
+available to us. It reads as an author refining their own paper — it improves the text technically and
 contradicts nothing — but that is a reading, and this note does not assert it.
 
 ## Part of the body survives from 2008, unchanged
@@ -494,7 +493,7 @@ contradicts nothing — but that is a reading, and this note does not assert it.
 The abstract was quoted in the announcement, so it has always been checkable. The **body** had no
 known 2008 witness at all — until the mail archive was searched for the paper's own sentences.
 
-On **8 November 2008**, answering a question about inflation, Satoshi quoted his own paper:
+On **8 November 2008**, answering a question about inflation, Satoshi quoted their own paper:
 
 > Increasing hardware speed is handled: *"To compensate for increasing hardware speed and varying
 > interest in running nodes over time, the proof-of-work difficulty is determined by a moving average
@@ -528,7 +527,7 @@ in a bracket of messages from other people, dated by their own clocks —
 Oct 31 14:10  satoshi   arrived between  Oct 31 04:25 pgut001  and  Oct 31 17:33 bear
 ```
 
-— and 17 of his 18 are consistent with their neighbours (the one exception is off by 2.4 hours, on a
+— and 17 of their 18 are consistent with their neighbours (the one exception is off by 2.4 hours, on a
 hand-moderated list). That is corroboration by many independent clocks plus server-recorded ordering.
 It is strong, and it is not the same thing as a third-party timestamp.
 
@@ -569,16 +568,16 @@ independent discriminators, in increasing order of usefulness:
 | **Section 6 transaction fees** | presumably absent | **absent** → **before 9 Nov 2008** | present |
 
 **Every entry in the August column comes from Satoshi's own words in dated records, not from any
-file.** His 22 August email to Wei Dai quotes the pre-release's title and full abstract — differing
+file.** Their 22 August email to Wei Dai quotes the pre-release's title and full abstract — differing
 from the announced October abstract by exactly one word, *offer* → *provide*.
 
-And the reference numbering comes from the COPA judgment, which quotes his email to **Adam Back on
+And the reference numbering comes from the COPA judgment, which quotes their email to **Adam Back on
 20 August 2008** (¶661):
 
 > *"I'm getting ready to release a paper that references your Hashcash paper… Here's what I have:
 > **[5]** A. Back, "Hashcash — a denial of service counter-measure"…"*
 
-Back replied the next day pointing him at b-money, which Satoshi had never heard of (¶665: *"I wasn't
+Back replied the next day pointing them at b-money, which Satoshi had not been aware of (¶665: *"I wasn't
 aware of the b-money page… I'll e-mail him to confirm the year of publication so I can credit him"*).
 
 **That generates a testable prediction:** if b-money was then inserted as `[1]`, Hashcash must shift

@@ -1,7 +1,7 @@
 # Difficulty-retarget surface, executed — v0.1's `GetNextWorkRequired` fencepost + timewarp
 
 **Evidence level: `MODEL`.** This ports Satoshi's difficulty retarget
-([`extracted/bitcoin/src/main.cpp:685-728`](../../extracted/bitcoin/src/main.cpp)) line-for-line and
+(`extracted/bitcoin/src/main.cpp:685-728`, present after `scripts/fetch-artifacts.sh` has fetched and extracted the archive) line-for-line and
 exhibits two era-authentic properties a faithful reconstruction must reproduce — the same way
 [`../overflow/`](../overflow/) made the value-overflow surface runnable. Both are consequences of the
 *executed* arithmetic, not of the design's intent.

@@ -56,7 +56,7 @@ whoever later published the file — places, on a specific dated day, a statemen
 "main files" pre-release had been sent to a named recipient, described in near-identical words to the
 readme in the artifact.
 
-**What it does not establish.** That the bytes here are the bytes he sent. No hash was published, no
+**What it does not establish.** That the bytes here are the bytes they sent. No hash was published, no
 copy was attached, and the recipient's own copy has never surfaced. The anchor dates *an artifact of
 this description*; it does not authenticate *this file*.
 
@@ -211,7 +211,7 @@ are the third and fourth of the reversed pubkey — `04 d4 51 b0 …`. They matc
 
 ## November against January
 
-| | 15 Nov 2008 pre-release | 3 Jan 2009 v0.1.0 |
+| | 15 Nov 2008 pre-release | v0.1.0 (genesis 3 Jan 2009) |
 |---|---|---|
 | **coinbase** | `CScript() << 247422313` — an integer | `The Times 03/Jan/2009 Chancellor on brink…` |
 

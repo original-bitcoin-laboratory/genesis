@@ -37,9 +37,7 @@ docker run --rm -v xnode-data:/data xnode
 `cryptography` is required; `bitcoinx` (the ~7× libsecp256k1 verifier) is attempted but optional — the
 node falls back to the faithful verifier with identical results. Swap `jan09x`↔`nov08x` (port `18008`).
 
-> **Maintainer, one-time:** GHCR packages start **private**. After the first CI publish, set the
-> `xnode` package to **public** (GitHub → org → Packages → `xnode` → Package settings → Change
-> visibility) so `docker pull` needs no login, and make sure **Actions is enabled** for the repo.
+> The `xnode` image on GHCR is public; `docker pull` needs no login.
 
 ## systemd
 

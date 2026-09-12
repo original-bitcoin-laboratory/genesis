@@ -71,6 +71,14 @@ refuses to accept from anybody else.
 ```
 LINKAGE MATRIX      the 2008-09 Satoshi   0 of 6
                     this project          6 of 6
+
+  the six pairs: W = the whitepaper author line, L = the source copyright line,
+  K = the chain keys, P = the OpenPGP key. W-L, W-P, W-K, L-K, L-P, K-P.
+  A pair is BOUND only by a signature that can be verified; a shared name string,
+  host, account or era does not count. For 2008-09 none of the six is bound.
+  For this project: the identity manifest (signed by P) names K and the release
+  signer; K and P co-signed PQ-SUCCESSION-CERTIFICATE.txt; the chain source
+  manifest is signed by K. Every file named here is under docs/.
 ```
 
 > ⚠️ **A co-signature binds KEYS, never PERSONS.** It does not prove one entity controls both, and
@@ -102,8 +110,8 @@ All times UTC.
                         nNonce 612491648
 ```
 
-**The chain is at height 3.** All four blocks link, and all four satisfy their proof-of-work target —
-checked against the difficulty arithmetic, not by eye.
+**At the time of this entry (5 August 2026) the chain was at height 3.** All four blocks linked, and all four satisfied their proof-of-work target —
+checked against the difficulty arithmetic, not by eye. The current tip is on the live status feed.
 
 ### Each mined block is bracketed by a bound binary
 

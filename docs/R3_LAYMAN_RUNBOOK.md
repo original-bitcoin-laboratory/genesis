@@ -125,18 +125,18 @@ of this one. In plain terms the extra steps are:
 
 ---
 
-## How to hand the results back to me
+## How to report the results
 
 Any one of these is enough — pick whatever's easiest:
 - The `debug.log` file(s) and your screenshot(s); **or**
 - Put the captured files under `lab/genesis/r3-evidence/<date-run>/` and run
-  `python scripts/capture-evidence.py --run <date-run>` from `lab/genesis/`, then give
-  me the generated `r3-findings/<date-run>/` folder; **or**
-- Just tell me, in your own words, what happened at each step (did it start? did the
+  `python scripts/capture-evidence.py --run <date-run>` from `lab/genesis/`, then attach
+  the generated `r3-findings/<date-run>/` folder; **or**
+- Or describe, in your own words, what happened at each step (did it start? did the
   block count climb? any error messages?).
 
-I'll check it against what this lab predicted (the genesis hash, the mining, the
-subsidy, the sync), write up any differences, and record the result — the top rung of
+Reports are checked against what this lab predicted (the genesis hash, the mining, the
+subsidy, the sync); differences are written up and the result recorded — the top rung of
 the evidence ladder, **JAN09-EXECUTED**.
 
 ## If something goes wrong

@@ -46,7 +46,9 @@ IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against th
 > `00000000000000000000b1914635ada20cd0992856ebba4ba21b5ea4815eda1b`, merkle root
 > `cf62d5d80f9e0a2fecdba1c129eff6fb42ce259572649c163e42e8641ea90864`, 2026-08-11 20:03:25 UTC).
 > **That anchor stands and is not withdrawn** — it proves revision 1 existed before that block.
-> Revision 2's proofs are freshly stamped and pending.
+> Revision 2's proofs are anchored in Bitcoin block 962081 (block hash
+> `000000000000000000000d3c4cb24b2fd84a2f65eb39c14f5708285820e9e0a1`, merkle root
+> `cbf9d141073c02fc3d955dfa6c8e7e758b5ec7388eb529eb9c4f7ee86d8d9b48`, 2026-08-12 03:29:39 UTC).
 
 ## Proof of domain control — a DNS TXT record on each of the three domains
 
@@ -337,7 +339,7 @@ gh secret set RAD_PASSPHRASE --repo original-bitcoin-laboratory/genesis
 ```
 
 `RAD_KEYPAIR` is the OpenSSH private key base64-encoded onto one line; the passphrase is whatever protects it.
-Both live in the cold backup under `01-keys-SECRET/radicle/`.
+Both live only in the offline backup and never in any repository.
 
 **Why this is not run from CI.** The Radicle identity key is **unencrypted**, and it is the sole thing
 controlling `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg`. Whoever holds it can push to that repository as `parthod0x` --
