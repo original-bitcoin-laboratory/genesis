@@ -78,9 +78,9 @@ limit — so the clamp returns `0x1d00ffff` unchanged.
 **This conclusion is robust.** It does not depend on the projected date, the mining
 rate, the off-by-one, or how many miners are running. Any spacing slower than
 10 minutes produces it. Only a chain mining *faster* than 10 min/block for 2015
-consecutive blocks could move `nBits` — which at difficulty 1, with the hash rates
-observed here (~1.1 MH/s for `BITCOIN-NODE-1`, ~4 MH/s for the external miner when
-it runs), will not happen by accident.
+consecutive blocks could move `nBits` — which at difficulty 1, at the block cadence
+observed here (roughly one block an hour for `BITCOIN-NODE-1`; the external miner produces
+blocks only when it runs), will not happen by accident.
 
 ## What would falsify this
 

@@ -1,4 +1,4 @@
-"""Every passage Satoshi quotes in his own words, tested against the March 2009 PDF.
+"""Every passage Satoshi quotes in their own words, tested against the March 2009 PDF.
 
 Two directions, and the second matters more:
   MATCH    -> that text existed in the paper on the list server's date. Body text, ANCHORED.

@@ -35,24 +35,19 @@ Modeled from the extracted, hash-verified v0.1.0 source:
 | `OP_WITHIN` | 633–647 |
 | hashes (`OP_SHA1/SHA256/HASH160/HASH256/RIPEMD160`) | 653–684 |
 
-## What it deliberately does NOT model (yet)
+## What it does not model
 
-To keep the MODEL honest about its scope, it omits — pending a real port/build:
-
-- the **byte-level** script serializer/parser (`CScript::operator<<`, `GetOp`);
-  scripts here are token lists, not raw bytes.
-- **ECDSA** paths: `OP_CHECKSIG(VERIFY)`, `OP_CHECKMULTISIG(VERIFY)`,
-  `SignatureHash`, and the `CTransaction` context.
-- **control flow** `OP_IF/NOTIF/ELSE/ENDIF`, `OP_CODESEPARATOR`, alt-stack.
-- consensus limits and standardness.
+Scripts here are token lists, not raw bytes: the byte-level serializer/parser (`CScript::operator<<`,
+`GetOp`) is not modelled, and neither are consensus limits or standardness. ECDSA, control flow and
+`OP_CODESEPARATOR` are covered (see `evalscript_model.py`).
 
 ## Status in the evidence ladder
 
 `OPCODES.md` establishes *declared* + *implemented* (rungs 1–2) from source. This
 MODEL is a runnable cross-check of the **opcode semantics only**. It is **not**
 proof of `JAN09-EXECUTED` (rung: reproduced with the historical implementation),
-which requires building/porting the original C++ (blocked here: no C++ toolchain).
-When a real port exists, these vectors become its **differential oracle**.
+which requires the original C++. That port exists in `../port/` and these vectors are its
+**differential oracle** (63 vectors agree).
 
 ## Opcode coverage
 

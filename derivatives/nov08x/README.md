@@ -66,7 +66,7 @@ provably isolated from any historical or live chain.
 ```bash
 python differential.py     # -> DIFFERENTIAL.md + PROVENANCE.json, prints the comparison
 python node.py             # mines a 3-block NOV08-X chain (nBits=20)
-python -m pytest           # 14 passed
+python -m pytest           # 20 passed
 ```
 
 ## Boundary

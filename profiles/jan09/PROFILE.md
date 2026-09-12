@@ -5,7 +5,7 @@
 - Primary artifact: `bitcoin-0.1.0.rar`
 - Same-source-tree companion: `bitcoin-0.1.0.tgz`
 - Historical date recorded by SNI: 2009-01-09
-- Status at project start: first publicly released Bitcoin v0.1.0 package
+- Status at project start: the archive distributed as v0.1.0 (its contents are v0.1.1 — see `common/VERSION_LABEL.md`)
 
 ## Profile rule
 

@@ -159,3 +159,6 @@ This directory carries the two binding records — **including the mis-copied `p
 it shipped so the defect stays visible** — this document, and their own `SHA256SUMS`.
 
 **NOT money.**
+
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

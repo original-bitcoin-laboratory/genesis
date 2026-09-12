@@ -61,7 +61,7 @@ change to the build inputs and fails if the hash moves --
 .github/workflows/reproducible.yml, which starts by fetching bitcoin-0.1.0.tgz over the network
 rather than trusting anything in the repository.
 
-It took two flags, both found by building twice and comparing, which nobody had done before.
+It took two flags, both found by building twice and comparing.
 
   * -Wl,--no-insert-timestamp. Two builds of identical inputs on one machine differed in 4 bytes of
     15,529,604: two in the PE TimeDateStamp at 0x88, two in the CheckSum at 0xd8 that derives from
@@ -100,8 +100,8 @@ To rebuild it yourself
 make_chain.py refuses unless each of the nine substitutions (across ten lines) matches exactly once, so that step re-verifies
 the extracted tree as a side effect. Full working: docs/BUILD_NOTES.md.
 
-v0.1.0, v0.1.1 and v0.1.2 remain published and their signatures remain valid. Nothing about the
-chain is affected: consensus, the wire format and the genesis are untouched, and block 1 was mined
+Earlier releases remain published and their signatures remain valid; CHRONOLOGY.md records what
+changed at each. Nothing about the chain is affected: consensus, the wire format and the genesis are untouched, and block 1 was mined
 and relayed by the v0.1.1 binary.
 
 Genesis
@@ -124,16 +124,16 @@ Mining
   height 1  000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c   4 Aug 2026
 
 Block 1 was mined by the v0.1.1 client, from this distribution, and relayed to the seed, which
-validated and stored it with a different implementation. Block 2 onward are unmined and anyone may
-take them. Blocks cost difficulty-1 work -- about 2^32 hashes -- so the client's own miner takes
-roughly an hour per block on one core. There is nothing to buy, nothing to claim, and nothing owed
-to whoever mines next.
+validated and stored it with a different implementation. Later blocks are listed in CHRONOLOGY.md and
+in the sealed findings sets; anyone may mine the next. Blocks cost difficulty-1 work -- about 2^32
+hashes. There is nothing to buy, nothing to claim, and nothing owed to whoever mines next.
 
 
 Build
 -----
-src/ is composed by make_chain.py from two inputs: the v0.1.0 source tree, SHA256
-8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56, and bitcoin-v0.1.0.patch --
+src/ is composed by make_chain.py from two inputs: the v0.1.0 source tree (bitcoin-0.1.0.tgz, SHA256
+ce9da46516e3042741224a7f9061e3181a5a4d17abba72b6e82922af3753d756; the same tree ships as bitcoin-0.1.0.rar, SHA256
+8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56), and bitcoin-v0.1.0.patch --
 this chain's genesis, network magic and port, and bootstrap channel. Ten lines, in main.cpp,
 net.h and irc.cpp.
 
@@ -178,7 +178,8 @@ so the only lever is the client's own /proxy option, which leaves addrLocalHost 
 it fall back to a random nickname. Everything else in the client is equally period-accurate: no
 encryption, no authentication, and a wallet.dat written in the clear.
 
-NOT MONEY. No premine of value, no token, no sale, no market. Experimental research artifact.
+NOT MONEY. Nothing is sold, offered, priced or traded by the maintainers. No premine of value, no token.
+Experimental research artifact.
 Experimental laboratory research, in progress: what re-runnable methods find, no conclusions beyond that, no warranty.
 Run the client only in an isolated VM: it is a live node.
 TXT

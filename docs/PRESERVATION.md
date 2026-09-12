@@ -7,7 +7,7 @@ bytes, offline, on any device). A recipe is only as durable as its availability.
 side quest here — it *is* the mission: keep the source of truth **retrievable, content-addressed, and
 self-verifying**, so it survives a dead link, a lost account, or a host that disappears.
 
-Five independent roots, so no single one is load-bearing:
+Four independent roots — Software Heritage, content-addressed pinning, Radicle, and the OpenTimestamps anchors described below — so no single one is load-bearing:
 
 | Layer | What it preserves | Status |
 |---|---|---|
@@ -39,7 +39,7 @@ IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against th
 > **Revision 2, 12 August 2026.** The manifest now also carries the agent's **post-quantum successor
 > key** (§5) — published, with its succession certificate and both signatures, because *a successor
 > key that first appears after a break is indistinguishable from one a forger made*. The exclusion
-> clause in §6 was narrowed accordingly: it had been withholding a key on a rule whose own reason —
+> clause under "What is in scope" was narrowed accordingly: it had been withholding a key on a rule whose own reason —
 > *never cite a hash a reader cannot fetch* — was better answered by publishing it.
 >
 > **Revision 1** was `11b3f7db…`, 11,394 B, **anchored in Bitcoin block 962049** (block hash
@@ -76,7 +76,7 @@ $ dig +short TXT bitcoinwhitepaper.online
 >
 > ⚠️ **Verify against the authoritative nameservers, not a public resolver.** When these were set,
 > `1.1.1.1` and `8.8.8.8` both still served the previous record for one domain with 1,755 s of TTL
-> left, while `dns1`/`dns2.registrar-servers.com` already had the new one. **A cached answer is not
+> left, while the domain's authoritative nameservers already had the new one. **A cached answer is not
 > the zone** — reading the resolver would have reported a correct change as a failed one.
 
 > **The merkle root was read off the chain and compared, not taken from the `ots` output.** That is
@@ -155,8 +155,8 @@ Bitcoin-v0.1.3   all four assets      blocks 961105, 961106, 961130
 ```
 
 ```
-ots verify bitcoin-0.1.4.tar.gz.ots     # needs the tarball beside it; wants a local Bitcoin node
-ots upgrade bitcoin-0.1.4.tar.gz.ots    # fetch the completed proof once a block confirms
+ots verify bitcoin-0.1.5.tar.gz.ots     # needs the tarball beside it; wants a local Bitcoin node
+ots upgrade bitcoin-0.1.5.tar.gz.ots    # fetch the completed proof once a block confirms
 ```
 
 **Without a Bitcoin node `ots verify` cannot finish**, and that is not a reason to take the anchor on
@@ -176,8 +176,8 @@ for the first few hours, not a failure.
 > prints calendar chatter that reads like progress. (`dist/` is not tracked here, so the superseded
 > backups live only in the working tree.)
 
-The hash stamped for `Bitcoin-v0.1.4` is **`3d7a7b3c…`** (`bitcoin-0.1.4.tar.gz`), the reproducible
-release; `Bitcoin-v0.1.3`'s was **`d24469a4…`**. That choice is the point: stamping a binary nobody
+The hash stamped for `Bitcoin-v0.1.5` is **`e6cf0b13…`** (`bitcoin-0.1.5.tar.gz`); `Bitcoin-v0.1.4`'s was
+**`3d7a7b3c…`** and `Bitcoin-v0.1.3`'s **`d24469a4…`** — all reproducible releases. That choice is the point: stamping a binary nobody
 else can regenerate would prove only that *we* had a file on a date. Stamping one that anyone can
 rebuild from the published 2009 archive means the date attaches to something a stranger can
 independently arrive at.
@@ -194,12 +194,8 @@ independently arrive at.
 > artifacts built specifically to outlive it: `SHA256SUMS.slhdsa`, the post-quantum
 > counter-signature, and the `.ots` proofs. A content-addressed copy carrying neither is a copy of
 > the thing we can no longer prove anything about. `preserve.yml` now also passes `-p '*.slhdsa'`
-> and `-p '*.ots'` — **4 of 10 `v0.1.5` assets were pinned under the old patterns, 10 of 10 under
-> the new ones.**
->
-> **⚠️ The CID table below predates that fix**, so its rows list four assets per release. Those CIDs
-> remain correct for the files they name; the missing ones are on the GitHub release and in the cold
-> backup, and will be pinned from the next release onward.
+> and `-p '*.ots'` — **4 of 10 `v0.1.5` assets were pinned under the old patterns; the remaining six were
+> pinned on 12 September 2026 (rows below).**
 
 
 | release | file | CID |
@@ -208,6 +204,12 @@ independently arrive at.
 |  | `bitcoin-0.1.5.tar.gz.asc` | `QmeoomwgPrJ1zdrY81wfZuxFUfuvcXMRb1afQvh1tgXT2D` |
 |  | `SHA256SUMS` | `QmdguWZuoNEkmxSN5CLZhXJZWg7FsxFxf5u9Qy8rNTSYUW` |
 |  | `SHA256SUMS.asc` | `QmbNRBoVwYTU4H3jkXdWtrGGecq525ai5hfi1DbzurhEpc` |
+|  | `bitcoin-0.1.5.tar.gz.ots` | `QmSj5XK7cCCHkDsjy7nqSJYZU52em8cDsEPxhZWC2rHw1C` |
+|  | `bitcoin-0.1.5.tar.gz.asc.ots` | `QmQvGQKxPqPXJNPfPiBRd1PqoLUBAkjQETiheQJwgFL3vf` |
+|  | `SHA256SUMS.ots` | `QmfTVVtkhdJ5wgrJd1kB6ER596yR4YexGcR5xSBnAvnkP2` |
+|  | `SHA256SUMS.asc.ots` | `QmPFzyNwnyTtRBKbK5Gts2kUZDUyYBb2zqneyTZkePFyGm` |
+|  | `SHA256SUMS.slhdsa` | `QmP723sCm1P6nmMHR97nCz1hzSanmbuiDKpZ2wNqxzpinb` |
+|  | `SHA256SUMS.slhdsa.ots` | `QmXjH3dVvQ18dKLK3RA8CaCFShVmcXybKfasfKTwbuLwEw` |
 | Bitcoin-v0.1.4 | `bitcoin-0.1.4.tar.gz` | `QmVRRpDq68wMiKKBySZcCtE6Enus11YYDut52g9geXFY7Q` |
 |  | `bitcoin-0.1.4.tar.gz.asc` | `QmZ3pHMbpbs3gUHWqZevm3YQJSWLXkAC41MyFRqAaTsDFr` |
 |  | `SHA256SUMS` | `QmQN1W5tBW9Rxd6bjrRpJA8qhrY3SFMWTaVEyMHZ58U9Rz` |
@@ -290,8 +292,8 @@ The v0.5.0 and v0.4.0 rows above, and the Bitcoin-v0.1.3 rows, were added on 12 
 reconciliation of the pinning account against this record: every CID was re-derived from the release bytes
 with a standard-library CIDv0 calculator that was first validated against four pins recorded here earlier.
 The `.ots` and `.slhdsa` files of releases before v0.7.0 had never been pinned; they were pinned on 12 September
-2026 by re-running the preservation workflow per tag, and every CID the workflow reported equalled the one
-computed locally from the same bytes beforehand. The rows above include them.
+2026 by re-running the preservation workflow per tag (v0.1.5's six on the same day), and every CID the workflow
+reported equalled the one computed locally from the same bytes beforehand. The rows above include them.
 
 Everything preserved is **hash-anchored**, which is what makes redundancy safe: a mirror cannot silently
 drift, because the genesis, the release tarballs, and the evidence bundles all carry digests that a copy
@@ -305,20 +307,7 @@ preserved as primary evidence; behaviour independently regenerable) from "publis
 "retrievable from several independent, content-addressed archives." Still **not money**: no premine, no
 token, no market — a valueless research instrument, preserved.
 
-## Enabling the two scaffolded layers
-
-### IPFS (content-addressed pinning) — automated once a token is set
-1. Create an account at a pinning service and generate an **API JWT** (e.g. Pinata → *API Keys* → *New Key*
-   with `pinFileToIPFS` permission → copy the JWT).
-2. In the `genesis` repo: **Settings → Secrets and variables → Actions → New repository secret**, name it
-   `IPFS_TOKEN`, paste the JWT.
-
-That is all. On the next published release the `ipfs` job downloads the signed `*.tar.gz`, `SHA256SUMS`, and
-`*.asc`, pins each to IPFS, and logs the CIDs — cross-checkable against `SHA256SUMS`, and
-retrievable from Pinata's gateway immediately or from another public gateway once it has found a
-provider (which can take several attempts; see the note above the CID table).
-
-### The signing key itself
+## The signing key itself
 
 Every mirror above carries the release *and* the key that signs it, which makes the check circular:
 a reader who fetches both from the same place is trusting that place twice. The key is therefore
@@ -414,7 +403,5 @@ appended, or the push is rejected with *"no public key given as a remote namespa
 its passphrase as `RAD_PASSPHRASE` to let the `radicle` job attempt an automated sync — but the local
 `git push rad` above is the reliable path.)*
 
-Until the secrets/identity are set, the scaffolded jobs log "skipped — not configured"; Software Heritage
-archival runs regardless.
 
 **NOT money.**

@@ -7,7 +7,7 @@ state that at the time this file was signed, the tags listed below resolved to t
 commits and trees given beside them.
 
 WHY THIS FILE EXISTS
-  Three of these are LIGHTWEIGHT tags. A lightweight tag is a bare ref with no object,
+  Four of these are LIGHTWEIGHT tags. A lightweight tag is a bare ref with no object,
   so it cannot carry a signature -- not an oversight that can be corrected in place.
   Re-creating them as signed tags would move what 16 published releases point at and
   invalidate commit SHAs already quoted in findings, papers and PRESERVATION.md, while

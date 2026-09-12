@@ -2,8 +2,8 @@
 
 **Evidence: NEW‑EXP. Not money.** These are **templates** to make running a node or a bootstrap DNS
 seed a copy‑paste job — the "operators" rung of
-[`../../../docs/PUBLIC_TESTNET_SCOPE.md`](../../../docs/PUBLIC_TESTNET_SCOPE.md). A chain is only
-"eternal" once independent people keep nodes up; nothing here changes that — it just lowers the bar
+[`../../../docs/PUBLIC_TESTNET_SCOPE.md`](../../../docs/PUBLIC_TESTNET_SCOPE.md). A chain persists
+only while independent people keep nodes up; nothing here changes that — it just lowers the bar
 to *become* one of those people. Read [`../SECURITY.md`](../SECURITY.md) first.
 
 > These files are deployment templates verified against the CLI, not run in CI — adjust the IPs,

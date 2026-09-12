@@ -1,4 +1,7 @@
-# Changelog — the forensic history the paper no longer carries
+# Changelog — the revision history the paper no longer carries
+
+*"Referee" and "reviewer" below name the independent review passes the laboratory ran on each revision
+before publication, not a journal's referees.*
 
 **R4 asked for the manuscript to read like a scientific article rather than a merged
 referee-response letter, and it was right.** The methodological admissions stay in the paper,

@@ -2,9 +2,9 @@
 """
 make_chain.py -- compose this chain's client source.
 
-Two inputs: the v0.1.0 source tree (SHA256
-8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56, verified in
-`manifests/EXPECTED_CHECKSUMS.json`) and the nine substitutions below -- this chain's genesis, its
+Two inputs: the v0.1.0 source tree (bitcoin-0.1.0.tgz, SHA256 ce9da46516e3042741224a7f9061e3181a5a4d17abba72b6e82922af3753d756;
+the same tree ships as bitcoin-0.1.0.rar, SHA256 8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56;
+both verified in `manifests/EXPECTED_CHECKSUMS.json`) and the nine substitutions below -- this chain's genesis, its
 network magic and port, and its bootstrap channel.
 
 Each substitution must match exactly once or this refuses to run, so the source either composes

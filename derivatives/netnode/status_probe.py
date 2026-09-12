@@ -5,7 +5,7 @@ secrets. Runs in CI (scheduled) or locally. NOT money.
 
     python status_probe.py --out status.json \
         --chain jan09x:18009 --chain nov08x:18008 \
-        --anchor 143.110.255.205 --anchor 178.62.236.102
+        --anchor-host seed.bitcoin-lab.org        # or --anchor <address>, repeatable
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ import asyncio
 import json
 import pathlib
 import sys
+import socket
 from datetime import datetime, timezone
 
 _HERE = pathlib.Path(__file__).resolve().parent
@@ -186,9 +187,11 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="probe X-chain anchors, emit status.json (NOT money)")
     ap.add_argument("--out", required=True)
     ap.add_argument("--chain", action="append", required=True, metavar="name:p2pport[@ip,ip]",
-                    help="e.g. jan09x:18009, or bitcoin:18026@168.144.27.117 to probe a chain only "
+                    help="e.g. jan09x:18009, or bitcoin:18026@bitcoin.bitcoin-lab.org to probe a chain only "
                          "on its own anchors (repeatable)")
-    ap.add_argument("--anchor", action="append", required=True, help="anchor IP (repeatable)")
+    ap.add_argument("--anchor", action="append", default=[], help="anchor address (repeatable)")
+    ap.add_argument("--anchor-host", action="append", default=[],
+                    help="a hostname whose A records are all anchors, e.g. seed.bitcoin-lab.org (repeatable)")
     ap.add_argument("--recent", type=int, default=15)
     ap.add_argument("--timeout", type=float, default=90.0,
                     help="per-read timeout. blocks_after() sends the ENTIRE remainder of "
@@ -196,6 +199,14 @@ def main(argv=None):
                          "~3.1 MB message; 10s was not enough to receive it and the walk "
                          "timed out into a false height of 0.")
     a = ap.parse_args(argv)
+    for h in a.anchor_host:
+        try:
+            found = sorted({ai[4][0] for ai in socket.getaddrinfo(h, None, socket.AF_INET)})
+        except socket.gaierror as e:
+            sys.exit("cannot resolve %s: %s" % (h, e))
+        a.anchor.extend(x for x in found if x not in a.anchor)
+    if not a.anchor:
+        sys.exit("no anchors: pass --anchor or --anchor-host")
     # A chain may pin its own anchors with @ip[,ip]. Without it, the chain is probed on every
     # --anchor. Chains that do not share hosts (an independent chain on its own seed) must pin
     # theirs, or every other anchor reports it unreachable and the page shows a false outage.

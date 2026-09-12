@@ -10,10 +10,9 @@ CANONICAL WHITEPAPER, 24 March 2009
   bytes   184,292        pages 9
 ```
 
-**Why.** The whitepaper carries no licence and no copyright notice. It is not public domain and not
-MIT — copyright subsists automatically and vests in an author who has never been identified. This
-project's own rule is that **a SHA-256 is not a reproduction**: we publish facts about documents and
-point at sources others published. Serving an unlicensed copy while saying that was the weaker
+**Why.** The whitepaper carries no licence and no copyright notice, and its author has never been
+identified. This project's own rule is that **a SHA-256 is not a reproduction**: we publish facts
+about documents and point at sources others published. Serving a copy while saying that was the weaker
 position.
 
 **Nothing is lost.** The canonical file is embedded in the block chain, where it cannot be revoked:

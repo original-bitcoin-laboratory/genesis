@@ -33,7 +33,7 @@ The v0.1.0 `.tgz` is the **runnable release**, not just source (48 files):
 
 - **`bitcoin.exe`** (6,440,960 B) + `libeay32.dll` (OpenSSL) + `mingwm10.dll`,
   `readme.txt`, `license.txt`.
-- **`src/` — 21 source files**: `main.*`, `net.*`, `script.*` (interpreter),
+- **`src/` — 26 source files**: `main.*`, `net.*`, `script.*` (interpreter),
   `key.h`, `db.*`, `market.*` (commerce subsystem), `irc.*`, `ui.*`/`uibase.*`,
   `sha.*`, `base58.h`, `bignum.h`, `serialize.h`, `uint256.h`, `util.*`,
   `headers.h`, plus `makefile` / `makefile.vc` and UI resources
@@ -201,7 +201,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   bit‑for‑bit). Behavioural intent also met by the C++ PORT + the run binary (`r3-findings/run1`,
   `…/2026-07-31-twonode-mined-block`); NOV08 ceiling established (= NOV08-Minimal). reproduce.py
   at that date **11 suites / 177 tests** (13/13 steps); the current count is whatever `scripts/reproduce.py` reports.
-- [~] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
+- [x] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
   unmodified v0.1.0 `bitcoin.exe` (sha256 `fbcac071…`, verified pre-run) was run and
   **reconstructed the exact genesis block** — hash `000000000019d668…`, merkle
   `4a5e1e…`, nonce `2083236893`, nTime `1231006505`, nBits `1d00ffff`, the Times-
@@ -264,9 +264,21 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     and a fresh `pre` is required.
   - Two things fall out of those records that are worth stating. **The bound processes started
     `2026-08-01T01:32:00Z` and `…:32:20Z`**, twenty seconds apart —
-    **R4a and R4b are one single run**, not two.
+    **R4a and R4b are one single run**, not two. That is not recalled, it is measured: R4a's
+    `debug.log` is a **byte-exact prefix** of R4b's on *both* nodes (nodeA 6,248 → 22,016 bytes; nodeB
+    6,982 → 22,898), so the same file was appended to and `bitcoin.exe` never restarted between them.
+    (v0.1.0 writes no timestamps into `debug.log` — that arrives in v0.1.3's `util.cpp` — so the prefix
+    test is the available proof, and it is a stronger one.) The binding therefore reaches **backwards over
+    the whole R4 series**: the already-witnessed sustained relay and reorganisation are retroactively bound
+    to a live process running `fbcac071…`, which they were not when they were written up.
+    **(Scope corrected 2026-08-09: this retroactive reach covers R4a and R4b, which share those
+    processes. R4c is bound by its own `pre`/`post` pair — see the correction above.)**
+    And **both guests report the same `vm_hostname` and `data_dir`** (they were cloned from one
+    image), so nothing *measured* in these files distinguishes node A's machine from node B's — the `-Node`
+    label is operator-supplied. That is not a flaw in the binding, whose job is process→binary; two-node
+    separation is established by the two distinct `blk0001.dat` files and the peer connections in the logs.
 
-    > **★ CORRECTED 2026-08-09.** An earlier version of this line said *"R4a, R4b and R4c are one
+    > **CORRECTED 2026-08-09.** An earlier version of this line said *"R4a, R4b and R4c are one
     > single run"*. **That is false for R4c.** The R4c binding records show PIDs **4468 / 7632**
     > started **2026-08-06T01:56:52Z / 01:57:09Z** — not the 5212 / 4196 processes started 2026-08-01.
     > `bitcoin.exe` **restarted twice** between R4b and the spend: the appended section of each
@@ -288,16 +300,4 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     > **The discipline held.** This same section already warned that *"restarting `bitcoin.exe`
     > between them voids the pair and a fresh `pre` is required"* — and a fresh `pre` **was** taken
     > (2026-08-06T01:58) with the new PIDs, bracketing the ~65-hour process that actually produced the
-    > spend. **The rule was written down before it was needed, and then it was followed.** That is not recalled, it is measured: R4a's
-    `debug.log` is a **byte-exact prefix** of R4b's on *both* nodes (nodeA 6,248 → 22,016 bytes; nodeB
-    6,982 → 22,898), so the same file was appended to and `bitcoin.exe` never restarted between them.
-    (v0.1.0 writes no timestamps into `debug.log` — that arrives in v0.1.3's `util.cpp` — so the prefix
-    test is the available proof, and it is a stronger one.) The binding therefore reaches **backwards over
-    the whole R4 series**: the already-witnessed sustained relay and reorganisation are retroactively bound
-    to a live process running `fbcac071…`, which they were not when they were written up.
-    **(Scope corrected 2026-08-09: this retroactive reach covers R4a and R4b, which share those
-    processes. R4c is bound by its own `pre`/`post` pair — see the correction above.)**
-    And **both guests report the same `vm_hostname` and `data_dir`** (they were cloned from one
-    image), so nothing *measured* in these files distinguishes node A's machine from node B's — the `-Node`
-    label is operator-supplied. That is not a flaw in the binding, whose job is process→binary; two-node
-    separation is established by the two distinct `blk0001.dat` files and the peer connections in the logs.
+    > spend. **The rule was written down before it was needed, and then it was followed.**

@@ -33,8 +33,8 @@ information already in DNS and on the website. Note that every client that joins
 the same way; that is a property of the protocol being reproduced, and it is documented in the
 release notes rather than papered over.
 
-    python3 -m netnode.ircseed --addr 168.144.27.117:18026 --print-nick
-    python3 -m netnode.ircseed --addr 168.144.27.117:18026 --channel '#bitcoin26'
+    python3 -m netnode.ircseed --addr bitcoin.bitcoin-lab.org:18026 --print-nick
+    python3 -m netnode.ircseed --addr bitcoin.bitcoin-lab.org:18026 --channel '#bitcoin26'
 """
 from __future__ import annotations
 
@@ -185,7 +185,7 @@ def run(host: str, port: int, channel: str, nick: str, once: bool = False) -> No
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--addr", required=True, metavar="IP:PORT",
-                   help="the seed address to publish, e.g. 168.144.27.117:18026")
+                   help="the seed address to publish, e.g. bitcoin.bitcoin-lab.org:18026")
     p.add_argument("--server", default="chat.freenode.net",
                    help="IRC host the client resolves (irc.cpp gethostbyname); default %(default)s")
     p.add_argument("--server-port", type=int, default=6667)

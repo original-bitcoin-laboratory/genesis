@@ -21,7 +21,8 @@ from source*, a strictly harder goal than running it (see `docs/R3_*`). **NOT mo
 ## Recipe outline (cross-compile from Linux, gitian-style)
 
 The lowest-friction faithful build is an **i686-w64-mingw32 cross-compile** with the four
-period libraries cross-built to the same target. Sketch (fill in a container of choice):
+period libraries cross-built to the same target. Historical sketch, superseded by `full_build_wsl.sh`,
+which pins the versions actually used:
 
 ```dockerfile
 # Dockerfile.period  (outline — pins the axes above; not executed by build.sh)

@@ -60,8 +60,8 @@ window open.
 - Because you're isolated, the puzzle difficulty is the lowest possible, so your PC
   finds blocks in **seconds to a few minutes**.
 - Watch the **block count** (shown in the window / status bar) climb: 1, 2, 3, …
-- Note: the **coin balance stays 0 for a long time** — freshly mined coins only count
-  after 100 more blocks (that's a real v0.1 rule). So watch the **block count**, not
+- Note: the **coin balance stays 0 for a long time** — freshly mined coins only become
+  spendable after 120 more blocks (`COINBASE_MATURITY = 100` plus the client's own 20-block margin — a real v0.1 rule). So watch the **block count**, not
   the balance. Letting it reach a few dozen blocks is plenty.
 
 ### Step 6 — Save the evidence
@@ -118,7 +118,7 @@ of this one. In plain terms the extra steps are:
   `172.20.0.10`).
 - In each VM, add one line to `C:\WINDOWS\system32\drivers\etc\hosts`:
   `172.20.0.10   chat.freenode.net` (this points the old program's built-in discovery
-  at your local server instead of the long-dead real one).
+  at your local server instead of the public one).
 - Start `bitcoin.exe` in both VMs with **Generate Coins** on; within a minute they find
   each other and sync. Then **Send Coins** from one to the other's address, mine one
   more block, and watch the balance move.

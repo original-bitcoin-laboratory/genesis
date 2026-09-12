@@ -54,7 +54,7 @@ SUITES = [
 ARTIFACTS = [
     ("descendant matrix  -> MATRIX.md / conformance.json", "conformance.py", DERIV / "conformance"),
     ("NOV08-X differential-> DIFFERENTIAL.md / PROVENANCE.json", "differential.py", DERIV / "nov08x"),
-    ("eternal recipe -> both genesis blocks re-derive from source", "verify_genesis.py", ROOT / "scripts"),
+    ("genesis recipe -> both genesis blocks re-derive from source", "verify_genesis.py", ROOT / "scripts"),
 ]
 
 CPP = [  # optional: C++/OpenSSL port differentials (bash run scripts)

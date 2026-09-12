@@ -85,7 +85,7 @@ for label, url in ENDPOINTS:
         print("       payload is not JSON — VOID (a rendered page is not an API answer)")
         time.sleep(0.4)
         continue
-    # ⛔ MY PARSER WAS WRONG, NOT THE ENDPOINT — the eleventh time this session.
+    # ⛔ MY PARSER WAS WRONG, NOT THE ENDPOINT — the eleventh time in this pass.
     #    btgexplorer runs Blockbook, which nests everything under a "blockbook" key, so a
     #    top-level scan found nothing and printed "200 but no height/time field found". The
     #    payload had the complete answer in it the whole time.

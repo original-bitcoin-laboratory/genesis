@@ -7,7 +7,8 @@ nothing about the existing GPG signatures — it sits beside them.**
 > **Applied retroactively on 10 August 2026, and that works for a reason worth stating.** A
 > counter-signature made today protects a release published earlier, because what matters is not when
 > it was *signed* but that its OpenTimestamps anchor **predates any cryptographic break**. All twelve
-> published manifests were counter-signed in one batch and anchored in **Bitcoin block 961879**.
+> manifests published by 10 August 2026 were counter-signed in one batch and anchored in **Bitcoin block
+> 961879**; releases since carry the counter-signature from the day they ship.
 >
 > Each was fetched **from its published release** before signing, so the signature covers the bytes
 > the world can actually download rather than a local copy.

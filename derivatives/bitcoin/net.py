@@ -1,4 +1,6 @@
-"""Bitcoin — network identity and genesis, for the netnode transport.
+"""Bitcoin (2026) — network identity and genesis, for the netnode transport.
+Experimental; not the 2009 Bitcoin; not money. Its author "Satoshi Nakamoto" is a 2026 program, not a
+person and not the historical Satoshi.
 
 The genesis is fixed: mined once at difficulty-1 (nBits 0x1d00ffff) and hardcoded here, as a
 client hardcodes block 0. The client asserts this same hash on startup, so the two agree on

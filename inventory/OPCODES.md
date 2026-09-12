@@ -11,7 +11,7 @@
 | File | lines | sha256 |
 |---|--:|---|
 | `script.h` | 597 | `f905858b5d6d4593a3051b593c45fb5a8dd4cd38b5636c5e4456060b034fa218` |
-| `script.cpp` | 1128 | `347c7526932d42a4d10ae487150b709e2ead737aa4b05f50aa9e2eefeb05a5b5` |
+| `script.cpp` | 1127 | `347c7526932d42a4d10ae487150b709e2ead737aa4b05f50aa9e2eefeb05a5b5` |
 
 ## Signature-hash modes (`script.h`)
 

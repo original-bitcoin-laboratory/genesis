@@ -9,7 +9,7 @@ registrar change that flips it to a fully dynamic crawling seed when the network
 **both** always-on anchors:
 
 ```
-seed.bitcoin-lab.org  ->  143.110.255.205 , 178.62.236.102   (round-robin)
+seed.bitcoin-lab.org  ->  anchor A , anchor B   (round-robin; `dig seed.bitcoin-lab.org` returns the current addresses)
 ```
 
 This is deliberately the robust choice **while the only nodes are operator-run**: the name is served
@@ -22,8 +22,8 @@ one NS delegation away from taking over the moment that's true.
 
 ## The live crawler (deployed, verified)
 
-Crawling DNS seeds run as `obl-dnsseed.service` on **both anchors** — `143.110.255.205` (anchor A) and
-`178.62.236.102` (anchor B) — each bound to its public IP on **:53** (systemd-resolved keeps only the
+Crawling DNS seeds run as `obl-dnsseed.service` on **both anchors** — anchor A and
+anchor B, the two addresses `seed.bitcoin-lab.org` resolves to — each bound to its public IP on **:53** (systemd-resolved keeps only the
 `127.0.0.53` stub, so the public `:53` is free). Each connects to every known node over the real
 netnode wire, does the `version` handshake — proving the node is **reachable and on jan09x** — harvests
 the peers it gossips, and answers `A` queries for `seed.bitcoin-lab.org` with the live **healthy** set.
@@ -33,9 +33,9 @@ so these IPs serve NOV08-X bootstrap too.)
 Verify either directly (works regardless of delegation — it queries the seed host itself):
 
 ```bash
-dig @143.110.255.205 seed.bitcoin-lab.org +short      # or @178.62.236.102 -> the live healthy IPs
+dig @ns1.bitcoin-lab.org seed.bitcoin-lab.org +short      # or @ns2.bitcoin-lab.org -> the live healthy addresses
 # Windows:
-Resolve-DnsName -Server 178.62.236.102 seed.bitcoin-lab.org -Type A
+Resolve-DnsName -Server ns2.bitcoin-lab.org seed.bitcoin-lab.org -Type A
 ```
 
 Deploy/redeploy: [`../netnode/deploy/obl-dnsseed.service`](../netnode/deploy/obl-dnsseed.service)
@@ -48,8 +48,8 @@ fully dynamic seed. In the registrar's zone editor for bitcoin-lab.org:
 
 1. **Remove** the two `A` records for host `seed` (the current static anchors).
 2. **Add** two `A` records — the nameservers' own addresses (glue):
-   - host `ns1`, value `143.110.255.205`
-   - host `ns2`, value `178.62.236.102`
+   - host `ns1`, value: anchor A's address
+   - host `ns2`, value: anchor B's address
 3. **Add** two `NS` records — delegate the subdomain to both nameservers:
    - host `seed`, value `ns1.bitcoin-lab.org.`
    - host `seed`, value `ns2.bitcoin-lab.org.`

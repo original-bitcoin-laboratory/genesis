@@ -1,4 +1,4 @@
-# Block 2 — the Bitcoin chain (genesis 00000000ad12f3ec…)
+# Block 2 — Bitcoin (2026), an experimental chain (genesis 00000000ad12f3ec…)
 
 Mined **2026-08-06 00:23:51 UTC** by `bitcoin-node-1`, after an unclean shutdown on
 5 August interrupted the first attempt. Verified here from the raw `blk0001.dat`, not from the
@@ -51,9 +51,12 @@ built from any release interoperate. It is not our release number. See
 | *(wallet held separately)* | held in the project's offline key store — **Tier 1, never published** |
 
 The earlier phase of the same day — the crash, the cold copy, the 0.1.1→0.1.3 switch, and block 2
-being found at 05:53 — is in the sibling folder `2026-08-06-crash-recovery/` (44 screenshots).
+being found at 05:53 — is in the offline evidence set `2026-08-06-crash-recovery` (44 screenshots, not published).
 
 Wallet copied from a **cleanly exited** client. v0.1 has no keypool: each block mints a new key
 written at the moment it is found, so a backup predating a block does not contain its coins.
 
 **NOT money.**
+
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

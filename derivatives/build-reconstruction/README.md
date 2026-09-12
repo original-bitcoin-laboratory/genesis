@@ -35,3 +35,6 @@ bash build.sh          # needs MSYS2 mingw64 g++ + OpenSSL, and ../../extracted/
 Expected: source hashes OK, `sha.cpp` compiles, SHA-256 vectors **ALL PASS**, and
 `serialize.h` / `bignum.h` **BLOCK** at their documented lines. The `build/` output dir is
 git-ignored. This module reads only the read-only `extracted/` tree; it modifies nothing.
+
+`EXPECTED_SHA256` is the digest of the Bitcoin (2026) `bitcoin.exe` that `.github/workflows/reproducible.yml`
+rebuilds from `derivatives/bitcoin/src`; it is not a 2009 digest.

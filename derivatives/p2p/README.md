@@ -54,7 +54,7 @@ reorg to a longer branch) plus two end-to-end scenarios over localhost TCP:
   synced with **no orphans left**.
 
 ```bash
-python -m pytest          # 7 passed (2 relay + 5 chain-sync)
+python -m pytest          # 9 passed (4 relay + 5 chain-sync)
 python test_p2p.py        # relay: B's inventory + message log
 python test_chainsync.py  # sync: heights reached + B's message log
 ```

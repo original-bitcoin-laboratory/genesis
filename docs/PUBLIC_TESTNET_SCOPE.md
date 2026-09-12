@@ -16,13 +16,13 @@ stand as *equally accessible* candidates, not only reproducible artifacts. It cl
 It does **not** make them money, and it does **not** make them "the real Bitcoin" — it makes them
 *reachable on the same footing.*
 
-## The hard truth about "eternal"
+## What lasting would take
 
 A chain persists only because **independent people choose to keep running it**. One
 machine broadcasting is not a network; it lasts exactly as long as that process. So
 the real deliverable isn't code — it's *other operators*. Everything below is
-necessary but **not sufficient**; adoption is the sufficient part, and it can't be
-engineered, only earned.
+necessary but **not sufficient**; other people choosing to run it is the sufficient part, and that cannot be
+engineered.
 
 ## The crux: "nothing disabled" is only safe *because* it isn't money
 
@@ -58,8 +58,8 @@ reconstruction.**
 
 ## A staged plan (each stage independently useful)
 
-> **Status (27 Jul 2026): Stages 1–4 built + tested, and the production‑node core is done**
-> in [`../derivatives/netnode/`](../derivatives/netnode/) (**45 tests**): hardened wire, crash‑safe
+> **Status (27 Jul 2026): Stages 1–4 built and tested, and the production‑node core is done**
+> in [`derivatives/netnode/`](https://github.com/original-bitcoin-laboratory/genesis/tree/main/derivatives/netnode/) (the test count is printed by `scripts/reproduce.py`): hardened wire, crash‑safe
 > store, real‑TCP sync, difficulty retarget, `addr`‑gossip discovery, DoS resource bounds, a tagged
 > pre‑release, **block validation beyond PoW** (`fullnode.py`), a **validated UTXO chainstate**
 > (`chainstate.py`) that is the **sole authority** for what the node serves and mines —
@@ -76,7 +76,7 @@ reconstruction.**
 > `getnewaddress` / `send` over a loopback RPC (`python -m netnode ctl`), all on the faithful v0.1
 > SelectCoins / CreateTransaction path. The network now carries **real transactions**, and a person
 > can **use** it without writing Python. A **performance harness** (`netnode/bench.py`) found **~95% of
-> validation time is ECDSA signature verification**, so this session **delivered** that lever — an
+> validation time is ECDSA signature verification**, so that lever was **delivered** — an
 > optional **libsecp256k1 verifier** (`netnode/fastverify.py`, ~7× per signature / ~4–5× end‑to‑end)
 > wired **byte‑faithfully** to the origin's pre‑BIP66 OpenSSL semantics (it normalizes + falls back
 > so it does **not** drift to the BIP66 strict rule; differential‑tested). Finally, the **operator
@@ -109,9 +109,9 @@ reconstruction.**
 4. **A runnable release.** ✅ operator guide (`netnode/RUN.md`), threat model (`netnode/SECURITY.md`),
    versioning + a tagged GitHub release, and **Docker + systemd deploy templates** (`netnode/deploy/`);
    **GPG‑signed builds remain an operator step** (needs a signing key).
-5. **Invite operators.** The chain is only "eternal" once **other people** run nodes 3 and 4 without
+5. **Invite operators.** The chain lasts only while **other people** run nodes 3 and 4 without
    you. The code lowers the bar (DNS seed + deploy templates); the *choosing to run it* can't be
-   engineered, only earned. The shipping docs for this rung: [`ANNOUNCE.md`](ANNOUNCE.md) (the
+   engineered. The shipping docs for this rung: [`ANNOUNCE.md`](ANNOUNCE.md) (the
    operator/seed invitation), [`AUDIT_SCOPE.md`](AUDIT_SCOPE.md) (what an independent reviewer should
    examine), and [`RELEASE_SIGNING.md`](RELEASE_SIGNING.md) (reproducible, GPG‑signed releases).
 6. *(Only if ever justified)* a faster node. ✅ *started* — the dominant cost (signature
@@ -136,7 +136,7 @@ reconstruction.**
 The **reproducible recipe** (`verify_genesis.py`) already gives you a durable, honest
 kind of permanence — anyone can re‑derive the exact genesis forever, with no node to
 maintain and no way to mislead. A live testnet adds *liveness* but also real
-obligations (security, maintenance, and the framing above) and only becomes "eternal"
-if strangers adopt it. Do stage 1–2 if you want the technical satisfaction of two
+obligations (security, maintenance, and the framing above) and lasts only
+if strangers choose to run it. Do stage 1–2 if you want the technical satisfaction of two
 machines syncing a full‑capability chain over the real internet; go past stage 3 only
 with eyes open about the community + responsibility it entails.

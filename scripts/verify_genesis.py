@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The eternal recipe — regenerate both experimental genesis blocks from source and
+"""The genesis recipe — regenerate both experimental genesis blocks from source and
 verify they match their pinned hashes.
 
 Our genesis blocks are *deterministic*: fixed coinbase message, fixed timestamp,

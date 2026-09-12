@@ -1,4 +1,4 @@
-# Block 3 — the Bitcoin chain (genesis 00000000ad12f3ec…)
+# Block 3 — Bitcoin (2026), an experimental chain (genesis 00000000ad12f3ec…)
 
 Mined **2026-08-06 01:40:22 UTC**. Verified from the raw `blk0001.dat`.
 
@@ -51,3 +51,6 @@ What can be said: each block required roughly 2^32 hashes at difficulty 1 on a s
 miner, and the elapsed *mining* time per block is not recorded by this evidence set.
 
 **NOT money.**
+
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

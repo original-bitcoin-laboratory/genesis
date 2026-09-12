@@ -93,7 +93,7 @@ lab/genesis/r3-evidence/<run>/B/…       # from VM-B
 ```
 (`r3-evidence/` is gitignored — the bytes never get committed.)
 
-## Phase 5 — Turn it into committed findings, then hand back
+## Phase 5 — Turn it into committed findings
 
 12. On the host, from `lab/genesis/`:
     ```bash

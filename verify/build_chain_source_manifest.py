@@ -17,7 +17,7 @@ key that mined block 0 has signed the source that built block 0.
 
 WHAT IT COVERS, AND WHY EXACTLY THIS SET
 ----------------------------------------
-  src/                 the 34 files of the client, 28 of which still carry
+  src/                 the 43 files of the client tree, 29 of which still carry
                        "Copyright (c) 2009 Satoshi Nakamoto" and the MIT/X11 notice -- this IS L
   PROVENANCE.txt       the statement of what is Satoshi's, what is Wei Dai's, and what is ours
   bitcoin-v0.1.0.patch the 10 lines that separate this chain from Satoshi's

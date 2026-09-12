@@ -1,4 +1,6 @@
-# Cutting a Bitcoin release
+# Cutting a Bitcoin (2026) release
+
+Releases of the laboratory's 2026 experimental chain — not the Bitcoin of 2009, not money.
 
 Written down because most of it is **not automated**, and the un-automated parts are the ones that
 rot quietly: nothing fails, the release just ends up missing a mirror, a timestamp, or a signature
@@ -171,7 +173,7 @@ tries to ssh to a host called `rad`.
 
 ## 7. Site and docs — **manual**
 
-- footer release link on all nine pages in `docs/`
+- footer release link on every page in `docs/` that carries the `lab-footer` block (13 at the time of writing)
 - a new section in `docs/bitcoin.html`, previous release marked superseded and *why*
 - `docs/ANNOUNCE.md`: the tarball name and the **verify-first sha256** — that line is the one a
   reader actually pastes, so a stale hash there is worse than none
@@ -218,9 +220,9 @@ anchor, and none of those expire.
 
 ### ★ This is no longer your job to remember
 
-**Run a proof sweep.** Walk every `.ots` you hold, and
-**FAIL** on any proof that carries no
-`BitcoinBlockHeaderAttestation`. It also reports stray `.ots.bak` files, which are the other half of
+**Run the proof sweep** (`python scripts/ots_upgrade.py --dry-run docs/ bitcoin-findings/`). It walks every `.ots`
+it is given, says which carry no `BitcoinBlockHeaderAttestation`, and a release must not ship while one of its
+own proofs is still pending. Stray `.ots.bak` files, which are the other half of
 the same hazard.
 
 It classifies by **reading the attestation marker**, not by file size. The old sweep here used

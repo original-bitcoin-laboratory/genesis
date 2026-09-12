@@ -3,14 +3,14 @@
 **For an independent reviewer.** This scopes a security/correctness review of the NOV08‑X / JAN09‑X
 node. It is deliberately blunt about what is and isn't defended, and about what a signoff would and
 would not mean. **This is a valueless research node — the review is about correctness and robustness,
-not about protecting anything of value, because there is nothing of value here (and never will be).**
+not about protecting anything of value, because nothing here is sold, offered, priced or traded.**
 
 ## The frame the review must keep
 
 The single load‑bearing invariant is: **"nothing disabled" is safe only because it is "not money."**
 The reconstructions faithfully carry the origin's *missing* guardrails (no `MoneyRange`/overflow
 check, no block‑size cap, no script element/op/stack limits, unbounded arithmetic — see
-[`../derivatives/conformance/CONSENSUS_SURFACE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/CONSENSUS_SURFACE.md)).
+[`common/conformance/CONSENSUS_SURFACE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/CONSENSUS_SURFACE.md)).
 A review should **confirm the node stays valueless and un‑drifted**, not recommend adding the 2010
 guardrails — adding them would make it no longer the origin. If value were ever attached (it must not
 be), the review scope changes entirely.

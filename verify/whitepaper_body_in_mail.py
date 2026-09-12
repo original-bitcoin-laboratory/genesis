@@ -5,7 +5,7 @@ that message. The body (~3,000 words) has never been shown to survive in any dat
 record; the only copy is a PDF created 2009-03-24, months after the announcement.
 
 But the Oct 2008 - Feb 2009 threads are technical. Satoshi answered James A. Donald, Ray Dillinger,
-Hal Finney and John Levine at length. If he -- or anyone -- restated a passage of the paper, THE LIST
+Hal Finney and John Levine at length. If they -- or anyone -- restated a passage of the paper, THE LIST
 SERVER DATES THAT TEXT, independent of any PDF. That is the only route left to anchoring body text.
 
 Method: word-shingle intersection, then extend hits to maximal runs. Quoted lines (">") are tracked

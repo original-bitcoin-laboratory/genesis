@@ -186,8 +186,8 @@ wallet keys not yet used                         1   v0.1 mints a key at find-ti
 
 ⚠️ **This count was 293 until two tools were made to disagree.** A naive "is it a valid point on
 secp256k1?" scan counts the curve's own **generator point G**, which sits in the wallet file as a
-constant rather than as anybody's key. `verify/wallet_custody.py` said 293; the repository's
-`generate_docs.py` said 292, because it already excluded G. **The disagreement is what found it —
+constant rather than as anybody's key. `verify/wallet_custody.py` said 293; the site generator, which
+already excluded G, said 292. **The disagreement is what found it —
 a single tool would simply have been believed.** Both now exclude G and agree at 292.
 
 > ### ★ The coinbase payees ABSENT from the miner's wallet are exactly the agent-key heights
@@ -205,7 +205,7 @@ a single tool would simply have been believed.** Both now exclude G and agree at
 (`6b37b7fd8f7ec3d4…`).
 
 **The wallet and the datadir are Tier 1 and are archived to the cold backup only.** Verified by
-`git ls-files` across all ten repositories in this workspace: **zero** wallet, datadir, chain, log
+`git ls-files` across the laboratory's public repositories: **zero** wallet, datadir, chain, log
 or binary *data* files are tracked anywhere. (Six tracked paths match the word "wallet" — they are
 `wallet.py`, `wallet.rs`, `nodewallet.py` and their tests: implementations, not data.)
 
@@ -229,7 +229,7 @@ cold backup, evidence set "2026-08-22-blocks122-295"       81 files + SHA256SUMS
   block122onward/bitcoin-0.1.3/    bitcoin.exe, debug.log, db.log, capture_binding.ps1,
                                    the two binding JSONs
   block122onward/                  blk0001-blk122onward-*.dat, wallet-clean-*, pre/post JSON
-  screenshots/                     66 PNGs, 2026-08-14 23:28 -> 2026-08-22 21:54
+  screenshots/                     66 PNGs; filenames carry the capture host's clock, UTC instants are in the offline manifest
   SHA256SUMS                       generated after the copy, from the copies
 
 this repository                    FINDINGS.md, SHA256SUMS, the two binding JSONs -- and nothing
@@ -245,6 +245,8 @@ Related: [previous round](../2026-08-14-blocks64-121/FINDINGS.md) ·
 [the first reorganization](../2026-08-21-first-reorganization/FINDINGS.md) ·
 [`CORRECTIONS.md`](../CORRECTIONS.md) · `verify/verify_capture.py` · `verify/wallet_custody.py` ·
 `verify/probe_seed_node.py`
+
+**NOT money.** No sale by us, no price set, we solicit no market; the units are counters, not BTC.
 
 The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
 the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

@@ -3,7 +3,7 @@
 
 WHY THIS EXISTS
 ---------------
-An audit on 15 Aug 2026 found 10 of 22 tags unsigned across the four laboratory repositories. Three
+An audit on 15 Aug 2026 found 10 of 22 tags unsigned across the four laboratory repositories (12 by 12 Sep 2026). Four
 are **lightweight** tags — a lightweight tag is a bare ref, it has no object to sign, so it cannot
 carry a signature at all. Two of those (`Bitcoin-v0.1.2`, `Bitcoin-v0.1.3`) sit *between* signed
 releases, which is the awkward part: the series looks continuous and is not.
@@ -31,6 +31,7 @@ Run:  python build_tag_attestation.py            # writes TAG-ATTESTATION.txt
       python build_tag_attestation.py --check    # regenerate and diff, fail if it drifted
 """
 import io
+from datetime import datetime, timezone
 import subprocess
 import sys
 from pathlib import Path
@@ -79,8 +80,8 @@ def build():
             rows.append((name, tag, kind,
                          g(path, "rev-list", "-n1", tag),
                          g(path, "rev-parse", "%s^{tree}" % tag),
-                         # committer date rendered in UTC: this project writes one clock only
-                         g(path, "log", "-1", "--date=format-local:%Y-%m-%dT%H:%M:%SZ", "--format=%cd", tag)))
+                         # committer date rendered in UTC from the unix timestamp, whatever the local clock
+                         datetime.fromtimestamp(int(g(path, "log", "-1", "--format=%ct", tag)), timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")))
     L = []
     L.append("ATTESTATION OVER UNSIGNED TAGS")
     L.append("Original Bitcoin Laboratory / satoshi-onchain     NOT money.")
@@ -91,7 +92,9 @@ def build():
     L.append("commits and trees given beside them.")
     L.append("")
     L.append("WHY THIS FILE EXISTS")
-    L.append("  Three of these are LIGHTWEIGHT tags. A lightweight tag is a bare ref with no object,")
+    n_lw = sum(1 for r in rows if r[2] == "lightweight")
+    words = {1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six"}
+    L.append("  %s of these are LIGHTWEIGHT tags. A lightweight tag is a bare ref with no object," % words.get(n_lw, str(n_lw)))
     L.append("  so it cannot carry a signature -- not an oversight that can be corrected in place.")
     L.append("  Re-creating them as signed tags would move what 16 published releases point at and")
     L.append("  invalidate commit SHAs already quoted in findings, papers and PRESERVATION.md, while")

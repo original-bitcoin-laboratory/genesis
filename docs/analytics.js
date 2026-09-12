@@ -1,31 +1,14 @@
-/* Analytics — GoatCounter enrichment.
+/* Analytics enrichment for the aggregate, cookie-less counters this site uses.
  *
- * ONE file, loaded by every page, so the behaviour lives in a single place instead of being
- * sprinkled across a dozen static HTML files. It adds EVENTS on top of the pageview that
- * count.js already sends.
+ * One file, loaded by every page, so the behaviour lives in a single place. It adds EVENTS on
+ * top of the pageview the counter already records: which outbound link was followed, which
+ * section was jumped to, whether a page was printed, how long it stayed open, whether a script
+ * threw. Every event is a fact about a VISIT, never about a VISITOR.
  *
- * WHAT IT DOES NOT DO, deliberately:
- *   - no cookies, no localStorage, no fingerprinting, no cross-site or per-visitor identifier
- *   - nothing that identifies a person, and nothing sent that a server log would not already see
- * GoatCounter is aggregate-only by design. "More detail" here means MORE KINDS OF EVENT,
- * never more identification of who did them. That ceiling is a property of the tool and a
- * feature of it; it is stated rather than worked around.
- *
- * ★ THE LINE THIS FILE WILL NOT CROSS, and why it was written down before it was tested.
- *   Asked in August 2026 to "track as much detail as possible", the tempting answer was a tool
- *   with per-visitor identity -- journeys, funnels, retention, returning-visitor counts. Every
- *   one of those needs to know that two events came from the SAME PERSON, and this project
- *   refuses to publish its own node identifiers precisely because they would manufacture a link
- *   between an identity and a network address. Applying a weaker standard to READERS than to ourselves
- *   would be indefensible.
- *
- *   So the expansion below adds only things that are true of a VISIT and never of a VISITOR:
- *   what kind of thing was copied, which section was jumped to, whether a page was printed, how
- *   long it was open, whether the in-browser cryptography threw. No identifier is created,
- *   nothing is stored on the device, and no two events can be tied together afterwards.
- *
- *   ⇒ If a question genuinely needs per-visitor identity, the honest move is to decide that
- *     openly and write down what changed -- not to let a tool choice make the decision quietly.
+ * What it does not do, deliberately: no cookies, no localStorage, no fingerprinting, no
+ * cross-site or per-visitor identifier, nothing that identifies a person, and nothing sent that
+ * a server log would not already see. Aggregate-only is a property of the tools chosen; it is
+ * stated here so it cannot drift quietly.
  *
  * PATH PREFIX: this site is the account's DEFAULT and reports bare paths ("/verify.html").
  * satoshioncha.in and bitcoinwhitepaper.online prefix themselves with their host, so the three
@@ -153,8 +136,8 @@
   }, true);
 
   // ---- print / save ---------------------------------------------------------------------
-  // Printing or saving a page to PDF is a strong intent signal on documents meant to be kept:
-  // the manifest, the certificates, the findings. It fires at most once per page view.
+  // Printing or saving a page to PDF is a strong intent signal on documents meant to be kept.
+  // It fires at most once per page view.
   var printed = false;
   window.addEventListener('beforeprint', function () {
     if (printed) return; printed = true;
@@ -180,9 +163,8 @@
   });
 
   // ---- script errors --------------------------------------------------------------------
-  // These pages run real cryptography in the browser -- a genesis block re-derived from source
-  // bytes, signatures checked client-side. If that breaks on someone's device we would never
-  // otherwise hear about it, and a silent failure on the flagship claim is the worst kind.
+  // Some pages run checks in the browser. If a script breaks on someone's device we would never
+  // otherwise hear about it, and a silent failure is the worst kind.
   //
   // Only the message and the file are sent, both truncated. No stack, no URL parameters.
   var errs = 0;

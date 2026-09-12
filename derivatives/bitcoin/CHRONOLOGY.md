@@ -110,7 +110,7 @@ All times UTC.
                         nNonce 612491648
 ```
 
-**At the time of this entry (5 August 2026) the chain was at height 3.** All four blocks linked, and all four satisfied their proof-of-work target —
+**At the time of this entry (6 August 2026) the chain was at height 3.** All four blocks linked, and all four satisfied their proof-of-work target —
 checked against the difficulty arithmetic, not by eye. The current tip is on the live status feed.
 
 ### Each mined block is bracketed by a bound binary
@@ -141,7 +141,7 @@ output    50 -> P2PK 04c0414c…   no value assigned
 ```
 
 **The coinbase is a proof of time, not homage.** It is *The Times* front-page splash of the morning
-the block was mined — the same page slot Satoshi used, and a different headline because copying his
+the block was mined — the same page slot Satoshi used, and a different headline because copying theirs
 would keep the words and lose the function. **This block cannot have been mined before that paper was
 printed.**
 
@@ -157,7 +157,7 @@ STRONGEST   the genesis and block-1 nTime
             with a newspaper published that morning. Cannot be backdated.
 
 STRONG      OpenTimestamps proofs, upgraded
-            Anchored into the Bitcoin blockchain by a third party. Independent of
+            Anchored into the 2009 Bitcoin chain by a third party. Independent of
             any clock of ours.
 
 MODERATE    GPG signature times · git tagger times
@@ -220,7 +220,7 @@ species either. **The position here is identical in kind, and stated rather than
 ## A signed statement exists, and only its hash is published
 
 A GPG-signed statement recording who built the agent is held privately. **Its hash was published in
-[`NOTARY.md`](NOTARY.md) on 5 August 2026**, so its existence and integrity are fixed and dated
+[`NOTARY.md`](NOTARY.md) on 4 August 2026**, so its existence and integrity are fixed and dated
 without disclosing its contents. If it is ever produced, anyone can verify it is byte-identical to
 the document that existed then.
 
@@ -233,7 +233,7 @@ sha256  98b30c08a3ad44a011d64da5290011214193923c6fe927bfc7021297aaa658eb   PROVE
 
 ## Known gaps in this record
 
-Listed here rather than left to be discovered. **Updated 9 August 2026 — two of the three below have
+Listed here rather than left to be discovered. **Updated 12 September 2026 — three of the six below have
 since been closed, and they are shown closed rather than deleted, because a gap that quietly
 disappears teaches a reader nothing.**
 
@@ -262,10 +262,14 @@ disappears teaches a reader nothing.**
   **Corrected forward on 12 September 2026:** the release-text template in `make_release.sh` now
   carries the library and its hash, so every release from v0.1.6 on will state it. v0.1.5's text
   is signed and anchored and **will not be re-cut**.
-- ◻ **OPEN — one node, no network.** Every block here was mined by a single node on an isolated
-  chain. Nothing in this record measures hashrate, difficulty or peer behaviour, and `nBits` has
-  never moved from `0x1d00ffff`. **The intervals between blocks are gaps between sessions, not block
-  times:** a 68-hour gap means the machine was switched off.
+- ◻ **PARTLY CLOSED — one node, no network.** The early blocks were mined by a single node on an
+  isolated chain. Since then a second miner has produced blocks (221 and 222, 19 August 2026;
+  `bitcoin-findings/2026-08-19-external-blocks221-222/`), the seed relays, and a reorganisation has
+  been recorded (`2026-08-21-first-reorganization/`). **Still open:** nothing here measures hashrate,
+  and `nBits` has never moved from `0x1d00ffff`; the first retarget is expected at height 2016, and until
+  then the laboratory's own nodes apply a 60-block rule that equals the 2009 client's only at the floor
+  (see `derivatives/netnode/README.md`). **The intervals between the early blocks are gaps between
+  sessions, not block times:** a 68-hour gap means the machine was switched off.
 
 **Corrections to sealed evidence are recorded, never edited in place** — see
 [`bitcoin-findings/CORRECTIONS.md`](https://github.com/original-bitcoin-laboratory/genesis/blob/main/bitcoin-findings/CORRECTIONS.md).

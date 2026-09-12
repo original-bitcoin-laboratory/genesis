@@ -20,8 +20,8 @@ one input → one 50.00 output, no change, no fee. Both nodes converged. Both bo
 **The R-series is complete.** Still modelled rather than executed: mining across a difficulty
 **retarget** window — the chain never left difficulty 1.
 
-**Operator's-eye view:** [`screenshots/`](screenshots/INDEX.md) is a 75-frame desktop-capture gallery of the
-whole run (31 Jul bring-up → 2 Aug reorg → the run climbing toward maturity at 26 blocks), hashed in its own
+**Operator's-eye view:** [`screenshots/INDEX.md`](screenshots/INDEX.md) captions the 75 desktop captures of the
+whole run and lists their hashes; the image files themselves are held offline (host captures are not published). It covers (31 Jul bring-up → 2 Aug reorg → the run climbing toward maturity at 26 blocks), hashed in its own
 `SHA256SUMS` and captioned in `INDEX.md`. It corroborates the byte-level findings above; the raw block bytes
 those findings are derived from remain gitignored under `r4-evidence/`.
 

@@ -1,4 +1,4 @@
-# Publishing the VM image — the audit that must happen before it leaves the machine
+# Publishing a VM image — the policy: the audit that must happen before it leaves the machine
 
 **The `.ova` is the artifact that converts *"we ran the 2009 Bitcoin client"* into *"anyone can."***
 Everything else in this laboratory is a description of an execution; the image **is** the execution,
@@ -38,8 +38,8 @@ amount of hashing makes a secret publishable.**
 obl-r4-nodes.ova     the RESEARCH appliance -- preserves the ability to RE-RUN the machine.
                      Contains wallets. NEVER published. Already hashed and recorded.
 a clean appliance    the REPRODUCIBILITY artifact -- a fresh guest with the binary, the
-  (does not exist    isolated network and the chain data, and NO WALLET AT ALL, built for
-   yet)              the purpose of being handed to strangers.
+  (not yet built)    isolated network and the chain data, and NO WALLET AT ALL, built for
+                     the purpose of being handed to strangers.
 ```
 
 **Everything below applies to that second appliance when it is built.** The hash and manifest steps
@@ -107,9 +107,9 @@ what was KEPT and why           the datadir, so the chain verifies on first boot
 how to run it                   VirtualBox version, RAM, and that it needs NO network
 ```
 
-⚠️ **State that it needs no network.** The 2009 client's only peer-discovery mechanism resolves
-`chat.freenode.net`, which has not existed since 2021 — a reader who expects it to sync will think
-the image is broken. `addr.txt` beside `bitcoin.exe` is the supported path, and it is a v0.1.0
+⚠️ **State that it needs no network.** The 2009 client's only built-in peer-discovery mechanism is IRC on
+`chat.freenode.net`; an image that must not touch the network needs `addr.txt` instead, and a reader who
+expects it to sync will otherwise think the image is broken. `addr.txt` beside `bitcoin.exe` is the supported path, and it is a v0.1.0
 feature, not a modification.
 
 ## STEP 3 — Sign and anchor the manifest
@@ -125,7 +125,7 @@ ots stamp OVA-MANIFEST.txt OVA-MANIFEST.txt.asc OVA-MANIFEST.txt.slhdsa
 **The manifest carries the image's hash, so signing the manifest signs the image** without needing
 to sign 23 GB.
 
-## STEP 4 — Distribution `AUTHOR DECISION`
+## STEP 4 — Distribution (decided per image)
 
 ```
 IPFS pin        content-addressed, already used for releases, and the CID would BE the hash.
@@ -137,7 +137,7 @@ on request      publish the hash and the manifest; hand the image to anyone who 
                 strictly better than the current state, where the hash is not even published.
 ```
 
-> **Recommendation: do STEPS 0–3 now, and STEP 4 later.** The audit, the hash, the manifest and the
+> **Order of operations: STEPS 0–3 before any image leaves the machine; STEP 4 is decided per image.** The audit, the hash, the manifest and the
 > signature are the whole of the value that does not depend on bandwidth. **Publishing the hash
 > without the image is a real improvement; publishing the image without the audit is a permanent
 > mistake.**

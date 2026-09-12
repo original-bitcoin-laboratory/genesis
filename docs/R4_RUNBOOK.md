@@ -75,7 +75,7 @@ discovery stalls, re-check step 2 (bare-`\r`) and step 7 (flushdns). This reprod
 
 1. On **node B only**: **Options → Generate Coins** (or launch `bitcoin.exe /gen`). **Leave node A NOT
    mining** — it stays a pure receiver so the CPU isn't split and blocks relay cleanly.
-2. Node B mines blocks **2 → ~6** on top of block 1 (difficulty-1 ≈ 10–15 min/block average, high variance).
+2. Node B mines blocks **2 → ~6** on top of block 1 (difficulty-1: 50–90 min/block observed in a 2-vCPU guest, high variance).
    Watch **node A's** block count climb in lockstep; `nodeA\debug.log` shows, per block:
    `got inventory: block <hash> → askfor → received block → ProcessBlock: ACCEPTED`.
 3. When node A shows ~6 blocks, turn **Generate Coins off** on node B.
@@ -171,9 +171,8 @@ cell witnessed on the real binary.
 
 ## Evidence capture & write-up
 
-> **R4a and R4b are done** — see `r4-findings/README.md`, `r4-findings/2026-08-01-sustained-relay/`, and
-> `r4-findings/2026-08-02-reorg-partition/`; `docs/STATUS.md` records both as witnessed. The notes below
-> are the general recipe (use them for R4c, or to reproduce).
+> **R4a, R4b and R4c are done** — see `r4-findings/README.md` and the three findings folders; `docs/STATUS.md`
+> records all three as witnessed. The notes below are the general recipe for reproducing them.
 
 - Mirror the R3 layout. Create `r4-findings/<YYYY-MM-DD>-<milestone>/` for the committed write-up +
   hashed manifest, and keep raw bytes under the gitignored `r4-evidence/<same>/`.
@@ -183,6 +182,6 @@ cell witnessed on the real binary.
   `verify_r4.py` output (heights, PoW, orphans, convergence), both `bitcoin.exe` = `fbcac071…`, and the
   divergences (peer-gated miner, stochastic reorg, maturity constraint for R4c).
 - Then update `docs/STATUS.md` + the paper §8: move sustained mining + reorg from "modeled/deferred" to
-  **witnessed (r4-findings/…)**; if you skip R4c, keep tx-relay explicitly headless-only.
+  **witnessed (r4-findings/…)**.
 
 **NOT money.** Isolated networks, real genesis, valueless by design.

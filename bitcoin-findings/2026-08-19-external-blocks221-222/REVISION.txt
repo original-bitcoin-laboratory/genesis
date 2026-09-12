@@ -1,5 +1,15 @@
-Revision 2, 12 September 2026. Wording revised under the revision rule in docs/EVIDENCE_POLICY.md: internal folder
-labels, local-clock times and the hosting provider removed; no-value and agent statements made explicit
-where absent. Every edit is listed in bitcoin-findings/CORRECTIONS.md. Revision 1's manifest and proof
-are kept beside this one as SHA256SUMS.r1 and SHA256SUMS.r1.ots and still verify; block data, bindings and
-every figure are unchanged.
+Revision 3, 12 September 2026. Revision 2's manifest was re-emitted in standard sha256sum form (its
+first emission carried a blank line, a mixed entry style and no final newline), and the two statements
+revision 2 was meant to add were added to every set still lacking one (the no-value line in blocks5-28, blocks29-50, blocks51-60, blocks122-295;
+the agent statement in block2, block3, blocks5-28, blocks29-50, blocks51-60, blocks298-731). In the same pass a few
+remaining local labels, an undated probe, an unsourced remark about a third party and the chain's name
+in two titles were corrected. Every edit is listed in bitcoin-findings/CORRECTIONS.md. Revision 2's
+manifest and its pending proof are kept as SHA256SUMS.r2 and SHA256SUMS.r2.ots.
+
+Revision 2, 12 September 2026. Wording revised under the revision rule in docs/EVIDENCE_POLICY.md:
+internal folder labels and local-clock times removed, the seed named by hostname, and the no-value
+and agent statements added where absent. Revision 1's manifest and proof are kept as SHA256SUMS.r1
+and SHA256SUMS.r1.ots; that proof still attests that manifest, whose FINDINGS.md line records the
+revision-1 text and therefore no longer matches this file.
+
+Block data, binding records and every figure are unchanged across revisions; only prose was revised.

@@ -57,8 +57,8 @@ pre    2026-08-10T22:05:30Z  pid 3040   create_time 2026-08-10T22:05:11Z
 post   2026-08-11T19:29:38Z  pid 3040   create_time 2026-08-10T22:05:11Z
 ```
 
-**The binary is byte-identical to `dist/bitcoin-0.1.3/bitcoin.exe` in this repository** — and to
-`dist/bitcoin-0.1.4` and `dist/bitcoin-0.1.5`, which ship the same executable. **So the VM is
+**The binary is byte-identical to `bitcoin.exe` in the published `Bitcoin-v0.1.3` release** — and to
+the executables of `Bitcoin-v0.1.4` and `Bitcoin-v0.1.5`, which ship the same executable. **So the VM is
 labelled 0.1.3 and is running exactly what 0.1.5 ships.**
 
 ### ★★ The limit recorded in the previous round is closed, and the evidence is the PID
@@ -173,9 +173,8 @@ SHA256SUMS                                          hashes of everything capture
 ```
 
 **Raw bytes are not in this repository** — `blk0001.dat`, `blkindex.dat`, `wallet.dat`, the debug
-log, the executable and 25 screenshots live in the cold backup under
-`04-evidence/bitcoin-chain-evidence/2026-08-12-blocks51-60/`, with the wallet in the Tier-1 key
-store as `wallet-clean-blk60-20260811.dat`. **Only hashes cross into the repo.** That rule is
+log, the executable and 25 screenshots are held offline in the cold backup for this evidence set,
+with the wallet in the offline key store. **Only hashes cross into the repo.** That rule is
 enforced by `.gitignore`, not by memory. **40 files were copied and every one re-hashed against its
 source: 0 mismatches.**
 
@@ -184,3 +183,8 @@ source: 0 mismatches.**
 
 Related: [`../2026-08-11-blocks29-50/FINDINGS.md`](../2026-08-11-blocks29-50/FINDINGS.md) ·
 [`../CORRECTIONS.md`](../CORRECTIONS.md) · [`../../docs/RELEASE_CHECKLIST.md`](../../docs/RELEASE_CHECKLIST.md)
+
+**NOT money.** No sale by us, no price set, we solicit no market; the units are counters, not BTC.
+
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

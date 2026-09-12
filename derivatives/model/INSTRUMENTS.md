@@ -67,3 +67,7 @@ Timelocks/refund-expiry use `nLockTime` + per-input sequence on pre-signed
 transactions (finality rule `main.h:400`: final when `nLockTime < nBestHeight`) —
 there is no `CLTV`/`CSV` opcode in v0.1. Those instruments are constructed as
 pre-signed transaction graphs, not single scripts.
+
+**Caveat, asserted by `test_instruments.py`.** Every instrument here is bypassed by a scriptSig ending in
+`OP_1 OP_RETURN`: v0.1 evaluates scriptSig and scriptPubKey as one script, so `OP_RETURN` after a true
+value succeeds before the scriptPubKey runs. They are executable, not secure.

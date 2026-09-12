@@ -34,8 +34,8 @@ announcement **linked** the paper rather than attaching it, so no mail archive h
 hash of it was ever posted. What does survive from October 2008 is the **abstract, quoted inline in
 the announcement**, dated by a mail server rather than by its author.
 
-Five independent sources now serve this exact file byte-for-byte: bitcoin.org today, the Nakamoto
-Institute, two Internet Archive captures, and this repository. Its provenance as *the file
+Four sources serve this exact file byte-for-byte — bitcoin.org today, the Nakamoto Institute, and two
+Internet Archive captures — and the block chain carries it (`verify/whitepaper_from_chain.py`). Its provenance as *the file
 bitcoin.org has served since at least 2010* is solid. Its provenance as *an October 2008 document*
 does not exist, and nothing here should imply otherwise.
 

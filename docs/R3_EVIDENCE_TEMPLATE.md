@@ -22,7 +22,7 @@ gitignored `r3-evidence/<RUN>/`). Fill this in from the observed run; cite the
 | # | Observation | Result (pass/fail) | Evidence file(s) → sha256 | Notes |
 |---|---|:--:|---|---|
 | 1 | Node starts; recognises genesis `…19d668…a8ce26f` | | `A/debug.log` → | |
-| 2 | `/gen` mining produces blocks; coinbase matures (100) | | `A/debug.log`, block height | |
+| 2 | `/gen` mining produces blocks; coinbase becomes spendable at 120 confirmations | | `A/debug.log`, block height | |
 | 3 | VM-B connects to VM-A over the isolated net (via IRC) | | `A/debug.log`, `B/debug.log` | peer count |
 | 4 | A block relays A→B and validates on B | | `B/blk0001.dat`, `B/blkindex.dat` → | |
 | 5 | Transaction A→B relays and confirms | | tx id, `A/debug.log`, screenshot → | |

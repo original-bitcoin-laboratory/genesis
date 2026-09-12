@@ -21,8 +21,8 @@ sha256  d84a8c1acaf1e5f088b292d1c39c6d86e5503cb84c981537648c5694310d6dcf   PROVE
 sha256  98b30c08a3ad44a011d64da5290011214193923c6fe927bfc7021297aaa658eb   PROVENANCE-STATEMENT.txt.asc
 ```
 
-Signed with `B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA` — the key named in this repo's
-LICENSE, and the key that signs its releases.
+Signed with `B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA` — the key named in
+`docs/RELEASE_SIGNING.md` and `docs/IDENTITY-MANIFEST.txt`, and the key that signs its releases.
 
 **To check, if the statement is ever produced:** `sha256sum` it and compare with the line above. A
 match means it is byte-identical to the document that existed on this date. Then

@@ -12,8 +12,8 @@ from peerdb import PeerDB, group_of                                  # noqa: E40
 
 
 def test_group_of_is_the_ipv4_16():
-    assert group_of("143.110.255.205") == "143.110"
-    assert group_of("178.62.236.102") == "178.62"
+    assert group_of("198.51.100.7") == "198.51"
+    assert group_of("198.51.100.8") == "198.51"
     assert group_of("localhost") == "localhost"                     # non-dotted -> the host itself
 
 
@@ -50,13 +50,13 @@ def test_sample_per_group_cap_spreads_across_subnets():
 
 def test_save_and_load_roundtrip(tmp_path):
     db = PeerDB()
-    db.add(("143.110.255.205", 18009))
-    db.mark_good(("178.62.236.102", 18009))
+    db.add(("198.51.100.7", 18009))
+    db.mark_good(("198.51.100.8", 18009))
     db.save(tmp_path / "peers.json")
     db2 = PeerDB()
     db2.load(tmp_path / "peers.json")
-    assert ("178.62.236.102", 18009) in db2.tried                  # tier preserved
-    assert ("143.110.255.205", 18009) in db2.new
+    assert ("198.51.100.8", 18009) in db2.tried                  # tier preserved
+    assert ("198.51.100.7", 18009) in db2.new
     assert db2.addrs() == db.addrs()
 
 

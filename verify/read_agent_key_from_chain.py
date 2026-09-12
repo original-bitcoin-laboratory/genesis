@@ -141,7 +141,7 @@ def main():
 
     print()
     print("coinbase headline   %r" % scriptsig[8:].decode("latin-1"))
-    print("output value        %d sat = %d BTC" % (value, value // 100000000))
+    print("output value        %d base units = %d coins (Bitcoin (2026), not money)" % (value, value // 100000000))
     key = spk[1:-1].hex() if spk and spk[-1] == 0xac else None
     print()
     print("THE AGENT'S PUBLIC KEY, READ OUT OF THE CHAIN:")

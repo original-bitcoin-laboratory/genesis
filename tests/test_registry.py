@@ -19,3 +19,12 @@ def test_jan09_pair_has_published_sha256():
 def test_all_artifact_urls_use_https():
     data = json.loads((ROOT / "manifests" / "EXPECTED_CHECKSUMS.json").read_text())
     assert all(a["url"].startswith("https://") for a in data["artifacts"])
+
+import subprocess
+
+
+def test_provenance_manifest_matches():
+    # the published hash manifest must match the files beside it, or it is a hash nobody checks
+    r = subprocess.run(["sha256sum", "-c", "../manifests/PROVENANCE_SHA256SUMS"], cwd=ROOT / "provenance",
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr

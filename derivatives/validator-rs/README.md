@@ -73,6 +73,10 @@ cargo run --bin obl-validate -- <HEX_BLOCK>     # context-free verdict for one b
 cargo test                                       # cross-checks everything against the Python node
 ```
 
+**Limit — retargeting.** Like `netnode`, this validator retargets every 60 blocks against a 30-second
+spacing on every chain. On the `bitcoin` chain that equals the 2009 client only while `nBits` stays at
+the floor `0x1d00ffff`, which it has since genesis; the 2009 rule is not yet wired in.
+
 ## How it's verified
 
 `cargo test` cross-checks the Rust against the **verified Python node** — the tests listed below (covering

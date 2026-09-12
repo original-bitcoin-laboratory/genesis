@@ -90,7 +90,7 @@
     <li><a class="d" href="IDENTITY-MANIFEST.txt">Identity manifest</a>
       <span class="desc">Every publishing identity bound to the signing key. Signed and anchored.</span></li>
     <li><a class="d" href="TAG-ATTESTATION.txt">Attestation over the unsigned tags</a>
-      <span class="desc">Ten tags carry no signature of their own &mdash; three are
+      <span class="desc">Twelve tags carry no signature of their own &mdash; four are
         <i>lightweight</i> and cannot carry one at all. Rather than re-create them and invalidate
         commit SHAs already in circulation, this states what each resolves to.
         <a href="TAG-ATTESTATION.txt.asc">.asc</a> &middot;
@@ -103,7 +103,7 @@
     <li><a class="d" href="PQ-COUNTERSIGNING.md">Post-quantum counter-signatures</a>
       <span class="desc">Why the timestamps outlive the signatures, and what was done about it.</span></li>
     <li><a class="d" href="PQ-SUCCESSION-CERTIFICATE.txt">Succession certificate</a>
-      <span class="desc">The certificate itself. <a href="PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md">What it establishes</a>.</span></li>
+      <span class="desc">The certificate itself, written in the first person of the 2026 agent &mdash; a program, not a person, not the historical Satoshi. <a href="PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md">What it establishes</a>.</span></li>
     <li><a class="d" href="PQ-COUNTERSIGN-DESIGNATION.txt">Counter-signing designation</a>
       <span class="desc">The designation record for the counter-signing key.</span></li>
     <li><a class="d" href="PQ-SIGNATURE-COST.md">What PQ signing costs a 2009-shaped chain</a>
@@ -142,17 +142,48 @@
     <li><a class="d" href="ANNOUNCE.md">An invitation to run the earliest Bitcoin</a></li>
   </ul>
 
-  <footer>
-    &#9670; Original Bitcoin Laboratory &middot; reconstructions + Bitcoin &mdash; <b>NOT money</b>
-    &middot; no warranty<br>
-    MIT &copy; 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a> &middot;
-    <a href="https://satoshioncha.in">Satoshi On-Chain</a> &middot;
-    <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a>
-  </footer>
+<footer class="lab-footer" aria-label="provenance and license">
+  <div class="lf-brand"><a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none;border:0">◆ Original Bitcoin Laboratory</a></div>
+  <p class="lf-anchor">Anchored to block <b>0</b> · 3 January 2009 ·
+    <span class="lf-h">000000000019d668…0a8ce26f</span><span class="lf-tips" hidden> ·
+    live lab chains: <span class="lf-h" id="lf-btc">bitcoin&nbsp;—</span> ·
+    <span class="lf-h" id="lf-jan">jan09x&nbsp;—</span> ·
+    <span class="lf-h" id="lf-nov">nov08x&nbsp;—</span></span></p>
+  <p class="lf-links">
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/Bitcoin-v0.1.5">Bitcoin-v0.1.5</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/releases/tag/v0.7.0-experimental">v0.7.0-experimental</a> ·
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md">source · verify</a> ·
+    <a href="parthod0x-signing-key.asc" title="ed25519 release-signing key">key B128&nbsp;526A…B78C&nbsp;F1DA</a>
+    <a href="https://keys.openpgp.org/search?q=B128526AF85AE4A8F22B949FB0145F74B78CF1DA"
+       title="the same key from a keyserver, so the key and the release do not come from one host">keyserver</a>
+  </p>
+  <p class="lf-related">Related · <a href="https://satoshioncha.in">Satoshi On-Chain</a> — the verifiable
+    footprint of the original Satoshi · <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> —
+    which version is which, and how to check. &middot; <a href="/docs.html">all documents</a><br>Three remits: <i>the code</i>, <i>the footprint</i>, <i>the document</i>.</p>
+    <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
+    · experimental laboratory research, in progress · statistical, machine-verifiable findings, no conclusions beyond them
+    · <b>NOT money</b>, not advice · no warranty</p>
+  <p><a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md">Rights, sourcing &amp; corrections</a> — independent research; not affiliated with any party; not financial advice.</p>
+</footer>
+<style>
+  .lab-footer{max-width:860px;margin:56px auto 40px;padding:20px clamp(16px,4vw,28px) 0;
+    border-top:1px solid var(--line,#2a2a2a);font-family:var(--mono,ui-monospace,monospace);
+    font-size:12px;line-height:1.75;color:var(--ink-faint,#8a8a8a);text-align:center}
+  .lab-footer .lf-related{margin:6px 0 0}
+  .lab-footer .lf-related i{font-style:italic;opacity:.85}
+  .lab-footer .lf-brand{letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim,#b0b0b0);
+    font-size:11px;margin-bottom:10px}
+  .lab-footer p{margin:3px 0}
+  .lab-footer .lf-h{color:var(--ink-dim,#b0b0b0)}
+  .lab-footer b{color:var(--brass,#c79a3a);font-weight:600}
+  .lab-footer a{color:var(--ink-faint,#8a8a8a);text-decoration:none;
+    border-bottom:1px solid var(--line-strong,#3a3a3a)}
+  .lab-footer a:hover{color:var(--ink,#e8e8e8);border-color:var(--brass,#c79a3a)}
+</style>
 </div>
 <script>window.goatcounter = {}</script>
 <script data-goatcounter="https://parthod0x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-<!-- umami-tracker: self-hosted, first-party, no cookies -->
+<!-- umami: self-hosted by the laboratory at analytics.bitcoin-lab.org; no cookies, aggregate only -->
 <script defer src="https://analytics.bitcoin-lab.org/script.js" data-website-id="9085ed4e-a489-4600-9d9c-1926c9b917d5"></script>
 <script src="analytics.js"></script>
 </html>

@@ -43,9 +43,9 @@ def test_dns_codec_roundtrips_query_and_a_records():
 
 
 def test_dns_codec_roundtrips_aaaa_records():
-    resp = build_response(0x1234, "seed.x.test", ["2001:db8::1", "2400:6180:100:d0:0:1:7140:b001"],
+    resp = build_response(0x1234, "seed.x.test", ["2001:db8::1", "2001:db8::2"],
                           ttl=42, qtype=TYPE_AAAA)
-    assert parse_records(resp, TYPE_AAAA) == ["2001:db8::1", "2400:6180:100:d0:0:1:7140:b001"]
+    assert parse_records(resp, TYPE_AAAA) == ["2001:db8::1", "2001:db8::2"]
     assert parse_records(resp, TYPE_A) == []                       # not A records
 
 

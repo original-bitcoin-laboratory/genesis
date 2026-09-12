@@ -363,13 +363,13 @@ def test_peer_table_persists_across_restart(tmp_path):
     cfg = CHAINS["jan09x"]
     d = str(tmp_path / "PP")
     n1 = Node(cfg, d)
-    n1._learn_addr(("143.110.255.205", 18009))
-    n1._learn_addr(("178.62.236.102", 18008))
+    n1._learn_addr(("198.51.100.7", 18009))
+    n1._learn_addr(("198.51.100.8", 18008))
     n1._save_peers()                                               # (also happens on stop())
     n1.store.close()
     n2 = Node(cfg, d)                                              # fresh node, same datadir
-    assert ("143.110.255.205", 18009) in n2.known_addrs
-    assert ("178.62.236.102", 18008) in n2.known_addrs
+    assert ("198.51.100.7", 18009) in n2.known_addrs
+    assert ("198.51.100.8", 18008) in n2.known_addrs
     n2.store.close()
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# provision.sh -- stand up a public Bitcoin (Aug 2026) node on a fresh Ubuntu 24.04 VPS.
+# provision.sh -- stand up a public Bitcoin (2026) node on a fresh Ubuntu 24.04 VPS.
 #
 # Run as root on the host:
 #     ssh root@<public-ip>
@@ -56,10 +56,10 @@ ufw status numbered | sed 's/^/    /'
 
 echo "==> systemd unit"
 cat >/etc/systemd/system/bitcoin-node.service <<UNIT
-# Bitcoin (Aug 2026) -- public node. NOT money.
+# Bitcoin (2026) -- public node. NOT money.
 # genesis 00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
 [Unit]
-Description=Bitcoin (Aug 2026) node -- experimental, NOT money
+Description=Bitcoin (2026) node -- experimental, NOT money
 After=network-online.target
 Wants=network-online.target
 
@@ -91,7 +91,7 @@ echo "==> status"
 systemctl is-active bitcoin-node | sed 's/^/    service: /'
 ss -lntp 2>/dev/null | grep ":${PORT}" | sed 's/^/    /' || echo "    (not listening yet -- check: journalctl -u bitcoin-node -n 50)"
 echo
-echo "Bitcoin (Aug 2026) node is up."
+echo "Bitcoin (2026) node is up."
 echo "  advertise : ${ADVERTISE_IP}:${PORT}"
 echo "  magic     : f00ba726   (mainnet is f9beb4d9 -- this is a separate network)"
 echo "  genesis   : 00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a"

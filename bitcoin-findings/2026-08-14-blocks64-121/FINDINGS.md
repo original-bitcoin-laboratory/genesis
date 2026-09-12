@@ -74,7 +74,7 @@ ERROR lines                51
 > ### ★★ THE SECOND DEAD 2009 HOST, AND IT IS THE SAME SHAPE AS THE FIRST
 >
 > `GetMyExternalIP()` calls IP-discovery services **hardcoded in the 2009 source**. They are gone,
-> exactly as `chat.freenode.net` is gone (F50). **Two of v0.1's outward-facing dependencies have now
+> exactly as the `chat.freenode.net` bootstrap no longer completes (see the blocks 29–50 set). **Two of v0.1's outward-facing dependencies have now
 > expired, and both failures are logged, harmless and self-limiting** — the client carries on and
 > mines.
 >
@@ -139,7 +139,7 @@ cold backup, evidence set "2026-08-14-blocks64-121"        50 files, all re-hash
   block64onward/datadir/          blk0001.dat, blkindex.dat, addr.dat, wallet.dat, database/
   block64onward/bitcoin-0.1.3/    bitcoin.exe, debug.log, db.log, the two binding JSONs
   block64onward/                  blk0001-blk64onward-*.dat, wallet-clean-*, pre/post JSON
-  screenshots/                    20 PNGs, 2026-08-12 18:45 -> 2026-08-14 23:10
+  screenshots/                    20 PNGs; filenames carry the capture host's clock, UTC instants are in the offline manifest
   SHA256SUMS                      generated after the copy, from the copies
 cold backup, key custody          the wallet, Tier 1, separate from the evidence set
 

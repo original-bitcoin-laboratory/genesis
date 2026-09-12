@@ -28,7 +28,7 @@ archive extracted at `../../extracted/`). Current host: `g++ 16.1.0`, `OpenSSL 3
 
 The one genuinely portable, consensus-relevant unit is **`sha.cpp`**, and it does not
 merely compile — the harness links the original `SHA256::Transform` and reproduces the
-standard SHA-256 known-answer vectors (empty, `"abc"`, the pangram). The SHA-256 code shipped in the 2009 release (Crypto++, Wei Dai — see PROVENANCE.txt)
+standard SHA-256 known-answer vectors (empty, `"abc"`, the pangram). The SHA-256 code shipped in the 2009 release (Crypto++, Wei Dai — see `../bitcoin/PROVENANCE.txt`)
 runs, byte-correct, on a 2026 compiler.
 
 ## The two period-locks (each captured from the compiler)

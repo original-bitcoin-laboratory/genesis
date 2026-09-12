@@ -8,7 +8,7 @@ Contributions that improve fidelity, reproducibility, tests, or documentation ar
 
 Open an issue on the repository: <https://github.com/original-bitcoin-laboratory/genesis/issues>.
 For anything that looks like a correctness or robustness problem, please include the exact command,
-the chain (`nov08x` / `jan09x`), and enough detail to reproduce. Because nothing of value is at stake,
+the chain (`nov08x` / `jan09x` / `bitcoin`), and enough detail to reproduce. Because nothing of value is at stake,
 disclosure can be public.
 
 ## Development setup and tests

@@ -12,7 +12,7 @@
 //
 // The point is to compile the ORIGINAL, byte-verified source unmodified and let
 // the compiler report exactly where the portable subset ends. Nothing here edits
-// Satoshi's files; this only replaces the environment his headers.h assumed.
+// Satoshi's files; this only replaces the environment their headers.h assumed.
 // NOT money.
 
 #include <cstdio>

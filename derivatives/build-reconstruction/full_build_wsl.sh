@@ -29,7 +29,7 @@ X=i686-w64-mingw32; GXX="$X-g++"; NP="$(nproc)"
 #   ifneq "$(BUILD)" "debug" / ifneq "$(BUILD)" "release" / BUILD=debug
 #   ifeq "$(BUILD)" "debug"  ->  D=d ; DEBUGFLAGS=-g -D__WXDEBUG__
 # We take the same variable with the same default, because the released bitcoin.exe
-# (fbcac071...) is demonstrably a DEBUG build. Three markers, measured from his binary
+# (fbcac071...) is demonstrably a DEBUG build. Three markers, measured from their binary
 # against ours:
 #   * "debug.log"                  7 occurrences vs 0 -- and that literal exists in exactly
 #                                  one place in the whole source, util.h:236, inside #ifdef __WXDEBUG__
@@ -53,11 +53,11 @@ echo "== SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH ($(date -u -d @$SOURCE_DATE_EPOCH 
 
 BUILD="${BUILD:-debug}"
 case "$BUILD" in debug|release) ;; *) BUILD=debug ;; esac
-# NOTE on -g. His DEBUGFLAGS are "-g -D__WXDEBUG__" and we take only the second, because on this
+# NOTE on -g. Their DEBUGFLAGS are "-g -D__WXDEBUG__" and we take only the second, because on this
 # point the makefile and the shipped artifact disagree and the artifact is what we reconstruct:
-#   his bitcoin.exe   6,440,960 bytes   sections .text .data .rdata .bss .idata .rsrc   0 debug
+#   their bitcoin.exe   6,440,960 bytes   sections .text .data .rdata .bss .idata .rsrc   0 debug
 #   with -g here     54,860,743 bytes   + 8 .debug_* sections
-# gcc 3.x-era -g did not survive into what he published. Carrying DWARF we know his binary does
+# gcc 3.x-era -g did not survive into what they published. Carrying DWARF we know their binary does
 # not have would be matching the flag and missing the artifact -- and DWARF is precisely where
 # absolute build paths live, which is why the leak gate below fires on the builder's home directory when -g is on.
 # __WXDEBUG__ is kept: it is the half that has observable behaviour (debug.log, wxASSERT).
@@ -92,7 +92,7 @@ grep -q obl-direct-fix "$WX/include/wx/filefn.h" || sed -i "1i // obl-direct-fix
 # translation units must agree with the library it links, or the two disagree about asserts
 # and layout. Each BUILD therefore gets its own wx, built out-of-tree side by side -- which is
 # also what Satoshi linked: -I"/wxWidgets/lib/vc_lib/mswd" is the DEBUG setup directory, and
-# his LIBS read -l wxmsw28$(D)_core with D=d.
+# their LIBS read -l wxmsw28$(D)_core with D=d.
 WXB="$WX/bld-$BUILD"
 if [ ! -f "$WXB/lib/libwx_base-2.8-$X.a" ]; then mkdir -p "$WXB"; ( cd "$WXB"
   ../configure --host=$X --build=x86_64-pc-linux-gnu --disable-shared --disable-unicode $WXDBG     --without-opengl --disable-mediactrl CXXFLAGS="-std=gnu++98 -include direct.h -w" CFLAGS="-std=gnu89 -w" >/dev/null 2>&1
@@ -122,13 +122,13 @@ OB="$W/bitcoin-build"; mkdir -p "$OB"
 CXX="$GXX -std=gnu++98 -w -fpermissive"
 
 # Satoshi's makefile compiles `g++ -c $(CFLAGS) -o $@ $<` from inside src/ -- a RELATIVE filename --
-# with its dependencies at short root paths (-I"/boost" -I"/OpenSSL/include" ...). That is why his
+# with its dependencies at short root paths (-I"/boost" -I"/OpenSSL/include" ...). That is why their
 # bitcoin.exe embeds no build-machine paths at all: every path assert() and BOOST_ASSERT bake into
 # .rodata via __FILE__ is either a bare filename or a rooted one. Compiling an ABSOLUTE source path
 # instead writes the builder's home directory into the shipped binary.
 #
 # We reproduce both properties. Sources are compiled by relative name from within $SRC, and every
-# dependency root is rewritten to the name his makefile used, so __FILE__ resolves the period way
+# dependency root is rewritten to the name their makefile used, so __FILE__ resolves the period way
 # regardless of where this actually builds. -ffile-prefix-map implies -fmacro-prefix-map, which is
 # what rewrites the __FILE__ string literals.
 #
@@ -136,7 +136,7 @@ CXX="$GXX -std=gnu++98 -w -fpermissive"
 # LAST one given, so these run least-specific -> most-specific. The two catch-alls come first purely
 # as a backstop; the named roots that follow are what actually land, and they are deliberately the
 # same names Satoshi's makefile used (-I"/boost" -I"/OpenSSL/include" -I"/wxWidgets/include" ...),
-# so the rebuilt binary quotes its headers exactly as his does: /boost/boost/array.hpp.
+# so the rebuilt binary quotes its headers exactly as theirs does: /boost/boost/array.hpp.
 MAP="-ffile-prefix-map=$HOME=/obl-home"
 MAP="$MAP -ffile-prefix-map=$W=/obl"
 MAP="$MAP -ffile-prefix-map=$SRC=/bitcoin/src"
@@ -157,14 +157,14 @@ INC="$($WXB/wx-config --cxxflags) -I$OSSL/include -I$BDB/build_unix -I$BOOST -I.
   for f in util script net irc db market main uibase ui; do
     $CXX $CFLAGS $MAP $INC -c "$f.cpp" -o "$OB/$f.o"; echo "   compiled $f.cpp"
   done
-  # sha.cpp alone is compiled -O3 in his makefile, overriding the -O0 that applies to every
+  # sha.cpp alone is compiled -O3 in their makefile, overriding the -O0 that applies to every
   # other unit. It is the mining inner loop; leaving it at -O0 would be faithful to the flag
   # list and unfaithful to the artifact.
   $CXX $CFLAGS -O3 $MAP $INC -c sha.cpp -o "$OB/sha.o"; echo "   compiled sha.cpp (-O3)"
   # obj/ui_res.o: windres ui.rc -- the toolbar bitmaps, the icons, the cursor. Omitting this
   # is why the client logged "Can't load bitmap 'send20' from resources" on first execution
-  # and why our binary had no .rsrc section at all where his has one.
-  # windres takes preprocessor options only. His rule passes exactly $(WXDEFS) $(INCLUDEPATHS)
+  # and why our binary had no .rsrc section at all where theirs has one.
+  # windres takes preprocessor options only. Their rule passes exactly $(WXDEFS) $(INCLUDEPATHS)
   # -- defines and include paths, nothing else -- so wx-config --cxxflags cannot be handed over
   # whole: it also emits -mthreads, and windres exits 1 with "invalid option -- 'm'".
   WXRC=""
@@ -173,22 +173,22 @@ INC="$($WXB/wx-config --cxxflags) -I$OSSL/include -I$BDB/build_unix -I$BOOST -I.
   echo "   windres ui.rc -> ui_res.o" )
 cd "$OB"
 OUT="${OUTDIR:-$OB}"; mkdir -p "$OUT"   # OUTDIR is caller-supplied; ld will not create it
-# His link line: g++ $(CFLAGS) -mwindows -Wl,--subsystem,windows -o $@ $(LIBPATHS) $(OBJS) $(LIBS)
+# Their link line: g++ $(CFLAGS) -mwindows -Wl,--subsystem,windows -o $@ $(LIBPATHS) $(OBJS) $(LIBS)
 # The GUI subsystem was already correct here -- wx-config --libs supplies -mwindows, and both
 # binaries measure subsystem=2 -- but it is now stated rather than inherited, and -mthreads is
-# carried to the link as his CFLAGS do.
+# carried to the link as their CFLAGS do.
 #
 # -static is a DELIBERATE and DISCLOSED divergence. He linked OpenSSL and the MinGW runtime
 # dynamically and shipped libeay32.dll + mingwm10.dll beside the exe; we link everything in.
-# Not corrected, for a reason about the artifact outliving us: DLLs we ship could not be his
-# DLLs anyway -- ours would come from Ubuntu's mingw-w64, not his MinGW -- so matching the
+# Not corrected, for a reason about the artifact outliving us: DLLs we ship could not be their
+# DLLs anyway -- ours would come from Ubuntu's mingw-w64, not their MinGW -- so matching the
 # structure buys a resemblance while adding two more files that must survive intact for the
 # client to start at all. One self-contained executable is the more durable form and changes
 # nothing a peer can observe. Recorded in RELEASE.txt, and it is why capture_binding.ps1
 # reports libeay32.dll / mingwm10.dll as "absent - statically linked build".
 # --strip-debug: OpenSSL/BDB/wx configure scripts default to -g, so their DWARF rides in through
 # static linking even when we compile without it -- our v0.1.1 shipped 8 .debug_* sections for
-# exactly that reason. His binary has none. Stripping them matches his section list and removes
+# exactly that reason. Their binary has none. Stripping them matches their section list and removes
 # the only place an absolute build path can survive.
 # --no-insert-timestamp: without it, ld writes the build clock into the PE COFF header, and the
 # PE checksum in the optional header derives from it. Two builds of identical inputs were compared

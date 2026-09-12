@@ -5,7 +5,7 @@
 it is money; nothing does. This is authenticity, not authority. **Not money.**
 
 > This uses **your** GPG key. Generating and safeguarding that key is yours to do — it is never
-> managed for you. Placeholders below (`B0145F74B78CF1DA`, `B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA`) are for you to fill in.
+> managed for you. The key below is the laboratory's release key; anyone reusing this procedure substitutes their own.
 
 ## 0. One‑time: have a signing key
 

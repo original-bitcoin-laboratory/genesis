@@ -17,7 +17,7 @@ bitcoin.pdf   184,292 bytes
 sha256        b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553
 ```
 
-**Its bytes are well established.** Five independent sources serve this file identically:
+**Its bytes are well established.** Four independent sources serve this file identically:
 
 | source | how to check |
 |---|---|
@@ -25,7 +25,6 @@ sha256        b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553
 | `cdn.nakamotoinstitute.org/docs/bitcoin.pdf` | same |
 | **SourceForge mirror, 2009-11-28** — earliest archived **bytes** | `web.archive.org/web/20091128185352if_/http://voxel.dl.sourceforge.net:80/project/bitcoin/Research%20Paper/bitcoin.pdf/bitcoin.pdf` — an actual archived PDF, not a listing. Download it and it hashes to `b1674191…f4f553`, **byte-identical to this file**. This is the capture COPA's expert verified as hash-identical to the control copy |
 | Internet Archive, **2010-07-04 21:36:49** | `web.archive.org/web/20100704213649if_/http://www.bitcoin.org:80/bitcoin.pdf` |
-| Internet Archive, a later capture | same method |
 
 As *"the file bitcoin.org has served since at least 2010"*, the provenance is solid.
 
@@ -145,11 +144,11 @@ October text anchored by a third party — the abstract quoted inline in the ann
 | file | abstract similarity to the announced text |
 |---|---|
 | the draft | **0.9788** — and the only difference is the *email's* trailing "full paper at…" line |
-| `bitcoin.pdf` we ship | 0.6503 — differing at exactly the six known revision points |
+| the canonical `bitcoin.pdf` | 0.6503 — differing at exactly the six known revision points |
 
 Strip the email's own URL line and **the draft's abstract is word-for-word the October 2008
-abstract.** It also carries `satoshi@vistomail.com`, the address Satoshi announced *from*; the file
-we ship carries `satoshin@gmx.com`, attested only from March 2009.
+abstract.** It also carries `satoshi@vistomail.com`, the address Satoshi announced *from*; the canonical
+file carries `satoshin@gmx.com`, attested only from March 2009.
 
 ### A court has already examined this file
 
@@ -163,7 +162,7 @@ related documents in disclosure and selected two as **control copies**:
 > 24 March 2009 and is **hash identical to a file 'Bitcoin.pdf' from a web archive capture dating to
 > 28 November 2009** from the sourceforge.net project."*
 
-So this version was used as a **forensic baseline in the High Court**, after verification against
+So this version was used as a **control copy in the High Court**, after verification against
 third-party sources — and the canonical was verified hash-identical to a **November 2009** SourceForge
 capture.
 
@@ -232,7 +231,7 @@ write any `CreationDate`; it cannot put a citation into a document before its au
 remove a paragraph they had not yet written.
 
 The file's internal date of 3 October 2008 is *consistent* with the bracket. It is corroboration, not
-proof — a creation date is writable, which is exactly how four fabricated copies were caught.
+proof — a creation date is writable, which is the property the court relied on in COPA v Wright (¶123).
 
 ### It is also the same toolchain and the same document lineage
 
@@ -457,7 +456,7 @@ the Internet Archive captured it either side of an edit:
 | **2008-10-31** | the announcement email | "without **the burdens of** going through a financial institution" · "if a trusted party is still required" · "as long as **honest nodes control the most CPU power on the network**" · "Messages are **broadcasted**" |
 | **2009-01-31 11:50:53** | bitcoin.org, archived | as above, with "financial **institutions**" |
 | **2009-03-03 19:59:36** | bitcoin.org, archived | "a trusted **third** party" · "as long as **a majority of CPU power is controlled by nodes that are not cooperating to attack the network**" · "Messages are **broadcast**" |
-| **2009-03-24** | the PDF we ship | "without going through a financial institution", plus all of the above |
+| **2009-03-24** | the canonical PDF | "without going through a financial institution", plus all of the above |
 
 **The revision happened between 31 January and 3 March 2009** — a window fixed by archive captures,
 not by us.
@@ -501,7 +500,7 @@ On **8 November 2008**, answering a question about inflation, Satoshi quoted the
 > increases."*
 > — [`cryptography@metzdowd.com`, message `014831`](https://www.metzdowd.com/pipermail/cryptography/2008-November/014831.html)
 
-That is **Section 4, Proof-of-Work**, 41 words, **identical** to the same passage in the PDF we ship.
+That is **Section 4, Proof-of-Work**, 41 words, **identical** to the same passage in the canonical PDF.
 
 So one paragraph of the body is fixed to November 2008 *and* shown not to have changed across the
 window in which the abstract did change. It is one paragraph out of roughly forty — but it is the
@@ -655,19 +654,13 @@ was already dead when first crawled. The file circulating under that name is PDF
 linearized, which OpenOffice 2.4 does not produce; it fails on **structure**, not merely on its date
 fields.
 
-The third is the strongest, and it is the one that dates a file rather than merely ordering it:
-Satoshi proposed transaction fees on the mailing list on **9 November 2008**, so a copy without them
-predates a message a third party archived. Text cannot be altered inside a document without altering
-the document; a creation date can be altered without touching anything else.
-
-**The archive search is not exhausted — that claim was wrong.** A pre-revision draft was public on
-archive.org the whole time (see above). What is still missing is narrower and more specific: the
+A pre-revision draft was public on archive.org the whole time (see above). What is still missing is narrower and more specific: the
 bytes actually served at the 31 October link. Worth asking anyone who followed that link in 2008,
 and anyone who pulled the paper off SourceForge, where `nakamoto2` uploaded a `bitcoin.pdf` around
 December 2008 that is likewise not preserved.
 
 ---
 
-*Reproduce: `strings docs/bitcoin.pdf | grep -a CreationDate` for the date; the Internet Archive CDX
+*Reproduce: `strings bitcoin.pdf | grep -a CreationDate` on a copy obtained as described in `WHITEPAPER.md`, for the date; the Internet Archive CDX
 API for the capture history; `verify/pdf_text.py` in the workshop notes for text extraction (the PDF
 uses per-font ToUnicode CMaps — a decoder that merges them produces nonsense).*

@@ -43,6 +43,9 @@ python stress_test.py       # the adversarial suite the paper was hardened again
 python build_paper.py       # rebuilds paper.md from paper.template.md
 ```
 
+`make_package.py`, the review pass's `revision_check.py` and the built `package/` and `arxiv/` directories are
+not part of this repository; `stress_test.py` reports their absence as warnings, not failures.
+
 ⚠️ **Line endings are load-bearing here.** `artifacts/comparison.json` is LF; the two CSVs are CRLF
 throughout, because `csv.writer` emits CRLF on every platform per RFC 4180. The repository's
 `.gitattributes` disables translation so a clone reproduces these bytes rather than the local

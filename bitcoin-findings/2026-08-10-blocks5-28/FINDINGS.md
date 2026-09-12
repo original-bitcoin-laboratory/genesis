@@ -106,3 +106,8 @@ parameters** and arrived at the same hash before syncing anything.
 
 *(The 116-byte size difference is framing, not content: the C++ store writes `magic+length+block`,
 netnode writes `length+block` — exactly 4 bytes × 29 blocks.)*
+
+**NOT money.** No sale by us, no price set, we solicit no market; the units are counters, not BTC.
+
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

@@ -18,8 +18,9 @@ Type=simple
 WorkingDirectory=/opt/genesis/derivatives
 # --listen must be the PUBLIC IP (not 0.0.0.0) so it doesn't collide with systemd-resolved's 127.0.0.53
 ExecStart=/opt/genesis/.venv/bin/python -m dnsseed --chain jan09x --zone seed.bitcoin-lab.org \
-          --seed 143.110.255.205:18009 --seed 178.62.236.102:18009 \
-          --listen 178.62.236.102:53 --interval 60
+          --seed 203.0.113.10:18009 --seed 203.0.113.11:18009 \
+          --listen 203.0.113.11:53 --interval 60
+# 203.0.113.x are documentation addresses: replace them with your anchors' public addresses.
 Restart=always
 RestartSec=5
 

@@ -53,10 +53,10 @@ Each release carries the tarball, its detached signature (`.asc`), and a signed 
 gpg --verify SHA256SUMS.asc SHA256SUMS
 
 # 2. verify the tarball matches the manifest
-sha256sum -c SHA256SUMS        # -> obl-genesis-0.4.0.tar.gz: OK
+sha256sum -c SHA256SUMS        # -> obl-genesis-0.7.0.tar.gz: OK
 
 # (or verify the tarball's own detached signature directly)
-gpg --verify obl-genesis-0.4.0.tar.gz.asc obl-genesis-0.4.0.tar.gz
+gpg --verify obl-genesis-0.7.0.tar.gz.asc obl-genesis-0.7.0.tar.gz
 ```
 
 A good signature prints `Good signature from "parthod0x <parthms.id@gmail.com>"`. (A

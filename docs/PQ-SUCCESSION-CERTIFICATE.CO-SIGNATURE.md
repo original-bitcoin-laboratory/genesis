@@ -36,9 +36,9 @@ manifest is signed by P and *names* K. That is testimony with a signature around
 between two keys — a cross-certification — and it is checkable by anyone with the two public keys and
 the document, in milliseconds, forever.
 
-> ⇒ **`K ↔ P` moves from ASSERTED to BOUND**, and with it the laboratory's own linkage matrix goes to
-> **5 of 6** — against **0 of 6** for the 2008–2009 Satoshi, which is the comparison this project
-> exists to make.
+> So **`K ↔ P` moves from ASSERTED to BOUND**, and the laboratory's own linkage matrix (see
+> `derivatives/bitcoin/CHRONOLOGY.md`) goes to **5 of 6** bindings; the historical record holds **0 of 6**,
+> the asymmetry described on the two-origins page.
 
 ## ⚠️ What it DOES NOT establish — and these limits are part of the claim
 

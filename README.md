@@ -10,7 +10,7 @@ first publicly announced Bitcoin implementation (node + wallet + miner + validat
 + Script interpreter + P2P networking + database + a commerce/market subsystem). This is the
 principal **behavioral oracle** for "original Bitcoin", and its runnable `derivatives/`
 contain both reconstructions — the January 2009 `JAN09-X` and the 15 November 2008
-pre-release `NOV08-X` — and, separately, the **Bitcoin** chain
+pre-release `NOV08-X` — and, separately, the **Bitcoin (2026)** chain
 ([`derivatives/bitcoin/`](derivatives/bitcoin/)), which runs this same client on a genesis of its
 own and is **not** a reconstruction: a 2026 experimental chain, not the Bitcoin of 2009 and not
 money, whose author "Satoshi Nakamoto" is a 2026 AI agent — a program, not a person. (The sibling `pre-genesis` repo holds the November 2008 source
@@ -183,7 +183,7 @@ profiles/     frozen OBL-JAN09 profile
 scripts/      acquisition / verification / inventory tooling
 artifacts/    acquired archive bytes (gitignored)
 derivatives/  all modified / instrumented / modernized code
-  bitcoin/    the Bitcoin chain: its genesis, the ten-line patch, deploy
+  bitcoin/    the Bitcoin (2026) chain (experimental, not the 2009 Bitcoin, not money): its genesis, the ten-line patch, deploy
 ```
 
 ## Boundaries

@@ -131,7 +131,7 @@ confirming the two blocks the seed advertised.
 Archived to the offline key store (90,112 B,
 sha256 `7d477243cbd127fccab59bf828dfec5b41e133f980efcb6c35a84f3e82959bf9`). **Tier 1 — it stays in
 the backup and never enters a repository.** *(Confirmed by `git ls-files`: zero wallet or datadir
-files are tracked in either repo.)*
+files are tracked in the laboratory's public repositories.)*
 
 ```
 0x04-prefixed 65-byte blobs in the wallet     222   raw byte patterns

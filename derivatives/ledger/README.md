@@ -19,7 +19,7 @@ It reuses the lab's already‑executed pieces (`model` EvalScript + sighash, `wa
 CreateTransaction, `consensus` Rules) — no new consensus code, just the UTXO
 bookkeeping that ties them into a spendable ledger.
 
-## What the tests show (`test_ledger.py`, 8)
+## What the tests show (`test_ledger.py`, 11)
 
 - a **wallet payment settles** on JAN09‑X: a matured coinbase is spent, the UTXO set
   updates (payee + change), value is conserved;
@@ -34,7 +34,7 @@ bookkeeping that ties them into a spendable ledger.
 ## Run
 
 ```bash
-python -m pytest        # 8 passed
+python -m pytest        # 11 passed
 ```
 
 ## Boundary

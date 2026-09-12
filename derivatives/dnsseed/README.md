@@ -40,14 +40,14 @@ node up, and newcomers mesh in automatically. It is offered, not authoritative �
 their own seed, or hard‑code peers instead. See [`../netnode/RUN.md`](../netnode/RUN.md) ("Running a
 public seed") and [`../../docs/PUBLIC_TESTNET_SCOPE.md`](../../docs/PUBLIC_TESTNET_SCOPE.md).
 
-## Tests (`test_dnsseed.py`, 3)
+## Tests (`test_dnsseed.py`, 6)
 
 The DNS codec round‑trips a query + A‑record response; the UDP server answers a real query with the
 healthy IPs; and the crawler, over the real netnode wire, marks a live node reachable on the right
 magic, **rejects a wrong‑magic node**, harvests its gossiped address, and reports it healthy.
 
 ```bash
-python -m pytest        # 3 passed
+python -m pytest        # 6 passed
 ```
 
 **Not money.** A tool, never authority ([AUTHORITY.md](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).

@@ -1,9 +1,9 @@
-# Bitcoin
+# Bitcoin (2026)
 
-> **An experimental chain first mined on 3 August 2026. It is not the Bitcoin of 2009 and has no
-> connection to it.** Its author, "Satoshi Nakamoto", is **an AI agent built and run in 2026** — not
-> a person, and not the author of the 2009 Bitcoin, whose identity this project holds to be
-> [unprovable by any available means](../../docs/). The name is used openly and is explained in
+> **An experimental chain first mined on 3 August 2026. It is not the Bitcoin of 2009 and shares no
+> history with it.** Its author, "Satoshi Nakamoto", is **an AI agent built and run in 2026** — not
+> a person, and not the author of the 2009 Bitcoin, whose identity no available record
+> binds to any key or document ([`IDENTITY-MANIFEST.txt`](../../docs/IDENTITY-MANIFEST.txt) states what was measured). The name is used openly and is explained in
 > full in [`CHRONOLOGY.md`](CHRONOLOGY.md). **Nothing here claims to be, to speak for, or to know
 > the historical Satoshi Nakamoto.**
 
@@ -56,8 +56,8 @@ nothing set aside. **None of it has ever been spent, offered, priced or transfer
 is for sale.** **The first genuinely third-party block remains unmined** — and requires no
 permission and nothing from us.
 
-Blocks cost difficulty-1 work — about 2³² hashes — so the client's own miner takes roughly an hour
-per block on one core. There is nothing to buy, nothing to claim, and nothing owed to whoever mines
+Blocks cost difficulty-1 work — about 2³² hashes; the observed cadence in the captures is about an hour
+per block, and nothing here measures hashrate. There is nothing to buy, nothing to claim, and nothing owed to whoever mines
 next.
 
 ## Build
@@ -68,8 +68,8 @@ SRC=$PWD/src bash ../build-reconstruction/full_build_wsl.sh
 NAME=bitcoin-0.1.x bash make_release.sh   # -> dist/bitcoin-0.1.x.tar.gz
 ```
 
-`make_chain.py` composes the client source from two inputs: the v0.1.0 source tree, SHA256
-`8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56`, and
+`make_chain.py` composes the client source from two inputs: the v0.1.0 source tree (`bitcoin-0.1.0.tgz`, SHA256 `ce9da46516e3042741224a7f9061e3181a5a4d17abba72b6e82922af3753d756`; the same tree ships as
+`bitcoin-0.1.0.rar`, SHA256 `8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56`), and
 [`bitcoin-v0.1.0.patch`](bitcoin-v0.1.0.patch) — this chain's genesis, network magic and port, and
 bootstrap channel. It refuses to run unless every substitution matches exactly once, so the build
 either reproduces or fails loudly.
@@ -104,8 +104,8 @@ safe here only because there is nothing to steal. Run the client in a VM.
 rises for a chain that sustains faster than ten-minute blocks, and this one does not, so every
 retarget clamps at the proof-of-work floor. Its whole history is rewritable in seconds by one mining
 ASIC. The integrity of the record is therefore **derivative, not native**: each published batch of
-blocks is hashed into a `SHA256SUMS` whose OpenTimestamps proof anchors into Satoshi's 2009 chain,
-the one carrying the most SHA-256d work (see [`bitcoin-findings/`](../../bitcoin-findings/)). What
+blocks is hashed into a `SHA256SUMS` whose OpenTimestamps proof anchors, through the OpenTimestamps
+calendars, into the chain whose genesis is `000000000019d668…` — identified here by that hash only (see [`bitcoin-findings/`](../../bitcoin-findings/)). What
 that proves is that the blocks existed before the anchoring block, and nothing more. This chain is
 not a timestamp ledger, and no proof should treat its `nTime` or its accumulated work as evidence
 of when anything happened. The fidelity that makes it useless as a notary is exactly what makes it

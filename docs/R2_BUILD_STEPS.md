@@ -1,6 +1,8 @@
 # R2 — build steps you can actually run (with WSL / Docker)
 
-Honest, staged instructions to attempt a period build of the January‑2009 source.
+> **Superseded on 5 August 2026:** the period build has been executed and is reproducible (see `R2_BUILD_RECONSTRUCTION.md` and `BUILD_NOTES.md`). Kept as the plan it was written from.
+
+Staged instructions to attempt a period build of the January‑2009 source.
 Read the "which goal" section first — it decides everything.
 
 ## First, the finding that shapes this

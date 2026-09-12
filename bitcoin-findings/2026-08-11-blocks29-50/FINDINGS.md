@@ -41,8 +41,8 @@ pre    2026-08-09T23:23:22Z  pid 4492
 post   2026-08-10T21:36:19Z  pid 5048
 ```
 
-**The binary is byte-identical to `dist/bitcoin-0.1.3/bitcoin.exe` in this repository** — and to
-`dist/bitcoin-0.1.4` and `dist/bitcoin-0.1.5`, which ship **the same executable**. `git diff
+**The binary is byte-identical to `bitcoin.exe` in the published `Bitcoin-v0.1.3` release** — and to
+the executables of `Bitcoin-v0.1.4` and `Bitcoin-v0.1.5`, which ship **the same executable**. `git diff
 Bitcoin-v0.1.3..Bitcoin-v0.1.5 -- derivatives/bitcoin/src/` is **empty**: those releases changed
 documentation and verification scripts, never consensus code. **So the VM is labelled 0.1.3 and is
 running exactly what 0.1.5 ships.**
@@ -113,8 +113,10 @@ That peer's `version` messages carry **timestamp 0**, producing offsets of about
 seconds** (≈ −29.77 million minutes):
 
 ```
-Added time data, samples 2, ip 751b90a8, offset -1786397777 (-29773296 minutes)
+Added time data, samples 2, ip <peer>, offset -1786397777 (-29773296 minutes)
 ```
+
+*(The peer field is elided here; the peer is `bitcoin.bitcoin-lab.org:18026`.)*
 
 **It was never applied.** Every such line reports `samples 2`, and v0.1.x only takes the median once
 it holds at least five samples. `GetAdjustedTime()` was never poisoned — **and the block timestamps
@@ -135,8 +137,7 @@ against a LOCAL ircd        R3 two-node, R4 relay,   21 joins,  0 failures
 ```
 
 `src/irc.cpp` hardcodes `chat.freenode.net`. It still answers TCP on 6667 — 0.27s from the host —
-but the 2009 client waits for greeting strings today's freenode does not send, and freenode lost its
-staff and community in 2021. **`docs/R3_HISTORICAL_NODE.md` already prescribes the working path:**
+but the 2009 client waits for greeting strings today's freenode servers do not send. **`docs/R3_HISTORICAL_NODE.md` already prescribes the working path:**
 run a local IRC daemon and point the guests at it, which is what the two-node runs did.
 
 **In practice this chain finds peers through a seeded `addr.dat` (32 KB here) plus the project's own
@@ -202,12 +203,16 @@ SHA256SUMS                                          hashes of everything capture
 ```
 
 **Raw bytes are not in this repository** — `blk0001.dat`, `blkindex.dat`, `wallet.dat`, the debug
-log, the executable and 41 screenshots live in the cold backup under
-`04-evidence/bitcoin-chain-evidence/2026-08-11-blocks29-50/`, with the wallet in the Tier-1 key
-store. **Only hashes cross into the repo.** That rule is enforced by `.gitignore`, not by memory.
+log, the executable and 41 screenshots are held offline in the cold backup for this evidence set,
+with the wallet in the offline key store. **Only hashes cross into the repo.** That rule is enforced by `.gitignore`, not by memory.
 
 > ⚠️ **The binding JSON files carry a UTF-8 BOM.** `json.load(open(path))` fails on them at
 > character 0. Read them with `encoding="utf-8-sig"`. The files are correct; the naive reader is not.
 
 Related: [`../2026-08-10-blocks5-28/FINDINGS.md`](../2026-08-10-blocks5-28/FINDINGS.md) ·
 [`../CORRECTIONS.md`](../CORRECTIONS.md) · [`../../docs/RELEASE_CHECKLIST.md`](../../docs/RELEASE_CHECKLIST.md)
+
+**NOT money.** No sale by us, no price set, we solicit no market; the units are counters, not BTC.
+
+The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
+the historical Satoshi; see `derivatives/bitcoin/CHRONOLOGY.md`.

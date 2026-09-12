@@ -82,8 +82,8 @@ touches consensus.
 
 ## Cross-check against the public seed
 
-The seed `bitcoin.bitcoin-lab.org:18026` was asked for its inventory over the wire
-(version handshake → `getblocks` from a genesis-only locator → count the `inv`). It advertised
+The seed `bitcoin.bitcoin-lab.org:18026` was asked for its inventory over the wire when this note was
+written, on 7 September 2026 (version handshake → `getblocks` from a genesis-only locator → count the `inv`). It advertised
 **734 block hashes** and **heights 1–297 are identical to this capture** — same chain, no fork.
 
 ## ★ The wallet — and the first time the two copies differed

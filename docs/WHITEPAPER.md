@@ -41,7 +41,7 @@ CANONICAL      24 Mar 2009   184,292 B   9 pages
 PRE-RELEASE    3 Oct 2008    183,697 B   8 pages
   sha256  427c63b364c6db914cf23072a09ffd53ee078397b7c6ab2d604e12865a982faa
   satoshi@vistomail.com · "without the burdens of" · /CreationDate D:20081003134958-07'00'
-  A forensic control copy in COPA v Wright. Published by gwern at
+  A control copy in COPA v Wright. Published by gwern at
   https://gwern.net/doc/bitcoin/20081003-nakamoto-bitcoindraft.pdf
 
 11 NOVEMBER 2008 — NOT HELD BY ANYONE PUBLIC

@@ -1,6 +1,6 @@
 # Why this chain continues, and where it stops
 
-**12 August 2026.** Until today this chain had no stated purpose past about a hundred blocks. It
+**12 August 2026.** Until today Bitcoin (2026), the laboratory's experimental chain (not the Bitcoin of 2009, not money), had no stated purpose past about a hundred blocks. It
 had a *history* — every block bound to its binary, cross-validated, byte-exact append-only — but no
 **hypothesis**. Block 200 would have demonstrated nothing block 64 did not.
 

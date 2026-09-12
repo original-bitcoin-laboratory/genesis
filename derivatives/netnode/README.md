@@ -89,12 +89,12 @@ python bench.py            # ~300 blocks; prints blocks/sec, tx/sec, sigs/sec + 
 ```
 
 The finding was clear and pointed at the lever: **~95% of validation time is ECDSA signature
-verification.** So this session built that lever — an **optional libsecp256k1 verifier**
+verification.** So that lever was built — an **optional libsecp256k1 verifier**
 ([`fastverify.py`](fastverify.py), via `bitcoinx` / `electrumsv‑secp256k1`) wired into the
 validation hot path. On a typical dev machine it verifies a bare‑P2PK input in **~53 µs vs ~376 µs**
 for the faithful pure‑Python interpreter (**~7×**), lifting end‑to‑end validation from ~1,300 to
 **~6,000 blocks/sec (~4–5×)**. If the native library isn't installed, it falls back to the faithful
-path automatically. (This session also made block‑connect avoid re‑serializing every transaction to
+path automatically. (Block‑connect was also changed to avoid re‑serializing every transaction to
 hash it — txids come straight from the parsed bytes.)
 
 **The fidelity catch (why it's not a naive swap).** libsecp256k1 rejects **high‑S** (malleated)
@@ -104,7 +104,7 @@ signatures the origin accepts — a **consensus drift** (see [`crypto_conformanc
 verifies the low‑S‑normalized signature natively and **falls back to OpenSSL**, so it is *identical to this node's OpenSSL backend* on every input (matching the origin's lenient, high-S acceptance on the tested canonical-DER paths) — **differential‑tested**
 ([`test_fastverify.py`](test_fastverify.py)). It does not claim exhaustive emulation of the 2009 OpenSSL parser on non-strict DER. Speed *and* fidelity, not one at the other's expense.
 
-## Tests (`test_netnode.py` + `test_chainstate.py` + `test_mempool.py` + `test_wallet.py` + `test_fastverify.py`, 57)
+## Tests (`test_*.py`; the count is printed by pytest)
 
 The wire rejects a tampered checksum / bad magic / oversize; the store ignores a crash‑truncated
 tail; **two nodes sync over real TCP**; a node **reloads its chain from disk**; the retarget
@@ -128,7 +128,7 @@ payment owned by the recipient**, and refuses an overspend; and the RPC control 
 `getinfo` / `getbalance` / `getnewaddress` and **builds + submits** a payment via `send`.
 
 ```bash
-python -m pytest        # 57 passed
+python -m pytest        # all pass; the count is printed
 python -m netnode --chain jan09x --datadir ./d --no-listen --mine   # watch it mine
 ```
 
@@ -139,13 +139,19 @@ transacting, and usable**: a validated UTXO chainstate (the **sole authority** f
 serves and mines) rejects double‑spends / bad scripts / inflation / over‑claimed coinbases and
 reorgs safely, a validating **mempool** relays real transactions into assembled blocks, and a
 **wallet + localhost RPC** let a person mine, check a balance, and send — but this is *not* safe as
-money or "eternal." The difficulty *floor* exists (`--min-difficulty`) but **defaults to easy** (a
+money and not permanent. The difficulty *floor* exists (`--min-difficulty`) but **defaults to easy** (a
 real one is an operator job); the RPC is **loopback‑only and unauthenticated**; the wallet holds
 **experimental keys for a valueless chain.** Still ahead (see the scope doc): running at a **real
 difficulty**, GPG‑**signed** builds, a **security review**, and — for extreme scale only — a
 full **native node** (the dominant per‑signature cost is already handled by the optional
-libsecp256k1 verifier), and — the part no code delivers — **other operators.** A chain is only
-"eternal" once independent people choose to keep running it. **Not money.**
+libsecp256k1 verifier), and — the part no code delivers — **other operators.** A chain persists only
+while independent operators keep running it. **Not money.**
+
+**Limit — retargeting.** This node retargets every 60 blocks against a 30-second spacing on every chain it
+serves. On the `bitcoin` chain that equals the 2009 client only while `nBits` stays at the floor
+`0x1d00ffff`, which it has since genesis; the 2009 rule (2016 blocks, two weeks) is modelled in
+`derivatives/retarget/` and is not yet wired into this node or `validator-rs`. Until it is, the first
+window of 60 blocks faster than 30 minutes in total would make this node and the 2009 client disagree.
 
 Provenance: consensus is `chainsync.Chain` (faithful to v0.1); the transport, persistence, and CLI
 are **NEW‑EXP**. A tool, never authority ([AUTHORITY.md](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).

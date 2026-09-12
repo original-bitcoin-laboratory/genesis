@@ -7,10 +7,10 @@ is nothing here to buy, sell, or hold, and the maintainers will not offer any. R
 
 **Three chains, and they are not the same kind of thing.** Take them in this order:
 
-- **Bitcoin** — **not a reconstruction.** It runs Satoshi’s released **January 2009 client itself**,
+- **Bitcoin (2026)** — **not a reconstruction, not the Bitcoin of 2009, not money.** It runs Satoshi’s released **January 2009 client itself**,
   on a genesis of its own, mined at the original difficulty‑1, its coinbase carrying the front page
   of the day it was mined. Its own network, its own signed release (`Bitcoin-v0.1.5`), and a chain it is
-  mined intermittently — **every block after block 1 has been mined by the released client itself.** It does **not** interoperate
+  mined intermittently — **every block after block 1 has been mined by a released client** (blocks 221–222 by one run outside the laboratory). It does **not** interoperate
   with the two below, and it has its own seed rather than sharing the crawler.
 
 **NOV08‑X** and **JAN09‑X** are faithful, executable **reconstructions** of the earliest Bitcoin —
@@ -34,7 +34,7 @@ and [`../../common/RELEASE_AS_CANDIDATES.md`](https://github.com/original-bitcoi
   measurable fact. Neither do we claim to settle it.
 - **What we do claim is measurable:** NOV08‑X / JAN09‑X are **fidelity candidates** — new instances
   whose design sits at **distance 0** from the origin (see the interactive tracker at
-  [`tracker.html`](https://bitcoin-lab.org/)). BTC and BSV are
+  [`tracker.html`](https://bitcoin-lab.org/tracker.html)). BTC and BSV are
   **continuity candidates** — branches of the launched chain. Both *kinds* are candidates; which lens
   counts (continuity vs fidelity) is itself a choice. So these are candidates under a different lens —
   ranked neither above nor below the continuity chains here — and they have not yet been *run by anyone
@@ -58,7 +58,7 @@ hashing, sighash, and value rules are pinned down.
 
 1. **Verify the genesis yourself** — the durable, permanent artifact. `scripts/verify_genesis.py`
    re‑derives both **experimental** genesis blocks (NOV08‑X and JAN09‑X) from source — the historical
-   January genesis is witnessed only by the unmodified 2009 binary, not by this lab's code; `scripts/reproduce.py` runs the whole lab (25/25). No
+   January genesis is witnessed only by the unmodified 2009 binary, not by this lab's code; `scripts/reproduce.py` runs the whole lab (every step must pass; the count is printed). No
    node required, no way to be misled. This is the part that lasts forever.
 2. **Run a node** — one command with the prebuilt image
    (`docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode`), or from source
@@ -67,7 +67,7 @@ hashing, sighash, and value rules are pinned down.
    machines can sync a chain over the internet.
 3. **Run a seed** — [`../derivatives/dnsseed/`](../derivatives/dnsseed/) hands fresh nodes a live set
    of peers. One resolvable name meshes a stranger in.
-4. **Tell one other person.** A chain is "eternal" only once **independent** people keep nodes up. We
+4. **Tell one other person.** A chain persists only while **independent** people keep nodes up. We
    can offer that; we can't manufacture it.
 
 **Watch it live:** the [status page](https://bitcoin-lab.org/status.html) and

@@ -215,7 +215,19 @@ are the third and fourth of the reversed pubkey — `04 d4 51 b0 …`. They matc
 |---|---|---|
 | **coinbase** | `CScript() << 247422313` — an integer | `The Times 03/Jan/2009 Chancellor on brink…` |
 
-> ### ⚠️ On reading `247422313` as a date — don't
+| **proof of time** | **none** | the front page of that morning |
+| `nTime` | 1221069728 = **2008-09-10** 18:02:08 UTC | 1231006505 = 2009-01-03 18:15:05 UTC |
+| `nBits` | `20` — leading-zero **bits**, `MINPROOFOFWORK=20`, "ridiculously easy for testing" | `0x1d00ffff` — compact target |
+| `nNonce` | **141,755** (~1.4 × 10⁵ hashes) | 2,083,236,893 (~2.1 × 10⁹ hashes) |
+| **work** | 1× | ~**14,700×** |
+| `nValue` | 10000, and `COIN = 1000000` → **0.01 coins** | 5000000000, `COIN = 100000000` → 50 coins |
+| block hash preimage | **76 bytes**, `nVersion` excluded | 80 bytes, `nVersion` included |
+| tx hash preimage | `nVersion` excluded under `SER_GETHASH` | `nVersion` included |
+| `nSequence` lives on | **`CTxOut`** (plus a disk-only `posNext`) | `CTxIn` |
+| pubkey literal | `CBigNum` **byte-reversed**; reversed begins `0x04` | same convention |
+| archive | fragment — 4 source files, uncompilable | complete, builds to a running client |
+
+> ### On reading `247422313` as a date — don't
 >
 > The claim circulates that the coinbase integer decodes as a Unix timestamp:
 > **`247422313` → 1977-11-03 16:25:13 UTC.** *The arithmetic is correct.* **The inference is not.**
@@ -238,17 +250,6 @@ are the third and fourth of the reversed pubkey — `04 d4 51 b0 …`. They matc
 >
 > *Recorded because the numerology is in public circulation (satoshitimeline.com card 8) and will
 > otherwise be re-derived by someone who has not checked the base rate.*
-| **proof of time** | **none** | the front page of that morning |
-| `nTime` | 1221069728 = **2008-09-10** 18:02:08 UTC | 1231006505 = 2009-01-03 18:15:05 UTC |
-| `nBits` | `20` — leading-zero **bits**, `MINPROOFOFWORK=20`, "ridiculously easy for testing" | `0x1d00ffff` — compact target |
-| `nNonce` | **141,755** (~1.4 × 10⁵ hashes) | 2,083,236,893 (~2.1 × 10⁹ hashes) |
-| **work** | 1× | ~**14,700×** |
-| `nValue` | 10000, and `COIN = 1000000` → **0.01 coins** | 5000000000, `COIN = 100000000` → 50 coins |
-| block hash preimage | **76 bytes**, `nVersion` excluded | 80 bytes, `nVersion` included |
-| tx hash preimage | `nVersion` excluded under `SER_GETHASH` | `nVersion` included |
-| `nSequence` lives on | **`CTxOut`** (plus a disk-only `posNext`) | `CTxIn` |
-| pubkey literal | `CBigNum` **byte-reversed**; reversed begins `0x04` | same convention |
-| archive | fragment — 4 source files, uncompilable | complete, builds to a running client |
 
 Two of those rows carry the weight.
 

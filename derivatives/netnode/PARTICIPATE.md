@@ -12,7 +12,10 @@ table with a `file:line` witness for every opcode see [`../../inventory/OPCODES.
 
 ---
 
-## The two chains
+## The chains
+
+`bitcoin` — Bitcoin (2026), experimental, not the 2009 Bitcoin, not money — is served by the same node
+(`--chain bitcoin`, port 18026) and described in `derivatives/bitcoin/`. The two reconstructions:
 
 | Chain | `--chain` | P2P port | Base unit (1 coin) | Coinbase pays |
 |---|---|---|---|---|

@@ -41,7 +41,10 @@ python -m netnode --chain jan09x --datadir ./data-b --connect <A_PUBLIC_IP>:1800
 B handshakes, pulls the chain over TCP, stays in sync as A mines, and learns any other peers A
 knows through `addr` gossip — you only ever need **one** reachable address to mesh in.
 
-## The two chains
+## The chains
+
+`bitcoin` — Bitcoin (2026), experimental, not the 2009 Bitcoin, not money — runs on the same node
+(`--chain bitcoin`, port 18026; see `derivatives/bitcoin/`). The two reconstructions:
 
 | Chain | `--chain` | Default port | Proof‑of‑work |
 |---|---|---|---|

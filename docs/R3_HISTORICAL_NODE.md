@@ -87,7 +87,7 @@ verified by `derivatives/r3/test_mini_ircd.py`.)
 | # | Observation | Capture |
 |---|---|---|
 | 1 | Node starts and recognises the genesis hash `…19d668…a8ce26f` | `debug.log`, screenshot |
-| 2 | `/gen` mining produces blocks; coinbase matures (100) | `debug.log`, block height |
+| 2 | `/gen` mining produces blocks; coinbase becomes spendable at 120 confirmations | `debug.log`, block height |
 | 3 | VM-B connects to VM-A over the host-only net (via IRC) | both `debug.log`s, peer count |
 | 4 | A block relays A→B and validates on B | `blk*.dat` present on B |
 | 5 | Send a transaction A→B (Send Coins), it relays and confirms | tx id, screenshots |

@@ -2,7 +2,8 @@
 
 The canonical PDF was embedded in mainnet transaction
   54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e713
-as 948 bare-multisig outputs whose "public keys" are really PDF bytes. Reassembling them gives back
+as 946 bare-multisig outputs (945 carrying three 65-byte "keys" and one carrying the 33-byte tail) whose
+"public keys" are really PDF bytes; two further outputs are change. Reassembling them gives back
 the file byte for byte.
 
 Why this matters to this lab's grading: it is the ONLY copy of any whitepaper version carrying a

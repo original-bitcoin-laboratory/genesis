@@ -136,7 +136,7 @@ def local_chain():
             nxt = sorted(nxt, key=depth, reverse=True)
         chain.append(nxt[0])
         cur = nxt[0]
-    return os.path.relpath(path, ws), chain, len(blocks) - len(chain)
+    return os.path.relpath(path, root), chain, len(blocks) - len(chain)
 
 
 def compare(advertised):
