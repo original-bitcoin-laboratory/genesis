@@ -175,6 +175,7 @@ it fall back to a random nickname. Everything else in the client is equally peri
 encryption, no authentication, and a wallet.dat written in the clear.
 
 NOT MONEY. No premine of value, no token, no sale, no market. Experimental research artifact.
+Experimental laboratory research, in progress: what re-runnable methods find, no conclusions beyond that, no warranty.
 Run the client only in an isolated VM: it is a live node.
 TXT
 fi

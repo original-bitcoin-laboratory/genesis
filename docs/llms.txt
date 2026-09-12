@@ -47,4 +47,12 @@ python make_chain.py --check                  the 2026 tree is the 2009 tree plu
                                               published patch, and nothing else
 ```
 
+## Scope
+
+Experimental laboratory research, in progress and expected to change. It reports what published,
+re-runnable methods find in public material — statistical and machine-verifiable findings, graded
+by their evidence — and draws no conclusion beyond them. It has no knowledge or insight beyond the
+material it names. Not money, not advice, no warranty. Neutral: no chain, project or person is
+endorsed or characterised; public records are cited.
+
 Corrections are published, dated, and never made silently.
