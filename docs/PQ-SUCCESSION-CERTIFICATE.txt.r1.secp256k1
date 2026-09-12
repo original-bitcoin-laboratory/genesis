@@ -10,9 +10,8 @@ PQ-SUCCESSION-CERTIFICATE.txt.
   r  d4c4e20f1c112bf6dc5554e11a2bcd9314256e046a7c13aa81f21023f44c3de7
   s  61ec2e5911565a9a4876286ba44c61d469ac8e1ade36dc4fb3ed2a16f1dbc430
 
-Signing is RFC6979-deterministic, so re-running verify/prove.py with the same challenge reproduces these
+Signing is RFC6979-deterministic, so re-running prove.py with the same challenge reproduces these
 exact values. Low-s normalised.
 
   reproduce   sha256sum PQ-SUCCESSION-CERTIFICATE.txt
-              python verify/prove.py check PQ-SUCCESSION-CERTIFICATE.txt     # verifies r, s above
-              (the signed message is the double SHA-256 of that 64-character hex string)
+              python prove.py "<that hash>"

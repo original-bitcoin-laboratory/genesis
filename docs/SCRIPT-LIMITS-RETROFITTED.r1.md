@@ -204,7 +204,7 @@ sufficient, and says nothing about verification opcodes, transaction size, block
 ## Limits of this note
 
 ```
-NOT a novelty claim      the literature search above was not exhaustive; the commits are public
+NOT a novelty claim      no literature search was performed; the commits are public
 NOT a claim about intent the commit messages are quoted, not interpreted. Why script.cpp was
                          rewritten in a commit about makefile.unix is not established here
 NOT a completeness claim only script.cpp was tracked. Other consensus limits (block size,
@@ -224,9 +224,3 @@ per-commit dating record are published with a SHA-256 manifest. The reproduction
 calls; the compiled check requires g++ and the interpreter source.
 
 **Corrections to this note will be published, dated, and never made silently.**
-
----
-
-*Revision 2, 12 September 2026: one line under "Limits of this note" contradicted the paragraph
-above it about the literature search; it now agrees. Nothing else changed. Revision 1 and its
-signatures and timestamp proofs are kept beside this file as `SCRIPT-LIMITS-RETROFITTED.r1.md*`.*

@@ -45,6 +45,7 @@ WS = LAB.parent.parent
 #    signature is the entire content. The signing key lives ONLY in the cold backup and is
 #    deliberately absent from the working keyring, so this step is author-gated by design.
 #  ⇒ Sign it, THEN copy it into docs/. The signing commands are in docs/RELEASE_SIGNING.md.
+import os
 OUT = Path(os.environ.get("OBL_ATTESTATION_OUT", Path(__file__).resolve().parent / "TAG-ATTESTATION.txt"))
 
 REPOS = [("genesis", GENESIS),
@@ -78,7 +79,8 @@ def build():
             rows.append((name, tag, kind,
                          g(path, "rev-list", "-n1", tag),
                          g(path, "rev-parse", "%s^{tree}" % tag),
-                         g(path, "log", "-1", "--format=%cI", tag)))
+                         # committer date rendered in UTC: this project writes one clock only
+                         g(path, "log", "-1", "--date=format-local:%Y-%m-%dT%H:%M:%SZ", "--format=%cd", tag)))
     L = []
     L.append("ATTESTATION OVER UNSIGNED TAGS")
     L.append("Original Bitcoin Laboratory / satoshi-onchain     NOT money.")
@@ -108,7 +110,7 @@ def build():
     L.append("  git -C <repo> rev-list -n1 <tag>        must equal the commit below")
     L.append("  git -C <repo> rev-parse <tag>^{tree}    must equal the tree below")
     L.append("  gpg --verify TAG-ATTESTATION.txt.asc TAG-ATTESTATION.txt")
-    L.append("  python _ots_upgrade.py                  then confirm the .ots is Bitcoin-anchored")
+    L.append("  python scripts/ots_upgrade.py <file>.ots   then confirm the .ots is Bitcoin-anchored")
     L.append("")
     L.append("=" * 100)
     L.append("%-16s %-30s %-12s %s" % ("REPOSITORY", "TAG", "KIND", "COMMIT"))
