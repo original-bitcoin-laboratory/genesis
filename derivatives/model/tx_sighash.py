@@ -184,6 +184,14 @@ def report() -> None:
     for n_in in (0, 1):
         for label, ht in types:
             print(f"SH nIn={n_in} type={label} => {signature_hash(script_code, tx, n_in, ht).hex()}")
+    # Second scriptCode: OP_CODESEPARATOR at both boundaries around a pushed 65-byte key whose bytes
+    # include 0xab. FindAndDelete erases the two boundary opcodes and keeps the key intact (same
+    # construction in sighash.cpp). The C++ port stripped every 0xab byte until 13 Sep 2026.
+    key = bytes([0x04]) + bytes([0xAB if i % 7 == 0 else 0x10 + i for i in range(64)])
+    script_code2 = bytes([0xAB, 0x41]) + key + bytes([0xAC, 0xAB])
+    for n_in in (0, 1):
+        for label, ht in types:
+            print(f"SH2 nIn={n_in} type={label} => {signature_hash(script_code2, tx, n_in, ht).hex()}")
 
 
 if __name__ == "__main__":

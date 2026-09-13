@@ -50,8 +50,10 @@ Build artifacts (`port.exe`, `cxx_out.txt`, `py_out.txt`) are gitignored.
 - **`run.sh`** — opcode differential (numeric/splice/bitwise + control flow +
   stack/alt-stack), 63 vectors, C++ port vs Python MODEL → IDENTICAL.
 - **`run_sighash.sh`** (`sighash.cpp` ↔ `../model/tx_sighash.py`) — `CTransaction`
-  serialization + `SignatureHash` over a fixed tx; 12 (nIn × SIGHASH) 32-byte
-  digests → IDENTICAL.
+  serialization + `SignatureHash` over a fixed tx; 24 (2 scriptCodes × nIn × SIGHASH)
+  32-byte digests → IDENTICAL. The second scriptCode puts `OP_CODESEPARATOR` at both
+  boundaries of a pushed key that itself contains `0xab` bytes: `FindAndDelete` must erase
+  the opcodes and keep the key (until 13 Sep 2026 the port stripped every `0xab` byte).
 - **`run_checksig.sh`** (`checksig_e2e.cpp` ↔ `verify_scenario.py`) — real
   secp256k1 (OpenSSL `EC_KEY`, same API as v0.1 `key.h`): C++ generates keys,
   signs the tx, and self-checks `OP_CHECKSIG` + a 2-of-3 escrow

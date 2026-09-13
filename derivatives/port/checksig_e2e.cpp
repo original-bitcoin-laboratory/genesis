@@ -21,6 +21,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
 typedef vector<unsigned char> bytes;
 
@@ -36,7 +37,25 @@ struct TxIn{ bytes prevhash; uint32_t n; bytes script; uint32_t seq; };
 struct TxOut{ int64_t value; bytes script; void set_null(){ value=-1; script.clear(); } };
 struct Tx{ int32_t version; vector<TxIn> vin; vector<TxOut> vout; uint32_t locktime; };
 static bytes serialize(const Tx& tx){ bytes s; put_le(s,(uint32_t)tx.version,4); bytes c=compact_size(tx.vin.size()); s.insert(s.end(),c.begin(),c.end()); for(const auto& i:tx.vin){ s.insert(s.end(),i.prevhash.begin(),i.prevhash.end()); put_le(s,i.n,4); put_push(s,i.script); put_le(s,i.seq,4);} c=compact_size(tx.vout.size()); s.insert(s.end(),c.begin(),c.end()); for(const auto& o:tx.vout){ put_le(s,(uint64_t)o.value,8); put_push(s,o.script);} put_le(s,tx.locktime,4); return s; }
-static bytes fad_cs(const bytes& s){ bytes o; for(unsigned char b:s) if(b!=OP_CODESEPARATOR) o.push_back(b); return o; }
+// script.h FindAndDelete: the pattern is erased only where it sits at an opcode boundary; GetOp steps
+// over pushed data, so a 0xab inside a pushed key or signature is data and stays. (Until 13 Sep 2026
+// this stripped every 0xab byte, and signed a wrong hash whenever a random key contained one.)
+static bytes find_and_delete(const bytes& s, const bytes& pat){
+    bytes o; size_t pc=0, n=s.size();
+    while(pc<n){
+        while(!pat.empty() && n-pc>=pat.size() && std::equal(pat.begin(),pat.end(),s.begin()+pc)) pc+=pat.size();
+        if(pc>=n) break;
+        size_t start=pc; unsigned char op=s[pc++]; size_t len=0; bool ok=true;
+        if(op<0x4c) len=op;                                                        // direct push; OP_0 pushes nothing
+        else if(op==0x4c){ ok=pc+1<=n; if(ok){ len=s[pc]; pc+=1; } }                // OP_PUSHDATA1
+        else if(op==0x4d){ ok=pc+2<=n; if(ok){ len=s[pc]|(size_t(s[pc+1])<<8); pc+=2; } }   // OP_PUSHDATA2
+        else if(op==0x4e){ ok=pc+4<=n; if(ok){ len=s[pc]|(size_t(s[pc+1])<<8)|(size_t(s[pc+2])<<16)|(size_t(s[pc+3])<<24); pc+=4; } }
+        if(!ok || pc+len>n){ o.insert(o.end(), s.begin()+start, s.end()); return o; }   // GetOp fails: the rest stays as is
+        pc+=len; o.insert(o.end(), s.begin()+start, s.begin()+pc);
+    }
+    return o;
+}
+static bytes fad_cs(const bytes& s){ return find_and_delete(s, bytes{OP_CODESEPARATOR}); }
 static bytes signature_hash(bytes sc, Tx tx, unsigned nIn, int ht){
     if(nIn>=tx.vin.size()){ bytes e(32,0); e[0]=1; return e; }
     sc=fad_cs(sc); for(auto& i:tx.vin) i.script.clear(); tx.vin[nIn].script=sc;

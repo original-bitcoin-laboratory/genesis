@@ -68,7 +68,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   - Control flow (`OP_IF/NOTIF/ELSE/ENDIF/VERIFY/RETURN`), alt-stack, full stack
     ops. `run.sh` differential over **63 vectors → IDENTICAL**.
   - `CTransaction` + **`SignatureHash`** (pre-BIP143) — `run_sighash.sh`
-    differential over **12 (nIn × SIGHASH) digests → IDENTICAL** (pinned).
+    differential over **24 (2 scriptCodes × nIn × SIGHASH) digests → IDENTICAL** (pinned).
   - **`OP_CHECKSIG` / `OP_CHECKMULTISIG` on real secp256k1** — `run_checksig.sh`:
     C++ signs + self-checks (8/8: P2PK + 2-of-3 escrow/arbitration; tamper /
     wrong-key / wrong-order rejected) and the **Python interpreter independently

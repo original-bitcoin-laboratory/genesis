@@ -87,7 +87,11 @@ Building `checksig.json` exposed a defect in the lab's own model: `tx_sighash.py
 public keys. A key containing `0xab` then hashed to the wrong digest, and CHECKMULTISIG spends against
 it verified as invalid while the from-spec interpreter, following `script.cpp:829`'s opcode-boundary
 `FindAndDelete`, verified them as valid. Fixed 12 September 2026; the model's 146 tests still pass.
-This is what a second implementation written from the text is for.
+The C++ port carried the same line (`fad_cs` in `port/checksig_e2e.cpp` and `sighash.cpp`), which is
+why its randomly keyed end-to-end check then failed on Linux whenever a fresh key contained `0xab`
+while the model, now correct, disagreed with it; the port was fixed 13 September 2026 and the sighash
+differential gained a scriptCode that exercises exactly this. This is what a second implementation
+written from the text is for.
 
 ## What the vectors do not cover, said plainly
 

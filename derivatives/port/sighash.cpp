@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
 typedef vector<unsigned char> bytes;
 
@@ -41,7 +42,25 @@ static bytes serialize(const Tx& tx){
     put_le(s,tx.locktime,4);
     return s;
 }
-static bytes find_and_delete_cs(const bytes& script){ bytes o; for(unsigned char b: script) if(b!=OP_CODESEPARATOR) o.push_back(b); return o; }
+// script.h FindAndDelete: the pattern is erased only where it sits at an opcode boundary; GetOp steps
+// over pushed data, so a 0xab inside a pushed key or signature is data and stays. (Until 13 Sep 2026
+// this stripped every 0xab byte.)
+static bytes find_and_delete(const bytes& s, const bytes& pat){
+    bytes o; size_t pc=0, n=s.size();
+    while(pc<n){
+        while(!pat.empty() && n-pc>=pat.size() && std::equal(pat.begin(),pat.end(),s.begin()+pc)) pc+=pat.size();
+        if(pc>=n) break;
+        size_t start=pc; unsigned char op=s[pc++]; size_t len=0; bool ok=true;
+        if(op<0x4c) len=op;                                                        // direct push; OP_0 pushes nothing
+        else if(op==0x4c){ ok=pc+1<=n; if(ok){ len=s[pc]; pc+=1; } }                // OP_PUSHDATA1
+        else if(op==0x4d){ ok=pc+2<=n; if(ok){ len=s[pc]|(size_t(s[pc+1])<<8); pc+=2; } }   // OP_PUSHDATA2
+        else if(op==0x4e){ ok=pc+4<=n; if(ok){ len=s[pc]|(size_t(s[pc+1])<<8)|(size_t(s[pc+2])<<16)|(size_t(s[pc+3])<<24); pc+=4; } }
+        if(!ok || pc+len>n){ o.insert(o.end(), s.begin()+start, s.end()); return o; }   // GetOp fails: the rest stays as is
+        pc+=len; o.insert(o.end(), s.begin()+start, s.begin()+pc);
+    }
+    return o;
+}
+static bytes find_and_delete_cs(const bytes& script){ return find_and_delete(script, bytes{OP_CODESEPARATOR}); }
 
 static bytes signature_hash(bytes scriptCode, Tx tx, unsigned int nIn, int hashType){
     if(nIn>=tx.vin.size()){ bytes e(32,0); e[0]=1; return e; }
@@ -71,6 +90,19 @@ int main(){
         for(auto& ty: types){
             bytes h=signature_hash(spk0, tx, nIn, ty.ht);
             printf("SH nIn=%u type=%s => ", nIn, ty.label);
+            for(unsigned char c: h) printf("%02x", c);
+            printf("\n");
+        }
+    }
+    // Second scriptCode: OP_CODESEPARATOR at both boundaries around a pushed 65-byte key whose bytes
+    // include 0xab. FindAndDelete erases the two boundary opcodes and keeps the key intact (same
+    // construction in tx_sighash.py; the model's FindAndDelete is validated by the vectors corpus).
+    bytes key{0x04}; for(int i=0;i<64;i++) key.push_back(i%7==0 ? 0xab : (unsigned char)(0x10+i));
+    bytes sc2{0xab, 0x41}; sc2.insert(sc2.end(), key.begin(), key.end()); sc2.push_back(0xac); sc2.push_back(0xab);
+    for(unsigned nIn=0; nIn<2; nIn++){
+        for(auto& ty: types){
+            bytes h=signature_hash(sc2, tx, nIn, ty.ht);
+            printf("SH2 nIn=%u type=%s => ", nIn, ty.label);
             for(unsigned char c: h) printf("%02x", c);
             printf("\n");
         }
