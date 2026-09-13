@@ -18,7 +18,7 @@
 
 SHA-256 values match the 2012 Hal Finney recovery thread. Whitepaper matches
 `manifests/PROVENANCE_SHA256SUMS`. Verified bytes live under `artifacts/jan09/`
-(gitignored, never edited). Per-file hashes of the extracted tree — including the
+(gitignored, not edited). Per-file hashes of the extracted tree — including the
 binary — are recorded in `manifests/SOURCE_MANIFEST.json` (bytes stay local under
 `extracted/`).
 
@@ -177,7 +177,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
 - [x] **Commerce subsystem executable model (R6)** → `derivatives/market/` (MODEL) — the
   marketplace **runs**: `CProduct`/`CReview` **signed** over `GetSigHash` (`SER_SKIPSIG`)
   and verified on real secp256k1 (tamper/wrong-key rejected); the **"atoms" web-of-trust**
-  reproduced exactly (`AddAtom` flow-through rate 2 / random atom / zero-never-propagates /
+  reproduced exactly (`AddAtom` flow-through rate 2 / random atom / zero-does-not-propagate /
   origin-propagates, `AddAtomsAndPropagate` two-frontier flood over `vLinksOut`). Off-chain
   by design. **9 tests.**
 - [x] **Transaction Studio (R7) — script debugger** → `derivatives/studio/` (MODEL) — a
@@ -191,7 +191,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   machine, two constitutions). NOV08-X here is **NOV08-Full's executable form**. **6 tests.**
 - [x] **NOV08-Full (R8 step 7)** → `common/nov08x/NOV08_FULL.md` — the one **interpretive**
   artifact, walled off: the full financial machine assembled on November's constitution
-  (= the console under `nov08` rules), every completion decision disclosed + classed, **never
+  (= the console under `nov08` rules), every completion decision disclosed + classed, **not
   presented as recovered code / "true Bitcoin"**. N-ORIG rules still win over J-DONOR/NEW-EXP.
 - [x] **R2 status** → `docs/R2_BUILD_RECONSTRUCTION.md` — the period **build is done**: on a
   pinned period toolchain (i686 · OpenSSL 1.0.2u · wxWidgets 2.8.12 · BDB 4.8 · Boost 1.42) the
@@ -266,7 +266,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     `2026-08-01T01:32:00Z` and `…:32:20Z`**, twenty seconds apart —
     **R4a and R4b are one single run**, not two. That is not recalled, it is measured: R4a's
     `debug.log` is a **byte-exact prefix** of R4b's on *both* nodes (nodeA 6,248 → 22,016 bytes; nodeB
-    6,982 → 22,898), so the same file was appended to and `bitcoin.exe` never restarted between them.
+    6,982 → 22,898), so the same file was appended to and `bitcoin.exe` was not restarted between them.
     (v0.1.0 writes no timestamps into `debug.log` — that arrives in v0.1.3's `util.cpp` — so the prefix
     test is the available proof, and it is a stronger one.) The binding therefore reaches **backwards over
     the whole R4 series**: the already-witnessed sustained relay and reorganisation are retroactively bound

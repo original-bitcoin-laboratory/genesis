@@ -110,8 +110,8 @@
     <b>bitcoin.exe</b> <span class="h">fbcac071d92e26d8…bdd30d2d</span>
     (+ shipped <span class="h">libeay32.dll</span>, <span class="h">mingwm10.dll</span>) — over a
     <b>VirtualBox Internal Network</b> <span class="h">172.20.0.0/24</span> with no gateway and no DNS.
-    Peer discovery reproduces the client's own IRC path against a minimal in-network daemon; it never
-    contacts the historical Freenode.
+    Peer discovery reproduces the client's own IRC path against a minimal in-network daemon; it does not
+    contact the historical Freenode.
   </div>
 
   <h2 class="sec">The milestones, in order</h2>
@@ -189,8 +189,8 @@
         <code>fbcac071…</code> in all four — <b>one unchanged process on each node, running ~65 hours,
         produced these blocks.</b></p>
       <p><b>This closes the R-series.</b> Value transfer on the unmodified 2009 client is now executed, not
-        modelled. What remains modelled is mining across a difficulty <i>retarget</i> window; the chain never
-        left difficulty&nbsp;1. <b>No value is assigned to any of it.</b></p>
+        modelled. What remains modelled is mining across a difficulty <i>retarget</i> window; the chain did not
+        leave difficulty&nbsp;1. <b>No value is assigned to any of it.</b></p>
     </div>
 
   </div>
@@ -228,7 +228,7 @@
         <code>cdn.nakamotoinstitute.org/code/bitcoin-0.1.0.rar</code>; same on both nodes.
         <a href="https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md">the six checks →</a></td></tr>
       <tr><th>Network</th><td>VirtualBox <b>Internal Network</b> <code>172.20.0.0/24</code>, no gateway, no DNS, firewall off. Node A <code>172.20.0.1</code>, node B <code>172.20.0.2</code>.</td></tr>
-      <tr><th>Discovery</th><td>the client's own hard-coded IRC path, reproduced against a minimal in-network daemon (<code>hosts</code> override) — never the historical Freenode.</td></tr>
+      <tr><th>Discovery</th><td>the client's own hard-coded IRC path, reproduced against a minimal in-network daemon (<code>hosts</code> override) — not the historical Freenode.</td></tr>
       <tr><th>Status</th><td>Isolated network · the real historical genesis · <b>no value assigned by design</b>. A <i>Bitcoin</i>, not <i>the</i> Bitcoin.</td></tr>
     </table>
   </div>

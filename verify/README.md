@@ -47,7 +47,7 @@ them loses ~2.8 KB while still producing a confident-looking hash. And `vout[945
 Word-shingle intersection between the PDF and every message in the archive, extending matches to
 maximal runs, tracking quoted lines separately.
 
-The abstract has always been checkable — it was quoted inline in the announcement. The **body** had
+The abstract has been checkable from the start — it was quoted inline in the announcement. The **body** had
 no known 2008 witness until the archive was searched for the paper's own sentences. It found one: on
 **8 November 2008**, answering Ray Dillinger on inflation, Satoshi quoted their own Section 4:
 
@@ -128,7 +128,7 @@ not available offline when it was written. The residual risk is a misreading of 
 OpenSSL also makes — unlikely, since the two were written independently in different languages, but
 that is the gap and it is stated rather than left for a reader to discover.
 
-⚠️ **It verifies; it never signs.** There is no signing path in the file, it needs no secret, and it
+⚠️ **It verifies; it does not sign.** There is no signing path in the file, it needs no secret, and it
 refuses a private key rather than reading one.
 
 ## What these do not establish
@@ -142,7 +142,7 @@ anchored.
 **Nothing executable in this lab depends on the paper.** The genesis re-derivation, the patched lines,
 the wire format and the opcode values all rest on the two hash-verified code archives.
 
-**A signature answers WHO, never WHEN.** `verify_slhdsa.py` tells you a key signed those bytes. It
+**A signature answers WHO, not WHEN.** `verify_slhdsa.py` tells you a key signed those bytes. It
 says nothing about when, and a signature is only as good as the scheme behind it. What dates these
 artifacts is the OpenTimestamps proof (`.ots`) beside each one, anchored in Bitcoin — and an anchor
 made before a scheme breaks keeps its meaning after, which is the whole reason the two are kept

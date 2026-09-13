@@ -20,7 +20,7 @@
   },
   "challenger_has_less_work": true,
   "selected_tip": "challenger_branch_A",
-  "selected_by": "height (nHeight > nBestHeight; never summed work)",
+  "selected_by": "height (nHeight > nBestHeight; not summed work)",
   "retarget_interval_used": 60,
   "historical_interval": 2016,
   "source_witness": "main.cpp best-chain update; test_chainstate.py::test_height_beats_cumulative_work_the_discriminating_fork"

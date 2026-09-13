@@ -32,7 +32,7 @@ model verifies a libsecp256k1 signature: True   ← round-trips both ways
 
 Canonical v0.1 sig ↔ libsecp256k1 both directions; high‑S accepted by OpenSSL but
 rejected by libsecp256k1 (Thread A); identical secp256k1 key across both stacks;
-libsecp256k1 always low‑S; canonicalization correct. All over a **real v0.1 sighash**.
+libsecp256k1 signs low‑S; canonicalization correct. All over a **real v0.1 sighash**.
 
 ```bash
 python crypto_conformance.py   # the five-line demo above
@@ -43,7 +43,7 @@ python -m pytest               # 21 passed (skips if libsecp256k1 absent)
 
 `libsecp256k1` is the crypto **every descendant inherited** (Thread A *converged* — see the
 essay's neutrality note), so this is a neutral cross‑check, not a privileging of any chain;
-it is a *tool*, never authority (`common/AUTHORITY.md`). Backed by
+it is a *tool*, not authority (`common/AUTHORITY.md`). Backed by
 `electrumsv-secp256k1` because the standalone `coincurve` / `secp256k1` wheels don't build
 on this Python; the underlying C library is the same libsecp256k1. Degrades gracefully
 (tests skip) if the binding is absent.

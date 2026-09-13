@@ -24,7 +24,7 @@ toolchain — the empirical answer to roadmap R2's "maximum executable reconstru
 - **[`sha_selftest.cpp`](sha_selftest.cpp)** — driver that runs Satoshi's `SHA256::Transform`
   against known-answer vectors (adds only padding/word-packing, no algorithm changes).
 - **[`compat/`](compat)** — a headless stand-in for `headers.h` (drops wx/winsock/BDB, keeps
-  std + OpenSSL) and a 3-name Boost shim. These replace the *environment*, never the source.
+  std + OpenSSL) and a 3-name Boost shim. These replace the *environment*, not the source.
 
 ## Run it
 

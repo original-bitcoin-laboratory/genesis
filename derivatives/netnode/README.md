@@ -18,7 +18,7 @@ transport** a public node needs — the "rewrite for adversarial conditions," no
 | | MODEL (`../p2p`) | netnode (Stage 1) |
 |---|---|---|
 | Framing | magic + command + size, **no checksum** | + **checksum** + **4 MiB size cap** ([`wire.py`](wire.py)) |
-| Stalls | trusting, blocks forever | **read timeouts** → drop the peer |
+| Stalls | trusting, blocks indefinitely | **read timeouts** → drop the peer |
 | Bad peers | — | **misbehavior scoring** → ban/disconnect |
 | Persistence | in‑memory | **crash‑safe on‑disk store** + restart recovery ([`store.py`](store.py)) |
 | Connections | one shot | **outbound reconnection** with backoff |
@@ -154,4 +154,4 @@ serves. On the `bitcoin` chain that equals the 2009 client only while `nBits` st
 window of 60 blocks faster than 30 minutes in total would make this node and the 2009 client disagree.
 
 Provenance: consensus is `chainsync.Chain` (faithful to v0.1); the transport, persistence, and CLI
-are **NEW‑EXP**. A tool, never authority ([AUTHORITY.md](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).
+are **NEW‑EXP**. A tool, not authority ([AUTHORITY.md](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).

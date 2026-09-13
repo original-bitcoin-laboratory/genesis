@@ -17,7 +17,7 @@ The file is `lab/genesis/r3-stage/bitcoin.exe` — the exact 2009 program, copie
 the hash-verified Nakamoto Institute archive. It's open-source (MIT), 6.4 MB, and we
 verified its fingerprint (SHA-256 `fbcac071…`). You'll run it **offline**, so it can't
 talk to the internet. Mined coins are lab coins on an isolated chain — not real money,
-never the real Bitcoin ledger.
+not the real Bitcoin ledger.
 
 ---
 

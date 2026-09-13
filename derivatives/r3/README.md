@@ -54,4 +54,4 @@ In each guest set a static IP, **blank gateway/DNS**.
 5. Capture evidence per the checklist in `../../docs/R3_HISTORICAL_NODE.md`.
 
 Reminder: mined coins here are laboratory coins on an isolated branch from the
-hardcoded genesis — never the historical Bitcoin ledger, never online.
+hardcoded genesis — not the historical Bitcoin ledger, not online.

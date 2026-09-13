@@ -3,7 +3,7 @@
 **Evidence level: `MODEL`.** The companion to [`../overflow/`](../overflow/): it makes runnable
 the *other* [`CONSENSUS_SURFACE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/CONSENSUS_SURFACE.md) finding —
 v0.1's Script interpreter enforces **no resource ceilings**. Verified in source, v0.1's
-`EvalScript` has only *underflow* guards (`if (stack.size() < N)`), never an upper bound;
+`EvalScript` has only *underflow* guards (`if (stack.size() < N)`), no upper bound;
 `MAX_SCRIPT_ELEMENT_SIZE`, the op‑count limit, and the stack‑size limit have **0 occurrences**.
 They were all added in the 2010 Script hardening.
 
@@ -53,4 +53,4 @@ python -m pytest          # 9 passed
 MODEL; the v0.1 side is the lab's executed interpreter; the ceilings are the documented 2010
 constants (`MAX_SCRIPT_ELEMENT_SIZE = 520`, op limit `201`, stack limit `1000`). Not a
 live‑exploit claim — these are prudential DoS bounds, and v0.1 simply predates them. A tool,
-never authority (`common/AUTHORITY.md`).
+not authority (`common/AUTHORITY.md`).

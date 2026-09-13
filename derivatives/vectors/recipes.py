@@ -408,7 +408,7 @@ def build_block_case(name: str, ctx: dict) -> dict:
                    note="nTime = now + 3h (the rule is > now + 2h; the extra hour absorbs clock drift between the harness "
                         "and the node); the vector carries `now`, the clock the verifier must use")
     if name == "v_nonfinal_locktime_accepted":
-        # v0.1 consults IsFinal only in CreateNewBlock and the wallet (main.cpp:2246, 2397, 2425), never in
+        # v0.1 consults IsFinal only in CreateNewBlock and the wallet (main.cpp:2246, 2397, 2425), not in
         # AcceptTransaction or ConnectBlock: a non-final transaction inside a block is accepted
         s = signed_spend(key, 2, fund[2]["value"], locktime=999_999_999, seq=0)
         return ok(blk([make_coinbase(h, [(sub, OP_TRUE_SCRIPT)]), s]), consumes=[2],

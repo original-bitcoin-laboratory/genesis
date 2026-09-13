@@ -28,7 +28,7 @@ too fast, and sets difficulty very slightly **harder**. The fixed point is `nAct
 nTargetTimespan`, i.e. `2015 · τ = 2016 · 600`, so the network's real spacing settles at
 
 ```
-τ = 2016/2015 × 600 = 600.2978 s   (~+0.0496%, a hair SLOW — permanently)
+τ = 2016/2015 × 600 = 600.2978 s   (~+0.0496%, a hair SLOW, at every retarget)
 ```
 
 This is the opposite direction from the common "~599.7 s, a hair fast" phrasing: the code compares
@@ -43,7 +43,7 @@ one period to the first of the next (`main.cpp:706`). Majority hashpower can sta
 block with an inflated timestamp so each window *looks* far too long, forcing the maximal `×4`
 difficulty drop per period (the clamp at `main.cpp:708-711`). Modelled here as the boundary forge; it
 collapses difficulty to the pow-limit floor within a few periods, while an honest chain is unmoved.
-**Never fired on Bitcoin mainnet** (needs 51% and is glaring); the point is only that the v0.1 code
+**Has not fired on Bitcoin mainnet** (needs 51% and is glaring); the point is only that the v0.1 code
 has this boundary behaviour, latent in the executable.
 
 ## Why it's a MODEL
@@ -82,5 +82,5 @@ python -m pytest       # 11 passed
 ## Boundary
 
 MODEL; objective source port of `main.cpp:685-728`; no chain privileged; not a live-exploit claim
-(timewarp needs majority hashpower and has never run on Bitcoin mainnet). It is a *tool*, never
+(timewarp needs majority hashpower and has not run on Bitcoin mainnet). It is a *tool*, not
 authority (`common/AUTHORITY.md`).

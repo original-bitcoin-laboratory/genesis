@@ -19,7 +19,7 @@ Two consensus‑critical things ran through OpenSSL's **general‑purpose** code
   `BIGNUM`; every numeric/splice opcode (`OP_ADD`, `OP_MUL`, `OP_LSHIFT`, `OP_CAT`, …)
   computed on it.
 
-Consensus needs **every node to agree, byte‑for‑byte, forever**. A library optimized for
+Consensus needs **every node to agree, byte‑for‑byte, for as long as the chain runs**. A library optimized for
 general correctness/speed is the wrong thing to place there. That mismatch produced two
 distinct hazards, and two distinct fixes.
 

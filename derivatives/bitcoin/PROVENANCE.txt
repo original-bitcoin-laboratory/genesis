@@ -98,7 +98,7 @@ that era. Read the coinbase of block 0:
       genesis   00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
       coinbase  The Times 03/Aug/2026 Toll of schooling 'straitjacket'
 
-Different genesis, different key, different network. They are not the same chain and never touch.
+Different genesis, different key, different network. They are not the same chain and do not touch.
 
 
 NOT MONEY
@@ -115,13 +115,13 @@ and nothing here is for sale.
 WHAT WE CANNOT PROMISE, STATED PLAINLY
 Anyone may find this software, run it, and mine. Whether a third party then values or trades those
 units is outside any software's control, and outside ours. We do not solicit it, we do not
-facilitate it, and nothing here invites it -- but we will not pretend to a guarantee we cannot give.
+facilitate it, and nothing here invites it -- but we do not pretend to a guarantee we cannot give.
 
 That distinction is deliberate. "We assign no value and make no sale" stays true whatever a stranger
 does. "There is no market" would be a claim about the world, and the world is not ours to bind.
 
 This is why a live node with a plaintext wallet and no script limits is safe to run at all: not
-because no one could ever value these units, but because nothing here has been given value BY US
+because no one could value these units, but because nothing here has been given value BY US
 to steal.
 
 
@@ -151,4 +151,4 @@ VERIFY ANY OF THE ABOVE
   sha256sum bitcoin.exe           # compare against RELEASE.txt; the build is reproducible
 
 If something here is wrong, it is a defect and will be corrected in the open rather than argued
-about. Corrections are published, dated, and never made silently.
+about. Corrections are published, dated, and not made silently.

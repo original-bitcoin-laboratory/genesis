@@ -137,7 +137,7 @@ Four things that are easy to get wrong:
 
 - **The Windows client does not work.** `ctypes.find_library` returns None and it dies with
   `LoadLibrary() argument 1 must be str, not None` — `ots` imports python-bitcoinlib, which loads an
-  OpenSSL DLL at import time for *wallet* code an upgrade never touches. **Every subcommand dies
+  OpenSSL DLL at import time for *wallet* code an upgrade does not touch. **Every subcommand dies
   before parsing its arguments.**
   > ★ **Preferred: a short script over the pure-python `opentimestamps` library** (with a dry-run mode). It
   > reaches the calendars directly, needs no WSL, and decides
@@ -152,8 +152,8 @@ Four things that are easy to get wrong:
   >
   > WSL remains a valid fallback: `pip install --break-system-packages opentimestamps-client`.
 - **A fresh proof is incomplete.** It reads *"Pending confirmation in Bitcoin blockchain"* for a few
-  hours. **Come back and `ots upgrade` each `.ots`, then re-upload.** A proof left un-upgraded never
-  completes itself, and the release ships something that looks like a timestamp and is not yet one.
+  hours. **Come back and `ots upgrade` each `.ots`, then re-upload.** A proof left un-upgraded does not
+  complete itself, and the release ships something that looks like a timestamp and is not yet one.
 - **A stale `.bak` silently eats the attestation.** `ots upgrade` writes `<file>.ots.bak` before
   replacing a proof and **refuses to write if that `.bak` already exists** — but only *after* it has
   fetched the attestation, which is then thrown away. `SHA256SUMS` is a filename every release
@@ -200,7 +200,7 @@ tries to ssh to a host called `rad`.
 
 Keep an offline copy of the repository and of every published release asset, and checksum the whole
 tree so the backup can be verified rather than trusted. `$BACKUP` is a path outside any checkout;
-nothing under it is ever published.
+nothing under it is published.
 
 ```bash
 git bundle create "$BACKUP/repos/genesis.bundle" --all
@@ -258,17 +258,17 @@ stop it, because a checklist step only fires when a human remembers to read the 
 > matters if GitHub does not survive.
 
 **Refresh stale proofs from the PUBLISHED release, not the working tree.** The published copy is the
-authoritative one, and re-downloading also catches assets the backup never had.
+authoritative one, and re-downloading also catches assets the backup did not have.
 
 **This happened on 10 Aug 2026** with the post-quantum bundle: sealed at 05:52, upgraded at 06:49, so
 the cold copy held 735-byte promises until it was rebuilt. **The routine already warned about this for
 published releases; nobody had thought to look for it in the backup path.**
 
-## 9. The thread — **append, never edit**
+## 9. The thread — **append, do not edit**
 
 Post a new tweet; do not delete or rewrite an old one. Name which earlier tweet the new one
-supersedes. A thread that visibly corrects itself can be checked; one that was never wrong cannot be
-distinguished from one that never looked.
+supersedes. A thread that visibly corrects itself can be checked; one that was not wrong cannot be
+distinguished from one that did not look.
 
 ---
 

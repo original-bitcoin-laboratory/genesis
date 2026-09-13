@@ -43,5 +43,5 @@ A coinbase paying **one unit less** than subsidy+fees:
 
 ## 6. Nothing disabled
 
-NOV08-X's Script engine (reconstructed from the interface NOV08 references) carries the **full original opcode vocabulary** — see `test_nov08x.py`, which runs `OP_CAT`/`OP_MUL`/… live. November never had a Script file to disable anything in.
+NOV08-X's Script engine (reconstructed from the interface NOV08 references) carries the **full original opcode vocabulary** — see `test_nov08x.py`, which runs `OP_CAT`/`OP_MUL`/… live. November did not have a Script file to disable anything in.
 

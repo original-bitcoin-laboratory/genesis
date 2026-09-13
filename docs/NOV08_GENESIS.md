@@ -57,7 +57,7 @@ whoever later published the file — places, on a specific dated day, a statemen
 readme in the artifact.
 
 **What it does not establish.** That the bytes here are the bytes they sent. No hash was published, no
-copy was attached, and the recipient's own copy has never surfaced. The anchor dates *an artifact of
+copy was attached, and the recipient's own copy has not surfaced. The anchor dates *an artifact of
 this description*; it does not authenticate *this file*.
 
 That is still a materially stronger position than the artifact had a moment ago, and it is the
@@ -76,7 +76,7 @@ readme says so in Satoshi's own words:
 
 It is worth being exact about what "just the main files" excludes, because it is most of a program.
 `main.cpp` opens with `#include "headers.h"` and `#include "sha.h"`; **neither file is in the
-archive.** Counted across `main.cpp` and `main.h`, these are used and never defined:
+archive.** Counted across `main.cpp` and `main.h`, these are used and not defined:
 
 | symbol | uses | defined in the archive |
 |---|---:|---|

@@ -73,7 +73,7 @@ def build_report():
           "## 6. Nothing disabled", "",
           "NOV08-X's Script engine (reconstructed from the interface NOV08 references) "
           "carries the **full original opcode vocabulary** — see `test_nov08x.py`, which "
-          "runs `OP_CAT`/`OP_MUL`/… live. November never had a Script file to disable "
+          "runs `OP_CAT`/`OP_MUL`/… live. November did not have a Script file to disable "
           "anything in.", ""]
     return "\n".join(L) + "\n", nov
 
@@ -84,7 +84,7 @@ def write_provenance(nov: Rules):
            "classes": {"N-ORIG": "verbatim from the surviving NOV08 source",
                        "N-IFACE": "reconstructed from an interface NOV08 references",
                        "J-DONOR": "imported from JAN09 where NOV08 is silent",
-                       "NEW-EXP": "new experimental decision (never a semantics change)"},
+                       "NEW-EXP": "new experimental decision (not a semantics change)"},
            "n_orig_rules": rows,
            "reconstructed_substrate": [
                {"component": "Script engine (full vocabulary, nothing disabled)", "class": "N-IFACE",

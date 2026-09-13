@@ -25,7 +25,7 @@ Four things in there were not happening:
 - **`-D__WXDEBUG__`.** The whole body of `OutputDebugStringF` sits inside `#ifdef __WXDEBUG__`
   (`util.h:232`). Without the define the function is a no-op, so the client emits no diagnostic
   output at all — not to file, not to `OutputDebugString`. That is the missing `debug.log`.
-- **`windres ui.rc`.** The rule was never run, so the binary had no `.rsrc` section and none of the
+- **`windres ui.rc`.** The rule was not run, so the binary had no `.rsrc` section and none of the
   eleven bitmaps and icons. That is the missing toolbar.
 - **`-mthreads`.** On MinGW this selects thread-safe C++ exception handling and the
   `_beginthreadex` runtime. This client runs five threads: socket handler, IRC seed, message
@@ -84,7 +84,7 @@ They prove nothing. `util.h:30` reads:
 #endif
 ```
 
-`_WINDOWS` comes from `WXDEFS` and is always defined, so every call site compiles in regardless;
+`_WINDOWS` comes from `WXDEFS` and is defined in every build, so every call site compiles in regardless;
 only the function *body* is gated. The strings are arguments, present either way. Distinguishing a
 string that is gated from one that merely looks gated is the whole of it.
 
@@ -155,7 +155,7 @@ c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d
 
 A GitHub-hosted runner built it from the published 2009 archive and arrived at exactly that, with
 zero differing bytes against the local build. The job is `.github/workflows/reproducible.yml`; it
-fails loudly if the hash ever moves.
+fails loudly if the hash moves.
 
 This was the one objection in the project's own design record conceded without a rebuttal.
 
@@ -179,10 +179,10 @@ wxWidgets stamping its own build clock through `wxGetLibraryVersionInfo`, plus t
 following it. gcc honours `SOURCE_DATE_EPOCH` for `__DATE__` and `__TIME__` from version 7 on, so
 the build exports it.
 
-Worth stating plainly, because it is the substance of the finding: **not one instruction ever
+Worth stating plainly, because it is the substance of the finding: **not one instruction
 differed.** Not a symbol, not a section, not an offset, not a byte of any of the four statically
 linked period libraries. Two machines hours apart emitted identical machine code and disagreed only
-about what time it was. The build was never chaotic — it was two clocks, and nobody had looked.
+about what time it was. The build was not chaotic — it was two clocks, and nobody had looked.
 
 ## The epoch
 
@@ -205,7 +205,7 @@ Follow that through: a compromised build machine could put a backdoored `bitcoin
 perfectly clean source, sign the tarball, and every signature check would still pass. The verifier
 would confirm authenticity and learn nothing about correctness — proving *who sent it* while unable
 to ask *what it is*. That is the general reason Bitcoin Core builds with Guix. A signature answers
-**who**, never **what**.
+**who**, not **what**.
 
 What changed is that the binary became a deterministic function of public inputs — a third party's
 2009 archive, ten patched lines, a named toolchain — so:

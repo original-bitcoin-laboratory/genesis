@@ -2,7 +2,7 @@
 
 **11 August 2026.** Post-quantum signatures for Bitcoin are discussed constantly and priced in
 adjectives. The question that decides whether any proposal is buildable is arithmetic: **a signature
-goes in every transaction input, and a chain stores every transaction forever.**
+goes in every transaction input, and a chain keeps every transaction.**
 
 This is that arithmetic, measured on the client this laboratory actually runs.
 
@@ -112,7 +112,7 @@ cryptographic cost is **under ~4 ms for all of them, and for several it is insid
 > signature in history.
 
 **What does not survive is size.** A transaction grows **19× to 86×**, and because a chain keeps
-everything forever, that multiplier applies to the entire history:
+everything, that multiplier applies to the entire history:
 
 ```
 secp256k1        52.6 GB/yr        the chain as it exists
@@ -188,4 +188,4 @@ change to the transaction model, which is the only computed part and is printed 
 validation so it can be checked rather than trusted.
 
 **If something here is wrong, it is a defect and will be corrected in the open rather than argued
-about.** Corrections are published, dated, and never made silently.
+about.** Corrections are published, dated, and not made silently.

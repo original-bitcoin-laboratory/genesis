@@ -22,11 +22,11 @@ error string in the client's own `debug.log`.
 | Where it ran | a **full VirtualBox clone** of the mining VM, taken after a clean exit of the client, with its only adapter switched to Host-only: no route to the internet, to the VPS seed, or to IRC |
 | Chain | Bitcoin (2026), genesis `00000000ad12…`, magic `f00ba726`, port 18026; the clone's chain was the public chain at **height 861** at clone time |
 | The one guest-side change | a hosts-file line `127.0.0.1 chat.freenode.net`, without which the 2009 code crashes on start (see *Divergences*) |
-| Generate Coins | off; the client's own miner never fired during either run (last `proof-of-work found` in the log predates the session) |
+| Generate Coins | off; the client's own miner did not fire during either run (last `proof-of-work found` in the log predates the session) |
 | Harness | `derivatives/vectors/replay/` at genesis commits `30bba3c` (run 1) and `cdd819e` (run 2); native miner `miner-rs`, SHA-NI |
 | Verdict channels | a transaction: served back by `getdata` from the client's relay pool (`mapRelay`), one round trip with a sentinel block; a block: served by `getdata` (in `mapBlockIndex`) and listed by `getblocks` from the previous tip (on the main chain) |
 
-The public mining VM and the public chain were never touched. The clone's chain forked privately from
+The public mining VM and the public chain were not touched. The clone's chain forked privately from
 height 861 and ended at height 966.
 
 ## What the client was given, and what it said
@@ -80,7 +80,7 @@ ProcessBlock: ORPHAN BLOCK, prev=43c56caa9c1262                                 
 
 Each rejected block was rejected at the stage the corpus predicts, with the string the corpus
 predicts. `v_chain_in_block` — a transaction spending an output created earlier in the **same
-block** — had never been exercised on a binary before; it is accepted, which confirms the same-block
+block** — had not been exercised on a binary before; it is accepted, which confirms the same-block
 read-back through `CDiskTxPos` (`main.cpp:938-946`) on the file just written.
 
 ## Verification from the raw bytes
@@ -105,7 +105,7 @@ regions; the "side" records are run 1's two stale-parent blocks and their kin (n
    address in `ThreadIRCSeed`: `gethostbyname` returns NULL, and `irc.cpp` dereferences it
    (`mov eax,[eax+0xc]`, the `h_addr_list` field). A hosts-file line pointing the name at 127.0.0.1
    is the whole workaround; the IRC thread then logs `IRC connect failed` and returns. The R3/R4
-   guests never met this only because their hosts files pointed the name at `mini_ircd`. Recorded in
+   guests did not meet this only because their hosts files pointed the name at `mini_ircd`. Recorded in
    the release-text template.
 2. **Run 1's two "accept" disagreements were the harness's, not the client's.** The harness's local
    validator used the lab's Python model for signatures; on a host without the `cryptography`

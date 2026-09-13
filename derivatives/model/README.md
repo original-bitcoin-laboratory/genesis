@@ -1,7 +1,7 @@
 # EvalScript MODEL (derivative)
 
 **Evidence level: `MODEL`** — a reimplementation / harness, **not** `JAN09-EXECUTED`.
-This is a DERIVATIVE (it lives under `derivatives/`, never in the canonical tree)
+This is a DERIVATIVE (it lives under `derivatives/`, not in the canonical tree)
 and carries **no authority on its own**. It re-expresses, in Python, the opcode
 execution bodies of v0.1.0 `EvalScript` and the CBigNum number codec, so the
 "broad vocabulary" of original Script can be *run* and inspected.

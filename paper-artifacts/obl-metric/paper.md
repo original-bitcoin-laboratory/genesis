@@ -12,11 +12,11 @@ header-includes:
   # Pandoc renders `author:` as a bare name. Every other paper in this corpus carries name +
   # affiliation + the canonical contact address, and obl-metric was the only one that did not --
   # an inconsistency visible the moment two of them sit side by side under one ORCID.
-  # `before_genesis.tex`, the closest sibling and already permanent on a Zenodo DOI, uses exactly
+  # `before_genesis.tex`, the closest sibling and already persistent on a Zenodo DOI, uses exactly
   # this form, so this matches it rather than inventing a seventh style.
   # And it is not only consistency: this paper's claim is that any cell can be CONTESTED against
   # its source. A contestability claim with no contact route is weaker than it needs to be, on a
-  # preprint that is permanent and indexed.
+  # preprint that is persistent and indexed.
   # ASCII ONLY here -- check_template.py fails the build on non-ASCII in the output.
   # NO ORCID LINE. It is carried by the arXiv author profile, which is where a reader follows it
   # from; repeating it on the title page adds a second place for it to be wrong and none for it to
@@ -126,7 +126,7 @@ subsection below explains why.* *(We say "eligible for inclusion if", not "inclu
 chains qualify, and the candidate audit below applies them outside the set -- but a hand-built
 candidate list cannot certify that every qualifying descendant has been enumerated.)*
 
-**An inclusion rule only ever applied to the chains one already chose is a description, not a rule**,
+**An inclusion rule only applied to the chains one already chose is a description, not a rule**,
 so we applied it to candidates outside the set. **Doing so changed this study.**
 
 Bitcoin Gold satisfies all three criteria: it duplicated Bitcoin's ledger through block 491,406, it
@@ -184,7 +184,7 @@ measured by this instrument at all."*
 > it further out. A reader who supplies the missing record — or who does the diff-reading and cites
 > it — can add a column, and the engine will accept it. **Found by an external referee, who noticed
 > that criterion (3) contradicted our own source model.**  An earlier draft described these as *"large"
-descendant chains without defining "large"*; the word is removed, because **size was never the
+descendant chains without defining "large"*; the word is removed, because **size was not the
 criterion and using it would have made the population a popularity judgement.**
 
 *A note on that label.* The archive distributed as `bitcoin-0.1.0.rar` **contains v0.1.1, not the 8 January 2009 release** — its size matches the figure Satoshi states for `bitcoin-0.1.1.rar` in a 10 January 2009 message, and the shipped executable's PE `TimeDateStamp` is 2009-01-10, two days after v0.1.0 was announced. Prior archival analysis reached this first [@chainbulletin]. **It does not affect anything reported here:** the v0.1.0-to-v0.1.1 delta is confined to `irc.cpp` and `serialize.h`, neither of which carries a consensus rule, so no axis or behaviour below changes. We retain the conventional filename because the published digests are recorded under it.
@@ -203,7 +203,7 @@ and BIP 340 respectively, and the paper discusses all three:
 2009. **17 axes.**
 
 **(ii) Reference-discriminating** — an early *reference* specifies the rule, and no descendant has
-ever changed it. **2 axes: the initial block subsidy and the target block spacing.**
+changed it. **2 axes: the initial block subsidy and the target block spacing.**
 
 > ### The second class is a revision, reported as one
 >
@@ -249,7 +249,7 @@ ever changed it. **2 axes: the initial block subsidy and the target block spacin
 > ### A third axis was removed because the rule, once stated, excluded it
 >
 >An earlier draft carried an eighteenth axis, the **monetary supply schedule** (210,000-block
-> halving, 21-million cap). It qualifies under neither class: no descendant has ever changed it,
+> halving, 21-million cap). It qualifies under neither class: no descendant has changed it,
 > and no early reference specifies it. **The engine's own class validator caught this within a
 > minute of the rule being written.** Its presence had been an unstated judgement that the
 > 21-million cap is too famous to omit — and there is no principled reason it was included while,
@@ -262,10 +262,10 @@ ever changed it. **2 axes: the initial block subsidy and the target block spacin
 > claim it was fixed before the analysis began — Section 2 records that it was not, and why.**
 The engine validates that the declared classes are **consistent with the frozen states** — a
 class-(ii) axis must be one on which every profile agrees *and* which an early reference specifies —
-**and the validator fails if a cell edit ever breaks that.** What it cannot check is the historical
-*never changed* condition, which is a separately sourced assertion: **the single-state schema cannot
+**and the validator fails if a cell edit breaks that.** What it cannot check is the historical
+*unchanged* condition, which is a separately sourced assertion: **the single-state schema cannot
 derive it**, for the same reason Section 4.1 gives — a chain that changed a rule and later restored
-it is indistinguishable, at the freeze, from one that never touched it.
+it is indistinguishable, at the freeze, from one that did not touch it.
 The enumeration yields 19 axes (Table 2), spanning best-chain selection, the block-size rule, the
 script opcode vocabulary and its numeric/element limits, signature encoding and scheme, the
 output-value range check, P2SH, segwit, Taproot, timelock opcodes, the difficulty algorithm, replay
@@ -399,7 +399,7 @@ denies.
 # 4. Results
 
 : Mismatch rate and coverage for every reference$\rightarrow$chain pair, evaluated 1 August 2026.
-The mismatch rate is *undefined* where coverage is zero; a rate must never be read without the
+The mismatch rate is *undefined* where coverage is zero; a rate is not to be read without the
 coverage beside it.
 
 | reference | BTC | BCH | BSV | XEC | BTG |
@@ -432,7 +432,7 @@ Regenerated by `figures/mismatch_heatmap.py` from the same engine that produces 
 
 ## 4.1 Why BSV is lowest, measured rather than asserted
 
-A chain can agree with the reference for two very different reasons: it never changed the rule
+A chain can agree with the reference for two very different reasons: it did not change the rule
 (**retention**), or it adopted a change and later removed it (**restoration**). A bare mismatch rate
 cannot tell these apart, and the distinction is the whole of the caution this method must carry. We
 therefore report it as a count.
@@ -455,7 +455,7 @@ vocabulary and the element-size limit (both restricted by the August 2010 commit
 Genesis); and the **timelock opcodes** — CLTV and CSV reached its lineage through BIP65 and BIP112 in
 2015--16 and Genesis sunsets them, the specification stating that the operations *revert to NOPs, which
 have no effect*, which is v0.1.0's value. **Its other 7 agreements — including the absence of
-segwit, Taproot and CTOR — are retentions: BSV forked from Bitcoin Cash in November 2018 and never
+segwit, Taproot and CTOR — are retentions: BSV forked from Bitcoin Cash in November 2018 and has not
 held any of them.**
 
 $\Rightarrow$ The caution is therefore narrower than a bare mismatch rate suggests, and sharper:
@@ -468,7 +468,7 @@ preserving original ones, and it is not a verdict of authenticity, continuity, o
 > citing a chain's own upgrade specification marks a rule that chain legislated. **That inference is
 > false and the numbers it produced were wrong** — it reported BSV at 7 restorations and gave BCH and
 >XEC two apiece. A citation records where a value is *documented*, not what the chain previously
-> did: BCH forked three weeks before segwit activated and so never had segwit to remove, yet its
+> did: BCH forked three weeks before segwit activated and so did not have segwit to remove, yet its
 > segwit cell cites the fork specification. **The table is now an explicit list in which every
 > restoration names the change that introduced the rule and the change that removed it**, and
 > nothing is inferred. *A citation is not a history.*
@@ -698,7 +698,7 @@ cells — 9 of them: **segwit on BCH, BSV and XEC** (Bitcoin Gold forked after
 segwit activated and therefore has it), **Taproot on BCH, BSV, XEC and BTG**, and **the Schnorr
 signature scheme on BSV and BTG** — cannot be confirmed by any
 audit, because **no document establishes that a rule is absent**. They rest on chronology, a fork
-cannot remove what it never had, together with the absence of any upgrade specification introducing
+cannot remove what it did not have, together with the absence of any upgrade specification introducing
 them. This is weaker than a positive citation, it is not remediable by further searching, and it is
 reported here rather than left for a reader to infer from the fact that the audit did not cover it.
 

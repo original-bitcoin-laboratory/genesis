@@ -152,4 +152,4 @@ python tools/build_wasm_verifier.py
 The consensus meaning is the lab's (faithful to v0.1); this is a **NEW-EXP** re-implementation in a
 second language, useful precisely because a second-language port that agrees byte-for-byte — down to
 the lenient, high-S-accepting signature behavior — is extra evidence the byte formats, hashing, sighash, and
-value rules are pinned down. A tool, never authority ([AUTHORITY.md](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)). **Not money.**
+value rules are pinned down. A tool, not authority ([AUTHORITY.md](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)). **Not money.**

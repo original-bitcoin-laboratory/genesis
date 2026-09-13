@@ -12,7 +12,7 @@ The reconstructions faithfully carry the origin's *missing* guardrails (no `Mone
 check, no block‑size cap, no script element/op/stack limits, unbounded arithmetic — see
 [`common/conformance/CONSENSUS_SURFACE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/CONSENSUS_SURFACE.md)).
 A review should **confirm the node stays valueless and un‑drifted**, not recommend adding the 2010
-guardrails — adding them would make it no longer the origin. If value were ever attached (it must not
+guardrails — adding them would make it no longer the origin. If value were attached (it must not
 be), the review scope changes entirely.
 
 ## In scope
@@ -46,7 +46,7 @@ reconstructions, so their consensus rule is the lenient one.
   scope to "fix" (it would be a drift): [`QUANTUM_EXPOSURE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/QUANTUM_EXPOSURE.md).
 
 ### 3. Transport robustness (adversarial input)
-- **Parser panic‑safety** — untrusted network bytes must never hang or panic the node. Both nodes now
+- **Parser panic‑safety** — untrusted network bytes must not hang or panic the node. Both nodes now
   gate every untrusted path: the Rust sync has bounds‑safe `well_formed_block` **and** `well_formed_tx`
   gates before the indexing parsers (`validator-rs/src/net.rs`); the Python `netnode` parsers bound
   every wire count to the actual payload length before looping/allocating. An internal robustness pass

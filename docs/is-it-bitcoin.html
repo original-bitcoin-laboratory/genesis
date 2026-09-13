@@ -186,7 +186,7 @@
     <p><b>What's fact, what's convention.</b> Fact (needs no convention): the <b>design</b> (the whitepaper
       predicate) and the <b>origin artifacts</b> — the hash‑verified January 2009 source and genesis
       <code>000000000019d668…</code>. Convention: which live network deserves the bare word, which codebase
-      defines “the” unit, and therefore the bitcoin↔satoshi ratio itself. This tool never smuggles the
+      defines “the” unit, and therefore the bitcoin↔satoshi ratio itself. This tool does not smuggle the
       second in as the first.</p>
     <div class="tags"><span>grounded: whitepaper + Jan 2009 source [S]</span><span>you supply the facts; it maps the senses</span><span>not money · no chain privileged</span></div>
   </div>
@@ -289,7 +289,7 @@ function vCandidate(){                              // a Bitcoin — the "a, not
   if(unk("pow")) return {b:"Indeterminate", c:"ind", why:"Set the proof‑of‑work property first."};
   if(is("genesis")) return {b:"Yes — a continuity candidate", c:"cand", why:
     "It traces to genesis <code>000000000019d668…</code> — a branch of the launched chain. Its claim is "+
-    "<em>“I am what that chain became.”</em> A real candidacy — but <b>a</b> Bitcoin, never <b>the</b> "+
+    "<em>“I am what that chain became.”</em> A real candidacy — but <b>a</b> Bitcoin, not <b>the</b> "+
     "Bitcoin: which branch you privilege is convention. (RELEASE_AS_CANDIDATES)"};
   if(is("faithful")) return {b:"Yes — a fidelity candidate", c:"cand", why:
     "A new instance (its own genesis) that re‑realizes the origin design <em>undrifted</em>. Its claim is "+
@@ -305,7 +305,7 @@ function vCandidate(){                              // a Bitcoin — the "a, not
     "Of the design, not of the launched chain."};
 }
 
-function vThe(){                                    // *the* Bitcoin — always convention
+function vThe(){                                    // *the* Bitcoin — convention
   let extra="";
   if(is("priced") && is("genesis")) extra=
     " In practice, what a market or a regulation calls “Bitcoin” is the sense‑6 <em>asset</em> on the "+
@@ -347,9 +347,9 @@ function bottomLine(){
   if(no("pow") && !is("ledger"))
     return "In short: <b>outside Bitcoin‑the‑design</b> — no proof‑of‑work ledger to attach the predicate to.";
   if(is("ledger") && is("pow") && is("genesis"))
-    return "In short: a <b>continuity candidate</b> for <em>a</em> Bitcoin — a branch of the launched chain; never <em>the</em> Bitcoin, which is convention.";
+    return "In short: a <b>continuity candidate</b> for <em>a</em> Bitcoin — a branch of the launched chain; not <em>the</em> Bitcoin, which is convention.";
   if(is("ledger") && is("pow") && is("faithful"))
-    return "In short: a <b>fidelity candidate</b> for <em>a</em> Bitcoin — the origin design re‑realized; never <em>the</em> Bitcoin, which is convention.";
+    return "In short: a <b>fidelity candidate</b> for <em>a</em> Bitcoin — the origin design re‑realized; not <em>the</em> Bitcoin, which is convention.";
   if(is("ledger") && is("pow")){
     if(no("genesis") && no("faithful"))
       return "In short: an <b>instance of the Bitcoin design</b> (the genus), like an altcoin — not the genesis instance.";
@@ -407,7 +407,7 @@ function syncSegs(){
 // Count the CONCLUSION people reach, and only when it changes. render() runs on every
 // keystroke and toggle, so counting each call would drown the dashboard in noise and tell
 // us nothing; counting each distinct verdict tells us which of the four senses of "Bitcoin"
-// readers actually end up in. The subject's NAME is never sent -- it is free text a visitor
+// readers actually end up in. The subject's NAME is not sent -- it is free text a visitor
 // typed, so it is exactly the thing that must not leave the page.
 let _lastVerdict=null;
 function countVerdict(html){

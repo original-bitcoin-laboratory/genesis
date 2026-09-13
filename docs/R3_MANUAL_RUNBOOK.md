@@ -11,7 +11,7 @@ node writes to **`%APPDATA%\Bitcoin\`** (`main.cpp:1353`). On an isolated chain 
 the hardcoded genesis, difficulty is 1 → blocks are CPU-mineable in seconds/minutes.
 
 > Safety: isolated network only, **no internet**, disposable disks, snapshots, no
-> real keys/funds. Mined coins are laboratory coins on an isolated branch — never
+> real keys/funds. Mined coins are laboratory coins on an isolated branch — not
 > the historical ledger.
 
 ---
@@ -91,7 +91,7 @@ on the host under:
 lab/genesis/r3-evidence/<run>/A/…       # from VM-A   (e.g. run = 2026-07-27-run1)
 lab/genesis/r3-evidence/<run>/B/…       # from VM-B
 ```
-(`r3-evidence/` is gitignored — the bytes never get committed.)
+(`r3-evidence/` is gitignored — the bytes are not committed.)
 
 ## Phase 5 — Turn it into committed findings
 

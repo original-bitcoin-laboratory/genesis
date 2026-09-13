@@ -73,7 +73,7 @@ It took two flags, both found by building twice and comparing.
     and __TIME__, and the build pins it to 1785781375: 2026-08-03 18:22:55 UTC, this chain's own
     genesis. The string inside the binary reads "Aug  3 2026" / "18:22:55".
 
-Not one instruction ever differed. Not a symbol, not a section, not an offset, not a byte of any of
+Not one instruction differed. Not a symbol, not a section, not an offset, not a byte of any of
 the four statically linked period libraries. Two machines hours apart emitted identical machine code
 and disagreed only about what time it was.
 

@@ -9,7 +9,7 @@ whole machine: wallet files, shell history, SSH keys, browser state, saved crede
 deleted-but-not-overwritten disk blocks. **A published image with a private key inside it cannot be
 recalled** — it will be mirrored within hours and content-addressed for as long as anyone keeps a copy.
 
-**So the order is: audit, then hash, then sign, then decide about distribution. Never the reverse.**
+**So the order is: audit, then hash, then sign, then decide about distribution. Not the reverse.**
 
 ---
 
@@ -26,7 +26,7 @@ obl-r4-nodes.ova   23.8 GiB   sha256 5C37A79ED31F53BD4D6AB6D5C645777C0869B309C4A
 
 > **"Both guests carry `wallet.dat`, including the keys to the coins spent in tx `f4309c`… the
 > appliance is key material and is handled as such: it stays on that machine or on encrypted media,
-> never in a repository, never in a cloud sync, never published."**
+> not in a repository, not in a cloud sync, not published."**
 
 **That is the correct call and it stands.** This checklist was drafted as though publishing *that*
 image were the goal. It is not, and could not be — **a VM containing wallet keys is a secret, and no
@@ -36,19 +36,19 @@ amount of hashing makes a secret publishable.**
 
 ```
 obl-r4-nodes.ova     the RESEARCH appliance -- preserves the ability to RE-RUN the machine.
-                     Contains wallets. NEVER published. Already hashed and recorded.
+                     Contains wallets. NOT published. Already hashed and recorded.
 a clean appliance    the REPRODUCIBILITY artifact -- a fresh guest with the binary, the
   (not yet built)    isolated network and the chain data, and NO WALLET AT ALL, built for
                      the purpose of being handed to strangers.
 ```
 
 **Everything below applies to that second appliance when it is built.** The hash and manifest steps
-also apply to the first — and are already done — because a hash on record makes any copy that ever
-surfaces checkable, whether or not it is ever meant to circulate.
+also apply to the first — and are already done — because a hash on record makes any copy that
+surfaces checkable, whether or not it is meant to circulate.
 
 ⚠️ **And the record names the deeper reason the research appliance must stay private:** *"it is also
 the only artifact that could later prove WHO ran the experiment. Anyone can copy a block file; only
-the key-holder can sign."* **Publishing it would give that away permanently.**
+the key-holder can sign."* **Publishing it would give that away for good.**
 
 ---
 
@@ -88,8 +88,8 @@ FREE SPACE       deleted files persist in unallocated blocks. Zero-fill free spa
 sha256sum obl-jan09-node.ova
 ```
 
-**Publish that value in the repository even if the image itself never ships.** It costs nothing and
-it means any copy that ever circulates — from a drive, a torrent, a colleague — is checkable against
+**Publish that value in the repository even if the image itself does not ship.** It costs nothing and
+it means any copy that circulates — from a drive, a torrent, a colleague — is checkable against
 a value we signed. **An unhashed image in circulation is worse than no image.**
 
 ## STEP 2 — Manifest what is inside
@@ -139,8 +139,8 @@ on request      publish the hash and the manifest; hand the image to anyone who 
 
 > **Order of operations: STEPS 0–3 before any image leaves the machine; STEP 4 is decided per image.** The audit, the hash, the manifest and the
 > signature are the whole of the value that does not depend on bandwidth. **Publishing the hash
-> without the image is a real improvement; publishing the image without the audit is a permanent
-> mistake.**
+> without the image is a real improvement; publishing the image without the audit is a mistake
+> with no undo.**
 
 ---
 

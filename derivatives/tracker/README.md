@@ -86,11 +86,11 @@ date)` enumerates all axis subsets and reports the fraction in which the orderin
 `subset_lattice(ref, date)` shows which chains' differing‑axis sets contain which. When one
 differing set is a subset of another the ordering holds in **every** subset (structurally) — e.g.
 from the `v0.1.0` origin, BSV's differing set is a subset of BTC's, so "BSV at least as close as
-BTC" holds in 2047/2047 axis subsets. Absolute distances are not so robust and are always reported
+BTC" holds in 2047/2047 axis subsets. Absolute distances are not so robust and are reported
 with their `(origin, axis‑set)`.
 
 ## Boundary
 
 MODEL; v0.1.0/nov08 axis‑values source‑verified, chain event dates documented; distance is
 neutral displacement from a **chosen** reference, **not** identity ("which is the real Bitcoin"
-is convention) and **not** quality. A tool, never authority (`AUTHORITY.md`).
+is convention) and **not** quality. A tool, not authority (`AUTHORITY.md`).

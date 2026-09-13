@@ -9,7 +9,7 @@ to every other document:
 > **A SHA-256 is not a reproduction.** We publish findings *about* documents — hashes, sizes, page
 > counts, metadata, provenance, searched negatives — and we point at sources other people published.
 
-The whitepaper carries **no licence and no copyright notice**, and its author has never been
+The whitepaper carries **no licence and no copyright notice**, and its author has not been
 identified. This laboratory does not redistribute it; it identifies it by hash and points at copies others publish.
 **Serving a copy of a work whose owner we cannot name, while telling everyone else that a hash beats
 a copy, was the weaker position.** So we stopped.

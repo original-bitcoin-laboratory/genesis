@@ -14,13 +14,13 @@ There are two binaries worth replaying, and they answer different questions:
 Same consensus code in both. Where their verdicts differ on the DER probes, that difference is a
 consensus-relevant fact about OpenSSL versions and belongs in `RELEASE.txt`.
 
-## The one rule: never replay against the live 2026 node
+## The one rule: do not replay against the live 2026 node
 
 The replay mines ~112 blocks in an hour, pays their coinbases to `OP_TRUE`, and spends test outputs.
-On the public 2026 chain that would break the chain's stated record (no coin ever spent, every coin
+On the public 2026 chain that would break the chain's stated record (no coin spent, every coin
 held by the project's keys) and distort its block tempo. **Replay only against an isolated clone**
 of the VM, on a host-only network with no route to the internet or to the VPS seed. The clone's chain
-forks privately from the public tip at clone time; the public chain never sees any of it.
+forks privately from the public tip at clone time; the public chain does not see any of it.
 
 ## A. Release build — clone the mining VM and isolate it
 
@@ -72,7 +72,7 @@ Everything below is on the mini-PC host, in PowerShell, except the two steps mar
     python replay\grade_replay.py replay\results\2026-09-DD-release\results.json --log replay\results\2026-09-DD-release\clone-debug.log
     ```
 11. Bring the results folder back (results.json, replay.log, state.json, the log, the block file, the binary's
-    hash and RELEASE.txt). The clone can be deleted afterwards or kept as evidence; the public VM was never touched.
+    hash and RELEASE.txt). The clone can be deleted afterwards or kept as evidence; the public VM was not touched.
 
 ## B. The 2009 binary — import the appliance
 

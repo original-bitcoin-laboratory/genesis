@@ -6,7 +6,7 @@ registrar change that flips it to a fully dynamic crawling seed when the network
 ## The decision (today: static A; crawler live and ready)
 
 `seed.bitcoin-lab.org` currently resolves — via ordinary **static A records at the registrar** — to
-**both** always-on anchors:
+**both** live anchors:
 
 ```
 seed.bitcoin-lab.org  ->  anchor A , anchor B   (round-robin; `dig seed.bitcoin-lab.org` returns the current addresses)
@@ -55,13 +55,13 @@ fully dynamic seed. In the registrar's zone editor for bitcoin-lab.org:
    - host `seed`, value `ns2.bitcoin-lab.org.`
 
 Propagation is minutes-to-hours. After it takes effect, any resolver querying `seed.bitcoin-lab.org`
-is answered by the live crawlers (either nameserver), so `--connect seed.bitcoin-lab.org:18009` always
+is answered by the live crawlers (either nameserver), so `--connect seed.bitcoin-lab.org:18009`
 dials a currently reachable peer — no hardcoded IP. **To revert:** delete the `NS` + `ns1`/`ns2` records
 and re-add the static `A` records for `seed`.
 
 ## Why this is the honest call
 
 Everything durable about the lab is reproducible from source; a live network's last mile is **other
-people running nodes**. The seed is *offered infrastructure, never authority* — anyone can run their
+people running nodes**. The seed is *offered infrastructure, not authority* — anyone can run their
 own, or hardcode peers. Static-until-diverse keeps bootstrap dependable now; two redundant crawlers are
 stood up and proven, so activation is a handful of registrar records, not a project. **Not money.**

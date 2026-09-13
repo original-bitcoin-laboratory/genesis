@@ -39,7 +39,7 @@ python -m netnode --chain jan09x --datadir ./data-b --connect <A_PUBLIC_IP>:1800
 ```
 
 B handshakes, pulls the chain over TCP, stays in sync as A mines, and learns any other peers A
-knows through `addr` gossip — you only ever need **one** reachable address to mesh in.
+knows through `addr` gossip — you only need **one** reachable address to mesh in.
 
 ## The chains
 
@@ -67,7 +67,7 @@ or live Bitcoin chain.
 | `--mine` | produce blocks |
 | `--min-difficulty NBITS` | network difficulty floor as compact‑nBits hex (e.g. `0x1f00ffff`), harder than the easy genesis so a live network requires real work. **All nodes on a network must use the same value.** |
 | `--wallet` | enable an experimental wallet in the datadir; a mining node earns its coinbase to it |
-| `--rpc [HOST:]PORT` | start a **localhost** control interface on this port (see below). Loopback only, no auth — never expose it |
+| `--rpc [HOST:]PORT` | start a **localhost** control interface on this port (see below). Loopback only, no auth — do not expose it |
 | `--version` | print version and exit |
 
 ## Running a public seed
@@ -142,6 +142,6 @@ for anything of value. **Not money.** (The faithful wallet model this builds on:
 
 ## Remember
 
-It's a research microscope, not a currency. If it ever gets treated as money on unaudited,
+It's a research microscope, not a currency. If it gets treated as money on unaudited,
 easy‑difficulty experimental code, people get hurt — don't let that happen. See
 [`SECURITY.md`](SECURITY.md) and [`../../docs/PUBLIC_TESTNET_SCOPE.md`](../../docs/PUBLIC_TESTNET_SCOPE.md).

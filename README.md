@@ -23,7 +23,7 @@ edition and its differential.)
 python scripts/verify-artifacts.py    # hash-check against manifests/EXPECTED_CHECKSUMS.json
 ```
 
-Archives land in `artifacts/jan09/` (gitignored) and are never edited. Verified
+Archives land in `artifacts/jan09/` (gitignored) and are not edited. Verified
 values: MD5/SHA-1 (SNI catalogue) plus SHA-256 matching the 2012 Hal Finney
 recovery thread — `bitcoin-0.1.0.rar` = `8b17eb9a…`, `bitcoin-0.1.0.tgz` =
 `ce9da465…`.
@@ -51,7 +51,7 @@ Which rule posture a run uses — the **faithful** reconstruction (v0.1 as writt
 `OP_NOTEQUAL` *token* to `OP_EQUAL OP_NOT` as a model-level macro (v0.1 has no such enum value or wire
 byte, so this is not a reopened on-wire opcode) — is declared
 and machine‑verified in [`derivatives/profiles/`](derivatives/profiles/): each profile's vocabulary is
-checked against the source opcode inventory and the live engine, so the distinction can never silently
+checked against the source opcode inventory and the live engine, so the distinction cannot silently
 drift.
 
 **Requirements.** Python 3.10+ with `cryptography` and `pytest` (the faithful crypto + test runner); `bitcoinx` is optional and
@@ -105,7 +105,7 @@ check, not full independence — one author, Python‑generated vectors): a Pyth
 libsecp256k1 verifier, a DNS seed) and a standalone Rust node
 ([`derivatives/validator-rs/`](derivatives/validator-rs/), 30 tests — **both** chains).
 
-Two live, always‑on anchors run both reconstructions — **JAN09‑X** (`seed.bitcoin-lab.org:18009`) and
+Two live anchors run both reconstructions — **JAN09‑X** (`seed.bitcoin-lab.org:18009`) and
 **NOV08‑X** (`seed.bitcoin-lab.org:18008`, its own genesis + leading‑zero‑bits PoW). Join either and
 watch your node sync + independently re‑validate every block:
 
@@ -188,9 +188,9 @@ derivatives/  all modified / instrumented / modernized code
 
 ## Boundaries
 
-- `artifacts/` holds acquired historical bytes and is never edited.
+- `artifacts/` holds acquired historical bytes and is not edited.
 - `derivatives/` holds every patch, port, harness, UI, or experiment; a
-  derivative is never described as canonical original code.
+  derivative is not described as canonical original code.
 - The program-wide roadmap lives in the lab umbrella (`common/ROADMAP.md`);
   see `docs/PROJECT_CHARTER.md` for method and evidence rules.
 

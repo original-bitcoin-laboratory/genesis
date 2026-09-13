@@ -12,7 +12,7 @@ check, no block‑size cap, no script element/op/stack limits, unbounded arithme
 On a **value‑bearing** chain those are exploitable; on a **non‑monetary** chain they are harmless
 research curiosities. **"Nothing disabled" is safe only because it is "not money."** Attaching
 value would force adding the 2010 guardrails — at which point it stops being the undrifted origin.
-**So: never attach value, never present it as money.** That is the security boundary.
+**So: do not attach value; do not present it as money.** That is the security boundary.
 
 ## What *is* defended (Stages 1–4 + full‑node core)
 
@@ -20,7 +20,7 @@ value would force adding the 2010 guardrails — at which point it stops being t
   scoring → a peer that sends garbage, oversize, or bad‑magic frames is dropped. Every wire count
   (`inv` / `getblocks` / `addr` / tx‑input) is **bounded to the actual payload** before it drives a
   loop or allocation, and untrusted bytes pass a bounds‑safe gate before any indexing parser, so a
-  malformed message drops the **peer, never the node** (`wire.py`, `livenode.py`; `net.rs`
+  malformed message drops the **peer, not the node** (`wire.py`, `livenode.py`; `net.rs`
   `well_formed_block` / `well_formed_tx`). See the internal robustness pass in
   [`../../docs/AUDIT.md`](../../docs/AUDIT.md).
 - **Difficulty**: a block's `nBits` must equal the expected retarget for its parent — checked on
@@ -33,14 +33,14 @@ value would force adding the 2010 guardrails — at which point it stops being t
 - **Validated UTXO chainstate** (`chainstate.py`), the **sole authority** for what the node serves
   and mines: a UTXO set with reorg‑safe connect/disconnect (undo) enforcing **no double‑spends,
   script satisfaction (VerifySignature), no inflation, coinbase maturity, and the coinbase‑value
-  rule with fees** — a PoW‑valid but tx‑invalid block is flagged and **never served, mined on, or
+  rule with fees** — a PoW‑valid but tx‑invalid block is flagged and **not served, mined on, or
   followed**, and a reorg to an invalid branch is **aborted and the prior chain restored**.
 - **Mempool** (`mempool.py`): relayed `tx` messages are fully validated against the UTXO and pooled
   parents before being accepted or re‑broadcast — an invalid or conflicting transaction is dropped,
   not relayed. The pool and the **orphan buffer** (txs that arrive before their parent) are both
   **bounded**, and a full pool uses **fee‑rate eviction** (a cheaper newcomer is refused; a dearer
   one evicts the cheapest childless entry). Consensus is still re‑checked when the block connects,
-  so the mempool can only *avoid* relaying/mining bad txs, never *admit* one.
+  so the mempool can only *avoid* relaying/mining bad txs, not *admit* one.
 - **Persistence**: the block store is fsync'd and tolerates a crash‑truncated tail.
 - **Resource bounds**: inbound connections are capped, the gossiped peer table is bounded, the
   mempool is size‑capped, and a per‑peer message **rate limit** drops flooding peers — basic
@@ -77,13 +77,13 @@ value would force adding the 2010 guardrails — at which point it stops being t
 - **Local trust of the datadir.** The block store isn't integrity‑signed; a tampered datadir is
   not defended against.
 - **The RPC has no authentication, and the wallet is not a secure key store.** The control
-  interface trusts anything that can reach its loopback port — **never expose it** (no bind to a
+  interface trusts anything that can reach its loopback port — **do not expose it** (no bind to a
   public interface, no port‑forward, no reverse proxy). Wallet keys are private scalars stored in
   plaintext (`<datadir>/wallet.json`), unencrypted — appropriate for an experimental, valueless
   chain, **not** for protecting anything of value. There is no key encryption, no HD derivation, no
   watch‑only mode, and no backup discipline beyond copying the file.
 
-## What a real security review must cover before *any* value is ever attached
+## What a real security review must cover before *any* value is attached
 
 Full transaction/script/value validation; difficulty as a validated consensus rule on **every**
 path (incl. orphans/reorgs) at real (non‑easy) difficulty; eclipse/Sybil/DoS resistance and peer

@@ -114,7 +114,7 @@ reconstruction.**
    engineered. The shipping docs for this rung: [`ANNOUNCE.md`](ANNOUNCE.md) (the
    operator/seed invitation), [`AUDIT_SCOPE.md`](AUDIT_SCOPE.md) (what an independent reviewer should
    examine), and [`RELEASE_SIGNING.md`](RELEASE_SIGNING.md) (reproducible, GPG‑signed releases).
-6. *(Only if ever justified)* a faster node. ✅ *started* — the dominant cost (signature
+6. *(Only if justified)* a faster node. ✅ *started* — the dominant cost (signature
    verification) is handled by the optional libsecp256k1 verifier, and a **complete Rust node**
    (`derivatives/validator-rs/`, 30 tests) — a byte‑for‑byte twin of the Python `netnode`: every
    consensus check (context‑free, stateful UTXO/value, the full v0.1 `EvalScript` interpreter, reorg +
@@ -123,8 +123,8 @@ reconstruction.**
 
 ## Non‑negotiable framing
 
-- **Experimental / educational, never money.** The coinbase already says so. No
-  premine, no sale, no "value," no promises. If value ever attaches to insecure
+- **Experimental / educational, not money.** The coinbase already says so. No
+  premine, no sale, no "value," no promises. If value attaches to insecure
   experimental code, people get hurt — don't let that happen.
 - **Security review before any public liveness.** MODEL code is not safe to expose;
   stage 1 is a rewrite for adversarial conditions, not a wrapper.
@@ -134,7 +134,7 @@ reconstruction.**
 ## The honest recommendation
 
 The **reproducible recipe** (`verify_genesis.py`) already gives you a durable, honest
-kind of permanence — anyone can re‑derive the exact genesis forever, with no node to
+kind of permanence — anyone can re‑derive the exact genesis, with no node to
 maintain and no way to mislead. A live testnet adds *liveness* but also real
 obligations (security, maintenance, and the framing above) and lasts only
 if strangers choose to run it. Do stage 1–2 if you want the technical satisfaction of two

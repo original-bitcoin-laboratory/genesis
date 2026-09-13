@@ -54,4 +54,4 @@ python -m pytest       # 12 passed
 ## Boundary
 
 MODEL; line‑for‑line port of the v0.1 rules; not a live‑exploit claim (these are the rules the
-origin *had*). A tool, never authority (`common/AUTHORITY.md`).
+origin *had*). A tool, not authority (`common/AUTHORITY.md`).

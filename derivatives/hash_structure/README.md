@@ -56,6 +56,6 @@ python -m pytest           # 5 passed
 ## Boundary
 
 MODEL / pure computation; no chain privileged; not a break claim (SHA-256 is clean NUMS, the merkle
-ambiguity is defended by rejecting 64-byte txs, the 2⁸⁰ margin is far off). A tool, never authority
+ambiguity is defended by rejecting 64-byte txs, the 2⁸⁰ margin is far off). A tool, not authority
 (`common/AUTHORITY.md`). Neutral write-up in
 [`common/conformance/HASH_STRUCTURE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/HASH_STRUCTURE.md).

@@ -81,5 +81,5 @@ python -m pytest            # 8 passed
 
 MODEL; pure-integer derivations from the published SEC2 / libsecp256k1 constants; no chain privileged;
 not a break or backdoor claim (the endomorphism is a ~0.79-bit tax, the trust atom is benign after
-15+ years). It is a *tool*, never authority (`common/AUTHORITY.md`). See the neutral write-up in
+15+ years). It is a *tool*, not authority (`common/AUTHORITY.md`). See the neutral write-up in
 [`common/conformance/CURVE_STRUCTURE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/CURVE_STRUCTURE.md).

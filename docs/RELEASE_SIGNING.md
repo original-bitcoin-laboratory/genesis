@@ -4,7 +4,7 @@
 **wasn't tampered with**. They do **not** — and cannot — prove a chain is "the real Bitcoin" or that
 it is money; nothing does. This is authenticity, not authority. **Not money.**
 
-> This uses **your** GPG key. Generating and safeguarding that key is yours to do — it is never
+> This uses **your** GPG key. Generating and safeguarding that key is yours to do — it is not
 > managed for you. The key below is the laboratory's release key; anyone reusing this procedure substitutes their own.
 
 ## 0. One‑time: have a signing key
@@ -111,6 +111,6 @@ counter-signature nobody dated is one a forger could also have made.**
 
 - A valid signature proves the build came from **you** and is **unmodified**. That's all.
 - The **durable** guarantee isn't the signature — it's the **reproducible recipe**: `verify_genesis`
-  lets anyone re‑derive the exact genesis forever, with no key and no node to trust. The signature
+  lets anyone re‑derive the exact genesis, with no key and no node to trust. The signature
   authenticates *a distribution*; the recipe authenticates *the artifact*.
 - Nothing here — not a signature, not a tag — makes the chain money or "the real Bitcoin." **Not money.**

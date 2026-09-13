@@ -42,15 +42,15 @@ digests the paper prints against bytes a stranger can fetch.
 > Reviewer #1 noticed that `audit_descendants.py` and `audit_btc.py` still use the unpinned idiom
 > the engine was repaired for. **It is inert today**: `.gitattributes` sets `* -text`, so the CRLF
 > bytes those Windows runs produced are pinned in the blobs and every cloner on every platform
-> receives the identical bytes that were hashed. The ledgers were never regenerable anyway — each
+> receives the identical bytes that were hashed. The ledgers were not regenerable anyway — each
 > embeds a run timestamp.
 >
 > ⛔ **And fixing it now would be actively wrong.** Editing either script changes its SHA-256, and
 > those two digests are printed in the manuscript, recorded in the Zenodo description and frozen
 > in a published archive. **A repair that invalidates the artifact it is meant to protect is not a
-> repair.** ⇒ The forward-looking consequence is recorded instead: *if those audits are ever
+> repair.** ⇒ The forward-looking consequence is recorded instead: *if those audits are
 > re-run from a Linux host, the ledger digests will move for a line-ending reason on top of the
-> timestamp reason.* Pin the writers in the same commit that re-runs them, never before.
+> timestamp reason.* Pin the writers in the same commit that re-runs them, not before.
 
 - **Independently confirmed this round, from the published archive rather than the working tree:**
   the served zip is 892,677 B / `01adcb09…cd3e`; all twelve digests re-hash correctly out of it;
@@ -96,7 +96,7 @@ broken."* Two optional items were taken, one of them not as proposed.
 > ⇒ **Know which side of a self-healing boundary your control is on, or you will conclude a gate is
 > stuck-green when it is merely being fed a repaired input.**
 
-- **The manifest is computed from the bytes about to be written, never from disk** — at that moment
+- **The manifest is computed from the bytes about to be written, not from disk** — at that moment
   the `.md` files are still the previous run's, the same trap that made the engine-output digests
   read a stale directory in round 16. Verified by round trip: recomputing from what was actually
   written reproduces the declared value.
@@ -134,14 +134,14 @@ only what the hashes establish.
   criteria, sources and confidence, so a citation-only correction moves the digest while every
   number holds. **This work has made exactly such corrections.**
   *"Every table is built from `comparison.json`"* -- a data-flow claim, and checking the code
-  settled it: `emit_tables` builds from in-memory state and never reads that file.
+  settled it: `emit_tables` builds from in-memory state and does not read that file.
 
 - **`test_M` gates the line-ending property, and proving it fires took three attempts.** Corrupting
   the file on disk proved nothing -- `test_B` re-runs the engine earlier in the suite and silently
   repaired it. **The only true control was breaking the ENGINE**, after which the byte check failed
   correctly. ⛔ *And the source check kept passing, because a bare substring search for the newline
   argument also matches the TABLES writer, which carries the same argument.* **A substring search
-  over a whole file answers "does this text exist somewhere", never "is this call correct".**
+  over a whole file answers "does this text exist somewhere", not "is this call correct".**
   Scoped to the `comparison.json` statement, both halves now fail together.
 
   ⚠️ **This entry was itself written through a shell heredoc that ate the escape** — the eighth
@@ -167,7 +167,7 @@ plus one visible typesetting defect.
   own.
   **The same source is right in one output format and wrong in the other**, so the fix belongs at
   the conversion — deleting it upstream would leave the markdown bibliography unlabelled.
-  ⛔ **No compile-time gate could ever have caught it: LaTeX is perfectly happy to set two
+  ⛔ **No compile-time gate could have caught it: LaTeX is perfectly happy to set two
   headings, and the log says nothing.** Found by a referee rasterising page 23.
   ⇒ Now gated twice — zero explicit `\section{References}` in the generated TeX, and **exactly one
   rendered heading read back out of the compiled PDF with `pdftotext`**. Both were exercised on a
@@ -219,12 +219,12 @@ tables/audit_btc.json            8 records   BTC 8                            7 
 axis BTG was added to expose. The sentence *"the 31 probes over 29 cells are the contents of these
 two files"* was true, and `test_L` had already verified it by counting.
 
-- **⛔ THE REAL DEFECT, which the counting could never see.** Section 7 said *"A third script,
+- **⛔ THE REAL DEFECT, which the counting could not see.** Section 7 said *"A third script,
   `audit_btg.py`, probes Bitcoin Gold's own `chainparams.cpp` for the 5 cells that distinguish
-  it."* **It does not, and never did.** `audit_btg.py` tests chain-selection criterion (2) — was
+  it."* **It does not, and did not.** `audit_btg.py` tests chain-selection criterion (2) — was
   BTG producing blocks at the freeze — and emits no citation ledger because it verifies no cell.
   Those five probes are run by `audit_descendants.py`. The engine splits them out **by chain**
-  (`r["chain"] == "BTG"`), never by script; the prose had read that split as a script boundary.
+  (`r["chain"] == "BTG"`), not by script; the prose had read that split as a script boundary.
   ★★ **The count was right, so every numeric gate passed, for rounds.**
 
 - **★★★ And the prescribed fix would have broken the number that was already correct.** Emitting
@@ -266,7 +266,7 @@ ambiguous, and it is a genuinely new class of objection.
 - **★★ Two digests moved and the paper gave no way to read the change.** `audit_descendants.py`
   and `audit_btc.py` changed between revisions 8 and 9. Two readings fit: *the scripts were
   reformatted and the results still hold* (true — it was the LF normalisation of Round 13), or
-  *the probes changed and the reported figures were never refreshed*. **Nothing in the manuscript
+  *the probes changed and the reported figures were not refreshed*. **Nothing in the manuscript
   distinguished them, and a hostile reader takes the second.** ⇒ *"The paper commits to what the
   code is, not to what it did."*
 
@@ -279,7 +279,7 @@ ambiguous, and it is a genuinely new class of objection.
   follow it; only a script digest moving means the code changed without a re-run, and the dates
   say so.
 
-- **Both new facts are computed, never typed.** The engine hashes the ledgers and lifts their
+- **Both new facts are computed, not typed.** The engine hashes the ledgers and lifts their
   `generated_utc` into `figures.json`, so they cannot go stale the way a hand-written digest would.
   No circularity: the ledgers are written by the audit scripts, not by the engine.
 
@@ -302,7 +302,7 @@ for two independent reasons.**
 
 - **⛔ D1 — the address contained none of the artifacts.** *Data and Code* stated the code and data
   were available at `github.com/original-bitcoin-laboratory/genesis`. That repository tracks none
-  of the four declared files, has never mentioned obl-metric, and its `paper-artifacts/` directory
+  of the four declared files, has not mentioned obl-metric, and its `paper-artifacts/` directory
   belongs to a different paper. All twelve repositories in the workspace were checked: **zero.**
   ⇒ The paper printed four full digests and said *"Any copy that does not hash to these is not the
   copy this paper reports on"* — pointing at a place with no copy to hash. **A commitment with no
@@ -326,7 +326,7 @@ for two independent reasons.**
   manuscript that lacks a digest `figures.json` declares.
 
 - Two checks downgraded from failure to **warning** where they genuinely cannot apply (no clone
-  visible / no nested `package/` inside the built package). **A check that always fails is a check
+  visible / no nested `package/` inside the built package). **A check that fails every time is a check
   the operator learns to skip** — which is how the defect it exists for gets through again.
 
 - R13-#2's optional wording adopted: *"the chain-selection criteria **were fixed before application
@@ -335,11 +335,11 @@ for two independent reasons.**
 > ### ★★★ WHY EVERY GATE WAS GREEN FOR THIRTEEN ROUNDS
 > `test_J` proved `package/` ships the declared bytes, and it passed every round. Every other check
 > compared local things to other local things: template to paper, package to figures.json, tex to
-> log. **The claim was about the outside world, and nothing in the harness ever looked outside.**
+> log. **The claim was about the outside world, and nothing in the harness looked outside.**
 > The referees could not see it either — they hold only the minimal three-file arXiv bundle, where
 > those bytes are absent *by design*, so their absence proves nothing. R13-#1 could see *"no DOI,
 > no commit hash"*; it could not see *"no files"*.
-> ⇒ **A green gate is evidence about what it measures, never about what it was assumed to cover.**
+> ⇒ **A green gate is evidence about what it measures, not about what it was assumed to cover.**
 > Now `test_K`.
 
 ## Round 4 (14 Aug 2026)

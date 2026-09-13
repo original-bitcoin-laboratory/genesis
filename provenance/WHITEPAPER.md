@@ -10,7 +10,7 @@ CANONICAL WHITEPAPER, 24 March 2009
   bytes   184,292        pages 9
 ```
 
-**Why.** The whitepaper carries no licence and no copyright notice, and its author has never been
+**Why.** The whitepaper carries no licence and no copyright notice, and its author has not been
 identified. This project's own rule is that **a SHA-256 is not a reproduction**: we publish facts
 about documents and point at sources others published. Serving a copy while saying that was the weaker
 position.
@@ -22,7 +22,7 @@ python verify/whitepaper_from_chain.py out.pdf    # carves it out of block 23000
 sha256sum out.pdf                                 # must equal b1674191…f4f553
 ```
 
-**That is a better source than this directory ever was** — it needs no website, no host, and no trust
+**That is a better source than this directory was** — it needs no website, no host, and no trust
 in us.
 
 See [`docs/WHITEPAPER.md`](../docs/WHITEPAPER.md) for every known version by hash, and

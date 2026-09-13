@@ -19,8 +19,8 @@ Reproduced **exactly** from `market.cpp` (pure algorithm):
 
 - `CUser::AddAtom` (market.cpp:109) — the flow‑through rule: incoming atoms collect in
   `vAtomsNew`; once `nFlowthroughRate = 2` (or nothing has flowed yet) a **randomly
-  chosen** atom moves to `vAtomsOut` to propagate; the **zero atom never propagates**;
-  **origin** atoms always do; duplicates are ignored.
+  chosen** atom moves to `vAtomsOut` to propagate; the **zero atom does not propagate**;
+  **origin** atoms do; duplicates are ignored.
 - `AddAtomsAndPropagate` (market.cpp:143) — a two‑frontier flood pushing newly‑out
   atoms along each user's `vLinksOut` (the links a review adds, market.cpp:219).
 

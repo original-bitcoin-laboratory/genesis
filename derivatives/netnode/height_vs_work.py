@@ -2,7 +2,7 @@
 
 The strongest original experiment (paper C4 / §6): under the faithful v0.1 rule, a TALLER branch of LOWER
 cumulative work displaces a SHORTER branch of HIGHER work — because the best-chain predicate is
-`nHeight > nBestHeight`, never summed work (`main.cpp`). This module runs that scenario once and records
+`nHeight > nBestHeight`, not summed work (`main.cpp`). This module runs that scenario once and records
 its actual state (branch heights, cumulative work, the selected tip, and the lab vs historical retarget
 horizons) so the result is a frozen, checkable artifact rather than a bare "the test passed".
 
@@ -99,7 +99,7 @@ def scenario() -> dict:
                                 "difficulty_floors_seen": sorted(f"{x:#010x}" for x in a_seen)},
         "challenger_has_less_work": bool(a_work < b_work),
         "selected_tip": "challenger_branch_A",
-        "selected_by": "height (nHeight > nBestHeight; never summed work)",
+        "selected_by": "height (nHeight > nBestHeight; not summed work)",
         "retarget_interval_used": NET_RETARGET_INTERVAL,       # lab substitution
         "historical_interval": HISTORICAL_INTERVAL,            # v0.1's 2016-block window
         "source_witness": "main.cpp best-chain update; test_chainstate.py::"

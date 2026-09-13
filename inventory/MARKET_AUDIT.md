@@ -74,7 +74,7 @@ via `AddAtomsAndPropagate(hashTo, …)` (`market.cpp:227`).
 graph; `CUser::AddAtom` (`market.cpp:109`) implements a **flow-through** rule
 (`nFlowthroughRate = 2`, `market.h:9`): incoming atoms accumulate in `vAtomsNew`, and
 once ≥2 (or none out yet) a **randomly chosen** one flows to `vAtomsOut` to propagate
-onward; the zero atom never propagates; origin atoms always do (`market.cpp:120-140`).
+onward; the zero atom does not propagate; origin atoms do (`market.cpp:120-140`).
 
 ## 5. Classification
 
@@ -89,7 +89,7 @@ onward; the zero atom never propagates; origin atoms always do (`market.cpp:120-
 | 7 | Review submission (UI) | **operational** | `ui.cpp:2787` | |
 | 8 | Review storage (`CReviewDB`) | **operational** | `db.h:280`, `db.cpp:474-480` | `ReadReviews/WriteReviews` |
 | 9 | Atom propagation through review links | **partial** | `market.cpp:143-190,225-228` | works, but seeded only by reviews |
-| 10 | **Origin-atom seeding** | **dormant** | `main.cpp:1226-1230` (commented) | new origin atoms never injected here |
+| 10 | **Origin-atom seeding** | **dormant** | `main.cpp:1226-1230` (commented) | new origin atoms not injected here |
 | 11 | Product add/update/delete notifications | **dormant** | `market.cpp:50-53,63` (commented) | UI callbacks stubbed |
 | 12 | `mapMyProducts` persistence | **partial/absent** | `market.cpp:20-21` (`"later figure out how these are persisted"`) | own listings are memory-only |
 
@@ -103,13 +103,13 @@ gaps are commented bootstrapping (10, 11) and an unfinished persistence TODO (12
   before "Bitcoin is just money" became the dominant framing. This corroborates the
   lab thesis that v0.1 is a *general financial predicate engine*, not only a currency.
 - **Off-chain by design.** Products/reviews/atoms live in a **broadcast + local DB**
-  layer (`CReviewDB`, `mapProducts`), never on the blockchain. Listings are **ephemeral**
+  layer (`CReviewDB`, `mapProducts`), not on the blockchain. Listings are **ephemeral**
   (die with the seller's connection). This is a flood pub/sub network with hop counts
   and subscriptions (`MSG_TABLE`/`MSG_PRODUCT`), distinct from block/tx relay.
 - **Privacy touch:** a fresh receiving key per buyer IP (`mapReuseKey`, `main.cpp:1983`).
 - **Reputation is a flow-through web of trust** (random-atom propagation, rate 2),
   bootstrapped by signed reviews — but the *origin* atom seeding is commented out
-  (`main.cpp:1230`), so the graph propagates trust it is never formally given a root
+  (`main.cpp:1230`), so the graph propagates trust it is not formally given a root
   for through that path.
 
 ## 7. Boundary & next

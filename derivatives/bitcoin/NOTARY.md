@@ -24,7 +24,7 @@ sha256  98b30c08a3ad44a011d64da5290011214193923c6fe927bfc7021297aaa658eb   PROVE
 Signed with `B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA` — the key named in
 `docs/RELEASE_SIGNING.md` and `docs/IDENTITY-MANIFEST.txt`, and the key that signs its releases.
 
-**To check, if the statement is ever produced:** `sha256sum` it and compare with the line above. A
+**To check, if the statement is produced:** `sha256sum` it and compare with the line above. A
 match means it is byte-identical to the document that existed on this date. Then
 `gpg --verify PROVENANCE-STATEMENT.txt.asc PROVENANCE-STATEMENT.txt`.
 
@@ -33,6 +33,6 @@ match means it is byte-identical to the document that existed on this date. Then
 Anchored: **that these bytes existed by this date**, and that they have not changed since.
 
 Not anchored, and not claimed: that the statement is *true*. It is testimony. What it attests to —
-that a particular agent was built and run — is a claim by its signer, exactly as such claims always
+that a particular agent was built and run — is a claim by its signer, as such claims
 are. The part of the lineage that needs no trust is the other one: the agent signs a challenge with
 the key the genesis pays to, and anyone can check that against the chain.

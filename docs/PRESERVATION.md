@@ -13,7 +13,7 @@ Four independent roots — Software Heritage, content-addressed pinning, Radicle
 |---|---|---|
 | **Software Heritage** | full history of all four OBL repositories, in the universal source-code archive | **live** — [`.github/workflows/preserve.yml`](../.github/workflows/preserve.yml) requests archival daily and on every release, no credentials required |
 | **Content-addressed pinning (IPFS)** | the signed release bundle + `SHA256SUMS`, addressable by content hash rather than by host | **live** — every release's signed assets are pinned; CIDs per release in the table below, cross-checkable against `SHA256SUMS`, so a gateway copy either matches or does not. **⚠ Ordering matters: `preserve.yml` fires on `release: published` and downloads the release's assets. Create the release WITH its assets attached** (`gh release create … file1 file2 …`) — a release created empty and populated afterwards makes the pin job run against nothing, log `no assets to download`, and exit green. That happened to `v0.6.0-experimental` on 9 Aug 2026; fixed by re-running the workflow once the assets were up. |
-| **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **live.** `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`), synced by hand at each release. **Synced 28 Aug 2026 for `v0.7.0-experimental`** — `main` at `5317d69`, synced with 6 seeds; the tag was pushed to Radicle in the same sync. *The node had been STOPPED and the mirror was 25 commits behind when this was checked on 28 Aug.* ⚠ **The node must be running to PUSH and ANNOUNCE — not to SERVE.** While it was stopped, `seed.radicle.garden` still answered for this RID at the 14 Aug head, and 12 nodes report seeding it. So a laptop node is sufficient and a dedicated always-on seed buys nothing here; what it does mean is that **an un-announced push reaches nobody**, so `rad sync --announce` and a public-seed head check belong in every release, not the assumption that a mirror keeps itself current. ⛔ `rad sync`'s default timeout is too short and reports `Synced with 0 seed(s)` on a healthy node — pass `--timeout 120sec` before believing it. *That sync also pushed `Bitcoin-v0.1.1`, `v0.1.2` and `v0.1.3`, which had **never reached Radicle before** — the tags were on GitHub only.* Replicated by 8 public seeds at the 5 Aug 2026 sync. Synced manually rather than from CI, deliberately: the identity key is unencrypted and stays off GitHub. |
+| **Radicle** | a peer-to-peer git mirror, so the repository has no single hosting dependency | **live.** `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg` (owned by `parthod0x`), synced by hand at each release. **Synced 28 Aug 2026 for `v0.7.0-experimental`** — `main` at `5317d69`, synced with 6 seeds; the tag was pushed to Radicle in the same sync. *The node had been STOPPED and the mirror was 25 commits behind when this was checked on 28 Aug.* ⚠ **The node must be running to PUSH and ANNOUNCE — not to SERVE.** While it was stopped, `seed.radicle.garden` still answered for this RID at the 14 Aug head, and 12 nodes report seeding it. So a laptop node is sufficient and a dedicated, continuously running seed buys nothing here; what it does mean is that **an un-announced push reaches nobody**, so `rad sync --announce` and a public-seed head check belong in every release, not the assumption that a mirror keeps itself current. ⛔ `rad sync`'s default timeout is too short and reports `Synced with 0 seed(s)` on a healthy node — pass `--timeout 120sec` before believing it. *That sync also pushed `Bitcoin-v0.1.1`, `v0.1.2` and `v0.1.3`, which had **not reached Radicle before** — the tags were on GitHub only.* Replicated by 8 public seeds at the 5 Aug 2026 sync. Synced manually rather than from CI, deliberately: the identity key is unencrypted and stays off GitHub. |
 
 
 ## The identity manifest — one signed answer for the whole periphery
@@ -40,7 +40,7 @@ IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against th
 > key** (§5) — published, with its succession certificate and both signatures, because *a successor
 > key that first appears after a break is indistinguishable from one a forger made*. The exclusion
 > clause under "What is in scope" was narrowed accordingly: it had been withholding a key on a rule whose own reason —
-> *never cite a hash a reader cannot fetch* — was better answered by publishing it.
+> *do not cite a hash a reader cannot fetch* — was better answered by publishing it.
 >
 > **Revision 1** was `11b3f7db…`, 11,394 B, **anchored in Bitcoin block 962049** (block hash
 > `00000000000000000000b1914635ada20cd0992856ebba4ba21b5ea4815eda1b`, merkle root
@@ -71,7 +71,7 @@ $ dig +short TXT bitcoinwhitepaper.online
 > is the wrong binding.** The fingerprint does not change; the manifest is expected to.
 >
 > **The record proves domain control, and nothing else.** It publishes a fingerprint, which is
-> already public — never a key. That is why `bitcoinwhitepaper.online` carries it while still hosting
+> already public — not a key. That is why `bitcoinwhitepaper.online` carries it while still hosting
 > no release material of any kind.
 >
 > ⚠️ **Verify against the authoritative nameservers, not a public resolver.** When these were set,
@@ -267,7 +267,7 @@ gateway — then check what comes back against `SHA256SUMS` from the release its
 > **3 of 4 `v0.1.2` objects came back and one needed three attempts** (two 28-second timeouts
 > first); several other public gateways were down or redirect-broken on the day.
 >
-> ⇒ **Content addressing proves what the bytes ARE. It never promises somebody is still serving
+> ⇒ **Content addressing proves what the bytes ARE. It does not promise that somebody is still serving
 > them.** The GitHub release is the primary copy and the pin is a mirror — stated in that order
 > because the reverse would be a claim this project cannot keep.
 
@@ -358,7 +358,7 @@ gh secret set RAD_PASSPHRASE --repo original-bitcoin-laboratory/genesis
 ```
 
 `RAD_KEYPAIR` is the OpenSSH private key base64-encoded onto one line; the passphrase is whatever protects it.
-Both live only in the offline backup and never in any repository.
+Both live only in the offline backup and not in any repository.
 
 **Why this is not run from CI.** The Radicle identity key is **unencrypted**, and it is the sole thing
 controlling `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg`. Whoever holds it can push to that repository as `parthod0x` --

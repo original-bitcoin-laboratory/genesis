@@ -19,7 +19,7 @@ the comparison is a computation anyone can re-derive rather than a judgement. En
 
 Three **references**: the 2008 whitepaper (design intent), the 15 November 2008 pre-release (a
 partial, source-bounded snapshot), and v0.1.0 (the January 2009 client, the only complete early
-ruleset). Four **chains** at a frozen date: **BTC, BCH, BSV, XEC**. Comparisons are always
+ruleset). Four **chains** at a frozen date: **BTC, BCH, BSV, XEC**. Comparisons run
 *reference → chain*.
 
 > **The label `v0.1.0` is retained deliberately.** The archive distributed as `bitcoin-0.1.0.rar` is
@@ -47,7 +47,7 @@ specifications — **they are excluded because the method cannot see them, not b
 unimportant**, and a reader who supplies such a record can add a column.
 
 ⚠️ **The abstract previously called these "large descendant chains" without defining "large".**
-Removed: **size was never the criterion, and using it would have made the population a popularity
+Removed: **size was not the criterion, and using it would have made the population a popularity
 judgement.**
 
 ## 3. Axis selection — two classes
@@ -58,7 +58,7 @@ excluded — we compare consensus behaviour, not code lineage.
 
 ```
 class i    changed on at least one included chain since January 2009           15 axes
-class ii   an early REFERENCE specifies it, and no descendant ever changed it    2 axes
+class ii   an early REFERENCE specifies it, and no descendant changed it    2 axes
            (initial block subsidy · target block spacing)
 ```
 
@@ -102,7 +102,7 @@ For a `(reference, chain)` pair, over the axes where **both** specify a value:
 - **mismatch rate** = differing / jointly-specified — **undefined** where nothing is jointly specified
 - **coverage** = jointly-specified / total axes
 
-Both are always reported. The three references have very different coverage (whitepaper 1 axis;
+Both are reported together. The three references have very different coverage (whitepaper 1 axis;
 November 2 axes; v0.1.0 all 17), and **a mismatch rate read without its coverage is meaningless.**
 
 ## 6. Four sensitivity analyses

@@ -27,11 +27,11 @@ serialization and wire format        executed
 block acceptance and reorg           executed  (R4b: a retained orphan, +223 bytes)
 transaction relay                    executed  (R4c: same txid in both node logs, height 122)
 proof-of-work at difficulty 1        executed  64 of 64 blocks
-DIFFICULTY RETARGET                  NEVER RUN
+DIFFICULTY RETARGET                  NOT YET RUN
 ```
 
 **The retarget fires at height 2016** — `nTargetTimespan / nTargetSpacing` in `main.cpp`. Until a
-chain reaches that height, the code path has never executed outside a test harness.
+chain reaches that height, the code path has not executed outside a test harness.
 
 ## Why it is worth answering at all
 
@@ -73,7 +73,7 @@ the mining       is free. It may continue, stop tomorrow, pause for a year and
                   resume. Nothing here obliges it to run, and nothing here forbids it.
 ```
 
-> **Naming a hypothesis constrains what may be claimed, never what may be done.** The experiment
+> **Naming a hypothesis constrains what may be claimed, not what may be done.** The experiment
 > is a subset of the operator's freedom to run the chain, not a limit on it. **A chain that keeps
 > growing after its last hypothesis is answered is perfectly fine — it is simply not evidence, and
 > the word for it is maintenance rather than experiment.**

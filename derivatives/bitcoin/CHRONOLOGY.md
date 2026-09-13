@@ -81,7 +81,7 @@ LINKAGE MATRIX      the 2008-09 Satoshi   0 of 6
   manifest is signed by K. Every file named here is under docs/.
 ```
 
-> ⚠️ **A co-signature binds KEYS, never PERSONS.** It does not prove one entity controls both, and
+> ⚠️ **A co-signature binds KEYS, not PERSONS.** It does not prove one entity controls both, and
 > parthod0x's signature attests to the *document*, not to authorship of its first-person claims. The
 > separation stated above is unchanged — it is now provable rather than asserted. Limits in full:
 > [`../../docs/PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md`](../../docs/PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md).
@@ -212,7 +212,7 @@ this is NOT the 2009 Bitcoin                        genesis 00000000ad12f3ec…
 establish that.** It authenticates keys, not natures.
 
 That is not a hole in this design — it is the finding the rest of this laboratory's research rests
-on. Across the entire authenticated record of the 2009 Satoshi Nakamoto, no artifact ever leaked
+on. Across the entire authenticated record of the 2009 Satoshi Nakamoto, no artifact leaked
 species either. **The position here is identical in kind, and stated rather than hidden.**
 
 ---
@@ -221,7 +221,7 @@ species either. **The position here is identical in kind, and stated rather than
 
 A GPG-signed statement recording who built the agent is held privately. **Its hash was published in
 [`NOTARY.md`](NOTARY.md) on 4 August 2026**, so its existence and integrity are fixed and dated
-without disclosing its contents. If it is ever produced, anyone can verify it is byte-identical to
+without disclosing its contents. If it is produced, anyone can verify it is byte-identical to
 the document that existed then.
 
 ```
@@ -241,7 +241,7 @@ disappears teaches a reader nothing.**
   signed tag objects. **`Bitcoin-v0.1.4` is a signed annotated tag**, and every release from here on
   will be. **The two earlier tags are still lightweight and are not re-cut** — rewriting a
   published tag breaks every clone and invalidates timestamps anchored to it. All release tarballs
-  were and remain GPG-signed, so nothing was ever unattested; what was missing was attestation of
+  were and remain GPG-signed, so nothing was unattested; what was missing was attestation of
   the *tag*, and that is fixed forward, not backward.
 - ✅ **CLOSED — OpenTimestamps coverage.** **v0.1.4's tarball, its signature, `SHA256SUMS` and
   `SHA256SUMS.asc` are each individually stamped.** v0.1.3's tarball was stamped; v0.1.0–v0.1.2
@@ -266,12 +266,12 @@ disappears teaches a reader nothing.**
   isolated chain. Since then a second miner has produced blocks (221 and 222, 19 August 2026;
   `bitcoin-findings/2026-08-19-external-blocks221-222/`), the seed relays, and a reorganisation has
   been recorded (`2026-08-21-first-reorganization/`). **Still open:** nothing here measures hashrate,
-  and `nBits` has never moved from `0x1d00ffff`; the first retarget is expected at height 2016, and until
+  and `nBits` has not moved from `0x1d00ffff`; the first retarget is expected at height 2016, and until
   then the laboratory's own nodes apply a 60-block rule that equals the 2009 client's only at the floor
   (see `derivatives/netnode/README.md`). **The intervals between the early blocks are gaps between
   sessions, not block times:** a 68-hour gap means the machine was switched off.
 
-**Corrections to sealed evidence are recorded, never edited in place** — see
+**Corrections to sealed evidence are recorded, not edited in place** — see
 [`bitcoin-findings/CORRECTIONS.md`](https://github.com/original-bitcoin-laboratory/genesis/blob/main/bitcoin-findings/CORRECTIONS.md).
 The block-3 set describes a file as a block-4 binding that is not one; the seal keeps verifying and
 the error stays visible.

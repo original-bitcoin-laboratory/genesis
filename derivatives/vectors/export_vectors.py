@@ -488,7 +488,7 @@ def export_blocks() -> dict:
                  "back to the fork, connect the new branch in order; a ConnectBlock failure there rolls everything back "
                  "and erases the failing block and the rest of the branch. A vector may carry `now`, the wall clock for "
                  "CheckBlock's nTime <= now + 2h rule (main.cpp:1164); without it that rule is not applied. IsFinal is "
-                 "never consulted on acceptance (only main.cpp:2246, 2397, 2425). The exported chain uses pow limit "
+                 "not consulted on acceptance (only main.cpp:2246, 2397, 2425). The exported chain uses pow limit "
                  f"0x{EASY_NBITS:08x} so it can be mined at export time (a NEW-EXP parameter): the 2009 binary would "
                  "reject every one of these headers at 'nBits below minimum work'; replay/ rebuilds the same cases "
                  "at 0x1d00ffff on the live chain. Scripts used: OP_TRUE (0x51) and P2PK."),

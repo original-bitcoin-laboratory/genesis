@@ -33,7 +33,7 @@ sync path, anchored to `main.cpp` / `main.h`:
 
 - On `version` the behind node asks `getblocks(CBlockLocator(pindexBest), 0)`
   (main.cpp:1734). `CBlockLocator::Set` records the tip, steps back exponentially
-  (step 1 for the first 10, then doubling) and **always ends with genesis**
+  (step 1 for the first 10, then doubling) and **ends with genesis**
   (main.h:1241).
 - The `getblocks` handler does `pindex = locator.GetBlockIndex(); pindex->pnext`
   and walks the main chain forward, `inv`-ing each block until `hashStop`

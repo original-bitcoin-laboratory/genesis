@@ -2,7 +2,7 @@
 
 The top rung of the evidence ladder: run the **unmodified** `BITCOIN.EXE` from the
 hash-verified v0.1.0 archive and observe original behaviour directly. This can only
-happen **inside an isolated virtual machine** (never on the host, never on the
+happen **inside an isolated virtual machine** (not on the host, not on the
 internet). This doc is the plan + evidence checklist to drive it; nothing here runs
 the binary automatically.
 
@@ -18,7 +18,7 @@ there is **no `-connect`/`-addnode`** — and mining is `fGenerateBitcoins`
 
 - Isolated VM only; **host-only network**, no NAT, no internet.
 - Disposable virtual disk; take a snapshot before every run.
-- No real private keys, no real `wallet.dat`, no valuable funds — ever.
+- No real private keys, no real `wallet.dat`, no valuable funds.
 - No shared folders / clipboard once running; copy artifacts in beforehand.
 - The binary is 2009 **alpha** software (Satoshi's own warning): treat as untrusted.
 
@@ -61,10 +61,10 @@ verified by `derivatives/r3/test_mini_ircd.py`.)
 
 ## Run + mine
 
-- **★ The miner is peer-gated — a *lone* node never hashes.** `BitcoinMiner()` parks
+- **★ The miner is peer-gated — a *lone* node does not hash.** `BitcoinMiner()` parks
   in `while (vNodes.empty())` (`main.cpp:2195`) until at least one peer connects, so a
   single isolated node with `fGenerateBitcoins` on will start the miner *thread* but
-  **never hash** — no hashmeter, no blocks. (Observed directly: a 2-hour solo GUI run
+  **not hash** — no hashmeter, no blocks. (Observed directly: a 2-hour solo GUI run
   with *Generate Coins* on used ~13 CPU-seconds total, wrote no hashmeter line, and
   stayed at 1 block.) Combined with IRC-only discovery and no `-connect`/`-addnode`,
   this means **mining requires the two-node IRC setup above** — one node cannot mine
@@ -95,7 +95,7 @@ verified by `derivatives/r3/test_mini_ircd.py`.)
 | 7 | (opt.) Reorg: mine competing blocks on each side, reconnect | `debug.log` reorg lines |
 
 Workflow: drop the captured artifacts (`debug.log`, `blk*.dat`, `blkindex.dat`,
-screenshots) under `r3-evidence/<run>/` (gitignored — bytes never committed), then
+screenshots) under `r3-evidence/<run>/` (gitignored — bytes not committed), then
 
     python scripts/capture-evidence.py --run <run>
 

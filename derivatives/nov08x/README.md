@@ -24,7 +24,7 @@ plus denomination `COIN = 1,000,000` (no "satoshi") and a **fixed** `1*CENT` fee
 
 ## Nothing disabled
 
-November never had a Script file, so it disabled nothing. NOV08‑X's Script engine is
+November did not have a Script file, so it disabled nothing. NOV08‑X's Script engine is
 reconstructed from the interface `main.cpp` references (`CScript`, `OP_CHECKSIG`)
 using the lab's own MODEL/PORT — carrying the **complete original opcode vocabulary**
 (`OP_CAT`, `OP_MUL`, `OP_LSHIFT`, `OP_INVERT`, …). `test_nov08x.py` runs them live.
@@ -47,7 +47,7 @@ using the lab's own MODEL/PORT — carrying the **complete original opcode vocab
 
 NOV08‑X now runs as an actual network, reusing the `../p2p/chainsync` sync path
 (version → getblocks → inv → getdata → block, orphan + height‑based reorg) with its
-**own identity** (all NEW‑EXP — never a NOV08 semantics change) and NOV08's
+**own identity** (all NEW‑EXP — not a NOV08 semantics change) and NOV08's
 leading‑zero‑bits PoW:
 
 | Item | NOV08‑X | vs |

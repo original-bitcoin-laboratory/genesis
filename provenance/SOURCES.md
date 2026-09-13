@@ -29,9 +29,9 @@ Full working, with the archive-dated evidence that the text was revised between 
 
 That file is preserved nowhere checkable. The Internet Archive's earliest capture of
 `bitcoin.org/bitcoin.pdf` is **4 July 2010** (byte-identical to this one); Common Crawl's
-`CC-MAIN-2008-2009` index — a crawl that ran during the window — never visited the domain at all; the
+`CC-MAIN-2008-2009` index — a crawl that ran during the window — did not visit the domain at all; the
 announcement **linked** the paper rather than attaching it, so no mail archive holds a copy; and no
-hash of it was ever posted. What does survive from October 2008 is the **abstract, quoted inline in
+hash of it was posted. What does survive from October 2008 is the **abstract, quoted inline in
 the announcement**, dated by a mail server rather than by its author.
 
 Four sources serve this exact file byte-for-byte — bitcoin.org today, the Nakamoto Institute, and two
@@ -41,4 +41,4 @@ does not exist, and nothing here should imply otherwise.
 
 ## Provenance caution
 
-The January archives have a documented recovery path through Hal Finney in 2012. The November archive is a later-publicly-preserved pre-release source witness. Neither establishes that no private drafts or additional files ever existed.
+The January archives have a documented recovery path through Hal Finney in 2012. The November archive is a later-publicly-preserved pre-release source witness. Neither establishes that no private drafts or additional files existed.

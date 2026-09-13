@@ -29,7 +29,7 @@ CORRECT VALUE   520-byte  — the same as BTC, NOT "raised"
 ```
 
 ★ **eCash split from BCH in 2020, five years before BCH raised the limit to 10,000 in the May 2025
-VM Limits upgrade.** Inheriting BCH's later value was never possible. The cell's *citation* was the
+VM Limits upgrade.** Inheriting BCH's later value was not possible. The cell's *citation* was the
 tell — `bch_2018` for a chain that did not exist under that name in 2018.
 
 ### 2. XEC script-number width — OUR CELL IS WRONG
@@ -123,7 +123,7 @@ the CHIP, not a guess — an algorithmically-varying cap is not a number.
    ★ Until this exists, every later step re-creates the propagation defects.
 1  census all 68 cells against primary sources; record verbatim quotes in the cell comments
 2  apply THIS LEDGER in the same pass
-3  freeze; rerun; regenerate every number, table AND FIGURE 1 (never regenerated — still 18 rows)
+3  freeze; rerun; regenerate every number, table AND FIGURE 1 (not regenerated — still 18 rows)
 4  sweep the whole repo for obsolete strings:
       "18 axes" · "126 cells" · "three restorations" · "0.44" · "988" · "k=4" · "0.8000"
       · 0x07 BEL bytes · U+2212 · "$pprox$" · "nothing for independent coders to disagree about"
@@ -139,7 +139,7 @@ showing 18 rows under a caption saying 17.
 # ROUND 2 OF THE CENSUS — the descendant columns, 14 August 2026
 
 **Closed the largest unverified surface in the paper.** `audit_btc.py` had censused the BTC column
-(8/8) and the other three had never been fetched at all. `audit_descendants.py` now probes them
+(8/8) and the other three had not been fetched at all. `audit_descendants.py` now probes them
 against BSV, BCH and Bitcoin ABC primary sources: **18 confirmed, 0 not found, 0 void.**
 
 ## ⛔ THE DEFECT IN MY OWN INSTRUMENT, FOUND ON THE FIRST RUN
@@ -156,7 +156,7 @@ matched inside page navigation:
 >
 > **Reading the ENVELOPE and calling it the LETTER.** A term in an `href` is the site's own
 > menu, not the document making a claim. **The fix was not a better regex — it was deleting the
-> envelope before reading**: `body_text()` strips tags, so no attribute can ever satisfy a probe.
+> envelope before reading**: `body_text()` strips tags, so no attribute can satisfy a probe.
 >
 > ⇒ **A passing audit whose pattern can match site chrome is not evidence; it is furniture.**
 
@@ -192,6 +192,6 @@ sound and the paperwork was not. **That is the better of the two findings and it
 
 `none` cells — segwit and Taproot on all three descendants, Schnorr on BSV — are **CLAIMS OF
 ABSENCE**, and **no document establishes that a rule is absent.** They rest on chronology (BCH
-forked three weeks before segwit locked in; it never had it to remove) plus the absence of any
+forked three weeks before segwit locked in; it did not have it to remove) plus the absence of any
 upgrade spec introducing them. **Not remediable by further searching.** Now stated in Limitations
 in the paper's own voice, rather than left for a reader to infer from what the audit skipped.

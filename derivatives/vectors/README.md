@@ -11,7 +11,7 @@ unmodified 2009 binary (OpenSSL 0.9.8) has not been replayed yet; its column sta
 (Two headers were already `JAN09-EXECUTED`.) This directory
 consolidates test vectors the lab computes in Python and consumes in Rust source
 (`../validator-rs/tests/data/`) and a text DSL (`../port/vectors.txt`) into one JSON corpus that carries
-no code, and adds the surfaces those containers never held: SignatureHash, CHECKSIG and CHECKMULTISIG
+no code, and adds the surfaces those containers did not hold: SignatureHash, CHECKSIG and CHECKMULTISIG
 spends, and whole-block validity. Each file states the rule it tests in prose, names the oracle the
 expected values came from, and can be replayed in any language. NOT money.
 
@@ -24,7 +24,7 @@ python -m pytest -q                 # the above, plus the replay harness end-to-
 
 ## Why this exists
 
-The January 2009 consensus rules have never been written down as a document; they exist as a C++
+The January 2009 consensus rules have not been written down as a document; they exist as a C++
 tree you have to run. The lab closes part of that gap with four implementations that agree — the
 Python model, the C++/OpenSSL port, the Rust validator, and the unmodified 2009 binary in a VM — but
 their agreement was recorded in language-specific containers. A stranger who wants to write a fifth
@@ -47,7 +47,7 @@ full-vocabulary EvalScript suite needs a complete Script interpreter, so it is r
 | `headers.json` | 80-byte header serialization, `dsha256`, `hash <= SetCompact(nBits)` | 4: both genesis headers (2009 and this lab's 2026 chain), each with a nonce+1 negative control | the executed 2009 binary (`r3-findings/run1`); `derivatives/bitcoin/net.py` |
 | `sighash.json` | `SignatureHash` (`script.cpp:818`): every hash type on both inputs, the two `return 1` cases, `OP_CODESEPARATOR` removal | 15 | `model/tx_sighash.py` == `port/sighash.cpp` (OpenSSL) |
 | `checksig.json` | `VerifySignature` / `CheckSig` / `OP_CHECKMULTISIG` (`script.cpp:881, 727, 1126`): canonical, high-S, wrong key, hash-type byte cases, compressed key, empty sig, three non-strict DER probes, three multisig layouts | 17, three verdict columns each | strict-DER rule; `model/spend.py`; the 2009 binary (via `replay/`) |
-| `blocks.json` | `CheckBlock` → orphan → `AcceptBlock` → `AddToBlockIndex` / `ConnectBlock` / `Reorganize` (`main.cpp:1154-1260, 772-870, 934-953, 1072-1149, 974-1053`), in order, with `main.cpp`'s strings; the wall-clock rule with a supplied clock; finality never consulted | 127: genesis, a funding block, 100 maturity blocks, 5 accepted, 2 side and 18 rejected cases, including a reorganisation that succeeds and one that is rolled back | `verify_vectors.Chain2009`; agrees with `ledger/`, `netnode/chainstate.py`, `validator-rs` on the shared cases |
+| `blocks.json` | `CheckBlock` → orphan → `AcceptBlock` → `AddToBlockIndex` / `ConnectBlock` / `Reorganize` (`main.cpp:1154-1260, 772-870, 934-953, 1072-1149, 974-1053`), in order, with `main.cpp`'s strings; the wall-clock rule with a supplied clock; finality not consulted | 127: genesis, a funding block, 100 maturity blocks, 5 accepted, 2 side and 18 rejected cases, including a reorganisation that succeeds and one that is rolled back | `verify_vectors.Chain2009`; agrees with `ledger/`, `netnode/chainstate.py`, `validator-rs` on the shared cases |
 | `MANIFEST.sha256` | the seven files above | — | — |
 
 Every rule string inside the JSON is the complete statement needed to replay that file. Test keys are
@@ -96,7 +96,7 @@ This is what a second implementation written from the text is for.
   reimplementations. `replay/` is built and tested against a stand-in; the VM run is the remaining human step.
 - **Retarget boundaries inside a block chain** and reorganisations between branches of *equal* height are
   not in `blocks.json`; the retarget arithmetic has its own suite. (The wall-clock rule is replayed with the
-  clock the vector carries; a successful and a failed reorganisation, and the fact that v0.1 never consults
+  clock the vector carries; a successful and a failed reorganisation, and the fact that v0.1 does not consult
   `IsFinal` on acceptance, have been in the corpus since 13 September 2026.)
 - **Full Script inside blocks.** `blocks.json` spends only `OP_TRUE` and P2PK outputs; the full vocabulary is
   `evalscript.json`'s job, and the replay spends every one of those scripts on the live chain.
@@ -110,4 +110,4 @@ concatenated interior hashes, is demonstrated in `../hash_structure/`. Neither r
 sees an actual transaction, not a bare branch. That format rule costs nothing and needs no consensus
 change anywhere. Prefer it to any redesign of the tree.
 
-MIT. Generated files are reproducible from `export_vectors.py`; edit the generator, never the JSON.
+MIT. Generated files are reproducible from `export_vectors.py`; edit the generator, not the JSON.

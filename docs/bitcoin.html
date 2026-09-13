@@ -86,13 +86,13 @@
     <span class="t">Bitcoin: A Peer-to-Peer Electronic Cash System<small>Satoshi Nakamoto · announced 31 Oct 2008 · this file created 24 Mar 2009 · sha256 b1674191&hairsp;…&hairsp;f4f553 · <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/WHITEPAPER_PROVENANCE.md" style="color:inherit">provenance</a></small></span>
   </a>
 
-  <p class="wp-note" style="margin-top:12px"><b>This laboratory points at published sources and at the chain rather than re-hosting the whitepaper.</b> The paper carries no licence and no copyright notice, and its author has never been
+  <p class="wp-note" style="margin-top:12px"><b>This laboratory points at published sources and at the chain rather than re-hosting the whitepaper.</b> The paper carries no licence and no copyright notice, and its author has not been
     identified. This project's own rule is that
     <b>a SHA-256 is not a reproduction</b>: we publish facts about documents and point at sources other people
     published. <b>Nothing is lost by it.</b> The canonical file is embedded in the block chain and can be carved
     back out — <span class="mono">python verify/whitepaper_from_chain.py out.pdf</span> reads it from
     <b>block 230009</b> and it hashes to <span class="mono">b1674191…f4f553</span>. <b>That is a better source than
-    this page ever was:</b> it needs no host and no trust in us.
+    this page was:</b> it needs no host and no trust in us.
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/WHITEPAPER.md">Every version, by hash →</a></p>
 
   <div class="wp-notes">
@@ -207,7 +207,7 @@
     <h2>The chain</h2>
     <p class="wp-note" style="margin:0 0 14px"><b>The first five blocks, sealed in findings sets</b> (the current tip is on the live status feed). All link, and all meet their
       proof-of-work target — checked from the raw block file against the difficulty arithmetic, not by
-      eye. <b>nBits is <span class="mono">0x1d00ffff</span> on every block: difficulty has never
+      eye. <b>nBits is <span class="mono">0x1d00ffff</span> on every block: difficulty has not
       moved.</b></p>
     <pre style="margin:0 0 14px">height 0  00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a   3 Aug 2026 18:22:55Z
 height 1  000000007beb32b8380089595a91261a5ce4fbd4ece0cd661683cb1ce81e407c   4 Aug 2026 22:36:53Z
@@ -362,7 +362,7 @@ height 4  0000000097b1298a990e8f872e4acda48ace5274e99d2a5f9a483f183c1bd20c   8 A
         attesting to a file anyone can regenerate. It took two flags &mdash;
         <span class="mono">-Wl,--no-insert-timestamp</span> and
         <span class="mono">SOURCE_DATE_EPOCH</span>, pinned to this chain&rsquo;s own genesis instant.
-        Not one instruction had ever differed between builds; two machines disagreed only about what
+        Not one instruction had differed between builds; two machines disagreed only about what
         time it was.
         <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/BUILD_NOTES.md">Build notes</a>.</dd>
 
@@ -504,7 +504,7 @@ SRC=$PWD/derivatives/bitcoin/src bash derivatives/build-reconstruction/full_buil
         it immediately; <b>a public gateway may need two or three attempts</b> while it locates a
         provider, and some public gateways are themselves unreliable. Measured 15&nbsp;Aug&nbsp;2026:
         3 of these 4 objects came back from <span class="mono">ipfs.io</span>, one of them only on
-        the third try. <b>Content addressing guarantees what the bytes are, never that someone is
+        the third try. <b>Content addressing guarantees what the bytes are, not that someone is
         still serving them</b> &mdash; which is why the release, not the pin, is the primary copy:
         <pre style="margin-top:10px;font-size:11px;line-height:1.6">bitcoin-0.1.2.tar.gz      QmXeWBKYEJCBYJaP7N1FLjQbLxmqWtTjydyqLwBncRKUvP
 bitcoin-0.1.2.tar.gz.asc  Qmcgxva1kv9SGL6EwwEoCYN8RfbB9HBbeXyPziQpfMjeXW

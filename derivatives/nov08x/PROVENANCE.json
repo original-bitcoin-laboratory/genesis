@@ -5,7 +5,7 @@
     "N-ORIG": "verbatim from the surviving NOV08 source",
     "N-IFACE": "reconstructed from an interface NOV08 references",
     "J-DONOR": "imported from JAN09 where NOV08 is silent",
-    "NEW-EXP": "new experimental decision (never a semantics change)"
+    "NEW-EXP": "new experimental decision (not a semantics change)"
   },
   "n_orig_rules": [
     {

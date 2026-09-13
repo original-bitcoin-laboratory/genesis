@@ -56,10 +56,10 @@ hashing, sighash, and value rules are pinned down.
 
 ## How to take part
 
-1. **Verify the genesis yourself** — the durable, permanent artifact. `scripts/verify_genesis.py`
+1. **Verify the genesis yourself** — the durable artifact. `scripts/verify_genesis.py`
    re‑derives both **experimental** genesis blocks (NOV08‑X and JAN09‑X) from source — the historical
    January genesis is witnessed only by the unmodified 2009 binary, not by this lab's code; `scripts/reproduce.py` runs the whole lab (every step must pass; the count is printed). No
-   node required, no way to be misled. This is the part that lasts forever.
+   node required, no way to be misled. This is the part that lasts.
 2. **Run a node** — one command with the prebuilt image
    (`docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode`), or from source
    via [`../derivatives/netnode/RUN.md`](../derivatives/netnode/RUN.md) and the Docker/systemd
@@ -77,7 +77,7 @@ and recent blocks. **Verify what you run:** every release is GPG‑signed — ch
 
 ## Join the live network — peers you can connect to today
 
-A node serves the **Bitcoin** chain, and **two** live, always‑on anchors run the two
+A node serves the **Bitcoin** chain, and **two** live anchors run the two
 reconstructions side by side:
 
 ```
@@ -110,9 +110,9 @@ and downloads **and independently re‑validates** every block until it reaches 
 verifier. Full steps: [`../derivatives/netnode/RUN.md`](../derivatives/netnode/RUN.md).)
 
 This anchor is a **convenience, not an authority**: it can disappear tomorrow and nothing is lost —
-the genesis is reproducible forever from `scripts/verify_genesis.py`, and any node you run is an equal
+the genesis is reproducible from `scripts/verify_genesis.py`, and any node you run is an equal
 peer. The name `seed.bitcoin-lab.org` resolves to the anchor; if the anchor
-ever moves, the name follows it — so prefer the name, and the reproducible recipe over both. **Not money.**
+moves, the name follows it — so prefer the name, and the reproducible recipe over both. **Not money.**
 
 ### Or join Bitcoin with the released 2009 client
 
@@ -173,7 +173,7 @@ carry the origin's *missing* guardrails (no value‑overflow check, no block‑s
 limits). On a **value‑bearing** chain those are exploitable; on a **valueless** one they are harmless
 research curiosities — there is nothing to steal. Attach value and you are *forced* to add the 2010
 guardrails, at which point it stops being the origin. **So these stay valueless. No premine, no sale,
-no "token," no promises, ever — the maintainers assign the units no value and solicit no market;
+no "token," no promises — the maintainers assign the units no value and solicit no market;
 whether anyone else values them is outside any software's control, but nothing here invites it.** (See
 [`PUBLIC_TESTNET_SCOPE.md`](PUBLIC_TESTNET_SCOPE.md) and each
 node's `SECURITY.md`.)
@@ -184,7 +184,7 @@ node's `SECURITY.md`.)
   keep it up and invite someone else.
 - **Not asking:** money, speculation, belief, or that you call it "the real Bitcoin."
 
-A tool, never authority ([`../../common/AUTHORITY.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).
+A tool, not authority ([`../../common/AUTHORITY.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).
 **Not money.**
 
 ---

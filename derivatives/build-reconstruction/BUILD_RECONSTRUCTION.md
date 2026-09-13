@@ -97,7 +97,7 @@ PASS CKey     static Verify(pubkey) round-trip
 So Satoshi's original `class CBigNum : public BIGNUM` and the secp256k1 `CKey` — the two things the
 modern host could not build — compile *and run byte-correct* under the period toolchain.
 
-**The interpreter, too.** `base58.h` and `script.cpp` were never toolchain-locked — only *coupled*,
+**The interpreter, too.** `base58.h` and `script.cpp` were not toolchain-locked — only *coupled*,
 needing `Hash()`/`Hash160()` (util.h) and the tx types (main.h). Supplying just those surfaces as
 donor scaffolding (`compat/donor_util.h`, `compat/donor_hashes.h`, `compat/donor_tx.h` — the util
 macros/helpers, the two hashes, and a faithful minimal `CTransaction` whose serialization mirrors

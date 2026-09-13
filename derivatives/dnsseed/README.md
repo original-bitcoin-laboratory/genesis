@@ -50,4 +50,4 @@ magic, **rejects a wrong‑magic node**, harvests its gossiped address, and repo
 python -m pytest        # 6 passed
 ```
 
-**Not money.** A tool, never authority ([AUTHORITY.md](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).
+**Not money.** A tool, not authority ([AUTHORITY.md](https://github.com/original-bitcoin-laboratory/common/blob/main/AUTHORITY.md)).

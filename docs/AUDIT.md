@@ -10,7 +10,7 @@ implementations (Python `netnode`, Rust `validator‑rs`). **NOT money.**
 > remains an **unaudited, valueless research microscope**. The load‑bearing invariant is unchanged —
 > *"nothing disabled" is safe only because it is "not money."* Nothing here makes the chain money,
 > makes it safe to attach value to, or substitutes for the review [`SECURITY.md`](../derivatives/netnode/SECURITY.md)
-> says must happen before any value is *ever* considered (which it must not be).
+> says must happen before any value is considered (which it must not be).
 
 ## Why this pass happened
 
@@ -38,7 +38,7 @@ true if a hostile or buggy peer can't hang or crash an honest node.
 |---|---|---|---|---|---|
 | **F1** | High (liveness) | `p2p/p2p.py` `parse_inv` | Read only `payload[0]` as the count; any `inv` ≥ 253 items misparsed → IBD silently stalled past ~252 blocks | Decode the full CompactSize varint | `test_inv_roundtrips_across_compactsize_boundary` |
 | **F2** | High (DoS) | `p2p/p2p.py` `parse_inv`, `p2p/chainsync.py` `parse_getblocks` | A huge claimed count (up to 2⁶⁴) spun an unbounded loop over empty slices → **hung the event loop** (one‑packet DoS; confirmed: RPC timed out under probe) | Bound the loop to the real bytes (`if i + item > len(payload): break`) | `test_inv_and_getblocks_bound_a_huge_claimed_count`, `test_node_survives_a_malformed_message_flood_and_still_serves` |
-| **F3** | Medium (availability) | `netnode/livenode.py` `_session` | A parse that *raised* on a malformed payload could drop the whole session ungracefully | Broad `except` around per‑message handling → **drop the peer, never the node**; log `peer dropped (bad message)` | covered by the flood‑survival test |
+| **F3** | Medium (availability) | `netnode/livenode.py` `_session` | A parse that *raised* on a malformed payload could drop the whole session ungracefully | Broad `except` around per‑message handling → **drop the peer, not the node**; log `peer dropped (bad message)` | covered by the flood‑survival test |
 | **F4** | High (DoS) | `validator-rs/src/mempool.rs` `accept` → `lib.rs` `parse_tx` | The **tx** ingest path had no panic‑safe gate (the **block** path has `well_formed_block`); a malformed tx (`Vec::with_capacity(nin)` with `nin`=2⁶⁴, or a truncated slice) **panicked** the parser | Added the sibling `well_formed_tx` bounds‑safe gate in `net.rs` before `mempool.accept`; a peer flooding malformed tx is scored and dropped | `dos.rs::a_peer_flooding_malformed_txs_is_dropped_without_panic` |
 
 All counts that drive a loop or allocation are now **bounded by the actual payload length** before
@@ -48,8 +48,8 @@ use, in both nodes, on every untrusted path.
 
 - **Wire** (both nodes): 4 MiB size cap enforced *before* allocation, double‑SHA‑256 checksum, bad
   magic rejected. A frame can't force a giant allocation.
-- **Rust block ingest**: `well_formed_block` (fully bounds‑checked, `checked_add` / `.get()`, never
-  panics) gates *before* the indexing `validate_context_free` via short‑circuit `||`, and requires
+- **Rust block ingest**: `well_formed_block` (fully bounds‑checked, `checked_add` / `.get()`, does not
+  panic) gates *before* the indexing `validate_context_free` via short‑circuit `||`, and requires
   the txs to consume **exactly** the body — which also caps `ntx`, so `Vec::with_capacity(ntx)`
   can't overflow.
 - **Python `addr`** (`livenode.decode_addrs`): already bounded (`range(min(n, 1000))` +
@@ -60,9 +60,9 @@ use, in both nodes, on every untrusted path.
   inbound‑connection cap, bounded gossiped peer table, size‑capped mempool with a bounded orphan
   buffer and fee‑rate eviction. (Existing tests: `test_rate_limit_drops_a_flooding_peer`,
   `test_inbound_connection_cap`, `test_known_addrs_are_bounded`.)
-- **Consensus authority**: a PoW‑valid but tx‑invalid block is flagged and never served/mined/
+- **Consensus authority**: a PoW‑valid but tx‑invalid block is flagged and not served/mined/
   followed; reorg to an invalid branch aborts and restores. The mempool can only *avoid* relaying a
-  bad tx, never *admit* one (consensus re‑checked on connect).
+  bad tx, not *admit* one (consensus re‑checked on connect).
 
 ## Explicitly *out* of this pass
 
@@ -88,7 +88,7 @@ Manual red‑team probe (starts a node, then floods it): see
 
 Against the adversarial classes tested — malformed, truncated, oversize, huge‑claimed‑count, and
 unknown‑command messages on every untrusted path — **both nodes now stay up and keep serving**; a
-hostile peer is dropped, never the node. That is the bar for "plug in and play" on a hobbyist network.
+hostile peer is dropped, not the node. That is the bar for "plug in and play" on a hobbyist network.
 
 It is **not** a clean bill of health, and it is **not** independent. Until the review in
 `AUDIT_SCOPE.md` signs off **and** the "not money" framing holds, this remains a **valueless

@@ -80,7 +80,7 @@ alongside it and can be checked with `gh attestation verify`.
 > ⚠️ **IMAGES PUBLISHED BEFORE 15 AUGUST 2026 ARE NOT SIGNED**, and no back-dating is possible — a
 > signature made now would attest to a rebuild, not to what was published then. Their tags remain
 > pullable and their digests remain in the registry, so **verify those the long way**: pull by
-> digest and compare against the release tarball, which has always been signed. **The gap is stated
+> digest and compare against the release tarball, which has been signed since the first release. **The gap is stated
 > rather than quietly closed, because a signature that claims more than it witnessed is worse than
 > no signature.**
 

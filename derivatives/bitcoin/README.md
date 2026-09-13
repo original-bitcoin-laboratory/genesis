@@ -52,7 +52,7 @@ this was the first external *implementation*, not yet the first external *party*
 ([findings](../../bitcoin-findings/2026-08-19-external-blocks221-222/FINDINGS.md)). Both of those
 coinbases pay the agent's genesis key; the anchoring project kept nothing. So the concentration
 survives in full: **no third party holds any coin on this chain.** No allocation, no sale, no token,
-nothing set aside. **None of it has ever been spent, offered, priced or transferred, and none of it
+nothing set aside. **None of it has been spent, offered, priced or transferred, and none of it
 is for sale.** **The first genuinely third-party block remains unmined** — and requires no
 permission and nothing from us.
 
@@ -87,7 +87,7 @@ The client asserts the genesis hash on startup, so a wrong build does not run.
 
 **What other people do with this chain is theirs, and is not endorsed here.** The software is MIT and
 the chain is open, so anyone may run it, mine it, or do anything else the licence permits — including
-things this project would not do. **If a market in these coins ever appears, it is not ours, we did
+things this project would not do. **If a market in these coins appears, it is not ours, we did
 not make it, and no price it produces is acknowledged, quoted or relied on anywhere in this project.**
 The coins held here stay unspent and unoffered regardless of what anyone else does.
 

@@ -244,7 +244,7 @@ be produced by editing a file. Run `verify/pdf_structure.py` on both:
 | linearized | no | **no** |
 | object streams `/ObjStm` (PDF 1.5+) | 0 | **0** |
 | xref streams `/XRef` (PDF 1.5+) | 0 | **0** |
-| `/ID[0] == /ID[1]` | **yes — never re-saved** | **yes — never re-saved** |
+| `/ID[0] == /ID[1]` | **yes — not re-saved** | **yes — not re-saved** |
 | XMP metadata | no | **no** |
 | embedded subset fonts | 7 | **7** |
 | pages | 9 | **8** |
@@ -288,7 +288,7 @@ archive.org copy existed, and confirmed by a participant from 2008.
 **And the content dating agrees with the custody claim without either knowing about the other.**
 StealthMonger said early November 2008; the absent transaction-fee paragraph independently says
 before 9 November 2008. Nothing in the file could have been tuned to match a claim made years later
-by someone who never mentioned fees.
+by someone who did not mention fees.
 
 *Recorded for completeness: in 2015 StealthMonger gives the file's local date as 2 November 2008; in
 2017 he writes "received here 2008 November 8". Six days apart. Both precede the 9 November fee
@@ -417,7 +417,7 @@ announcement through early November.
 
 **What would settle it outright:** a capture, download or published hash of `bitcoin.org/bitcoin.pdf`
 dated 31 October or 1 November 2008. None exists — the Internet Archive's first capture of that URL
-is 2010-07-04, and Common Crawl's 2008–2009 crawl never visited the domain.
+is 2010-07-04, and Common Crawl's 2008–2009 crawl did not visit the domain.
 
 ## What was searched and is genuinely not there
 
@@ -431,9 +431,9 @@ Searched, and recorded so nobody repeats it:
 | Common Crawl `CC-MAIN-2009-2010` | earliest 2010-02-08, HTML only |
 | arquivo.pt | earliest 2014-11-27 |
 | archive.today | no snapshot |
-| `cryptography@metzdowd.com`, Oct + Nov 2008 threads | no mirror URL, **and no hash ever posted** |
+| `cryptography@metzdowd.com`, Oct + Nov 2008 threads | no mirror URL, **and no hash posted** |
 
-The Common Crawl line is the informative one: that crawl **ran during the window** and never visited
+The Common Crawl line is the informative one: that crawl **ran during the window** and did not visit
 the domain. This is not an archive losing a file — it is an unknown site that nothing crawled until
 after the file behind its one interesting link had been replaced.
 
@@ -466,7 +466,7 @@ moral premise — *honest nodes control the most CPU power* — to a game-theore
 CPU power is controlled by nodes that are not cooperating to attack the network*.
 
 That is a sharpening of the central claim. It is also, arguably, the prose catching up with the
-mechanism: proof-of-work never required honesty, only that attackers fail to coordinate a majority.
+mechanism: proof-of-work does not require honesty, only that attackers fail to coordinate a majority.
 
 **We do not claim to know who made the edit**, and the reason is stronger than "no record
 attributes it."
@@ -489,7 +489,7 @@ contradicts nothing — but that is a reading, and this note does not assert it.
 
 ## Part of the body survives from 2008, unchanged
 
-The abstract was quoted in the announcement, so it has always been checkable. The **body** had no
+The abstract was quoted in the announcement, so it has been checkable from the start. The **body** had no
 known 2008 witness at all — until the mail archive was searched for the paper's own sentences.
 
 On **8 November 2008**, answering a question about inflation, Satoshi quoted their own paper:
@@ -636,7 +636,7 @@ March replacement. The narrow, defensible claim is: **in December 2008, when it 
 the project, it was downloaded once.**
 
 **So the December 2008 file existed for about three and a half months and was replaced on
-2009-03-24.** Its size was never captured: sweeping every SourceForge capture in the window shows a
+2009-03-24.** Its size was not captured: sweeping every SourceForge capture in the window shows a
 **Wayback gap for this project from January to September 2009**, and the file-detail page — the only
 page carrying a size — was not captured in that period. That copy is not recoverable by machine.
 
