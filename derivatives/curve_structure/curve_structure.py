@@ -23,7 +23,7 @@ identically by anyone, anywhere, at any time:
       (The prime's constant 977 is likewise not the minimal NUMS choice — 263 is — so 977 carries an
       unpublished extra constraint; a rigidity wrinkle, not a break.)
 
-  (4) Twist. The quadratic twist has small factors (3^2, 13^2, 3319, 22639) that leak ~33 key bits to a
+  (4) Twist. The quadratic twist has small factors (3^2, 13^2, 3319, 22639) that leak ~37 key bits (2^36.7) to a
       NON-validating implementation; libsecp256k1 validates points, so Bitcoin is unaffected — a
       "handle with care", not a free curve.
 

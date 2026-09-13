@@ -1,6 +1,6 @@
 """secp256k1 curve structure, executed: the GLV endomorphism (beta,lambda derivable, ~0.79-bit rho
 tax, 2^127.03 best generic attack), textbook safety, the un-derivable generator trust-atom + non-minimal
-977, and the twist's ~33-bit leak. All from the published constants with pure-integer math. MODEL."""
+977, and the twist's ~37-bit leak. All from the published constants with pure-integer math. MODEL."""
 
 import pathlib
 import sys
@@ -62,7 +62,7 @@ def test_977_is_not_the_minimal_prime_constant():
 def test_twist_small_factors_leak_and_factorization_is_exact():
     tw = twist()
     assert tw["small"] == {3: 2, 13: 2, 3319: 1, 22639: 1}
-    assert tw["leak_bits"] == 33                 # ~33 key bits vs a non-validating implementation
+    assert tw["leak_bits"] == 37                 # log2(3^2 * 13^2 * 3319 * 22639) = 36.7 -> ~37 key bits vs a non-validating implementation
     assert tw["big_prime"]                       # the large cofactor is prime
     assert tw["big_bits"] >= 200                 # ~2^220
     assert tw["factorization_exact"]             # small factors * big cofactor == twist order exactly
