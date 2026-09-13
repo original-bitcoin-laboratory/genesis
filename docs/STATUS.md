@@ -88,7 +88,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   - `chain_port` (8/8): faithful `ConnectInputs`/`ConnectBlock` over an in-memory
     UTXO index — builds a 121-block chain and **validates a real spend of a matured
     coinbase**, rejecting double-spend, inflation, tampered sig, immature-coinbase
-    spend, and coinbase over-claim. Covers the ledger's core guarantees headlessly.
+    spend, and coinbase over-claim. Covers the ledger's core rules headlessly.
     Remaining boundary: the unmodified binary (persistence now covered below).
 - [x] Headless **P2P relay** → `derivatives/p2p/` (MODEL, wire anchored to source):
   two nodes over localhost TCP speak the real v0.1 protocol (magic `f9beb4d9`, **no

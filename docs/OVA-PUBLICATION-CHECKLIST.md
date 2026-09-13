@@ -131,7 +131,7 @@ to sign 23 GB.
 IPFS pin        content-addressed, already used for releases, and the CID would BE the hash.
                 ⚠️ 23 GB needs a paid pinning tier or a self-hosted node kept online.
 torrent         free, durable while anyone seeds, and a magnet link is content-addressed too.
-                Weakest guarantee of availability; strongest cost profile.
+                Weakest availability; strongest cost profile.
 on request      publish the hash and the manifest; hand the image to anyone who asks.
                 ⚠️ Costs nothing and reaches almost nobody -- but it is honest, and it is
                 strictly better than the current state, where the hash is not even published.

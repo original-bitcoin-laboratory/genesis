@@ -285,7 +285,7 @@ function robustNote(origin, at){
     if(A.size < B.size && [...A].every(x=>B.has(x)) && (!best || B.size-A.size>best.gap))
       best={a,b,gap:B.size-A.size};
   }
-  if(!best) return "Robustness: no ordering here is structurally guaranteed across all axis subsets — compare with care.";
+  if(!best) return "Robustness: no ordering here holds across all axis subsets — compare with care.";
   return `Robustness: ${best.a}'s differing axes are a subset of ${best.b}'s, so "${best.a} at least as close as ${best.b}" holds under every axis subset — structural, not an artifact of the axes chosen.`;
 }
 

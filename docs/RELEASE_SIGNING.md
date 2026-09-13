@@ -110,7 +110,7 @@ counter-signature nobody dated is one a forger could also have made.**
 ## The trust model, stated plainly
 
 - A valid signature proves the build came from **you** and is **unmodified**. That's all.
-- The **durable** guarantee isn't the signature — it's the **reproducible recipe**: `verify_genesis`
+- What **lasts** isn't the signature — it's the **reproducible recipe**: `verify_genesis`
   lets anyone re‑derive the exact genesis, with no key and no node to trust. The signature
   authenticates *a distribution*; the recipe authenticates *the artifact*.
 - Nothing here — not a signature, not a tag — makes the chain money or "the real Bitcoin." **Not money.**

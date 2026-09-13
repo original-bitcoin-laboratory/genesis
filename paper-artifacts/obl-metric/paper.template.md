@@ -59,7 +59,7 @@ primary source (a BIP, an upgrade specification, or a self-describing commit), a
 **{{FIG:aud_fetched}} of the {{FIG:aud_specified}} cells additionally verified by fetching that source
 mechanically** (Section 7) — so
 the whole table is **machine-recomputable** from that encoding. **We are careful not to claim more.**
-Reproducibility guarantees that anyone scoring the same encoding gets the same number; it does not make
+Reproducibility means that anyone scoring the same encoding gets the same number; it does not make
 the encoding the uniquely correct reading of the protocol. **Judgement is not eliminated, it is relocated
 to individuation** — which axes exist, how finely they are cut, and what each state is called — where it
 is visible and can be perturbed on purpose, and we perturb it (Section 5). We report a

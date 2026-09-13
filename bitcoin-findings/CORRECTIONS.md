@@ -63,7 +63,7 @@ in the middle. Earlier brackets are wider. **A wide bracket is weaker evidence, 
 The gaps between blocks — 28.2 h, 23.9 h, 1.3 h, 68.6 h — are **wall-clock intervals between
 sessions, not block times.** The miner is not left running; the guest is started when there is time.
 **A 68-hour gap means the machine was off**, not that anything got harder: `nBits` is `0x1d00ffff` on
-every block and difficulty has never moved.
+every block and difficulty has not moved.
 
 **Nothing here measures hashrate or difficulty.** The early sets are one node, isolated; later sets record a
 seed, a second miner and a reorganisation.
@@ -175,7 +175,7 @@ unprovable by any available means."*
 **That is stronger than anything this laboratory has established, and stronger than its own closure
 ledger.** The project's own records show the opposite: **a living key holder could sign one fresh
 challenge with the genesis key and the PGP key and prove common control, now, machine-verifiably.**
-It has never been done — which makes the identity **unproven**, not **unprovable**. What is closed
+It has not been done — which makes the identity **unproven**, not **unprovable**. What is closed
 by proof is *authorship of a document*, which is a different question.
 
 > **Corrected:** the page now reads *"whose identity is unknown and which this project does not

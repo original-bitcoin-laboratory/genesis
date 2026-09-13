@@ -142,9 +142,9 @@ Releases are **GPG‑signed** (key `B0145F74B78CF1DA`, fingerprint
 [**Releases**](https://github.com/original-bitcoin-laboratory/genesis/releases) and the checklist in
 [`docs/RELEASE_SIGNING.md`](docs/RELEASE_SIGNING.md). A signature authenticates *a distribution*;
 the reproducible recipe (`scripts/verify_genesis.py`) *regenerates* the artifact from a stated input —
-inspectability rather than authentication, and the guarantee that lasts, with no key and no node to trust.
+inspectability rather than authentication, and the check that lasts, with no key and no node to trust.
 
-Two things extend that guarantee. Anyone can **re-derive the historical genesis in a browser, offline** —
+Two things extend that check. Anyone can **re-derive the historical genesis in a browser, offline** —
 [`docs/verify-genesis.html`](docs/verify-genesis.html) (live at
 [bitcoin-lab.org/verify-genesis.html](https://bitcoin-lab.org/verify-genesis.html)) rebuilds the 3 January
 2009 block from its source bytes with a self-contained SHA-256, nothing to install. A companion

@@ -18,7 +18,7 @@ one input → one 50.00 output, no change, no fee. Both nodes converged. Both bo
 `bitcoin.exe` (`fbcac071…`) by PID and process start time across a ~65-hour run.
 
 **The R-series is complete.** Still modelled rather than executed: mining across a difficulty
-**retarget** window — the chain never left difficulty 1.
+**retarget** window — the chain did not leave difficulty 1.
 
 **Operator's-eye view:** [`screenshots/INDEX.md`](screenshots/INDEX.md) captions the 75 desktop captures of the
 whole run and lists their hashes; the image files themselves are held offline (host captures are not published). It covers (31 Jul bring-up → 2 Aug reorg → the run climbing toward maturity at 26 blocks), hashed in its own

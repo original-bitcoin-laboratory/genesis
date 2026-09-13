@@ -94,7 +94,7 @@ So "OpenSSL is the load‑bearing dependency" is the spine connecting
 validity, arithmetic bounds — to a general‑purpose library whose behavior varies by
 version and platform.** Bitcoin's maturation from the origin is largely the story of
 pulling that behavior *in‑house* — strict‑DER parsing, `libsecp256k1`, bounded
-`CScriptNum` — to guarantee the determinism a global monetary ledger requires. v0.1's
+`CScriptNum` — to give the determinism a global monetary ledger requires. v0.1's
 reliance on OpenSSL was the expedient choice that got Bitcoin *working*, and a latent
 consensus risk that took ~10 years (2009 → 2019) to fully unwind.
 

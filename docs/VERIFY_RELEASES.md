@@ -89,5 +89,5 @@ alongside it and can be checked with `gh attestation verify`.
 - **Does:** the tarball is byte‑identical to what `parthod0x` released, and hasn't been altered in
   transit or on a mirror.
 - **Does not:** make the chain money, make it safe to attach value to, or make it "the real Bitcoin."
-  The durable guarantee is separate and stronger — `scripts/verify_genesis.py` re‑derives both
+  What lasts is separate and stronger — `scripts/verify_genesis.py` re‑derives both
   genesis blocks from source, so you do not have to trust *us* about the chain itself. **Not money.**

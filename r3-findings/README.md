@@ -9,7 +9,7 @@ Committed manifests and written conclusions from JAN09-EXECUTED runs. Each run g
 - `FINDINGS.md` — the filled-in results (from `../docs/R3_EVIDENCE_TEMPLATE.md`).
 
 The **raw bytes** (`debug.log`, `blk*.dat`, screenshots) live under the gitignored
-`r3-evidence/<run>/` and are never committed. Generate a run's manifest with:
+`r3-evidence/<run>/` and are not committed. Generate a run's manifest with:
 
     python scripts/capture-evidence.py --run <run>
 
