@@ -9,7 +9,7 @@ is nothing here to buy, sell, or hold, and the maintainers do not offer any. Rea
 
 - **Bitcoin (2026)** — **not a reconstruction, not the Bitcoin of 2009, not money.** It runs Satoshi’s released **January 2009 client itself**,
   on a genesis of its own, mined at the original difficulty‑1, its coinbase carrying the front page
-  of the day it was mined. Its own network, its own signed release (`Bitcoin-v0.1.5`), and a chain it is
+  of the day it was mined. Its own network, its own signed release (`Bitcoin-v0.1.5`), and a chain that is
   mined intermittently — **every block after block 1 has been mined by a released client** (blocks 221–222 by one run outside the laboratory). It does **not** interoperate
   with the two below, and it has its own seed rather than sharing the crawler.
 
@@ -114,7 +114,7 @@ the genesis is reproducible from `scripts/verify_genesis.py`, and any node you r
 peer. The name `seed.bitcoin-lab.org` resolves to the anchor; if the anchor
 moves, the name follows it — so prefer the name, and the reproducible recipe over both. **Not money.**
 
-### Or join Bitcoin with the released 2009 client
+### Or join Bitcoin (2026) with the released client
 
 `bitcoin-0.1.5.tar.gz` ships the actual client, and it will find the network on its own — but read
 this first, because it behaves like software from 2009, which is the point. (Its `bitcoin.exe` is

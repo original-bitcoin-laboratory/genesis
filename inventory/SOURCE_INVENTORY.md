@@ -85,5 +85,5 @@ resources (`rc/` bitmaps + icons, `ui.rc`, `uiproject.fbp`). The `.tgz` ships th
 - Two **experimental subsystems** ship in the release build: the `market.*`
   commerce layer (users/products/reviews/reputation) and a **dormant poker UI**
   (`CPoker*DialogBase` present in `uibase` but not surfaced in `ui.h`).
-- Next (R1 cont. → R4): line-numbered function catalog for `main.cpp` consensus
+- Done since (`VALIDATION_PATH.md`, R3–R4): the line-numbered function catalog for `main.cpp` consensus
   paths (`ConnectInputs → VerifyScript → EvalScript`), and per-opcode reachability.

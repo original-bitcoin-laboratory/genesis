@@ -21,7 +21,7 @@ The two mail scripts need a directory of gzipped monthly mboxes from
 
 ## `whitepaper_from_chain.py` — the strongest anchor the paper has
 
-The canonical file is embedded in mainnet transaction
+The canonical file is embedded in a transaction on Satoshi's 2009 Bitcoin chain,
 `54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e713` as 945 bare-multisig outputs whose
 "public keys" are really file bytes, plus a 33-byte tail push. The script reassembles and hashes it:
 
@@ -144,6 +144,6 @@ the wire format and the opcode values all rest on the two hash-verified code arc
 
 **A signature answers WHO, not WHEN.** `verify_slhdsa.py` tells you a key signed those bytes. It
 says nothing about when, and a signature is only as good as the scheme behind it. What dates these
-artifacts is the OpenTimestamps proof (`.ots`) beside each one, anchored in Bitcoin — and an anchor
+artifacts is the OpenTimestamps proof (`.ots`) beside each one, anchored in the 2009 Bitcoin chain — and an anchor
 made before a scheme breaks keeps its meaning after, which is the whole reason the two are kept
 together.

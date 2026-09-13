@@ -15,7 +15,7 @@ identified. This project's own rule is that **a SHA-256 is not a reproduction**:
 about documents and point at sources others published. Serving a copy while saying that was the weaker
 position.
 
-**Nothing is lost.** The canonical file is embedded in the block chain, where it cannot be revoked:
+**Nothing is lost.** The canonical file is embedded in the 2009 Bitcoin block chain, where no host can withdraw it:
 
 ```bash
 python verify/whitepaper_from_chain.py out.pdf    # carves it out of block 230009

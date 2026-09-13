@@ -18,7 +18,7 @@ a copy, was the weaker position.** So we stopped.
 
 ## Get the canonical version from the block chain
 
-**The 24 March 2009 whitepaper is embedded in the Bitcoin block chain and cannot be taken down.**
+**The 24 March 2009 whitepaper is embedded in the 2009 Bitcoin block chain, where no host can withdraw it.**
 Carve it out and hash it:
 
 ```bash
@@ -28,7 +28,7 @@ sha256sum out.pdf     # b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc2
 
 That reads the data from **block 230009**, reassembles the file, and gives you the authentic bytes —
 **from the chain itself, with nobody in between.** It is a better source than any website, including
-this one, because it cannot be altered, revoked or lost.
+this one, because it has not changed since block 230009 and cannot be changed without redoing that proof-of-work.
 
 ## The versions, by hash
 

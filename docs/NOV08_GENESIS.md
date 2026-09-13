@@ -214,7 +214,6 @@ are the third and fourth of the reversed pubkey — `04 d4 51 b0 …`. They matc
 | | 15 Nov 2008 pre-release | v0.1.0 (genesis 3 Jan 2009) |
 |---|---|---|
 | **coinbase** | `CScript() << 247422313` — an integer | `The Times 03/Jan/2009 Chancellor on brink…` |
-
 | **proof of time** | **none** | the front page of that morning |
 | `nTime` | 1221069728 = **2008-09-10** 18:02:08 UTC | 1231006505 = 2009-01-03 18:15:05 UTC |
 | `nBits` | `20` — leading-zero **bits**, `MINPROOFOFWORK=20`, "ridiculously easy for testing" | `0x1d00ffff` — compact target |
@@ -293,7 +292,6 @@ print(h2(hdr)[::-1].hex())
 # 000006b15d1327d67e971d1de9116bd60a3a01556c91b6ebaa416ebc0cfaa646
 ```
 
-The merkle root above is taken from the debug comment in `main.cpp` rather than recomputed, for the
-reason given earlier. Everything else is derived.
+The merkle root above is the one the solve earlier on this page reproduces. Everything else is derived.
 
 **NOT money.**

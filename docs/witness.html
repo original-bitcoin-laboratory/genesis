@@ -61,6 +61,7 @@
   .pill{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
     padding:3px 9px;border-radius:999px;border:1px solid;white-space:nowrap}
   .pill.done{color:var(--good);border-color:color-mix(in srgb,var(--good) 55%,transparent)}
+  .sec span{letter-spacing:0;text-transform:none;color:var(--ink-faint);font-size:12.5px;font-weight:400}
   .pill.live{color:var(--wait);border-color:color-mix(in srgb,var(--wait) 55%,transparent)}
   .step p{margin:11px 0 0;font-size:14px;color:var(--ink-dim);line-height:1.62}
   .step p b{color:var(--ink);font-weight:600}
@@ -172,7 +173,7 @@
       <div class="top">
         <span class="id">R4c · 6–8 Aug 2026</span>
         <h3>A relayed spend of a matured coinbase</h3>
-        <span class="pill">witnessed</span>
+        <span class="pill done">witnessed</span>
       </div>
       <p>A coinbase matured under the client's own rule — <b>120 confirmations, not 100</b>: <code>main.h</code>
         sets <code>COINBASE_MATURITY&nbsp;=&nbsp;100</code> but <code>main.cpp:544</code> withholds a generated
@@ -236,8 +237,8 @@
   <h2 class="sec">Verify it yourself</h2>
   <p class="lede" style="font-size:14px;max-width:70ch">Each verifier re-derives its result <b>from the raw block bytes</b> — it reads the
     <code style="font-family:var(--mono)">blk0001.dat</code> files named on its command line, checks the genesis, proof-of-work,
-    linkage, best chain, and (for the reorg) the retained orphan. Get the block files + verifiers from the findings folders in the repo
-    (<code style="font-family:var(--mono)">r4-findings/</code>, <code style="font-family:var(--mono)">r3-findings/</code>):</p>
+    linkage, best chain, and (for the reorg) the retained orphan. The verifiers are in the findings folders of the repo
+    (<code style="font-family:var(--mono)">r3-findings/</code>, <code style="font-family:var(--mono)">r4-findings/</code>); the raw block files are not committed (their hashes are, in each set's <code style="font-family:var(--mono)">SHA256SUMS</code>) and are staged from the offline evidence set as each README describes. With them in place:</p>
   <pre class="cmd"><span class="c"># every file in the deposit</span>
 sha256sum -c SHA256SUMS
 
@@ -248,8 +249,8 @@ python 2026-07-31-twonode-mined-block/<b>verify_r3.py</b> \
 
 <span class="c"># R4a — sustained 14-block chain incl. genesis, byte-identical both nodes</span>
 python 2026-08-01-sustained-relay/<b>verify_r4.py</b> \
-    2026-08-01-sustained-relay/run-b-14/nodeA_blk0001.dat \
-    2026-08-01-sustained-relay/run-b-14/nodeB_blk0001.dat
+    2026-08-01-sustained-relay/nodeA_blk0001.dat \
+    2026-08-01-sustained-relay/nodeB_blk0001.dat
 
 <span class="c"># R4b — reorganisation: node A 1 orphan, both converge on one tip</span>
 python 2026-08-02-reorg-partition/<b>verify_r4.py</b> \
@@ -257,10 +258,14 @@ python 2026-08-02-reorg-partition/<b>verify_r4.py</b> \
     2026-08-02-reorg-partition/nodeB_blk0001.dat
 
 <span class="c"># R4c — relayed spend: both at height 122 on one tip; block 122 holds 2 transactions</span>
-python derivatives/r4/<b>verify_r4.py</b> \n    2026-08-06-relayed-spend/nodeA/blk0001.dat \n    2026-08-06-relayed-spend/nodeB/blk0001.dat
+python derivatives/r4/<b>verify_r4.py</b> \
+    2026-08-06-relayed-spend/nodeA/blk0001.dat \
+    2026-08-06-relayed-spend/nodeB/blk0001.dat
 
 <span class="c"># and the relay itself — the SAME txid in both nodes' logs</span>
-grep -n "AcceptTransaction(): accepted f4309c" \n    2026-08-06-relayed-spend/nodeA/debug.log \n    2026-08-06-relayed-spend/nodeB/debug.log</pre>
+grep -n "AcceptTransaction(): accepted f4309c" \
+    2026-08-06-relayed-spend/nodeA/debug.log \
+    2026-08-06-relayed-spend/nodeB/debug.log</pre>
 
   <h2 class="sec">The evidence &amp; the recipe</h2>
   <div class="links">

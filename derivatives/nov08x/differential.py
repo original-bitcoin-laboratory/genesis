@@ -17,10 +17,15 @@ from consensus import Rules
 _HERE = pathlib.Path(__file__).resolve().parent
 
 
+def _coins(value, coin):
+    """Whole coins where the subsidy divides exactly; otherwise the exact fraction (e.g. 12.5)."""
+    return str(value // coin) if value % coin == 0 else f"{value / coin:g}"
+
+
 def rows_subsidy(nov, jan, heights):
     out = []
     for h in heights:
-        out.append((h, nov.get_block_value(h) // nov.COIN, jan.get_block_value(h) // jan.COIN))
+        out.append((h, _coins(nov.get_block_value(h), nov.COIN), _coins(jan.get_block_value(h), jan.COIN)))
     return out
 
 
@@ -46,11 +51,10 @@ def build_report():
           f"target = mantissa·256^(exp-3).",
           "",
           "## 3. Retarget (one full window)", ""]
-    # too-slow window (actual = 3x target) and too-fast (actual = target/3)
-    for label, actual in [("blocks came 3x too SLOW", nov.timespan * 3),
-                          ("blocks came 3x too FAST", nov.timespan // 3)]:
-        n_nb, n_how = nov.next_work(24, actual)
-        _, j_how = jan.next_work(0x1d00ffff, actual)
+    # too-slow window (actual = 3x target) and too-fast (actual = target/3), each chain against ITS OWN window
+    for label, factor in [("blocks came 3x too SLOW", 3), ("blocks came 3x too FAST", 1 / 3)]:
+        n_nb, n_how = nov.next_work(24, int(nov.timespan * factor))
+        _, j_how = jan.next_work(0x1d00ffff, int(jan.timespan * factor))
         L.append(f"- **{label}:** NOV08-X → {n_how};  JAN09 → {j_how}.")
     L += ["",
           f"NOV08-X nudges by **±1 bit** (max one change per {nov.timespan // 86400}-day window); "

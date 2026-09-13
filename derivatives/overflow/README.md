@@ -56,4 +56,4 @@ python -m pytest       # 10 passed
 
 MODEL; objective source port of `main.h:442` + the documented Aug‑2010 fix; historical
 amounts from the public record; no chain privileged; not a live‑exploit claim (the surface was
-patched in 0.3.1). It is a *tool*, not authority (`common/AUTHORITY.md`).
+patched in 0.3.10). It is a *tool*, not authority (`common/AUTHORITY.md`).

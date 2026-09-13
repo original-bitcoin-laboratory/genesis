@@ -83,7 +83,7 @@ value would force adding the 2010 guardrails — at which point it stops being t
   chain, **not** for protecting anything of value. There is no key encryption, no HD derivation, no
   watch‑only mode, and no backup discipline beyond copying the file.
 
-## What a real security review must cover before *any* value is attached
+## What a chain that carried value would require (this one does not)
 
 Full transaction/script/value validation; difficulty as a validated consensus rule on **every**
 path (incl. orphans/reorgs) at real (non‑easy) difficulty; eclipse/Sybil/DoS resistance and peer

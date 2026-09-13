@@ -5,9 +5,10 @@ This is the one step only a human can do: **run the unmodified January-2009
 mine coins. Everything else in this lab was proven headlessly; this is the live
 witness. Written for a non-programmer — follow it top to bottom.
 
-There are three options, easiest first. **Option 1 alone gives the core result**
-(the historic program runs, makes the genesis block, and mines). Options 2 and 3 are
-optional and give a cleaner room / the two-computer network story.
+There are three options, easiest first. **Option 1 shows the historic program running and
+constructing its genesis block.** Mining needs Option 3, the two-computer network: the 2009
+miner waits for a peer before it hashes, so a lone node does not mine (that is itself one of the
+lab's findings). Option 2 gives a cleaner room.
 
 ---
 
@@ -57,12 +58,13 @@ A small window titled **Bitcoin** opens.
 ### Step 5 — Start mining
 In the menu bar: **Options → Generate Coins** (click so it's checked). Leave the
 window open.
-- Because you're isolated, the puzzle difficulty is the lowest possible, so your PC
-  finds blocks in **seconds to a few minutes**.
+- The puzzle difficulty is the lowest possible, but the 2009 miner only hashes once a peer is
+  connected (Option 3), and even then a block takes **tens of minutes to an hour or more** on
+  one machine.
 - Watch the **block count** (shown in the window / status bar) climb: 1, 2, 3, …
 - Note: the **coin balance stays 0 for a long time** — freshly mined coins only become
   spendable after 120 more blocks (`COINBASE_MATURITY = 100` plus the client's own 20-block margin — a real v0.1 rule). So watch the **block count**, not
-  the balance. Letting it reach a few dozen blocks is plenty.
+  the balance. A handful of blocks is plenty.
 
 ### Step 6 — Save the evidence
 1. Let it mine for a few minutes, then take a **screenshot** of the window (press

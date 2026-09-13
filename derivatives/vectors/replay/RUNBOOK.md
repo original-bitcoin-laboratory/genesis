@@ -8,7 +8,7 @@ There are two binaries worth replaying, and they answer different questions:
 
 | target | binary | OpenSSL | chain | where it is |
 |---|---|---|---|---|
-| `release-v0.1.x-openssl-1.0.2u` | this lab's release client (`derivatives/bitcoin/`, v0.1 source + nine chain-separation substitutions) | 1.0.2u | Bitcoin (2026): magic `f00ba726`, port 18026, genesis `00000000ad12…` | the mining VM on the mini-PC, `c:\bitcoin\bitcoin-0.1.3\` |
+| `release-v0.1.3-openssl-1.0.2u` | this lab's release client (`derivatives/bitcoin/`, v0.1 source + nine chain-separation substitutions) | 1.0.2u | Bitcoin (2026): magic `f00ba726`, port 18026, genesis `00000000ad12…` | the mining VM on the mini-PC, `c:\bitcoin\bitcoin-0.1.3\` |
 | `2009-fbcac071-openssl-0.9.8` | the unmodified January 2009 `bitcoin.exe` | 0.9.8 | Satoshi's: magic `f9beb4d9`, port 8333, genesis `000000000019d668…` | the R4 appliance `obl-r4-nodes.ova` (two guests; import it to run) |
 
 Same consensus code in both. Where their verdicts differ on the DER probes, that difference is a

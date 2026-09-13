@@ -78,7 +78,7 @@ LINKAGE MATRIX      the 2008-09 Satoshi   0 of 6
   host, account or era does not count. For 2008-09 none of the six is bound.
   For this project: the identity manifest (signed by P) names K and the release
   signer; K and P co-signed PQ-SUCCESSION-CERTIFICATE.txt; the chain source
-  manifest is signed by K. Every file named here is under docs/.
+  manifest is signed by K. Every file named here is under docs/, except the chain source manifest, under manifests/.
 ```
 
 > ⚠️ **A co-signature binds KEYS, not PERSONS.** It does not prove one entity controls both, and
@@ -108,6 +108,9 @@ All times UTC.
                         nNonce 1510572694
 2026-08-06 01:40:22   BLOCK 3                                      00000000428303928…
                         nNonce 612491648
+2026-08-08 22:19:22   BLOCK 4                                      0000000097b1298a…
+                        nNonce 2045882594 — the first block with a
+                        pre/post executed-binary bracket (39 minutes wide)
 ```
 
 **At the time of this entry (6 August 2026) the chain was at height 3.** All four blocks linked, and all four satisfied their proof-of-work target —
@@ -238,8 +241,8 @@ since been closed, and they are shown closed rather than deleted, because a gap 
 disappears teaches a reader nothing.**
 
 - ✅ **CLOSED — signed tags.** `Bitcoin-v0.1.2` and `v0.1.3` were lightweight git tags rather than
-  signed tag objects. **`Bitcoin-v0.1.4` is a signed annotated tag**, and every release from here on
-  will be. **The two earlier tags are still lightweight and are not re-cut** — rewriting a
+  signed tag objects. **`Bitcoin-v0.1.4` is a signed annotated tag**, as is `v0.1.5`; the release
+  checklist requires one. **The two earlier tags are still lightweight and are not re-cut** — rewriting a
   published tag breaks every clone and invalidates timestamps anchored to it. All release tarballs
   were and remain GPG-signed, so nothing was unattested; what was missing was attestation of
   the *tag*, and that is fixed forward, not backward.
@@ -260,7 +263,7 @@ disappears teaches a reader nothing.**
   sha256-pinned in `full_build_wsl.sh` and `period_build_wsl.sh`, but the release text a stranger
   reads first does not say so, and OpenSSL's ECDSA and BIGNUM behaviour is consensus-relevant.
   **Corrected forward on 12 September 2026:** the release-text template in `make_release.sh` now
-  carries the library and its hash, so every release from v0.1.6 on will state it. v0.1.5's text
+  carries the library and its hash, so later release texts state it. v0.1.5's text
   is signed and anchored and **is not re-cut**.
 - ◻ **PARTLY CLOSED — one node, no network.** The early blocks were mined by a single node on an
   isolated chain. Since then a second miner has produced blocks (221 and 222, 19 August 2026;

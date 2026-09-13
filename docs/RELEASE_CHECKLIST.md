@@ -239,7 +239,7 @@ anchor, and none of those expire.
 
 **Run the proof sweep** (`python scripts/ots_upgrade.py --dry-run docs/ bitcoin-findings/`). It walks every `.ots`
 it is given, says which carry no `BitcoinBlockHeaderAttestation`, and a release must not ship while one of its
-own proofs is still pending. Stray `.ots.bak` files, which are the other half of
+own proofs is still pending. It also reports stray `.ots.bak` files, which are the other half of
 the same hazard.
 
 It classifies by **reading the attestation marker**, not by file size. The old sweep here used

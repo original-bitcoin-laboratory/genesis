@@ -37,7 +37,7 @@ differential-testing method: the MODEL is validated against the original engine.
 ## Build & run
 
 ```bash
-# MSYS2/MinGW (this machine): g++ 16.1.0 + OpenSSL 3.x
+# MSYS2/MinGW example: g++ 16.x + OpenSSL 3.x
 export GXX=/c/msys64/mingw64/bin/g++
 export PATH="/c/msys64/mingw64/bin:$PATH"   # for libcrypto DLL at runtime
 ./run.sh

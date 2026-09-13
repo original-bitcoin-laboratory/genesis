@@ -133,8 +133,8 @@ The parameter sets are a direct trade.
 
 ### And the ranking flips with the output type
 
-**For pay-to-pubkey, both the signature and the key are on chain.** That is what this laboratory's
-own experimental chain uses (51 of 51 outputs), and what the earliest 2009 coins use.
+**For pay-to-pubkey, both the signature and the key are on chain.** That is what Bitcoin (2026), this laboratory's
+own experimental chain, uses (51 of 51 outputs), and what the earliest 2009 coins use.
 
 ```
                     sig B  +   pk B   =   on-chain crypto payload
@@ -187,5 +187,5 @@ where process spawn is cheaper, which compresses the timing columns and *strengt
 change to the transaction model, which is the only computed part and is printed next to its
 validation so it can be checked rather than trusted.
 
-**If something here is wrong, it is a defect and will be corrected in the open rather than argued
+**If something here is wrong, it is a defect and is corrected in the open rather than argued
 about.** Corrections are published, dated, and not made silently.

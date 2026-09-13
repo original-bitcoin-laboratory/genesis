@@ -68,7 +68,7 @@ SRC=$PWD/src bash ../build-reconstruction/full_build_wsl.sh
 NAME=bitcoin-0.1.x bash make_release.sh   # -> dist/bitcoin-0.1.x.tar.gz
 ```
 
-`make_chain.py` composes the client source from two inputs: the v0.1.0 source tree (`bitcoin-0.1.0.tgz`, SHA256 `ce9da46516e3042741224a7f9061e3181a5a4d17abba72b6e82922af3753d756`; the same tree ships as
+`make_chain.py` composes the client source from two inputs: the source tree distributed as v0.1.0 (its contents are v0.1.1 by PE timestamp and size — [VERSION_LABEL](https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md); `bitcoin-0.1.0.tgz`, SHA256 `ce9da46516e3042741224a7f9061e3181a5a4d17abba72b6e82922af3753d756`; the same tree ships as
 `bitcoin-0.1.0.rar`, SHA256 `8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56`), and
 [`bitcoin-v0.1.0.patch`](bitcoin-v0.1.0.patch) — this chain's genesis, network magic and port, and
 bootstrap channel. It refuses to run unless every substitution matches exactly once, so the build
@@ -89,7 +89,7 @@ The client asserts the genesis hash on startup, so a wrong build does not run.
 the chain is open, so anyone may run it, mine it, or do anything else the licence permits — including
 things this project would not do. **If a market in these coins appears, it is not ours, we did
 not make it, and no price it produces is acknowledged, quoted or relied on anywhere in this project.**
-The coins held here stay unspent and unoffered regardless of what anyone else does.
+The coins held here are unspent and unoffered, whatever anyone else does.
 
 No premine of value, no token, no sale by us, no price set, no promises. **We solicit no market;
 whether a third party values or trades these units is outside any software's control, and we do
@@ -100,9 +100,9 @@ safe here only because there is nothing to steal. Run the client in a VM.
 
 ## Provenance
 
-**Not a notary.** This chain's own proof-of-work is difficulty 1 and stays there: the retarget only
-rises for a chain that sustains faster than ten-minute blocks, and this one does not, so every
-retarget clamps at the proof-of-work floor. Its whole history is rewritable in seconds by one mining
+**Not a notary.** This chain's own proof-of-work is difficulty 1 and has stayed there: the retarget only
+rises for a chain that sustains faster than ten-minute blocks, which this one has not, so at its
+pace a retarget clamps at the proof-of-work floor. Its whole history is rewritable in seconds by one mining
 ASIC. The integrity of the record is therefore **derivative, not native**: each published batch of
 blocks is hashed into a `SHA256SUMS` whose OpenTimestamps proof anchors, through the OpenTimestamps
 calendars, into the chain whose genesis is `000000000019d668…` — identified here by that hash only (see [`bitcoin-findings/`](../../bitcoin-findings/)). What

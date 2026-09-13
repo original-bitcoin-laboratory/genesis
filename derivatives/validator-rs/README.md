@@ -64,7 +64,7 @@ native node matters only at extreme scale; this is that node, built and tested.)
   (`miner`) — so a Rust node mines coins, pools a spend, and mines it into a block.
 
 This is a **complete node** — consensus + transport + wallet/RPC — a byte-for-byte twin of the Python
-`netnode`, in a second language. There is no remaining consensus or transport feature left to port. Hashes use pure-Rust RustCrypto crates (`ripemd`,
+`netnode`, in a second language. There is no remaining transport feature left to port; the one consensus difference is the retarget rule, below. Hashes use pure-Rust RustCrypto crates (`ripemd`,
 `sha1`); arithmetic uses `num-bigint`; ECDSA uses `k256`; networking + persistence use only `std` — no
 C / OpenSSL / async runtime anywhere.
 
@@ -75,7 +75,7 @@ cargo test                                       # cross-checks everything again
 
 **Limit — retargeting.** Like `netnode`, this validator retargets every 60 blocks against a 30-second
 spacing on every chain. On the `bitcoin` chain that equals the 2009 client only while `nBits` stays at
-the floor `0x1d00ffff`, which it has since genesis; the 2009 rule is not yet wired in.
+the floor `0x1d00ffff`, which it has since genesis; the 2009 rule is not wired in.
 
 ## How it's verified
 
@@ -112,7 +112,7 @@ the floor `0x1d00ffff`, which it has since genesis; the 2009 rule is not yet wir
   validating it into its own mempool.
 - `tests/discovery.rs` (1): **`addr` gossip** — B, dialing A, learns A's advertised address and the
   peers A already knows.
-- `tests/dos.rs` (1): a peer **flooding malformed blocks** (which a naive parser would panic on) is
+- `tests/dos.rs` (2): a peer **flooding malformed blocks** (which a naive parser would panic on) is
   **dropped for misbehavior** — no panic, nothing accepted.
 - `tests/rpc.rs` (1): a node **mines coins to its wallet**, then a client drives it over the
   **localhost RPC** — `getbalance` (the matured coinbase), `getnewaddress`, `send` (returns a txid),

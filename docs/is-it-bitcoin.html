@@ -406,7 +406,7 @@ function syncSegs(){
 
 // Count the CONCLUSION people reach, and only when it changes. render() runs on every
 // keystroke and toggle, so counting each call would drown the dashboard in noise and tell
-// us nothing; counting each distinct verdict tells us which of the four senses of "Bitcoin"
+// us nothing; counting each distinct verdict tells us which of the five senses of "Bitcoin"
 // readers actually end up in. The subject's NAME is not sent -- it is free text a visitor
 // typed, so it is exactly the thing that must not leave the page.
 let _lastVerdict=null;
@@ -419,7 +419,7 @@ function countVerdict(html){
 
 function render(){
   const name=subjectEl.value.trim();
-  subjEchoEl.innerHTML=name?`Placing <b>${esc(name)}</b> across the four senses:`:"";
+  subjEchoEl.innerHTML=name?`Placing <b>${esc(name)}</b> across the five senses:`:"";
   blEl.innerHTML=bottomLine();
   countVerdict(blEl.innerHTML);
   cardsEl.innerHTML="";

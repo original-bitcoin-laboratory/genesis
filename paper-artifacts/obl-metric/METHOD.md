@@ -1,7 +1,10 @@
 # Reference-relative protocol-profile comparison — method
 
 > **Historical record, 14 August 2026.** Figures below (four chains, 17 + 2 axes) predate the published
-> 19-axis / 5-chain artifacts; `tables/figures.json` and `CHANGELOG.md` are current.
+> 19-axis / 5-chain artifacts; `tables/figures.json` and `CHANGELOG.md` are current. Two arguments below were
+> later retracted in the paper itself (§2): the criterion-(3) wording that a chain without a dated specification
+> "cannot be measured by this instrument at all", and the class-(ii) rationale that the November reference would
+> otherwise have "zero jointly specified axes". They stay here as the record of what this file said.
 
 **Regenerated 14 August 2026.** ⚠️ **This file had drifted badly** — it still described a one-class
 axis rule and an 18-axis enumeration after both were replaced, and carried retracted provenance

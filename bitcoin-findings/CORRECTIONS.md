@@ -253,3 +253,27 @@ here rather than edited in place**, exactly as the policy at the top of this fil
   here and is not published; nothing about the future is asserted.
 - **Titles reading "the Bitcoin chain"** in the sealed block 4 set mean Bitcoin (2026), the laboratory's
   experimental chain — not the 2009 Bitcoin, not money.
+
+## 13 September 2026 — a final read of the sealed sets before the language pass closed
+
+A file-by-file read of every findings set, recorded here rather than edited into the sealed narratives:
+
+- **Block 1, sealed:** `2026-08-05-block1/FINDINGS.md` names the chain without saying which one. Read every
+  "the chain" in it as Bitcoin (2026), the laboratory's experimental chain — not the 2009 Bitcoin, not money.
+- **"never", sealed:** `2026-08-06-block2/FINDINGS.md` ("Tier 1, never published"), `2026-08-10-blocks5-28/FINDINGS.md`
+  ("never committed", "never enters a repository") and `2026-08-12-blocks61-63/FINDINGS.md` say "never" where
+  the project now says "not". Read each as a statement of what is the case, not a promise about the future.
+- **Block 4, sealed:** line 95 gives a command with a local-workspace path
+  (`original-bitcoin-laboratory/lab/genesis/derivatives/bitcoin/net.py`); inside the repository the path is
+  `derivatives/bitcoin/net.py`. Line 100 says the directory "carries the datadir, both wallets and the client":
+  none of those is in this repository; they are in the offline evidence set, whose hashes the manifest records.
+- **Blocks 5–28, sealed:** "a copy already held in this repository" / "already in `derivatives/bitcoin/dist/`"
+  — that directory is not tracked; the copy meant is the published release (the same correction already
+  recorded for `blocks29-50` and `blocks51-60`).
+- **Blocks 298–731, sealed:** "roughly 1.9× faster than the chain's lifetime average" compares the round
+  (49.2 min/block) with the average *before* the round (92.2). Against the lifetime average the same file
+  prints three lines above (66.7 min/block, including the round) the factor is 1.4×.
+- **Blocks 122–295, sealed:** "the distinction the obl-ledger correction turned on" refers to a correction made
+  while preparing the laboratory's paper on executing the earliest Bitcoin (a manuscript, not a public record
+  a reader can follow); the distinction itself is the one stated in the surrounding sentence.
+

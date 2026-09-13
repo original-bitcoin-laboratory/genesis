@@ -133,8 +133,8 @@ reconstruction.**
 
 ## The honest recommendation
 
-The **reproducible recipe** (`verify_genesis.py`) already gives you a durable, honest
-kind of permanence — anyone can re‑derive the exact genesis, with no node to
+The **reproducible recipe** (`verify_genesis.py`) already gives you an honest kind of
+durability — anyone can re‑derive the exact genesis, with no node to
 maintain and no way to mislead. A live testnet adds *liveness* but also real
 obligations (security, maintenance, and the framing above) and lasts only
 if strangers choose to run it. Do stage 1–2 if you want the technical satisfaction of two

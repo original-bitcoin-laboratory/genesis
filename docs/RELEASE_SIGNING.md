@@ -30,9 +30,9 @@ secrets, keys, or binaries staged (`git ls-files | grep -Ei 'key|secret|\.env'` 
 ## 2. Tag, signed
 
 ```bash
-git tag -s netnode-vX.Y.Z-experimental -m "NOV08-X / JAN09-X experimental release X.Y.Z — NOT money"
-git push origin netnode-vX.Y.Z-experimental
-git verify-tag netnode-vX.Y.Z-experimental   # sanity check the signature
+git tag -s vX.Y.Z-experimental -m "NOV08-X / JAN09-X experimental release X.Y.Z — NOT money"
+git push origin vX.Y.Z-experimental
+git verify-tag vX.Y.Z-experimental   # sanity check the signature
 ```
 
 (The first pre‑release, `netnode-v0.1.0-experimental`, was **unsigned**. From now on, sign every tag;

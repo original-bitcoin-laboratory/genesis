@@ -4,8 +4,8 @@
 corpus (then 317 vectors) was replayed over the wire against this lab's release `bitcoin.exe` (`c3f15fc5…`, the v0.1
 source with the nine chain-separation substitutions, OpenSSL 1.0.2u), running on an isolated full
 clone of the mining node with its chain at height 963: **136/136 script vectors, 17/17 signature
-vectors and 19/19 block cases agreed with the binary, and every one of the 19 rejected blocks
-produced its exact `main.cpp` error string in the node's `debug.log`.** The three non-strict DER
+vectors and 19/19 block cases agreed with the binary; each of the 16 rejected blocks
+produced its exact `main.cpp` error string in the node's `debug.log`, and the 3 the corpus expects to be accepted were accepted.** The three non-strict DER
 signatures were rejected by that OpenSSL; the verdict is recorded per vector under `witnessed`. The
 unmodified 2009 binary (OpenSSL 0.9.8) has not been replayed yet; its column stays `expected_binary`.
 (Two headers were already `JAN09-EXECUTED`.) This directory
@@ -26,7 +26,8 @@ python -m pytest -q                 # the above, plus the replay harness end-to-
 
 The January 2009 consensus rules have not been written down as a document; they exist as a C++
 tree you have to run. The lab closes part of that gap with four implementations that agree — the
-Python model, the C++/OpenSSL port, the Rust validator, and the unmodified 2009 binary in a VM — but
+Python model, the C++/OpenSSL port, the Rust validator, and the release client over the wire (the
+unmodified 2009 binary witnesses the two genesis headers so far) — but
 their agreement was recorded in language-specific containers. A stranger who wants to write a fifth
 implementation from the rules should not need Python, Rust *or* the binary to check it. This corpus is
 the shared target: pass it and you agree with all four on these surfaces.
@@ -95,9 +96,10 @@ written from the text is for.
 
 ## What the vectors do not cover, said plainly
 
-- **Not yet replayed against the frozen `bitcoin.exe`.** The binary is the oracle only for the two genesis
-  headers, which it reproduces (`JAN09-EXECUTED`). Everything else is `MODEL`-level, agreed across the
-  reimplementations. `replay/` is built and tested against a stand-in; the VM run is the remaining human step.
+- **Not yet replayed against the unmodified 2009 `bitcoin.exe`** (OpenSSL 0.9.8, in the R4 appliance). That
+  binary is the oracle only for the two genesis headers, which it reproduces (`JAN09-EXECUTED`). The release
+  client (`c3f15fc5…`) was replayed on 13 September 2026 (`r5-findings/2026-09-13-binary-replay-release/`);
+  the appliance run is the remaining human step.
 - **Retarget boundaries inside a block chain** and reorganisations between branches of *equal* height are
   not in `blocks.json`; the retarget arithmetic has its own suite. (The wall-clock rule is replayed with the
   clock the vector carries; a successful and a failed reorganisation, and the fact that v0.1 does not consult

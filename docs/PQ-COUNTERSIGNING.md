@@ -42,7 +42,7 @@ answers *which came first*.**
 on hash functions**, so it stands in the same place SHA-256 does.
 
 ```
-public key   126 bytes      parthod0x-pq-countersign.pem
+public key   126 bytes      parthod0x-pq-countersign.pem   (PEM; the raw SLH-DSA key is 32 bytes)
 signature  7,856 bytes      <release>.SHA256SUMS.slhdsa
 ```
 

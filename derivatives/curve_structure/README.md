@@ -15,7 +15,7 @@ with pure-integer arithmetic (no libraries, no secrets), each re-evaluable ident
     endomorphism tax = 0.792 bit; secp256k1 is 0.792 bit below P-256 (a tax, not a break)
 (2) TEXTBOOK SAFETY: p prime, n prime, cofactor 1, non-anomalous, MOV-safe, G on curve — all PASS
 (3) PROVENANCE: Gx is not sha256(obvious seed) mod p; 977 is not the minimal prime c (263 is)
-(4) TWIST: small factors {3^2,13^2,3319,22639} -> ~33-bit leak vs a non-validating impl
+(4) TWIST: small factors {3^2,13^2,3319,22639} -> ~37-bit leak (2^36.7) vs a non-validating impl
 ```
 
 ## The five facts
@@ -44,7 +44,7 @@ with pure-integer arithmetic (no libraries, no secrets), each re-evaluable ident
    master key; only un-derivable ones can, and here the only un-derivable one is a benign generator.)*
 
 4. **The quadratic twist wants point validation.** The twist order has small factors
-   `{3², 13², 3319, 22639}` leaking ~33 key bits to an implementation that **skips** point validation;
+   `{3², 13², 3319, 22639}` leaking ~37 key bits (2^36.7) to an implementation that **skips** point validation;
    the factorization is verified to reconstruct the twist order exactly, and the large cofactor
    (~2²²⁰) is prime. libsecp256k1 validates points, so Bitcoin is unaffected — a "handle with care",
    not a free curve.
@@ -69,7 +69,7 @@ claim.
 
 The endomorphism (derived == published, `[λ]G`, `1+λ+λ²≡0`, `j=0`); the tax (2¹²⁷·⁰³, 0.79 bit, below
 P-256); textbook safety (all six pass); the generator (not a NUMS point); the twist (`{3²,13²,3319,22639}`,
-~33-bit leak, exact factorization, prime cofactor); the CM point-count reproducing secp256k1's published
+~37-bit leak, exact factorization, prime cofactor); the CM point-count reproducing secp256k1's published
 order; and `977` as the minimal design-satisfying constant (263 composite order, 361 wrong `p%3`).
 
 ```bash

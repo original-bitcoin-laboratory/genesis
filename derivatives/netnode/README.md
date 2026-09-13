@@ -141,16 +141,15 @@ reorgs safely, a validating **mempool** relays real transactions into assembled 
 **wallet + localhost RPC** let a person mine, check a balance, and send — but this is *not* safe as
 money and not permanent. The difficulty *floor* exists (`--min-difficulty`) but **defaults to easy** (a
 real one is an operator job); the RPC is **loopback‑only and unauthenticated**; the wallet holds
-**experimental keys for a valueless chain.** Still ahead (see the scope doc): running at a **real
-difficulty**, GPG‑**signed** builds, a **security review**, and — for extreme scale only — a
-full **native node** (the dominant per‑signature cost is already handled by the optional
-libsecp256k1 verifier), and — the part no code delivers — **other operators.** A chain persists only
+**experimental keys for a valueless chain.** Not done here (see the scope doc): running at a **real difficulty** and an external
+**security review**. A native node exists (`derivatives/validator-rs/`) and releases are GPG‑signed.
+The part no code delivers is **other operators.** A chain persists only
 while independent operators keep running it. **Not money.**
 
 **Limit — retargeting.** This node retargets every 60 blocks against a 30-second spacing on every chain it
 serves. On the `bitcoin` chain that equals the 2009 client only while `nBits` stays at the floor
 `0x1d00ffff`, which it has since genesis; the 2009 rule (2016 blocks, two weeks) is modelled in
-`derivatives/retarget/` and is not yet wired into this node or `validator-rs`. Until it is, the first
+`derivatives/retarget/` and is not wired into this node or `validator-rs`. The first
 window of 60 blocks faster than 30 minutes in total would make this node and the 2009 client disagree.
 
 Provenance: consensus is `chainsync.Chain` (faithful to v0.1); the transport, persistence, and CLI

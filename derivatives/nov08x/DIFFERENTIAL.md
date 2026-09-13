@@ -13,7 +13,7 @@ November source); JAN09 is the differential baseline.
 | 200,000 | 25 | 50 |
 | 209,999 | 25 | 50 |
 | 210,000 | 25 | 25 |
-| 420,000 | 6 | 12 |
+| 420,000 | 6.25 | 12.5 |
 
 NOV08-X starts at **100 coins**, halving every **100,000** blocks; JAN09 at 50, halving every 210,000.
 
@@ -24,8 +24,8 @@ NOV08-X starts at **100 coins**, halving every **100,000** blocks; JAN09 at 50, 
 
 ## 3. Retarget (one full window)
 
-- **blocks came 3x too SLOW:** NOV08-X → nBits 24->23 (one bit EASIER);  JAN09 → target x4.00 (proportional, clamped 4x).
-- **blocks came 3x too FAST:** NOV08-X → nBits 24->25 (one bit HARDER);  JAN09 → target x0.71 (proportional, clamped 4x).
+- **blocks came 3x too SLOW:** NOV08-X → nBits 24->23 (one bit EASIER);  JAN09 → target x3.00 (proportional, clamped 4x).
+- **blocks came 3x too FAST:** NOV08-X → nBits 24->25 (one bit HARDER);  JAN09 → target x0.33 (proportional, clamped 4x).
 
 NOV08-X nudges by **±1 bit** (max one change per 30-day window); JAN09 scales the target **proportionally** over its 14-day window.
 

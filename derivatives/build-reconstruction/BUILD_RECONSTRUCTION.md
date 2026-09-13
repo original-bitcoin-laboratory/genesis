@@ -40,7 +40,7 @@ unsigned int blk = min(nSize - i, 1 + 4999999 / sizeof(T));
 `nSize - i` is `unsigned int`; `1 + 4999999 / sizeof(T)` is `size_t`. On the 32-bit
 platform v0.1 shipped for, `size_t == unsigned int`, so `std::min` deduces one type and
 compiles. On a 64-bit target the two operands differ and template deduction fails. The
-released binary (`bitcoin.exe`, sha256 `fbcac071…`) is a 32-bit PE; this line is a direct
+2009 released binary (`bitcoin.exe`, sha256 `fbcac071…`) is a 32-bit PE; this line is a direct
 fingerprint of that target. A faithful build must target **i686 (32-bit)**.
 
 **2. Public-struct OpenSSL (≤ 1.0.2) — `bignum.h:49`.**
@@ -138,7 +138,7 @@ structurally bound to a period toolchain on three independent axes:
 - **OpenSSL 0.9.8–1.0.2** (from `bignum.h:49`, the hard one),
 - **wxWidgets 2.8 + Win32** (from `util.h` and the GUI/net/db units),
 
-plus **Boost 1.3x** and **Berkeley DB 4.7**. That is exactly the "period-appropriate build
+plus a period **Boost** (1.42.0 in the build that succeeded) and a **Berkeley DB** with the 4.7 API (4.8.30.NC used). That is exactly the "period-appropriate build
 environment" R2 names. See [`PERIOD_BUILD.md`](PERIOD_BUILD.md) for a recipe that pins
 those versions; it is the documented reproducible path for anyone with the period toolchain
 (the released `bitcoin.exe` itself is the JAN09-EXECUTED oracle — see `docs/R3_*`).

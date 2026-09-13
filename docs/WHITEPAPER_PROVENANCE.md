@@ -120,7 +120,7 @@ change outputs. Getting either wrong yields a corrupt file and a confident-looki
 
 Read it yourself: `strings bitcoin.pdf | grep CreationDate`, or open the file in any hex viewer.
 
-**24 March 2009** is 144 days after the paper was announced, 80 days after the genesis block, and 74
+**24 March 2009** is 144 days after the paper was announced, 80 days after the genesis block, and 75
 days after v0.1 was released. Whatever this file is, it was not created on 31 October 2008.
 
 ## A pre-revision draft *is* preserved — correcting this note

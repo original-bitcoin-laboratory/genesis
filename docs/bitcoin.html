@@ -215,7 +215,7 @@ height 2  000000001690a604f122ddf97c77d2580535fde2b2d700dc8a4478aea7ed75d5   6 A
 height 3  00000000428303928c985745792c7ad7644cb5f310b417263a66108fa7f49dcf   6 Aug 2026 01:40:22Z
 height 4  0000000097b1298a990e8f872e4acda48ace5274e99d2a5f9a483f183c1bd20c   8 Aug 2026 22:19:22Z</pre>
     <dl>
-      <dt>sealed through</dt> <dd>block 4 (8 Aug 2026) — nonce 2045882594; the current tip is on the <a href="status.html">status feed</a></dd>
+      <dt>sealed through</dt> <dd>block 731 (6 Sep 2026), in dated findings sets under <a href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/bitcoin-findings">bitcoin-findings/</a>; the current tip is on the <a href="status.html">status feed</a></dd>
       <dt>mined by</dt>
       <dd><b>Block 1</b> by <span class="mono">bitcoin.exe</span> cfb59606… (v0.1.1).
         <b>Every block since, in the sealed sets,</b> by <span class="mono">c3f15fc5…</span> — <b>the released v0.1.3 client</b>
@@ -499,18 +499,18 @@ SRC=$PWD/derivatives/bitcoin/src bash derivatives/build-reconstruction/full_buil
     <h2>Mirrors</h2>
     <dl>
       <dt>IPFS</dt>
-      <dd>v0.1.2, by content hash &mdash; and either it matches
+      <dd>v0.1.5, by content hash &mdash; and either it matches
         <span class="mono">SHA256SUMS</span> or it does not. Pinned via Pinata, whose gateway serves
         it immediately; <b>a public gateway may need two or three attempts</b> while it locates a
-        provider, and some public gateways are themselves unreliable. Measured 15&nbsp;Aug&nbsp;2026:
-        3 of these 4 objects came back from <span class="mono">ipfs.io</span>, one of them only on
+        provider, and some public gateways are themselves unreliable. Measured 15&nbsp;Aug&nbsp;2026 on the v0.1.2 pins:
+        3 of 4 objects came back from <span class="mono">ipfs.io</span>, one of them only on
         the third try. <b>Content addressing pins what the bytes are, not that someone is
         still serving them</b> &mdash; which is why the release, not the pin, is the primary copy:
-        <pre style="margin-top:10px;font-size:11px;line-height:1.6">bitcoin-0.1.2.tar.gz      QmXeWBKYEJCBYJaP7N1FLjQbLxmqWtTjydyqLwBncRKUvP
-bitcoin-0.1.2.tar.gz.asc  Qmcgxva1kv9SGL6EwwEoCYN8RfbB9HBbeXyPziQpfMjeXW
-SHA256SUMS                QmU1JwBJ9Enw2VJwKoet1HLnpRiKWpT5yPsHavGJ1rTHXb
-SHA256SUMS.asc            QmcVxjbgyQxj6KWP32MoBrYfvPfy4VRnn9ZyAeW5conQH2</pre>
-        <span style="opacity:.7">Earlier releases:
+        <pre style="margin-top:10px;font-size:11px;line-height:1.6">bitcoin-0.1.5.tar.gz      Qmf3gedtsL5oaWXaWLwWqjNNjxC2qwDNGguWT6y1CwoPAu
+bitcoin-0.1.5.tar.gz.asc  QmeoomwgPrJ1zdrY81wfZuxFUfuvcXMRb1afQvh1tgXT2D
+SHA256SUMS                QmdguWZuoNEkmxSN5CLZhXJZWg7FsxFxf5u9Qy8rNTSYUW
+SHA256SUMS.asc            QmbNRBoVwYTU4H3jkXdWtrGGecq525ai5hfi1DbzurhEpc</pre>
+        <span style="opacity:.7">All releases, including the post-quantum counter-signature and the proofs:
         <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/PRESERVATION.md">PRESERVATION.md</a></span></dd>
 
       <dt>Radicle</dt>

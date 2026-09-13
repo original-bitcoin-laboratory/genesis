@@ -181,7 +181,6 @@ cell witnessed on the real binary.
 - Write `FINDINGS.md` like `r3-findings/2026-07-31-twonode-mined-block/FINDINGS.md`: environment, the
   `verify_r4.py` output (heights, PoW, orphans, convergence), both `bitcoin.exe` = `fbcac071…`, and the
   divergences (peer-gated miner, stochastic reorg, maturity constraint for R4c).
-- Then update `docs/STATUS.md` + the paper §8: move sustained mining + reorg from "modeled/deferred" to
-  **witnessed (r4-findings/…)**.
+- `docs/STATUS.md` and the paper §8 record sustained mining + reorg as **witnessed (r4-findings/…)**.
 
 **NOT money.** Isolated networks, real genesis, valueless by design.

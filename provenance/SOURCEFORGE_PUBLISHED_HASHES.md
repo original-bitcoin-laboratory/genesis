@@ -27,7 +27,7 @@ the release the Laboratory rebuilds.
 It also corroborates two figures published elsewhere in this project from unrelated routes:
 
 - **`bitcoin.pdf` = 184,292 bytes, MD5 `d56d71ec…`** — identical to the canonical whitepaper, and to
-  the MD5 a High Court expert published for the court's own control copy.
+  the MD5 the court's document expert published for the court's own control copy (COPA v Wright [2024] EWHC 1198 (Ch)).
 - **`pubDate 24 Mar 2009 17:50:18`** — the same instant the SourceForge mirrors report as their
   `Last-Modified`, seventeen minutes after bitcoin.org's own filesystem timestamp of `17:33:15`.
 - **`download-count 83`** — the figure this project has published as the upper bound on the Research

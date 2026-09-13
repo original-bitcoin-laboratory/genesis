@@ -34,3 +34,16 @@ python r4-findings/2026-08-02-reorg-partition/verify_r4.py \
     r4-evidence/2026-08-02-reorg-partition/nodeB_blk0001.dat
 # node A: 17 blocks / 1 orphan / reorg witnessed: True;  node B: 16 / 0;  same best tip: True
 ```
+
+## Corrections (13 September 2026)
+
+Recorded here rather than edited into the sets:
+
+- `2026-08-01-sustained-relay/EVIDENCE.md` and `2026-08-02-reorg-partition/EVIDENCE.md` say the manifest's OK
+  lines cover `FINDINGS.md`; the manifests list the verifier and the raw captures only. Their reference to a
+  dataset "named in `screenshots/INDEX.md`": that index names no dataset; the sanitised deposit is described in
+  the offline evidence set and is not published in this repository.
+- `2026-08-01-sustained-relay/FINDINGS.md` and `2026-08-02-reorg-partition/FINDINGS.md` give coinbase maturity
+  as 100 (or "~101 blocks"); the client's rule is 120, as `2026-08-06-relayed-spend/` established.
+- `2026-08-06-relayed-spend/FINDINGS.md` says the bytes "never are" published. Read: they are not; the hashes are.
+

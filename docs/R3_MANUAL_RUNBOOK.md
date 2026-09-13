@@ -8,7 +8,8 @@ produces the top-rung **JAN09-EXECUTED** evidence. Read
 Grounded in the archive: OS target is **Windows NT/2000/XP** (`readme.txt`); run is
 "unpack + run `bitcoin.exe`", mine via **Options → Generate Coins** (or `/gen`); the
 node writes to **`%APPDATA%\Bitcoin\`** (`main.cpp:1353`). On an isolated chain from
-the hardcoded genesis, difficulty is 1 → blocks are CPU-mineable in seconds/minutes.
+the hardcoded genesis, difficulty is 1; the miner hashes only once a peer is connected, and a
+block then takes tens of minutes to an hour or more per machine.
 
 > Safety: isolated network only, **no internet**, disposable disks, snapshots, no
 > real keys/funds. Mined coins are laboratory coins on an isolated branch — not
@@ -120,5 +121,5 @@ the conclusion is committed with the same provenance discipline.
 - **nodes don't connect:** confirm both can ping `172.20.0.10`; `mini_ircd` is
   running; the `hosts` line is exact; IPs are `172.20.x` (not `192.168.x`); firewall
   allows 8333. Capture both `debug.log`s and send them — the IRC lines tell us why.
-- **mining seems stuck:** it shouldn't at difficulty 1; give it a few minutes on one
-  node, confirm *Generate Coins* is checked.
+- **mining seems stuck:** a lone node does not hash (the miner waits for a peer); with two
+  nodes peered, give it an hour, and confirm *Generate Coins* is checked.

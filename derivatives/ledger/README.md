@@ -42,4 +42,4 @@ python -m pytest        # 11 passed
 Rules‑level UTXO validation (signatures real, scripts executed, value/maturity/
 double‑spend enforced). It is not block assembly or the P2P layer — those are
 `../nov08x/net.py` / `../jan09x/net.py` and `../p2p`. Wiring a mined block's txs
-through this ledger on a running X‑chain node is the natural next step.
+through this ledger on a running X‑chain node would be the next cross‑check.

@@ -119,6 +119,7 @@ faithful). The generated inventory carries a `script.h`/`script.cpp` `file:line`
 | bit logic | 8 | `OP_INVERT` `OP_AND` `OP_OR` `OP_XOR` `OP_EQUAL` `OP_EQUALVERIFY` |
 | numeric | 27 | `OP_ADD` `OP_SUB` `OP_BOOLAND` `OP_NUMEQUAL` `OP_MIN` `OP_MAX` `OP_WITHIN` `OP_NOTEQUAL` |
 | crypto | 10 | `OP_RIPEMD160` `OP_SHA1` `OP_SHA256` `OP_HASH160` `OP_HASH256` `OP_CHECKSIG` `OP_CHECKMULTISIG` |
+| template pseudo-words | 3 | `OP_PUBKEY` `OP_PUBKEYHASH` `OP_INVALIDOPCODE` (match templates; do not execute) |
 
 ### Contract forms the node validates
 
@@ -165,7 +166,7 @@ python -m netnode ctl --rpc 18332 sendrawtransaction <signed-tx-hex>   # prints 
 To build that raw spend in Python (e.g. `<sig> <preimage>` to open the hash‑lock above):
 
 ```python
-# inside genesis/derivatives
+# inside genesis/derivatives/model
 import cscript
 from tx_sighash import Tx, TxIn, TxOut, serialize as ser_tx
 from spend import sign

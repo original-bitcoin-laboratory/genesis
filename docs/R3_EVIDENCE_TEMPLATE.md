@@ -1,6 +1,6 @@
 # R3 run findings — `<RUN>`
 
-Evidence level: **JAN09-EXECUTED** (unmodified v0.1.0 `bitcoin.exe` in an isolated
+Evidence level: **JAN09-EXECUTED** (unmodified `bitcoin.exe` from the archive labelled v0.1.0, v0.1.1 by its bytes, in an isolated
 VM). Raw artifacts are hashed in `EVIDENCE_MANIFEST.json` (bytes stay under the
 gitignored `r3-evidence/<RUN>/`). Fill this in from the observed run; cite the
 `sha256` of each supporting artifact from the manifest.

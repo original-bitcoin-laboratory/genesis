@@ -44,4 +44,4 @@ python -m pytest         # 5 passed
 Implemented via a minimal `trace` hook added to `../model/evalscript_model.run`
 (back‑compatible; the model suite is unchanged — see `derivatives/model`). This is the debugger/stack
 tracer of R7; the composer / UTXO viewer / evidence exporter build on the same engine
-plus `../ledger` and are the natural next studio pieces.
+plus `../ledger`, and would build on the same engine.

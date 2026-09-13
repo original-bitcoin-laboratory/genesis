@@ -8,7 +8,7 @@ referee-response letter, and it was right.** The methodological admissions stay 
 compressed to a sentence each. The account of *how* each one was found lives here.
 
 ★ **Nothing is deleted, only relocated.** A finding that cost something to learn is worth keeping;
-it is simply not what a reader of the paper came for.
+it is simply not what a reader of the paper came for. Rounds 5–12 are not reproduced here.
 
 ## Round 19 (16 Aug 2026) — the gate closes, and a claim about my own edit was wrong
 

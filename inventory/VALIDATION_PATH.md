@@ -64,9 +64,9 @@ strict succession test.
 **B. Subsidy halves on the *global* `nBestHeight`, not the block's own height.**
 `GetBlockValue` (`src/main.cpp:675`) computes `nSubsidy >>= (nBestHeight /
 210000)` — it reads the node's current best height, not `pindex->nHeight` of the
-block being valued. A consensus/reproducibility subtlety to test in R4.
+block being valued. A consensus/reproducibility subtlety, noted for the executed runs.
 
-## Per-opcode reachability (seed for R4)
+## Per-opcode reachability
 
 `EvalScript` is reached for every non-coinbase input via
 `ConnectInputs → VerifySignature → EvalScript`, executing `scriptSig` then

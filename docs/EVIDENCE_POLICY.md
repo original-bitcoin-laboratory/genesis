@@ -31,6 +31,7 @@ Use one of these prefixes in reports:
 - resulting UTXO state;
 - failure paths and security limitations;
 - explicit distinction between native rule and external coordination.
+
 ## Sealed sets and revisions
 
 A findings set is sealed by its `SHA256SUMS`, whose OpenTimestamps proof anchors it in a Bitcoin

@@ -6,7 +6,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Original Bitcoin Laboratory">
 <meta property="og:url" content="https://bitcoin-lab.org/tracker.html">
-<meta property="og:title" content="Pick an origin and a moment in history and see how far each Bitcoin version stood from it — distance, not identity; no chain privileged. Not money.">
+<meta property="og:title" content="How far from the origin? — Bitcoin origin-distance tracker">
 <meta property="og:description" content="Pick an origin and a moment in history and see how far each Bitcoin version stood from it — distance, not identity; no chain privileged. Not money.">
 <meta name="twitter:card" content="summary">
 <meta charset="utf-8">
@@ -181,7 +181,7 @@
     <p>Companion: <a href="./is-it-bitcoin.html" style="color:var(--focus)">Is it a Bitcoin?</a> — a
       reasoning compass that maps any object onto the seven senses of the word, honest about where the
       answer is convention rather than fact. &nbsp;·&nbsp; <a href="/" style="color:var(--focus)">Lab home →</a></p>
-    <div class="tags"><span>JAN09 / nov08 values — source-verified [S]</span><span>change dates — public record [D]</span><span>Bitcoin / JAN09-X / NOV08-X — MODEL</span></div>
+    <div class="tags"><span>JAN09 / nov08 values — source-verified [S]</span><span>change dates — public record [D]</span><span>Bitcoin (2026) — EXECUTED (the released client); JAN09-X / NOV08-X — MODEL</span></div>
   </div>
 </div>
 
@@ -211,7 +211,7 @@ const FROZEN = {
     sig_encoding:"lenient", crypto_lib:"openssl", pow_algo:"sha256d-compact",
     monetary:"jan 1e8/50/210k/10m", consensus_db:"bdb", witness:"inline", sig_scheme:"ecdsa"}
 };
-const RECON = {                                  // the lab's reconstructions (MODEL), from 26 Jul 2026
+const RECON = {                                  // the lab's own chains: Bitcoin (2026) runs the released client (EXECUTED, from 3 Aug 2026); JAN09-X / NOV08-X are MODEL builds, from 26 Jul 2026
   // Runs the January 2009 client itself rather than modelling it, so crypto_lib and consensus_db are the
   // real OpenSSL and Berkeley DB it links, not null. Its consensus code is unmodified: the release
   // changes only the genesis and the network identity, neither of which is an axis here.

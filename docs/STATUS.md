@@ -202,7 +202,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
   `…/2026-07-31-twonode-mined-block`); NOV08 ceiling established (= NOV08-Minimal). reproduce.py
   at that date **11 suites / 177 tests** (13/13 steps); the current count is whatever `scripts/reproduce.py` reports.
 - [x] **JAN09-EXECUTED — genesis witnessed (2026-07-26, `r3-findings/run1/`).** The
-  unmodified v0.1.0 `bitcoin.exe` (sha256 `fbcac071…`, verified pre-run) was run and
+  unmodified `bitcoin.exe` from the archive labelled v0.1.0 (sha256 `fbcac071…`, verified pre-run) was run and
   **reconstructed the exact genesis block** — hash `000000000019d668…`, merkle
   `4a5e1e…`, nonce `2083236893`, nTime `1231006505`, nBits `1d00ffff`, the Times-
   headline coinbase, 50-coin reward, `AddToBlockIndex … height=0`. Independently

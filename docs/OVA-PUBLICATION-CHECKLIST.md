@@ -38,11 +38,11 @@ amount of hashing makes a secret publishable.**
 obl-r4-nodes.ova     the RESEARCH appliance -- preserves the ability to RE-RUN the machine.
                      Contains wallets. NOT published. Already hashed and recorded.
 a clean appliance    the REPRODUCIBILITY artifact -- a fresh guest with the binary, the
-  (not yet built)    isolated network and the chain data, and NO WALLET AT ALL, built for
+  (if built)         isolated network and the chain data, and NO WALLET AT ALL, built for
                      the purpose of being handed to strangers.
 ```
 
-**Everything below applies to that second appliance when it is built.** The hash and manifest steps
+**Everything below applies to that second appliance if it is built.** The hash and manifest steps
 also apply to the first — and are already done — because a hash on record makes any copy that
 surfaces checkable, whether or not it is meant to circulate.
 
@@ -59,7 +59,7 @@ Run these **inside the guest** before exporting, or against a mounted copy of th
 ```
 WALLETS          wallet.dat anywhere on the disk, including
                  %APPDATA%\Bitcoin\, the Recycle Bin, and any backup/ folder
-                 ⚠️ THE MINER WALLET HOLDS 64 KEYPAIRS. It must NOT ship.
+                 ⚠️ THE MINER WALLET HOLDS LIVE KEYS. It must NOT ship.
 KEYS             *.pem *.key *.asc *.gpg id_* .ssh/ .gnupg/ .radicle/
 HISTORY          PowerShell PSReadLine history, cmd doskey, .bash_history
 CREDENTIALS      Windows Credential Manager, saved RDP/SMB passwords,
@@ -134,7 +134,7 @@ torrent         free, durable while anyone seeds, and a magnet link is content-a
                 Weakest availability; strongest cost profile.
 on request      publish the hash and the manifest; hand the image to anyone who asks.
                 ⚠️ Costs nothing and reaches almost nobody -- but it is honest, and it is
-                strictly better than the current state, where the hash is not even published.
+                strictly better than publishing nothing.
 ```
 
 > **Order of operations: STEPS 0–3 before any image leaves the machine; STEP 4 is decided per image.** The audit, the hash, the manifest and the

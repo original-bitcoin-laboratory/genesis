@@ -48,8 +48,8 @@ Which Bitcoin: this is a 2026 experimental chain, not the Bitcoin of 2009 and no
 author "Satoshi Nakamoto" is an AI agent built in 2026 -- a program, not a person, and not the
 historical Satoshi.
 
-What changed
-------------
+Reproducible build
+------------------
 The binary is reproducible. You can rebuild it and get the same bytes.
 
   bitcoin.exe  c3f15fc5b7bd80f4d08fe5ff356256214734eb1a3e4a7c953c9e8fc8453d2c7d
@@ -148,7 +148,7 @@ compiled:
   openssl-1.0.2u.tar.gz  sha256 ecd0c6ffb493dd06707d38b14bb4d8c2288bb7033735606569d8f90f89669d16
 
 What this client does with scripts and blocks is verified, not assumed. On 13 September 2026 the
-lab's conformance corpus (derivatives/vectors/, 317 vectors: Script, SignatureHash, CHECKSIG and
+lab's conformance corpus (derivatives/vectors/, 317 vectors at that replay: Script, SignatureHash, CHECKSIG and
 CHECKMULTISIG, block validity) was replayed over the wire against this same binary (c3f15fc5)
 running on an isolated clone of the mining node: every script vector, every signature vector and
 every block case agreed with the binary, and each rejected block produced its exact main.cpp error
@@ -197,7 +197,6 @@ clone of the mining node; confirmed against the binary at offset 0x5378 (mov eax
 hostent pointer, i.e. h_addr_list of NULL).
 
 NOT MONEY. Nothing is sold, offered, priced or traded by the maintainers. No premine of value, no token.
-Experimental research artifact.
 Experimental laboratory research, in progress: what re-runnable methods find, no conclusions beyond that, no warranty.
 Run the client only in an isolated VM: it is a live node.
 TXT

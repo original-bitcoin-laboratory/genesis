@@ -14,3 +14,14 @@ The **raw bytes** (`debug.log`, `blk*.dat`, screenshots) live under the gitignor
     python scripts/capture-evidence.py --run <run>
 
 See `../docs/R3_HISTORICAL_NODE.md` for the run plan and checklist.
+
+## Corrections (13 September 2026)
+
+Recorded here rather than edited into the sets:
+
+- `2026-07-31-twonode-mined-block/EVIDENCE.md` says the manifest's OK lines cover `FINDINGS.md`. The manifests
+  list the verifier and the raw captures only; the narrative is not in them.
+- `run1/FINDINGS.md` gives coinbase maturity as 100 blocks. The client's own rule is 120
+  (`COINBASE_MATURITY` plus the 20-block margin), as `r4-findings/2026-08-06-relayed-spend/` established.
+- Where a set says a step was deferred to a Windows-XP guest, the runs were made on Windows 10 guests.
+

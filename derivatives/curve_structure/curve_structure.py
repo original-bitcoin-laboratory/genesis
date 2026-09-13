@@ -150,7 +150,9 @@ def twist():
     for q in range(2, 50000):
         while m % q == 0:
             small[q] = small.get(q, 0) + 1; m //= q
-    leak_bits = sum(e * (q.bit_length() - 1) for q, e in small.items())
+    # bits an attacker gains from the small twist factors: log2 of their product (2^36.7 for secp256k1).
+    # (A per-factor floor, sum(e*(bitlen-1)), undercounts this at 33; the product is the honest figure.)
+    leak_bits = round(math.log2(math.prod(q ** e for q, e in small.items())))
     # verify the factorization reconstructs the order exactly (m = the remaining large cofactor)
     prod = m
     for q, e in small.items(): prod *= q ** e

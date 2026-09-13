@@ -67,5 +67,5 @@ These are unretouched desktop captures, hashed in `SHA256SUMS`. The **raw** evid
 nodes' `blk0001.dat` and `debug.log` — stays under the gitignored `r4-evidence/` and is what `verify_r4.py`
 actually re-derives the results from; the screenshots are corroborating documentation, not the primary
 record, and are held offline; they are excluded from the privacy-sanitised Zenodo dataset. A screenshot is a *witness of what the
-operator saw*, never an authority (`common/AUTHORITY.md`); where a screenshot and the verified bytes could
+operator saw*, not an authority (`common/AUTHORITY.md`); where a screenshot and the verified bytes could
 ever disagree, the bytes win.

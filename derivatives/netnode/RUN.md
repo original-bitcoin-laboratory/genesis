@@ -58,7 +58,7 @@ or live Bitcoin chain.
 
 | Flag | Meaning |
 |---|---|
-| `--chain {nov08x,jan09x}` | which experimental chain |
+| `--chain {nov08x,jan09x,bitcoin}` | which chain |
 | `--datadir DIR` | where the block store lives (survives restarts) |
 | `--listen HOST:PORT` | bind address (default `0.0.0.0:<chain port>`) |
 | `--no-listen` | outbound‑only (won't accept inbound peers) |

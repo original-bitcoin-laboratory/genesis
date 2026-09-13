@@ -346,19 +346,12 @@ rad clone rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg
 Durable public availability depends on a seed replicating the repository; keep a node online or arrange a
 seed to hold `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg`.
 
-### Turning the CI mirror on
+### The CI mirror job stays off
 
-The `radicle` job in `.github/workflows/preserve.yml` installs `rad`, imports the key, starts a node, pushes
-`HEAD` to the RID and announces it. It is **inert until two secrets exist**, and it says so in the run summary
-rather than passing quietly:
-
-```
-gh secret set RAD_KEYPAIR   --repo original-bitcoin-laboratory/genesis   --body "$(base64 -w0 ~/.radicle/keys/radicle)"
-gh secret set RAD_PASSPHRASE --repo original-bitcoin-laboratory/genesis
-```
-
-`RAD_KEYPAIR` is the OpenSSH private key base64-encoded onto one line; the passphrase is whatever protects it.
-Both live only in the offline backup and not in any repository.
+The `radicle` job in `.github/workflows/preserve.yml` would install `rad`, import a key, start a node, push
+`HEAD` to the RID and announce it. It is **inert because the two secrets it needs are not set**, and it says so
+in the run summary rather than passing quietly. The key it would need lives only in the offline backup and not in
+any repository, and it is kept that way on purpose.
 
 **Why this is not run from CI.** The Radicle identity key is **unencrypted**, and it is the sole thing
 controlling `rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg`. Whoever holds it can push to that repository as `parthod0x` --
@@ -399,9 +392,8 @@ rad sync status                        # which seeds hold it, and at which refs
 
 The remote URL is **not** `rad:<RID>`. Git parses that as scp-style `host:path` and tries to ssh to a host
 called `rad`; the `git-remote-rad` helper is only invoked for a `scheme://` URL. It also needs the node ID
-appended, or the push is rejected with *"no public key given as a remote namespace"*. *(Optional CI:* add the exported key as `RAD_KEYPAIR` and
-its passphrase as `RAD_PASSPHRASE` to let the `radicle` job attempt an automated sync — but the local
-`git push rad` above is the reliable path.)*
+appended, or the push is rejected with *"no public key given as a remote namespace"*. The local
+`git push rad` above is the path; the CI job stays off (see above).
 
 
 **NOT money.**
