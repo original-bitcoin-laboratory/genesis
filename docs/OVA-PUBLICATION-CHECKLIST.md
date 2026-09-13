@@ -7,7 +7,7 @@ handed over.
 ⚠️ **It is also the single most dangerous thing this project could publish.** A VM image captures a
 whole machine: wallet files, shell history, SSH keys, browser state, saved credentials, the datadir,
 deleted-but-not-overwritten disk blocks. **A published image with a private key inside it cannot be
-recalled** — it will be mirrored within hours and content-addressed forever.
+recalled** — it will be mirrored within hours and content-addressed for as long as anyone keeps a copy.
 
 **So the order is: audit, then hash, then sign, then decide about distribution. Never the reverse.**
 

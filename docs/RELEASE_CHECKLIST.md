@@ -51,7 +51,7 @@ EXE=<path-to-new-exe> bash derivatives/bitcoin/make_release.sh
 cd derivatives/bitcoin/dist && sha256sum bitcoin-0.1.N.tar.gz > SHA256SUMS
 ```
 
-`EXE` is overridable so cutting a release never overwrites the previous binary. That matters:
+`EXE` is overridable so cutting a release does not overwrite the previous binary. That matters:
 `build/` holds `cfb59606…`, the v0.1.1 executable that mined block 1, and the evidence records for
 that block are bound to its hash.
 
@@ -209,8 +209,8 @@ cd "$BACKUP" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 s
 sha256sum -c SHA256SUMS --quiet
 ```
 
-**⚠️ Do this AFTER step 5's `ots upgrade`, never between the stamp and the upgrade.** A backup sealed
-in that gap stores **pending** proofs — promises that can never complete on their own — and the
+**⚠️ Do this AFTER step 5's `ots upgrade`, not between the stamp and the upgrade.** A backup sealed
+in that gap stores **pending** proofs — promises that cannot complete on their own — and the
 filename is identical either way, so nothing about the archive looks wrong.
 
 ```bash

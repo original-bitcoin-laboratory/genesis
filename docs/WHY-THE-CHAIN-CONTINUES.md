@@ -36,7 +36,7 @@ chain reaches that height, the code path has never executed outside a test harne
 ## Why it is worth answering at all
 
 **Because "we ran the earliest Bitcoin" is a claim about the whole client, and one consensus rule
-in it has never run.** The laboratory's standard is `EXECUTED`, not `MODELLED` — that distinction is
+in it has not run.** The laboratory's standard is `EXECUTED`, not `MODELLED` — that distinction is
 the reason this project exists rather than being a description of somebody else's software.
 
 **It is a genuine question, not a formality.** The retarget reads timestamps from the chain

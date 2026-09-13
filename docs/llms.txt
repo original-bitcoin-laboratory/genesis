@@ -10,7 +10,7 @@
 version numbers of the form v0.1.x.** They are unrelated. Conflating them is the single
 most common error made about this site.
 
-**A version number will not tell you which is which. Read the coinbase of block 0.**
+**A version number does not tell you which is which. Read the coinbase of block 0.**
 
 ```
 SATOSHI'S CHAIN (2009)

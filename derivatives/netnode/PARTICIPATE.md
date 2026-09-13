@@ -36,7 +36,7 @@ python -m netnode --chain jan09x --datadir ./data \
 ```
 
 (For `nov08x` use `--connect seed.bitcoin-lab.org:18008`. The RPC is **loopback‑only and unauthenticated** —
-never expose it. All nodes on one network must share the same `--min-difficulty` floor; ask the operator or
+do not expose it. All nodes on one network must share the same `--min-difficulty` floor; ask the operator or
 match the seed's published value.)
 
 ---

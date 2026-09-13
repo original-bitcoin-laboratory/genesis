@@ -15,7 +15,7 @@ authorship and integrity; it says nothing about value. NOT money.**
 | **Public key** | [`parthod0x-signing-key.asc`](parthod0x-signing-key.asc) (also attached to each GitHub release) |
 | **Independently** | `gpg --keyserver hkps://keys.openpgp.org --recv-keys B128526AF85AE4A8F22B949FB0145F74B78CF1DA` |
 
-**Always compare the fingerprint above against a second source** (the repo, the release page, this
+**Compare the fingerprint above against a second source** (the repo, the release page, this
 site) before trusting a signature — a key you fetch and its own claimed identity are not
 independent.
 
@@ -90,4 +90,4 @@ alongside it and can be checked with `gh attestation verify`.
   transit or on a mirror.
 - **Does not:** make the chain money, make it safe to attach value to, or make it "the real Bitcoin."
   The durable guarantee is separate and stronger — `scripts/verify_genesis.py` re‑derives both
-  genesis blocks from source, so you never have to trust *us* about the chain itself. **Not money.**
+  genesis blocks from source, so you do not have to trust *us* about the chain itself. **Not money.**

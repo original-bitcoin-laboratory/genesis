@@ -511,7 +511,7 @@ Searched systematically; this is the **only** passage of the paper quoted anywhe
 
 ## What "anchored" means here, precisely
 
-The list archive is not a timestamping service, and this note will not imply that it is.
+The list archive is not a timestamping service, and this note does not imply that it is.
 
 pipermail writes its mbox `From_` line **from the message's own `Date` header** — we checked all 345
 messages in the window and the delay between the two is exactly zero for every sender, which is only

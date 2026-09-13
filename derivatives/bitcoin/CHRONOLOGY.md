@@ -163,7 +163,7 @@ STRONG      OpenTimestamps proofs, upgraded
 MODERATE    GPG signature times · git tagger times
             SELF-ASSERTED. A signer's clock can be set to anything.
             ★ This lab says exactly that about the satoshin@gmx.com key's 2008 date.
-              The same limit applies to ours, and we will not cite a GPG time as
+              The same limit applies to ours, and we do not cite a GPG time as
               proof of when something happened.
 
 WEAKEST     file modification times
@@ -239,7 +239,7 @@ disappears teaches a reader nothing.**
 
 - ✅ **CLOSED — signed tags.** `Bitcoin-v0.1.2` and `v0.1.3` were lightweight git tags rather than
   signed tag objects. **`Bitcoin-v0.1.4` is a signed annotated tag**, and every release from here on
-  will be. **The two earlier tags are still lightweight and will not be re-cut** — rewriting a
+  will be. **The two earlier tags are still lightweight and are not re-cut** — rewriting a
   published tag breaks every clone and invalidates timestamps anchored to it. All release tarballs
   were and remain GPG-signed, so nothing was ever unattested; what was missing was attestation of
   the *tag*, and that is fixed forward, not backward.
@@ -261,7 +261,7 @@ disappears teaches a reader nothing.**
   reads first does not say so, and OpenSSL's ECDSA and BIGNUM behaviour is consensus-relevant.
   **Corrected forward on 12 September 2026:** the release-text template in `make_release.sh` now
   carries the library and its hash, so every release from v0.1.6 on will state it. v0.1.5's text
-  is signed and anchored and **will not be re-cut**.
+  is signed and anchored and **is not re-cut**.
 - ◻ **PARTLY CLOSED — one node, no network.** The early blocks were mined by a single node on an
   isolated chain. Since then a second miner has produced blocks (221 and 222, 19 August 2026;
   `bitcoin-findings/2026-08-19-external-blocks221-222/`), the seed relays, and a reorganisation has

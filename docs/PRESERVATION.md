@@ -291,7 +291,7 @@ gateway — then check what comes back against `SHA256SUMS` from the release its
 The v0.5.0 and v0.4.0 rows above, and the Bitcoin-v0.1.3 rows, were added on 12 September 2026 after a
 reconciliation of the pinning account against this record: every CID was re-derived from the release bytes
 with a standard-library CIDv0 calculator that was first validated against four pins recorded here earlier.
-The `.ots` and `.slhdsa` files of releases before v0.7.0 had never been pinned; they were pinned on 12 September
+The `.ots` and `.slhdsa` files of releases before v0.7.0 had not been pinned; they were pinned on 12 September
 2026 by re-running the preservation workflow per tag (v0.1.5's six on the same day), and every CID the workflow
 reported equalled the one computed locally from the same bytes beforehand. The rows above include them.
 

@@ -89,7 +89,7 @@ archive.** Counted across `main.cpp` and `main.h`, these are used and never defi
 | `CDB` | 2 | no |
 
 The script engine, the bignum layer, serialization, the database and the hash primitives are all
-absent. **The November pre-release cannot be compiled from what survives**, and it never could be —
+absent. **The November pre-release cannot be compiled from what survives**, and it could not be —
 it was circulated as a preview of the design, privately, to a handful of correspondents. `NOV08-X`
 exists because the lab supplied the missing halves under strict per-line discipline; it is a
 reconstruction, and the honest word for the archive itself is *fragment*.

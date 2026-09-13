@@ -83,7 +83,7 @@ value.**
 
 Bitcoin's descendant chains — BTC, Bitcoin Cash (BCH), Bitcoin SV (BSV), eCash (XEC), Bitcoin Gold (BTG) — each present
 themselves, explicitly or implicitly, in relation to an origin. Comparisons of how far each has moved from
-that origin are common but almost always *rhetorical*: a list of favoured changes, weighted by the author's
+that origin are common but usually *rhetorical*: a list of favoured changes, weighted by the author's
 priorities, concluding with the author's preferred chain. Such comparisons are unreproducible and
 unfalsifiable; a reader cannot re-derive them or locate where a disagreement lies.
 We take the opposite stance. Rather than argue *which* chain is closest, we build a **measurement
@@ -317,7 +317,7 @@ an axis — kept distinct from "specified and equal."
 
 **Mismatch rate and coverage.** For a reference$\rightarrow$chain pair, over the axes both specify (*jointly
 specified*): the **mismatch rate** is differing / jointly-specified, and is *undefined* where nothing is
-jointly specified; **coverage** is jointly-specified / total. We report both, always. A single "distance"
+jointly specified; **coverage** is jointly-specified / total. We report both. A single "distance"
 number is rejected precisely because the three references have very different coverage, and a mismatch rate
 read without its coverage misleads.
 

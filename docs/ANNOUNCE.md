@@ -1,7 +1,7 @@
 # An invitation to run the earliest Bitcoin — and the chain built from it
 
 **Experimental. Educational. Not money.** This is an invitation to *operators*, not an offering. There
-is nothing here to buy, sell, or hold, and the maintainers will not offer any. Read [why](#the-one-rule-that-makes-all-of-this-safe) before deciding it's worth your time.
+is nothing here to buy, sell, or hold, and the maintainers do not offer any. Read [why](#the-one-rule-that-makes-all-of-this-safe) before deciding it's worth your time.
 
 ## What these are
 

@@ -87,7 +87,7 @@ has to be redone, which is why this one took about 2^32 hashes to start.
 WHICH CHAIN IS THIS -- THE ONLY RELIABLE TEST
 ---------------------------------------------
 
-**A version number will not tell you.** Both eras use v0.1.x, because this laboratory reconstructs
+**A version number does not tell you.** Both eras use v0.1.x, because this laboratory reconstructs
 that era. Read the coinbase of block 0:
 
     SATOSHI'S CHAIN (2009)

@@ -209,7 +209,7 @@ here rather than edited in place**, exactly as the policy at the top of this fil
   the author of the 2009 Bitcoin. The disclaimer is stated once there and applies to every set.
 - **Provider and address.** Some sets named, in revision 1, the hosting provider of the seed node and its raw IPv4
   address. The hostname `bitcoin.bitcoin-lab.org:18026` is the durable identifier; the provider is
-  incidental and will not be named in future sets.
+  incidental and is not named in later sets.
 - **Local-clock times** appear in two early sets and in one later capture note, as already recorded
   above; UTC is the only time this project writes from here on.
 - **Revised the same day, under the revision rule adopted for it** (`docs/EVIDENCE_POLICY.md`): every set
