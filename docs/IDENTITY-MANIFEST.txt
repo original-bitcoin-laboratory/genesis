@@ -4,9 +4,9 @@ ORIGINAL BITCOIN LABORATORY -- IDENTITY MANIFEST
 A single signed list of the identities that speak publicly for this project, so that a stranger can
 check any of them without asking anyone anything.
 
-Issued 12 August 2026 by parthod0x. Revision 2, 14 September 2026: wording only — the statements
-below are made in the present tense and without absolutes; no identifier changed. Revision 1 and its
-signatures and proofs are kept beside this file as IDENTITY-MANIFEST.r1.txt*.
+Issued 12 August 2026 by parthod0x. Revision 3, 14 September 2026: wording only — the statements
+below are made in the present tense and without absolutes; no identifier changed. Revision 2 (12 August
+2026) and its signatures and proofs are kept beside this file as IDENTITY-MANIFEST.r2.txt*.
 
 
 WHY IT EXISTS
@@ -242,4 +242,4 @@ HOW TO CHECK THIS FILE
   If any identifier above is wrong, or if this file has gone stale, it is a defect. Corrections are
   published, dated, and not made silently.
 
-                                                     -- parthod0x, 12 Aug 2026; revision 2, 14 Sep 2026
+                                                     -- parthod0x, 12 Aug 2026; revision 3, 14 Sep 2026

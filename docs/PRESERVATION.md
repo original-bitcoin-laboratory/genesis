@@ -30,9 +30,9 @@ account and both organisations, the three sites, the Radicle identity and reposi
 Bitcoin-anchored**, so the assertion provably predates any dispute about it.
 
 ```
-IDENTITY-MANIFEST.txt          13,257 B   sha256 1c350426a29d530bbb3050b4e1380092e0663a273e097703eca7809f9ae76fbd
-                                          revision 2, 14 Sep 2026 (wording only); revision 1 and its
-                                          signatures and proofs are kept beside it as IDENTITY-MANIFEST.r1.txt*
+IDENTITY-MANIFEST.txt          13,274 B   sha256 632a46806183a87fb52dc307923550fff79a2060dbdcb47958902a92b7f205c5
+                                          revision 3, 14 Sep 2026 (wording only); revision 2 and its
+                                          signatures and proofs are kept beside it as IDENTITY-MANIFEST.r2.txt*
 IDENTITY-MANIFEST.txt.asc         273 B   OpenPGP, B128526AF85AE4A8F22B949FB0145F74B78CF1DA
 IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against the published pk
   + a .ots proof over each of the three
@@ -51,6 +51,10 @@ IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against th
 > Revision 2's proofs are anchored in Bitcoin block 962081 (block hash
 > `000000000000000000000d3c4cb24b2fd84a2f65eb39c14f5708285820e9e0a1`, merkle root
 > `cbf9d141073c02fc3d955dfa6c8e7e758b5ec7388eb529eb9c4f7ee86d8d9b48`, 2026-08-12 03:29:39 UTC).
+>
+> **Revision 3, 14 September 2026** (`632a4680…`, 13,274 B): wording only — present tense, no
+> absolutes, no identifier changed. Revision 2 and its signatures and proofs are kept beside it as
+> `IDENTITY-MANIFEST.r2.txt*`. Revision 3's proofs are pending until a calendar anchors them.
 
 ## Proof of domain control — a DNS TXT record on each of the three domains
 
