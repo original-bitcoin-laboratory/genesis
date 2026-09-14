@@ -27,8 +27,12 @@
   body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
   .wrap{max-width:860px;margin:0 auto;padding:clamp(28px,6vw,68px) clamp(16px,4vw,28px) 72px}
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:0 0 16px}
+  .eyebrow a{color:inherit;text-decoration:none;border:0}
+  .eyebrow a:hover{color:var(--ink)}
+  a{color:var(--focus);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  a:hover{color:var(--brass);border-color:var(--brass)}
   h1{font-family:var(--mono);font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0 0 12px}
-  .lede{font-size:clamp(14px,2.2vw,16px);color:var(--ink-dim);max-width:64ch;margin:0}
+  .lede{font-size:clamp(14px,2.2vw,16px);color:var(--ink-dim);max-width:none;margin:0}
   .lede b{color:var(--ink);font-weight:600}
   .bar{margin-top:20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
   .bar a{color:var(--focus);text-decoration:none}.bar a:hover{color:var(--brass)}
@@ -46,24 +50,27 @@
   .rows .lbl{color:var(--ink-faint)} .mono{font-family:var(--mono)}
   .anchor{display:inline-flex;align-items:center;gap:6px;margin-right:12px}
   .dot{width:8px;height:8px;border-radius:50%;background:var(--down)}.dot.up{background:var(--up)}
-  .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:70ch;line-height:1.6}
+  .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:none;line-height:1.6}
   .note b{color:var(--ink-dim)}
   .tags{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
   .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
 </style>
 
 <div class="wrap">
-  <p class="eyebrow">Original Bitcoin Laboratory · live</p>
+  <p class="eyebrow"><a href="/" title="Home — Original Bitcoin Laboratory">◆ Original Bitcoin Laboratory</a> · live</p>
   <h1>Network status</h1>
   <p class="lede">Proof of life for the three experimental chains — <b>anchor uptime</b>, <b>tip
     height</b>, and mempool — measured over each chain's own peer‑to‑peer protocol. <b>Not money.</b></p>
   <div class="bar">
     <span id="updated">loading…</span>
     <a href="explorer.html">block explorer →</a>
-    <a href="/">← home</a>
+    <a href="/">Lab home</a>
   </div>
 
-  <div class="grid" id="chains"></div>
+  <div class="grid" id="chains">
+    <div class="card" aria-busy="true"><div class="k">status feed</div><h2>loading…</h2>
+      <p style="color:var(--ink-dim);font-size:13.5px;margin:0">Reading <span class="mono">status.json</span> — the three chain cards appear here once the feed has been fetched.</p></div>
+  </div>
 
   <p class="note"><b>How this is measured.</b> A scheduled probe connects to each anchor over the real
     node wire (magic + checksum framing), does the <span class="mono">version</span> handshake, and
@@ -146,14 +153,12 @@ fetch(SRC, {cache:"no-store"}).then(r => { if(!r.ok) throw new Error(r.status); 
        title="the same key from a keyserver, so the key and the release do not come from one host">keyserver</a>
   </p>
   <p class="lf-related">Related · <a href="https://satoshioncha.in">Satoshi On-Chain</a> — the verifiable
-    on-chain footprint of the original Satoshi. This lab studies <i>Bitcoin</i> by making the earliest code run; that one
-    measures what the chain records about <i>Satoshi</i>. ·
-    <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> — which version is which,
-    and how to tell from the bytes. &middot;
-    <a href="/docs.html">all documents</a></p>
+    footprint of the original Satoshi · <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> —
+    which version is which, and how to check. &middot; <a href="/docs.html">all documents</a><br>Three remits: <i>the code</i>, <i>the footprint</i>, <i>the document</i>.</p>
     <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
     · experimental laboratory research, in progress · statistical, machine-verifiable findings, no conclusions beyond them
     · <b>NOT money</b>, not advice · no warranty</p>
+  <p><a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md">Rights, sourcing &amp; corrections</a> — independent research; not affiliated with any party; not financial advice.</p>
 </footer>
 <style>
   .lab-footer{max-width:860px;margin:56px auto 40px;padding:20px clamp(16px,4vw,28px) 0;

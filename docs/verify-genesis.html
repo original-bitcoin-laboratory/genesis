@@ -31,10 +31,12 @@
     --line:#e0e5e0; --line-strong:#cfd6d0; --brass:#9a7726; --focus:#2f6b85; --pass:#2f8f63; --fail:#a9741f; }
   *{box-sizing:border-box}
   body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:820px;margin:0 auto;padding:clamp(26px,6vw,60px) clamp(15px,4vw,26px) 64px}
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:0 0 14px}
+  .wrap{max-width:860px;margin:0 auto;padding:clamp(28px,6vw,68px) clamp(16px,4vw,28px) 72px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:0 0 16px}
+  .eyebrow a{color:inherit;text-decoration:none;border:0}
+  .eyebrow a:hover{color:var(--ink)}
   h1{font-family:var(--mono);font-weight:700;font-size:clamp(25px,5vw,40px);line-height:1.07;letter-spacing:-.01em;margin:0 0 14px;text-wrap:balance}
-  .lede{font-size:clamp(14.5px,2.3vw,17px);color:var(--ink-dim);max-width:64ch;margin:0}
+  .lede{font-size:clamp(14.5px,2.3vw,17px);color:var(--ink-dim);max-width:none;margin:0}
   .lede b{color:var(--ink);font-weight:600}
   .verdict{margin:30px 0 6px;border:1px solid var(--line-strong);border-radius:14px;padding:20px 22px;background:var(--panel);
     display:flex;align-items:center;gap:16px;transition:border-color .2s}
@@ -63,11 +65,12 @@
   .chip.on{background:var(--brass);color:var(--brass-ink);border-color:var(--brass)}
   .hint{margin-top:10px;font-size:12.5px;color:var(--ink-faint);line-height:1.6}
   .hint b{color:var(--ink-dim)}
-  .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:70ch;line-height:1.65}
+  .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:none;line-height:1.65}
   .note b{color:var(--ink-dim)}
   .tags{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
   .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
-  a{color:var(--focus)}
+  a{color:var(--focus);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  a:hover{color:var(--brass);border-color:var(--brass)}
   @media(max-width:520px){.row{grid-template-columns:1fr;gap:2px}}
 
   .lab-footer{max-width:860px;margin:56px auto 40px;padding:20px clamp(16px,4vw,28px) 0;
@@ -86,8 +89,8 @@
   </style>
 
 <div class="wrap">
-  <p class="eyebrow">Original Bitcoin Laboratory</p>
-  <h1>Re-derive Satoshi's genesis block.</h1>
+  <p class="eyebrow"><a href="/" title="Home — Original Bitcoin Laboratory">◆ Original Bitcoin Laboratory</a> · genesis verifier</p>
+  <h1>Re-derive Satoshi's genesis block</h1>
   <p class="lede">This page rebuilds the <b>3 January 2009</b> genesis block from its source ingredients — the
     <i>Times</i> headline, the 50-coin reward, and the exact parameters — and hashes it <b>live, on your
     device</b>. No server, no network, no dependencies. Change one character and watch it break. You don't
@@ -154,14 +157,12 @@
        title="the same key from a keyserver, so the key and the release do not come from one host">keyserver</a>
   </p>
   <p class="lf-related">Related · <a href="https://satoshioncha.in">Satoshi On-Chain</a> — the verifiable
-    on-chain footprint of the original Satoshi. This lab studies <i>Bitcoin</i> by making the earliest code run; that one
-    measures what the chain records about <i>Satoshi</i>. ·
-    <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> — which version is which,
-    and how to tell from the bytes. &middot;
-    <a href="/docs.html">all documents</a></p>
+    footprint of the original Satoshi · <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> —
+    which version is which, and how to check. &middot; <a href="/docs.html">all documents</a><br>Three remits: <i>the code</i>, <i>the footprint</i>, <i>the document</i>.</p>
     <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
     · experimental laboratory research, in progress · statistical, machine-verifiable findings, no conclusions beyond them
     · <b>NOT money</b>, not advice · no warranty</p>
+  <p><a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md">Rights, sourcing &amp; corrections</a> — independent research; not affiliated with any party; not financial advice.</p>
 </footer>
 
 <script>

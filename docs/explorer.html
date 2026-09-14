@@ -24,10 +24,14 @@
   :root[data-theme="light"]{--ground:#f3f5f2;--panel:#ffffff;--panel-2:#f7f9f6;--ink:#18211f;--ink-dim:#4f5c60;--ink-faint:#859295;--line:#e0e5e0;--line-strong:#cfd6d0;--brass:#9a7726;--fill:#5a8298;--focus:#2f6b85;--up:#2f8f62;--down:#b0505c;}
   *{box-sizing:border-box}
   body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:920px;margin:0 auto;padding:clamp(28px,6vw,68px) clamp(16px,4vw,28px) 72px}
+  .wrap{max-width:860px;margin:0 auto;padding:clamp(28px,6vw,68px) clamp(16px,4vw,28px) 72px}
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:0 0 16px}
+  .eyebrow a{color:inherit;text-decoration:none;border:0}
+  .eyebrow a:hover{color:var(--ink)}
+  a{color:var(--focus);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  a:hover{color:var(--brass);border-color:var(--brass)}
   h1{font-family:var(--mono);font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0 0 12px}
-  .lede{font-size:clamp(14px,2.2vw,16px);color:var(--ink-dim);max-width:66ch;margin:0}
+  .lede{font-size:clamp(14px,2.2vw,16px);color:var(--ink-dim);max-width:none;margin:0}
   .lede b{color:var(--ink);font-weight:600}
   .bar{margin-top:20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
   .bar a{color:var(--focus);text-decoration:none}.bar a:hover{color:var(--brass)}
@@ -36,20 +40,21 @@
   .chead h2{font-size:16px;font-weight:700;margin:0}
   .chead .tip{font-size:12px;color:var(--ink-faint)}
   .tablewrap{margin-top:12px;overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  @media(max-width:560px){.tablewrap::after{content:"scroll sideways \2192";display:block;font:11px/1.4 var(--mono,monospace);letter-spacing:.06em;color:var(--ink-faint);padding:6px 12px 2px;border-top:1px solid var(--line)}}
   table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
   th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line)}
   th{color:var(--ink-faint);font-weight:400;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
   tbody tr:last-child td{border-bottom:0}
   td.h{color:var(--brass)} td.right{text-align:right;font-variant-numeric:tabular-nums}
   .hash{color:var(--ink-dim)}
-  .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:70ch;line-height:1.6}
+  .note{margin-top:30px;font-size:12.5px;color:var(--ink-faint);max-width:none;line-height:1.6}
   .note b{color:var(--ink-dim)}
   .tags{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
   .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
 </style>
 
 <div class="wrap">
-  <p class="eyebrow">Original Bitcoin Laboratory · live</p>
+  <p class="eyebrow"><a href="/" title="Home — Original Bitcoin Laboratory">◆ Original Bitcoin Laboratory</a> · live</p>
   <h1>Block explorer</h1>
   <p class="lede">The most recent blocks on each experimental chain — <b>height</b>, <b>hash</b>,
     <b>time</b>, and <b>tx count</b> — read straight off the anchors over the peer‑to‑peer protocol.
@@ -57,7 +62,7 @@
   <div class="bar">
     <span id="updated">loading…</span>
     <a href="status.html">← network status</a>
-    <a href="/">home</a>
+    <a href="/">Lab home</a>
   </div>
 
   <div id="chains"></div>
@@ -140,14 +145,12 @@ fetch(SRC, {cache:"no-store"}).then(r => { if(!r.ok) throw new Error(r.status); 
        title="the same key from a keyserver, so the key and the release do not come from one host">keyserver</a>
   </p>
   <p class="lf-related">Related · <a href="https://satoshioncha.in">Satoshi On-Chain</a> — the verifiable
-    on-chain footprint of the original Satoshi. This lab studies <i>Bitcoin</i> by making the earliest code run; that one
-    measures what the chain records about <i>Satoshi</i>. ·
-    <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> — which version is which,
-    and how to tell from the bytes. &middot;
-    <a href="/docs.html">all documents</a></p>
+    footprint of the original Satoshi · <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> —
+    which version is which, and how to check. &middot; <a href="/docs.html">all documents</a><br>Three remits: <i>the code</i>, <i>the footprint</i>, <i>the document</i>.</p>
     <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
     · experimental laboratory research, in progress · statistical, machine-verifiable findings, no conclusions beyond them
     · <b>NOT money</b>, not advice · no warranty</p>
+  <p><a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md">Rights, sourcing &amp; corrections</a> — independent research; not affiliated with any party; not financial advice.</p>
 </footer>
 <style>
   .lab-footer{max-width:860px;margin:56px auto 40px;padding:20px clamp(16px,4vw,28px) 0;

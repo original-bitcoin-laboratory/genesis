@@ -44,14 +44,15 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
     line-height:1.55;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:920px;margin:0 auto;padding:clamp(20px,4vw,44px) clamp(16px,4vw,28px) 72px}
-  a{color:var(--focus);text-decoration:none}
-  a:hover{text-decoration:underline}
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-    color:var(--brass);margin:0 0 14px}
+  .wrap{max-width:860px;margin:0 auto;padding:clamp(28px,6vw,68px) clamp(16px,4vw,28px) 72px}
+  a{color:var(--focus);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  a:hover{color:var(--brass);border-color:var(--brass)}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:0 0 16px}
+  .eyebrow a{color:inherit;text-decoration:none;border:0}
+  .eyebrow a:hover{color:var(--ink)}
   h1{font-family:var(--mono);font-weight:700;font-size:clamp(26px,5.2vw,40px);line-height:1.08;
     letter-spacing:-.01em;margin:0 0 12px;text-wrap:balance}
-  .lede{font-size:clamp(15px,2.4vw,17px);color:var(--ink-dim);max-width:66ch;margin:0}
+  .lede{font-size:clamp(15px,2.4vw,17px);color:var(--ink-dim);max-width:none;margin:0}
   .lede b{color:var(--ink);font-weight:600}
   .nav{margin:18px 0 0;display:flex;flex-wrap:wrap;gap:8px;font-family:var(--mono);font-size:12px}
   .nav a{border:1px solid var(--line-strong);border-radius:7px;padding:6px 11px;color:var(--ink-dim)}
@@ -125,7 +126,7 @@
     color:var(--ink-faint)}
   .legend span{display:inline-flex;align-items:center;gap:6px}
   .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
-  .note{margin-top:22px;display:grid;gap:12px;max-width:74ch}
+  .note{margin-top:22px;display:grid;gap:12px}
   .note p{margin:0;font-size:13px;color:var(--ink-dim)}
   .note p b{color:var(--ink);font-weight:600}
   .note code{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--panel);
@@ -137,7 +138,7 @@
 </style>
 
 <div class="wrap">
-  <p class="eyebrow">Original Bitcoin Laboratory · a compass, not a verdict</p>
+  <p class="eyebrow"><a href="/" title="Home — Original Bitcoin Laboratory">◆ Original Bitcoin Laboratory</a> · a compass, not a verdict</p>
   <h1>Is it a Bitcoin?</h1>
   <p class="lede">No single definition of “Bitcoin” is universal — the word points at <b>seven different
     kinds of thing</b> (a design, a client, a network, a ledger, a unit, a lineage…). So this doesn't
@@ -457,14 +458,12 @@ render();
        title="the same key from a keyserver, so the key and the release do not come from one host">keyserver</a>
   </p>
   <p class="lf-related">Related · <a href="https://satoshioncha.in">Satoshi On-Chain</a> — the verifiable
-    on-chain footprint of the original Satoshi. This lab studies <i>Bitcoin</i> by making the earliest code run; that one
-    measures what the chain records about <i>Satoshi</i>. ·
-    <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> — which version is which,
-    and how to tell from the bytes. &middot;
-    <a href="/docs.html">all documents</a></p>
+    footprint of the original Satoshi · <a href="https://bitcoinwhitepaper.online">The Bitcoin Whitepaper</a> —
+    which version is which, and how to check. &middot; <a href="/docs.html">all documents</a><br>Three remits: <i>the code</i>, <i>the footprint</i>, <i>the document</i>.</p>
     <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
     · experimental laboratory research, in progress · statistical, machine-verifiable findings, no conclusions beyond them
     · <b>NOT money</b>, not advice · no warranty</p>
+  <p><a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md">Rights, sourcing &amp; corrections</a> — independent research; not affiliated with any party; not financial advice.</p>
 </footer>
 <style>
   .lab-footer{max-width:860px;margin:56px auto 40px;padding:20px clamp(16px,4vw,28px) 0;
