@@ -10,6 +10,16 @@ compressed to a sentence each. The account of *how* each one was found lives her
 ★ **Nothing is deleted, only relocated.** A finding that cost something to learn is worth keeping;
 it is simply not what a reader of the paper came for. Rounds 5–12 are not reproduced here.
 
+## Round 20 (14 Sep 2026) — two imprecisions found by a whole-collateral read
+
+- **"8 of 8 BIP-backed BTC cells" → "8 of 8 BIP-backed BTC probes (over 7 cells)".** The BTC audit
+  ledger holds eight probes, but `timelock_opcodes` is probed twice (BIP65 and BIP112), so the count
+  of cells confirmed is seven. The sentence counted probes and called them cells.
+- **`figures.json` → `tables/figures.json`** in the three places the prose names it. The bare name
+  does not resolve in the package.
+- Nothing numeric changes; every figure still comes through `{{FIG:...}}` and the checks are green.
+  The published arXiv version predates this round; the next version carries it.
+
 ## Round 19 (16 Aug 2026) — the gate closes, and a claim about my own edit was wrong
 
 The artifacts were published: signed commit `a15e2b60`, signed tag `obl-metric-v1.0.0`,
