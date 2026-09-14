@@ -154,7 +154,7 @@ def finalize(r_hex, s_hex, man_dir: pathlib.Path, dry: bool):
     assert (msg2, r2, s2, pub2) == (digest, r, s, pub), "the signature file would not parse back to what was signed"
     say("signature file  parses back exactly (message, r, s, pubkey)")
 
-    # 2. retire schema 1 -- rename, never delete
+    # 2. retire schema 1 -- rename, do not delete
     v1_present = [suf for suf in V1_SUFFIXES if (man_dir / ("CHAIN_SOURCE_MANIFEST" + suf)).exists()]
     for suf in v1_present:
         src, dst = man_dir / ("CHAIN_SOURCE_MANIFEST" + suf), man_dir / (V1_PREFIX + suf)
