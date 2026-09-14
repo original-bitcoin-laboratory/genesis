@@ -20,6 +20,10 @@ it is simply not what a reader of the paper came for. Rounds 5–12 are not repr
 - Nothing numeric changes; every figure still comes through `{{FIG:...}}` and the checks are green.
   The arXiv submission (submit/7956167) was still on hold when this round was made, so its source was
   replaced with this round's bundle and the announced version carries it.
+- The manuscript is dated 14 September 2026 (the date of the text; the evaluation date, 1 August 2026,
+  is unchanged), and its availability paragraph cites the Zenodo concept DOI and the signed tag
+  `obl-metric-v1.0.2`. Deposited as replication package 1.0.2; `obl-metric-v1.0.1` was a repository tag
+  of 16 August 2026 that was not deposited.
 
 ## Round 19 (16 Aug 2026) — the gate closes, and a claim about my own edit was wrong
 
