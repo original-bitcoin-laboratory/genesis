@@ -50,6 +50,9 @@
     .grid{grid-template-columns:1fr 1fr}
     /* an odd group leaves its last card stranded on a half-width row; let it span instead */
     .grid > a.card:last-child:nth-child(odd){grid-column:1 / -1}
+    /* the chains grid: the live chain leads at full width, the two reconstructions share the row below */
+    .grid.lead-first > a.card:first-child{grid-column:1 / -1}
+    .grid.lead-first > a.card:last-child:nth-child(odd){grid-column:auto}
   }
   a.card{display:block;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:14px;
     padding:20px 20px 18px;transition:border-color .16s,transform .16s}
@@ -95,7 +98,7 @@
     <a href="https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md" style="color:var(--focus)">the six checks →</a></p>
 
   <h2 class="sec">The chains<span>three live networks — one released, two reconstructions</span></h2>
-  <div class="grid">
+  <div class="grid lead-first">
     <a class="card" href="bitcoin.html" data-goatcounter-click="open-bitcoin">
       <div class="k">Released · executed · live</div>
       <h2>Bitcoin</h2>
