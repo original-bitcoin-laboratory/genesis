@@ -10,6 +10,76 @@ compressed to a sentence each. The account of *how* each one was found lives her
 ★ **Nothing is deleted, only relocated.** A finding that cost something to learn is worth keeping;
 it is simply not what a reader of the paper came for. Rounds 5–12 are not reproduced here.
 
+## Round 21 (14 Sep 2026) — internal review of round 20: two readers, one verdict of "minor revision"
+
+Both readers found the arithmetic reconciled and the central claim held; what follows is every
+correction they asked for, applied, and one they asked for that could not be.
+
+- **Abstract.** "Every cell of the comparison is a source-anchored encoding" claimed a citation for
+  the 9 absence cells that Section 7 says rest on chronology. Now "every specified cell", with the
+  fetched count scoped to the 95 chain cells and the 9 absence cells named in the same sentence.
+  The sentence "only well-posed under v0.1.0" now says that the axis rule partly builds this in.
+- **§1 and §8 said the axes were "fixed before any run is scored"; §2 says they were not
+  pre-registered.** Both now use §2's wording: frozen before each reported run.
+- **§2, the pow-cell reversal box.** "One chain's whitepaper rate moved from 0.50 to 0.00" was
+  incomplete: re-derived from `comparison.json`, the reversal took whitepaper coverage from 2/19 to
+  1/19 and moved *two* chains — Bitcoin Gold 0.50→0.00 and eCash 0.50→1.00, the latter because its
+  best-chain label (`most-work+avalanche`) mismatches the whitepaper's `most-work`. Stated in full.
+- **§2, "117 of 152 high-confidence".** The old diagnosis ("counted every unspecified cell as
+  high-confidence") does not reproduce 117 from the present cells (111 + 34 = 145). The sentence now
+  says what is known: a typed figure that no partition of the present cells reproduces.
+- **§2 structure.** The "large descendant chains" retraction sat inside the criterion-(3) box as an
+  unquoted continuation; moved to the chain-selection paragraph it belongs to. A verbless sentence
+  ("Found by an external referee, who noticed…") given its verb. The third restatement of "class (ii)
+  buys reference coverage" trimmed. Three "Section 2" self-references from inside Section 2 now say
+  "this section". The superseded nested box carries a status line. "The engine will accept it" →
+  "accepts it".
+- **§2 said the engine reports perturbations "per pair"; §5 reports v0.1.0 only.** §2 now says why
+  (a perturbation over one or three jointly specified axes carries no information) and where the
+  other pairs' values are.
+- **§3 and Data Availability, "a one-cell edit after a future upgrade".** Contradicted §7's
+  single-frozen-date rule; now "under a new evaluation freeze … the 1 August 2026 results are not
+  edited in place".
+- **§4.1.** Heading "Why BSV is lowest, measured rather than asserted" → "Decomposing agreement with
+  v0.1.0: retention and restoration". "The whole of the caution" → "the largest part" (§5.1 carries
+  the rest). "Narrower … and sharper" → "more specific".
+- **Table 3 caption** now says every chain's matches include the 2 constant agreeing axes, counted
+  as retentions. **The Table 4 note** said "the exact fraction beside them"; only the base column
+  carries one.
+- **§7.** Bitcoin Gold's 5 probes had no verdict stated; now "confirms 5 of 5" (the ledger records
+  5/5 matched). The two doubly probed cells are named (BTC timelock opcodes via BIP65 and BIP112;
+  BSV script-number width via two specifications). "The `none` cells — 9 of them" was wrong by
+  label: 10 chain cells carry `none`, 7 of them absence-warranted; the paragraph now says
+  "absence-warranted cells", names the 3 `none` cells classified otherwise (BTC replay protection,
+  inherited; BSV P2SH and element-size limit, documented removals), and narrows "no document
+  establishes that a rule is absent" to *non-adoption* — BSV's Genesis specification does document
+  removals.
+- **§8.** "With the other 7 preserved throughout" is more than a single-state schema shows; now
+  "recorded as retentions". "The only way to keep it from being forgotten" → "keeps it in every
+  rerun rather than in a footnote".
+- **Data Availability.** "The tag is the immutable one" → the DOI is the durable address, the signed
+  tag identifies the frozen repository version, and the commit is recorded in the Zenodo version
+  record (a document cannot carry the digest of the commit that contains it). "Every numerical
+  figure … interpolated" → "every reported rate, count and coverage figure". The manifest's
+  computation is stated (by `obl_metric.py`, name then digest, sorted). "Closes the remaining link"
+  → "pins", with `tables/figures.json` covered the other way by `revision_check_live.py`. The
+  descendant ledger's run timestamp is given. The byte count, printed for `obl_metric.py` alone,
+  is removed rather than added to every file.
+- **`paper.bib`, `saxena_ledger`.** The note still said the companion paper's package was "archived
+  with the present work" at tag `obl-metric-v1.0.0`, commit `a15e2b60`. It now says the manuscript is
+  under review and points to its historical-binary evidence deposit, `10.5281/zenodo.21978132`.
+- **Found while verifying the bib change: the tracked `paper.pdf` carried the previous round's
+  bibliography.** `make_arxiv.py` wrote it from the pdflatex pass that runs *before* bibtex, so it
+  typeset the `.bbl` left by the round before; the arXiv preview, built clean-room after bibtex, was
+  right. Invisible in every round where `paper.bib` did not change. The script now copies the
+  clean-room build over `paper.pdf`, and the two are checked byte-identical.
+- **Not done: printing the 1.0.3 version DOI inside the text.** A version DOI exists only once the
+  deposit is made, and the deposit contains this text. The concept DOI resolves to the latest
+  version and the version record prints its own DOI, tag and commit.
+- Deposited as replication package 1.0.3 at the signed tag `obl-metric-v1.0.3`. Round 20's tag
+  `obl-metric-v1.0.2` was signed and pushed but not deposited, its text having gone to internal
+  review instead.
+
 ## Round 20 (14 Sep 2026) — two imprecisions found by a whole-collateral read
 
 - **"8 of 8 BIP-backed BTC cells" → "8 of 8 BIP-backed BTC probes (over 7 cells)".** The BTC audit
@@ -22,8 +92,8 @@ it is simply not what a reader of the paper came for. Rounds 5–12 are not repr
   replaced with this round's bundle and the announced version carries it.
 - The manuscript is dated 14 September 2026 (the date of the text; the evaluation date, 1 August 2026,
   is unchanged), and its availability paragraph cites the Zenodo concept DOI and the signed tag
-  `obl-metric-v1.0.2`. Deposited as replication package 1.0.2; `obl-metric-v1.0.1` was a repository tag
-  of 16 August 2026 that was not deposited.
+  `obl-metric-v1.0.2` (tagged, sent to internal review, not deposited — see round 21);
+  `obl-metric-v1.0.1` was a repository tag of 16 August 2026 that was not deposited.
 
 ## Round 19 (16 Aug 2026) — the gate closes, and a claim about my own edit was wrong
 

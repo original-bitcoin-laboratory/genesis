@@ -125,11 +125,9 @@ Parth~Mauria Saxena.
 \newblock Executing the earliest {Bitcoin}: A hash-anchored reconstruction of
   the january 2009 client and a source-bounded model of the november 2008
   preview, 2026{\natexlab{b}}.
-\newblock Preprint. A Zenodo DOI for this companion paper is being minted
-  separately; the replication package referred to here is the one archived with
-  the present work, {DOI} 10.5281/zenodo.21964447, signed tag
-  {\texttt{obl-metric-v1.0.0}}, commit
-  {\texttt{a15e2b60a5ac60690f680bd027fe95bab12d90f0}}.
+\newblock Manuscript under review. Its historical-binary evidence (two-node
+  runs of the unmodified January 2009 client) is archived on Zenodo, {DOI}
+  10.5281/zenodo.21978132, \url{https://doi.org/10.5281/zenodo.21978132}.
 
 \bibitem[Stefanov(2020)]{chainbulletin}
 G.~Stefanov.

@@ -264,6 +264,13 @@ def clean_compile():
                                           ("worst %.2fpt" % max(big)) if big else ""))
     if pdf.exists():
         shutil.copy2(pdf, OUT / "paper-arxiv-preview.pdf")
+        # R21: the tracked paper.pdf used to be the output of "pdflatex (pass 1, for .aux)" above,
+        #    which runs BEFORE bibtex and therefore typesets the PREVIOUS round's paper.bbl. Every
+        #    round in which paper.bib did not change hid this; round 21 changed one entry and the
+        #    tracked PDF still printed the old note. The manuscript copy is now this clean-room
+        #    build, byte for byte, so paper.pdf and the arXiv preview cannot disagree.
+        shutil.copy2(pdf, HERE / "paper.pdf")
+        print("    ok   paper.pdf replaced by the clean-room build (same bytes as the preview)")
     # ⚠️ `heads is None` (no extractor) does NOT fail the build — an absent tool is not a defect —
     #    but it prints "not checked" rather than passing silently, so the gap is visible.
     # ⚠️ `ok and ...`, not `ok = ...`. The alternate-engine loop above may already have set ok
