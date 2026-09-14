@@ -49,9 +49,15 @@ bibliography problem introduced. Reader 1's one residual and reader 2's list are
   companion-paper note prints its evidence DOI once; the two self-citations are cited a-then-b.
 - **This changelog.** Round 21's Table 3 / Table 4 bullet named the wrong tables (they are Table 4
   and Table 6); corrected in place and noted.
-- Deposited as replication package 1.0.4 at the signed tag `obl-metric-v1.0.4`. Round 21's tag
-  `obl-metric-v1.0.3` was signed and pushed but not deposited; its text went to the verification read
-  instead.
+- **After tag 1.0.4 was signed: README.md still printed the old figure and renderer digests.**
+  The engine re-derived `sha_figpng` and `sha_figscript`, the paper interpolated them, every check
+  passed — and the README's "Verify before you trust" block, maintained by hand, kept the two old
+  values. Found by grepping for the old hash. The README is corrected, and `stress_test.py` gains
+  test N, which checks every digest line in the README against the file on disk and the manifest
+  line against `tables/figures.json`; it fails on the stale README and passes on the corrected one.
+- Deposited as replication package 1.0.5 at the signed tag `obl-metric-v1.0.5`. Tags `obl-metric-v1.0.3`
+  (round 21, verification read) and `obl-metric-v1.0.4` (this round, before the README defect was found)
+  were signed and pushed but not deposited.
 
 ## Round 21 (14 Sep 2026) — internal review of round 20: two readers, one verdict of "minor revision"
 

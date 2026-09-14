@@ -18,8 +18,8 @@ obl_metric.py                      c57741458a459169e909aefdf5c1516e0460458c48d7c
 audit_descendants.py               74daf47d77aa8266561963f8e4115eaa7376859450c1c9b923b8f94f40240214
 audit_btc.py                       daa7dcaebc464a206881be1107b463b510a61a86906d747012e7bc2013e01369
 audit_btg.py                       8de0a38b4e968662f2ea0e2d604a1c77a55ca2874bc54e5a381b2165679a5f65
-figures/mismatch_heatmap.py        2406483e3d637311002257d4f49f915785de81715b417d387a4780b91477feab
-figures/mismatch_heatmap_v010.png  67549237b042d335f7149b6677900fa7ad7bee5c1ffef4f634cbb034ec1281ff
+figures/mismatch_heatmap.py        e5b3c633ef75ddd8171a8bb3036eb7201cddccfe883c8ee34cc4509fe6af71f6
+figures/mismatch_heatmap_v010.png  d6ace5be32c6f94c7d78f36817bf93f0fdeed5af9e5ebee2af4af5b2f996b9de
 tables/audit_descendants.json      a35b7def457c9bda17d8c05edec334fb2aec827858cd6706c42569727c184ebc
 tables/audit_btc.json              ab63eef2f14674fcce02149a8d4d9136164706e551722bd535b2428d786f1efb
 artifacts/comparison.json          2209d84e4cf03c7297016fec4cda05d23b00331ce3bc42601c5729801528bcc9

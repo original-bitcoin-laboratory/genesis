@@ -700,10 +700,43 @@ def test_M():
           "of the platform that produced it")
 
 
+# ── N ── README.md's digest table against the files it names ─────────────────
+def test_N():
+    """⛔ THE README PRINTS DIGESTS BY HAND AND NOTHING CHECKED THEM.
+
+    ★★ R22: the figure's subtitle was corrected and the heat-map regenerated. The engine re-derived
+       `sha_figpng`/`sha_figscript`, the paper interpolated them, every check here passed — and
+       README.md still printed the OLD digests for both files, in a block whose heading is
+       "Verify before you trust". Found by grepping for the old hash after tag 1.0.4 was signed,
+       which is why 1.0.5 exists. A correction not propagated to every file that states the
+       number is not a correction (METHOD.md, 14 Aug) — this is that rule, applied to the README.
+       Every `path  <64 hex>` line in the README is checked against the file on disk, and the
+       tables-manifest line against `tables/figures.json`; a path that no longer exists fails too.
+    """
+    import hashlib as _h, json as _j, re as _re
+    hdr("N. README digest table vs the files on disk")
+    txt = (HERE / "README.md").read_text(encoding="utf-8")
+    rows = _re.findall(r"^([A-Za-z0-9_./-]+)[ ]+([0-9a-f]{64})$", txt, _re.M)
+    check("README carries a digest table", len(rows) >= 11, "%d digest lines" % len(rows))
+    for path, digest in rows:
+        f = HERE / path
+        if not f.exists():
+            check("README digest: %s" % path, False, "file missing")
+            continue
+        actual = _h.sha256(f.read_bytes()).hexdigest()
+        check("README digest: %s" % path, actual == digest,
+              "" if actual == digest else "README %s… disk %s…" % (digest[:12], actual[:12]))
+    m = _re.search(r"tables/table[*].md[ ]+8 files[ \r\n]+([0-9a-f]{64})", txt)
+    fig = _j.loads((HERE / "tables" / "figures.json").read_text(encoding="utf-8"))
+    check("README tables-manifest digest == figures.json sha_tables_manifest",
+          bool(m) and m.group(1) == fig.get("sha_tables_manifest"),
+          "" if m else "manifest line not found")
+
+
 def main():
     print(__doc__.split("Run:")[0])
     for t in (test_A, test_B, test_C, test_D, test_E, test_F, test_G, test_H, test_I, test_J,
-              test_K, test_L, test_M):
+              test_K, test_L, test_M, test_N):
         t()
     hdr("SUMMARY")
     print("  FAILURES (%d)" % len(FAILS))
