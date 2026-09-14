@@ -77,8 +77,11 @@ existing v1 signature
 4. **Check it, cryptographically, before anything else:**
    ```
    python verify/prove.py check manifests/CHAIN_SOURCE_MANIFEST.json     # must say VERIFIES
-   python ../../../_verify_self_sufficient.py                            # section 6b: five ok lines
+   python ../../../_verify_self_sufficient.py
    ```
+   Section 6b's manifest block should then print exactly four `ok` lines — pinned files match,
+   signature VERIFIES, the rule selects exactly the pinned set, chain identity matches — and no
+   `note` about a staged successor.
 
 5. **Timestamp both new files** (`_ots_stamp.py` at the workspace root), and upgrade the proofs after
    the calendars anchor them.
