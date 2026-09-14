@@ -1,49 +1,52 @@
 secp256k1 signature by the Bitcoin (2026) genesis key over the SHA-256 of
-CHAIN_SOURCE_MANIFEST.json.
+CHAIN_SOURCE_MANIFEST.json (schema 2).
 
-  message signed   62ba1cee54f26cf5a17070be6a7389818e75e2069d043a4f4828724606855beb
+  message signed   051de993426662608f2bfbcd4281cfbfb98571a4dc4993750e0506e191acc9d1
                    (the ASCII hex string above, 64 characters -- NOT the raw digest bytes)
-  public key       04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba7
-                   94ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834
+  public key       04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba79
+                   4ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834
   genesis          00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
 
-  r  7874c12092599ad266b8992ebe85988cd9f4d1b868b3b1cb150661b8d56701d9
-  s  14736ee6259b7778ca2ce82ae3412432e280cf93235dccebe801f26f4119a9d6
+  r  9cf1c1b95a4570aecf6aad9da386e475a88128440860e146eb7354c674f6fadc
+  s  41f0206da4156fdd96d87e5b1d3f58d1f95043e4917f75f7d2dfda9ee06e7cd4
 
 Signing is RFC6979-deterministic, so re-running prove.py with the same challenge reproduces these
 exact values. Low-s normalised. The digest convention is Bitcoin's own: double-SHA256 of the ASCII
 hex challenge.
 
-  reproduce   python ../verify/build_chain_source_manifest.py
-              python prove.py "<the manifest sha256 it prints>"
+  reproduce   python verify/build_chain_source_manifest.py --check
+              python verify/prove.py check manifests/CHAIN_SOURCE_MANIFEST.json
 
 
-WHAT THIS BINDS, AND WHY IT WAS THE LAST ONE
---------------------------------------------
+WHAT THIS BINDS
+---------------
 
 This laboratory measures whether four identities are cryptographically bound -- the whitepaper
 author line (W), the source copyright line (L), the chain keys (K) and the OpenPGP key (P). For
-Satoshi Nakamoto's 2008-2009 record, every one of the six pairs is unbound: ZERO OF SIX, measured.
+Satoshi Nakamoto's 2008-2009 record, every one of the six pairs is unbound: zero of six, measured.
+For this project, L <-> K is bound by this file: the key that mined block 0 has signed a manifest of
+the source that built block 0.
 
-Run against this project on 12 August 2026, five of six were bound. The exception was L <-> K, and
-its status was "by construction": the source carrying the copyright line is the source that mined
-our genesis, but nobody had signed anything to that effect.
+This is the second signed manifest. The first, schema 1, was signed on 12 August 2026 over
+62ba1cee54f26cf5a17070be6a7389818e75e2069d043a4f4828724606855beb
+and is retained beside this file under a SUPERSEDED- prefix with its own signature and timestamps.
+It was true when signed. It pinned PROVENANCE.txt -- a note for a reader that the compiler does not
+read -- so a prose correction on 12 September left it describing a tree that had moved, and it did
+not pin net.py, which holds the chain's identity. The succession is recorded inside the signed
+document itself (the "supersedes" field), so it is part of what this signature covers.
 
-That is precisely the standard this laboratory refuses to accept from anybody else. Satoshi's own
-L <-> K is "by construction" in exactly the same sense -- the client carrying the copyright line is
-the client that mined block 0 -- and we call that administrative, not cryptographic, because it is.
+Schema 2 pins by two rules, chosen by what a change would mean:
 
-  BEFORE   the source built the chain, and the connection was an argument about causation
-  AFTER    the key that mined block 0 has SIGNED a manifest of the source that built block 0
+  BY BYTES   src/** and bitcoin-v0.1.0.patch -- 44 files, 28 of which carry
+             "Copyright (c) 2009 Satoshi Nakamoto" with the MIT/X11 notice intact. These were
+             compiled into the binary that mined block 0. A byte change here is a different program.
+  BY VALUE   the chain's identity -- magic f00ba726, port 18026, the coinbase headline, the genesis
+             hash, time, nonce, bits and public key -- read out of net.py and checked against the
+             substitution patch. A changed value is a different chain. A prose edit is nothing.
 
-The manifest covers 45 files: the 43-file client source tree, of which 29 still carry
-"Copyright (c) 2009 Satoshi Nakamoto" with the MIT/X11 notice intact; PROVENANCE.txt, which states
-what is Satoshi's, what is Wei Dai's and what is ours; and bitcoin-v0.1.0.patch, the ten lines that
-separate this chain from Satoshi's.
-
-Build outputs are deliberately excluded. They are products of the source rather than the source,
-and they are not byte-reproducible across toolchains -- a manifest that fails for an honest
-verifier on a different machine would be worse than one that does not cover them.
+Build outputs are excluded by class. They are products of the source rather than the source, and
+they are not byte-reproducible across toolchains. A root entry that matches no class makes the
+builder refuse, so the set is decided by a rule and not by a list.
 
 
 WHAT IT DOES NOT DO
@@ -53,13 +56,13 @@ WHAT IT DOES NOT DO
              his. This signature attests to what the tree contains, not to who wrote it.
 
   DOES NOT   prove who operates this key, or that any person is any other person. A signature
-             binds keys to bytes. It has never bound a key to a person, here or anywhere.
+             binds keys to bytes. It does not bind a key to a person, here or anywhere.
 
   DOES NOT   assert any right in the name "Bitcoin" or the name "Satoshi Nakamoto", make this
              chain money, or create any claim on the 2009 chain. No premine, no token, no sale,
              no price, no offer.
 
   DOES NOT   change the source. Re-running the builder on an unchanged tree reproduces the
-             manifest byte-for-byte, so this signature stays valid until the source itself moves.
-             When it moves, the manifest must be rebuilt and re-signed -- and the old signature
-             will correctly stop verifying, which is the point.
+             manifest byte-for-byte, so this signature stays valid until the program or the chain
+             itself changes. When that happens the manifest is rebuilt and re-signed, and this
+             signature correctly stops verifying -- which is the point.

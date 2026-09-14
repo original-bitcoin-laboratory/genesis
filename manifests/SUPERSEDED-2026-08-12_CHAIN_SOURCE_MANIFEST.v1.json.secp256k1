@@ -1,0 +1,65 @@
+secp256k1 signature by the Bitcoin (2026) genesis key over the SHA-256 of
+CHAIN_SOURCE_MANIFEST.json.
+
+  message signed   62ba1cee54f26cf5a17070be6a7389818e75e2069d043a4f4828724606855beb
+                   (the ASCII hex string above, 64 characters -- NOT the raw digest bytes)
+  public key       04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba7
+                   94ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834
+  genesis          00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
+
+  r  7874c12092599ad266b8992ebe85988cd9f4d1b868b3b1cb150661b8d56701d9
+  s  14736ee6259b7778ca2ce82ae3412432e280cf93235dccebe801f26f4119a9d6
+
+Signing is RFC6979-deterministic, so re-running prove.py with the same challenge reproduces these
+exact values. Low-s normalised. The digest convention is Bitcoin's own: double-SHA256 of the ASCII
+hex challenge.
+
+  reproduce   python ../verify/build_chain_source_manifest.py
+              python prove.py "<the manifest sha256 it prints>"
+
+
+WHAT THIS BINDS, AND WHY IT WAS THE LAST ONE
+--------------------------------------------
+
+This laboratory measures whether four identities are cryptographically bound -- the whitepaper
+author line (W), the source copyright line (L), the chain keys (K) and the OpenPGP key (P). For
+Satoshi Nakamoto's 2008-2009 record, every one of the six pairs is unbound: ZERO OF SIX, measured.
+
+Run against this project on 12 August 2026, five of six were bound. The exception was L <-> K, and
+its status was "by construction": the source carrying the copyright line is the source that mined
+our genesis, but nobody had signed anything to that effect.
+
+That is precisely the standard this laboratory refuses to accept from anybody else. Satoshi's own
+L <-> K is "by construction" in exactly the same sense -- the client carrying the copyright line is
+the client that mined block 0 -- and we call that administrative, not cryptographic, because it is.
+
+  BEFORE   the source built the chain, and the connection was an argument about causation
+  AFTER    the key that mined block 0 has SIGNED a manifest of the source that built block 0
+
+The manifest covers 45 files: the 43-file client source tree, of which 29 still carry
+"Copyright (c) 2009 Satoshi Nakamoto" with the MIT/X11 notice intact; PROVENANCE.txt, which states
+what is Satoshi's, what is Wei Dai's and what is ours; and bitcoin-v0.1.0.patch, the ten lines that
+separate this chain from Satoshi's.
+
+Build outputs are deliberately excluded. They are products of the source rather than the source,
+and they are not byte-reproducible across toolchains -- a manifest that fails for an honest
+verifier on a different machine would be worse than one that does not cover them.
+
+
+WHAT IT DOES NOT DO
+-------------------
+
+  DOES NOT   claim authorship of Satoshi's 2009 code. The copyright line is retained BECAUSE it is
+             his. This signature attests to what the tree contains, not to who wrote it.
+
+  DOES NOT   prove who operates this key, or that any person is any other person. A signature
+             binds keys to bytes. It has never bound a key to a person, here or anywhere.
+
+  DOES NOT   assert any right in the name "Bitcoin" or the name "Satoshi Nakamoto", make this
+             chain money, or create any claim on the 2009 chain. No premine, no token, no sale,
+             no price, no offer.
+
+  DOES NOT   change the source. Re-running the builder on an unchanged tree reproduces the
+             manifest byte-for-byte, so this signature stays valid until the source itself moves.
+             When it moves, the manifest must be rebuilt and re-signed -- and the old signature
+             will correctly stop verifying, which is the point.

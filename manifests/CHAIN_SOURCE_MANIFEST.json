@@ -1,19 +1,20 @@
 {
  "agent_public_key": "04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba794ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834",
- "excluded": [
-  "build outputs",
-  "dist/",
-  "build-*/",
-  "obj/",
-  "__pycache__/"
- ],
- "file_count": 45,
+ "chain_identity": {
+  "coinbase_message": "The Times 03/Aug/2026 Toll of schooling 'straitjacket'",
+  "genesis_bits": "1d00ffff",
+  "genesis_hash": "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a",
+  "genesis_nonce": 33394338,
+  "genesis_pubkey": "04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba794ca0602e8527d7ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834",
+  "genesis_raw_bytes": 270,
+  "genesis_raw_sha256": "1779dd94921aa46b7dd833c1891397a74ca4416381b2b480fd9542d91a7c12a4",
+  "genesis_time": 1785781375,
+  "magic": "f00ba726",
+  "merkle_root": "aaa5bdfd6c4075a646db9975aab8515781c67fdd73b02df1773a4e1e21a38085",
+  "port": 18026
+ },
+ "file_count": 44,
  "files": [
-  {
-   "path": "PROVENANCE.txt",
-   "sha256": "bc477fd5c3846edeecc6d72e7b6cc03dbfd2db3f9412724a7bacd207cc597730",
-   "size": 7644
-  },
   {
    "path": "bitcoin-v0.1.0.patch",
    "sha256": "4f63070cc8e91cf7218633c4274e17806a5dcaa84763bb9c6c43abe5720d8b1a",
@@ -235,9 +236,53 @@
    "size": 11482
   }
  ],
- "files_carrying_satoshi_copyright": 29,
+ "files_carrying_satoshi_copyright": 28,
  "genesis": "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a",
+ "identity_cross_checked_against_patch": [
+  "coinbase_message",
+  "genesis_hash",
+  "genesis_nonce",
+  "genesis_pubkey",
+  "genesis_time",
+  "magic",
+  "merkle_root",
+  "port"
+ ],
  "root": "derivatives/bitcoin",
- "schema": 1,
- "what": "the source that produced this chain's genesis block, and the copyright line it carries"
+ "rule": {
+  "excluded": {
+   "*.md": "prose for a reader",
+   "*.txt": "prose for a reader",
+   ".gitignore": "repository tooling",
+   "__pycache__/": "python bytecode",
+   "build*/": "build output tree, not reproducible across toolchains",
+   "deploy/": "deployment packaging",
+   "dist/": "packaging output",
+   "make_chain.py": "the composer; its effect is the patch, which is pinned",
+   "make_release.sh": "release packaging, downstream of the source",
+   "obj/": "build output"
+  },
+  "fail_closed": "a root-level entry matching none of these classes aborts the build",
+  "pinned_by_bytes": {
+   "bitcoin-v0.1.0.patch": "the nine substitutions; make_chain.py produces this file",
+   "src": "the composed client tree, compiled into the binary that mined block 0"
+  },
+  "pinned_by_value": {
+   "net.py": "chain identity is READ from here and pinned as values, not bytes"
+  },
+  "root_excluded": "not enumerated: excluded entries are build outputs and prose present on the generating machine, not source; the verifier re-classifies the root on every run",
+  "root_pinned": {
+   "bitcoin-v0.1.0.patch": "pin-bytes",
+   "net.py": "pin-value",
+   "src": "pin-bytes"
+  }
+ },
+ "schema": 2,
+ "supersedes": {
+  "manifest_sha256": "62ba1cee54f26cf5a17070be6a7389818e75e2069d043a4f4828724606855beb",
+  "schema": 1,
+  "signed": "2026-08-12",
+  "why": "schema 1 pinned PROVENANCE.txt, prose the build does not read, and omitted net.py, which holds the chain's identity. A prose correction on 2026-09-12 left the signed manifest describing a tree that no longer existed. Schema 2 pins source by bytes and identity by value, so the signature breaks only when the program or the chain changes."
+ },
+ "what": "the source that produced this chain's genesis block -- the client tree and the substitution patch pinned by their bytes, and the chain's identity constants pinned by their values"
 }
