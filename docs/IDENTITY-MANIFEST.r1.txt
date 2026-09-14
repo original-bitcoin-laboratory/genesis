@@ -4,9 +4,7 @@ ORIGINAL BITCOIN LABORATORY -- IDENTITY MANIFEST
 A single signed list of the identities that speak publicly for this project, so that a stranger can
 check any of them without asking anyone anything.
 
-Issued 12 August 2026 by parthod0x. Revision 2, 14 September 2026: wording only — the statements
-below are made in the present tense and without absolutes; no identifier changed. Revision 1 and its
-signatures and proofs are kept beside this file as IDENTITY-MANIFEST.r1.txt*.
+Issued 12 August 2026 by parthod0x.
 
 
 WHY IT EXISTS
@@ -31,8 +29,8 @@ WHAT IT PROVES, AND WHAT IT DOES NOT
   PROVE       one. That limit is stated in this laboratory's own published findings about somebody
               else, and it applies to us exactly as it applies to them.
 
-  DOES NOT    prove exclusive control beyond its date. It is a dated statement, not a standing
-  PROVE       guarantee. If it goes stale, that is a defect and it is corrected in the open.
+  DOES NOT    prove exclusive control forever. It is a dated statement, not a standing guarantee. If
+  PROVE       it goes stale, that is a defect and it will be corrected in the open.
 
 Nothing here is money. No premine, no token, no sale, no offer, no price, no warranty.
 
@@ -52,7 +50,7 @@ anything new.
     Revised 12 Aug 2026: this clause previously also excluded "keys not yet published", which
     covered the agent's post-quantum successor. That key is now PUBLISHED and is in section 5, so
     the exclusion no longer applies to it. A key was being withheld on a rule whose own reason --
-    do not cite a hash a reader cannot fetch -- was better answered by publishing it.
+    never cite a hash a reader cannot fetch -- was better answered by publishing it.
 
   A signed inventory that quietly omitted things while saying "every" would be the exact failure
   this project exists not to make. So the omission is stated instead of hidden.
@@ -75,7 +73,7 @@ anything new.
   appeared in this project's git history is superseded and speaks for nothing.
 
   Post-quantum counter-signing key
-              SLH-DSA-SHA2-128s (NIST FIPS 205) -- stateless by deliberate choice, not LMS/XMSS
+              SLH-DSA-SHA2-128s (NIST FIPS 205) -- stateless by deliberate choice, never LMS/XMSS
               published as parthod0x-pq-countersign.pem, a 126-byte PEM holding a 32-byte raw key
               sha256 of that file, exactly as published:
                 0624d2c7149d4af09e25b558e76f5e6b1a8855d60723c45333829c46488ceda4
@@ -114,7 +112,7 @@ anything new.
   bitcoin-lab.org             the laboratory
   satoshioncha.in             the on-chain tracker -- a separate project
   bitcoinwhitepaper.online    a study of the 2008 document. Publishes no software, signs nothing,
-                              and hosts no release keys, by design.
+                              and hosts no release keys. It should never host any.
 
   Each serves /.well-known/security.txt, /robots.txt and /llms.txt.
 
@@ -158,7 +156,7 @@ anything new.
 ------------------------------
 
   THIS IS NOT THE BITCOIN OF 2008-2009. Both use version numbers of the form v0.1.x, because this
-  laboratory reconstructs that era. A version number does not tell you which chain you are looking
+  laboratory reconstructs that era. A version number will not tell you which chain you are looking
   at. Read the coinbase of block 0.
 
     2009, Satoshi's chain   genesis  000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
@@ -201,16 +199,15 @@ anything new.
   designation made and anchored BEFORE a break can be told apart from a forgery afterwards. The
   certificate says so in its own text, and the anchor is what carries the weight.
 
-  The coins on that chain have not been sold, offered, priced or transferred, and are not for sale:
-  no value is assigned, no price is set, and no market is solicited.
+  The coins on that chain have never been sold, offered, priced or transferred, and will not be.
 
 
 6. WHAT IS DELIBERATELY ABSENT
 ------------------------------
 
   No legal name appears in this manifest. It appears in LICENSE and CITATION.cff, which is where a
-  copyright notice belongs, and nowhere else. Binding it here would broadcast a copy of it, one that
-  could not be withdrawn, with every signature this project makes, in exchange for binding something that remains a
+  copyright notice belongs, and nowhere else. Binding it here would broadcast a permanent copy of it
+  with every signature this project makes, in exchange for binding something that remains a
   declaration either way. The cryptography would not get stronger; only the exposure would.
 
   No secret material of any kind appears here. No wallet, no seed phrase, no private key, no server
@@ -240,6 +237,6 @@ HOW TO CHECK THIS FILE
   been checked against itself.
 
   If any identifier above is wrong, or if this file has gone stale, it is a defect. Corrections are
-  published, dated, and not made silently.
+  published, dated, and never made silently.
 
-                                                     -- parthod0x, 12 Aug 2026; revision 2, 14 Sep 2026
+                                                                          -- parthod0x, 12 Aug 2026

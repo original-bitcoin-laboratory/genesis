@@ -26,8 +26,7 @@ HOW TO CHECK A ROW
   git -C <repo> rev-list -n1 <tag>        must equal the commit below
   git -C <repo> rev-parse <tag>^{tree}    must equal the tree below
   gpg --verify TAG-ATTESTATION.txt.asc TAG-ATTESTATION.txt
-  ots verify <file>.ots                   or the genesis repository's scripts/ots_upgrade.py;
-                                          confirm the .ots is Bitcoin-anchored
+  python scripts/ots_upgrade.py <file>.ots   then confirm the .ots is Bitcoin-anchored
 
 ====================================================================================================
 REPOSITORY       TAG                            KIND         COMMIT
@@ -61,8 +60,3 @@ satoshi-onchain  v1.0.0                         lightweight  ffeee4d6828ac1e1fa7
 
 12 unsigned tags attested.
 Tags NOT listed here carry their own OpenPGP signature; verify those with `git tag -v`.
-
-Revision 4, 14 September 2026: the verification line above named a script by a path that exists
-only in the genesis repository; it now names the tool and the path. Every row was re-checked against
-the repositories before this revision was signed; no row changed. Revisions 1-3 and their signatures
-and proofs are kept beside this file as TAG-ATTESTATION.r1.txt*, .r2.txt*, .r3.txt*.

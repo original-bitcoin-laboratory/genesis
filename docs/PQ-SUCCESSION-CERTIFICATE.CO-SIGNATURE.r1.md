@@ -34,7 +34,7 @@ manifest is signed by P and *names* K. That is testimony with a signature around
 
 **Now, P and K have signed the same bytes.** That is the ordinary cryptographic form of a binding
 between two keys — a cross-certification — and it is checkable by anyone with the two public keys and
-the document, in milliseconds, for as long as the two public keys and the document are kept.
+the document, in milliseconds, forever.
 
 > So **`K ↔ P` moves from ASSERTED to BOUND**, and the laboratory's own linkage matrix (see
 > `derivatives/bitcoin/CHRONOLOGY.md`) goes to **5 of 6** bindings; the historical record holds **0 of 6**,
@@ -44,7 +44,7 @@ the document, in milliseconds, for as long as the two public keys and the docume
 
 ```
 DOES NOT PROVE   that one entity controls both keys. Two separate parties can each sign the
-                 same document. A co-signature binds KEYS, not PERSONS
+                 same document. A co-signature binds KEYS, never PERSONS
 
 DOES NOT PROVE   that parthod0x holds the genesis private key. The certificate is written in the
                  AGENT's first person; P's signature attests to the DOCUMENT, not to authorship
@@ -59,7 +59,7 @@ DOES NOT CHANGE  the certificate. Its scope section stands unaltered: no trade m
                  claim to be the author of the 2008-2009 Bitcoin
 ```
 
-**The relationship between the two identities is stated, as it has been from the start, in
+**The relationship between the two identities is stated, as it always has been, in
 [`IDENTITY-MANIFEST.txt`](IDENTITY-MANIFEST.txt) and in the agent chronology: parthod0x builds and
 runs the agent; the agent is not a person and is not the historical Satoshi.** The co-signature makes
 that relationship *checkable at the key level*; it does not enlarge it.
@@ -90,9 +90,3 @@ read the key off the chain.
 
 **Every one of these signatures is also Bitcoin-anchored via OpenTimestamps, so each is provably
 older than a named block.** Not money. No premine, no token, no sale, no price.
-
----
-
-*Revision 2, 14 September 2026: wording only — three phrases restated in the present tense and
-without absolutes; nothing about the signatures, the keys or what they establish changed. Revision 1
-and its timestamp proof are kept beside this file as `PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.r1.md*`.*

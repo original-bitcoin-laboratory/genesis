@@ -223,14 +223,10 @@ The experiment source, its captured output, the fetched upstream `script.cpp`, a
 per-commit dating record are published with a SHA-256 manifest. The reproduction is two `curl`
 calls; the compiled check requires g++ and the interpreter source.
 
-**Corrections to this note are published, dated, and not made silently.**
+**Corrections to this note will be published, dated, and never made silently.**
 
 ---
 
 *Revision 2, 12 September 2026: one line under "Limits of this note" contradicted the paragraph
 above it about the literature search; it now agrees. Nothing else changed. Revision 1 and its
 signatures and timestamp proofs are kept beside this file as `SCRIPT-LIMITS-RETROFITTED.r1.md*`.*
-
-*Revision 3, 14 September 2026: the corrections sentence above is restated in the present tense and
-without absolutes. Nothing else changed. Revision 2 is kept beside this file as
-`SCRIPT-LIMITS-RETROFITTED.r2.md*`.*
