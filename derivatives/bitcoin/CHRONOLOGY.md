@@ -60,8 +60,10 @@ parthod0x's OpenPGP key B128526AF85AE4A8F22B949FB0145F74B78CF1DA  ─┐
 the agent's chain key  04c0414cfdcc…  (inside genesis block 0)   ─┘  PQ-SUCCESSION-CERTIFICATE.txt
                                                                      sha256 9d892f72…
 
-and the chain key alone signed CHAIN_SOURCE_MANIFEST.json — the 45 source files that built
-block 0 — so the key that mined the genesis has signed the source that produced it.
+and the chain key alone signed CHAIN_SOURCE_MANIFEST.json — the source that built block 0
+(45 files by their bytes in the schema-1 manifest of 12 August; from schema 2, prepared
+14 September, 44 files by their bytes plus the chain's identity constants by their values)
+— so the key that mined the genesis has signed the source that produced it.
 ```
 
 **Before this, the top arrow was testimony:** the identity manifest is signed by parthod0x's key and
@@ -85,6 +87,26 @@ LINKAGE MATRIX      the 2008-09 Satoshi   0 of 6
 > parthod0x's signature attests to the *document*, not to authorship of its first-person claims. The
 > separation stated above is unchanged — it is now provable rather than asserted. Limits in full:
 > [`../../docs/PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md`](../../docs/PQ-SUCCESSION-CERTIFICATE.CO-SIGNATURE.md).
+
+#### 14 September 2026 — the L ↔ K manifest's scope was corrected, and here is the whole of it
+
+A language pass on 12 September corrected the prose of `PROVENANCE.txt`. No constant moved. The
+schema-1 manifest signed on 12 August pinned that file's bytes, so the signed manifest stopped
+describing the tree: the signature stayed valid over the manifest, and the manifest stopped being
+true of the source. Checking why turned up the larger error: `net.py` — which holds this chain's
+magic, port, coinbase headline and the genesis block itself — was pinned by nothing.
+
+Schema 2 (`verify/build_chain_source_manifest.py`) pins the client tree and the substitution patch
+**by bytes**, as before, and the identity constants **by value**, read out of `net.py` and checked
+against the patch on eight constants. Prose is excluded by class. A file that matches no class makes
+the build refuse. The result is a signature that breaks only when the program or the chain changes.
+
+**Nothing is withdrawn.** The schema-1 manifest, its signature and its two OpenTimestamps proofs
+remain under a `SUPERSEDED-` prefix; the schema-1 output is still reproducible from the generator
+and does reproduce the signed hash `62ba1cee…` when given the tree as it was. The succession is
+recorded *inside* the schema-2 document, so it is part of what the chain key signs. Until that
+signature lands, the schema-1 binding stands as it was signed — stale, not false, and marked as
+such by the verifier on every run.
 
 ---
 
