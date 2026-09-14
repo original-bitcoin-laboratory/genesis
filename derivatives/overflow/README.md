@@ -26,7 +26,9 @@ two outputs of 9223372036854277039 sat each (~92,233,720,368.54 BTC)
   whose sum overflows a signed 64‑bit accumulator and wraps to a small **negative** number.
   A downstream `inputs >= outputs` check then sees a tiny (negative) total and passes, while
   the true minted value is ~184 billion BTC. Those are the **exact satoshi amounts** from the
-  transaction in **block 74638 (15 Aug 2010)**.
+  transaction in **block 74638 (15 Aug 2010)**; the incident and its 184,467,440,737 BTC total are recorded on
+  the Bitcoin wiki's [Value overflow incident](https://en.bitcoin.it/wiki/Value_overflow_incident) page. The overflow block was replaced
+  after the fix, so a present-day explorer at height 74638 ([blockstream.info](https://blockstream.info/block/000000000069e1affe7161ab4bcbeacebb4ddf155b50e807f42de971b688a09b)) shows a different block.
 
 ## Why the wrap is modelled explicitly
 
@@ -55,5 +57,5 @@ python -m pytest       # 10 passed
 ## Boundary
 
 MODEL; objective source port of `main.h:442` + the documented Aug‑2010 fix; historical
-amounts from the public record; no chain privileged; not a live‑exploit claim (the surface was
+amounts from the public record (the Bitcoin wiki's Value overflow incident page, linked above); no chain privileged; not a live‑exploit claim (the surface was
 patched in 0.3.10). It is a *tool*, not authority (`common/AUTHORITY.md`).

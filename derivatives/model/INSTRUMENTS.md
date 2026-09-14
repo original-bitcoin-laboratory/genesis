@@ -4,7 +4,8 @@ Each instrument is built **only from original v0.1 primitives** and runs through
 the MODEL interpreter with real secp256k1, `scriptCode` derived from the real
 subscript (byte-level `cscript`). This is the executable form of Satoshi's
 Jan 10 2009 claim that Bitcoin's network "can support a full range of escrow
-transactions and contracts". Evidence level: **MODEL** (cross-validated against
+transactions and contracts" (email to Wei Dai, published by Wei Dai and mirrored at
+https://gwern.net/doc/bitcoin/2008-nakamoto). Evidence level: **MODEL** (cross-validated against
 the C++/OpenSSL port for the CHECKSIG/multisig core). Tests: `test_checksig.py`,
 `test_instruments.py`.
 

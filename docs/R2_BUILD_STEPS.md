@@ -28,7 +28,7 @@ Idea: use a **period distro** (Ubuntu 10.04) so the *dependencies already match 
 the **Windows→Linux port** (wxMSW→wxGTK, drop Win32 libs, replace a few Win32 calls) —
 not fighting modern OpenSSL 3 / wx 3 API changes.
 
-### 1. Prereqs (on either Windows machine, in WSL)
+### 1. Prereqs (on a Windows machine, in WSL)
 ```bash
 # in WSL (Ubuntu):
 sudo apt-get update && sudo apt-get install -y docker.io   # or install Docker Desktop
@@ -110,3 +110,7 @@ The lab's **C++ PORT** (`derivatives/port/`, `derivatives/node/`) already compil
 v0.1 *consensus + script* on a modern toolchain (OpenSSL 3), reproduces the exact genesis,
 and is differential‑tested. So the *consensus* is already an executable reconstruction;
 Goal B adds the rest of the original program (GUI, market, db) as a period build.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

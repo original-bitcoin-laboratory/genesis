@@ -55,3 +55,7 @@ No feature is described as native consensus functionality merely because its nam
 ## Initial success criterion
 
 Release 0 succeeds when another researcher can independently acquire the same artifacts, verify all published hashes, reproduce the repository manifests, and understand exactly which evidence is original and which is derivative.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

@@ -49,7 +49,7 @@ maximal runs, tracking quoted lines separately.
 
 The abstract has been checkable from the start — it was quoted inline in the announcement. The **body** had
 no known 2008 witness until the archive was searched for the paper's own sentences. It found one: on
-**8 November 2008**, answering Ray Dillinger on inflation, Satoshi quoted their own Section 4:
+**8 November 2008**, answering Ray Dillinger on inflation ([archived message](https://www.metzdowd.com/pipermail/cryptography/2008-November/014831.html)), Satoshi quoted their own Section 4:
 
 > *"To compensate for increasing hardware speed and varying interest in running nodes over time, the
 > proof-of-work difficulty is determined by a moving average targeting an average number of blocks

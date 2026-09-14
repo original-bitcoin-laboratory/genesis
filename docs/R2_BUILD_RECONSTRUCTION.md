@@ -100,3 +100,7 @@ So R2's build is **done** as a period‑faithful *source → `bitcoin.exe`* rebu
 reproduction of the historical binary stays out of reach (and out of scope). The behavioural
 oracle is confirmed directly (the unmodified binary was run), and the NOV08 ceiling is
 **established**.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

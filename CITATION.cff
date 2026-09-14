@@ -12,6 +12,8 @@ authors:
     given-names: Parth Mauria
     email: parthms.id@gmail.com
 license: MIT
+version: 0.7.0-experimental
+date-released: 2026-08-28
 repository-code: "https://github.com/original-bitcoin-laboratory/genesis"
 url: "https://bitcoin-lab.org"
 keywords:

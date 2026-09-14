@@ -190,3 +190,7 @@ A tool, not authority ([`../../common/AUTHORITY.md`](https://github.com/original
 ---
 *Repos: <https://github.com/original-bitcoin-laboratory> · seed the network with the DNS seed +
 deploy templates · report issues on the genesis repo.*
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

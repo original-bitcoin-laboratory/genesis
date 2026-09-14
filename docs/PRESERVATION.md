@@ -54,7 +54,7 @@ IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against th
 >
 > **Revision 3, 14 September 2026** (`632a4680…`, 13,274 B): wording only — present tense, no
 > absolutes, no identifier changed. Revision 2 and its signatures and proofs are kept beside it as
-> `IDENTITY-MANIFEST.r2.txt*`. Revision 3's proofs are pending until a calendar anchors them.
+> `IDENTITY-MANIFEST.r2.txt*`. Revision 3's proofs are anchored in Bitcoin blocks 966942 and 966945 (read off the chain, 14 September 2026).
 
 ## Proof of domain control — a DNS TXT record on each of the three domains
 
@@ -366,7 +366,7 @@ to GitHub Actions secrets would put the only copy that matters onto third-party 
 future workflow change, and would break the invariant that **no private key of this project is on GitHub**. The
 release is already signed by hand for the same reason; syncing by hand costs one command more.
 
-**What replication does and does not guarantee.** Seeds are volunteers. Eight held the current refs at the
+**What replication does and does not promise.** Seeds are volunteers. Eight held the current refs at the
 5 Aug sync and nine more held older ones, which is real redundancy across operators nobody here controls -- but
 none of them is obliged to keep it. That is a different kind of durability from Software Heritage, not a lesser
 one, and it is why the sync output is recorded with a date rather than described as permanent.
@@ -403,3 +403,11 @@ appended, or the push is rejected with *"no public key given as a remote namespa
 
 
 **NOT money.**
+
+## Build-account names in the 0.1.1–0.1.5 tarball headers
+
+The `bitcoin-0.1.1` to `bitcoin-0.1.5` tarballs were packed with `tar` defaults, so their entry headers carry the build account's user and group names (`xyoga`, then `Yoga`/`197121`). Nothing else in those archives names a machine or a path; the `bitcoin.exe` inside carries none. `bitcoin-0.1.5/00-PROVENANCE.txt` also names the copyright holder in full, as `LICENSE` does. The five assets are signed and frozen, so they are left as they are and recorded here; from v0.1.6 the release script packs with `--owner=0 --group=0 --numeric-owner --sort=name` and a fixed mtime, and the provenance text refers to `LICENSE` for the holder. Recorded 14 September 2026.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

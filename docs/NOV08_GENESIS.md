@@ -232,7 +232,7 @@ are the third and fourth of the reversed pubkey — `04 d4 51 b0 …`. They matc
 > **`247422313` → 1977-11-03 16:25:13 UTC.** *The arithmetic is correct.* **The inference is not.**
 >
 > **Every nine-digit integer decodes to some date.** The range `100000000`–`999999999` maps onto
-> **1973-03-03 to 2001-09-09** — so any value of that size is *guaranteed* to land on a plausible
+> **1973-03-03 to 2001-09-09** — so any value of that size lands on a plausible
 > historical date. Finding one is not a discovery; it is arithmetic.
 >
 > ```
@@ -247,7 +247,7 @@ are the third and fourth of the reversed pubkey — `04 d4 51 b0 …`. They matc
 > with no unit, no encoding marker, and no corroborating artifact. **The honest reading is the one
 > this document already gives: it commits to nothing.**
 >
-> *Recorded because the numerology is in public circulation (satoshitimeline.com card 8) and will
+> *Recorded because the reading is in public circulation (satoshitimeline.com card 8) and will
 > otherwise be re-derived by someone who has not checked the base rate.*
 
 Two of those rows carry the weight.
@@ -295,3 +295,7 @@ print(h2(hdr)[::-1].hex())
 The merkle root above is the one the solve earlier on this page reproduces. Everything else is derived.
 
 **NOT money.**
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

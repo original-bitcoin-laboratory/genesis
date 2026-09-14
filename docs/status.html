@@ -10,6 +10,7 @@
 <meta property="og:description" content="Live status of the Bitcoin / JAN09-X / NOV08-X experimental chains: anchor uptime, tip heights, mempool. Not money.">
 <meta name="twitter:card" content="summary">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27M8 1l7 7-7 7-7-7z%27 fill=%27%23c9a75f%27/%3E%3C/svg%3E">
 <meta name="description" content="Live status of the Bitcoin / JAN09-X / NOV08-X experimental chains: anchor uptime, tip heights, mempool. Not money.">
 <style>
   :root{
@@ -59,7 +60,7 @@
 <div class="wrap">
   <p class="eyebrow"><a href="/" title="Home — Original Bitcoin Laboratory">◆ Original Bitcoin Laboratory</a> · live</p>
   <h1>Network status</h1>
-  <p class="lede">Proof of life for the three experimental chains — <b>anchor uptime</b>, <b>tip
+  <p class="lede">Proof of life for the three experimental chains — none of them the 2009 Bitcoin network, none of them money — <b>anchor uptime</b>, <b>tip
     height</b>, and mempool — measured over each chain's own peer‑to‑peer protocol. <b>Not money.</b></p>
   <div class="bar">
     <span id="updated">loading…</span>
@@ -82,7 +83,7 @@
 
 <script>
 const SRC = "https://raw.githubusercontent.com/original-bitcoin-laboratory/genesis/status/status.json";
-const LABEL = {bitcoin:"Bitcoin · its own chain", jan09x:"JAN09-X · Jan 2009 v0.1.0",
+const LABEL = {bitcoin:"Bitcoin (2026) · its own chain, not the 2009 network", jan09x:"JAN09-X · Jan 2009 v0.1.0",
                nov08x:"NOV08-X · Nov 2008 pre-release"};
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const short = h => h ? esc(h.slice(0,12) + "…" + h.slice(-8)) : "—";
@@ -157,7 +158,7 @@ fetch(SRC, {cache:"no-store"}).then(r => { if(!r.ok) throw new Error(r.status); 
     which version is which, and how to check. &middot; <a href="/docs.html">all documents</a><br>Three remits: <i>the code</i>, <i>the footprint</i>, <i>the document</i>.</p>
     <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
     · experimental laboratory research, in progress · statistical, machine-verifiable findings, no conclusions beyond them
-    · <b>NOT money</b>, not advice · no warranty</p>
+    · <b>NOT money</b>, not advice · no warranty · aggregate, cookie-less analytics, no identifiers</p>
   <p><a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md">Rights, sourcing &amp; corrections</a> — independent research; not affiliated with any party; not financial advice.</p>
 </footer>
 <style>

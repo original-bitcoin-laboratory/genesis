@@ -196,8 +196,9 @@ derivatives/  all modified / instrumented / modernized code
 
 ## License
 
-MIT © 2026 parthod0x (new laboratory material only). Original Bitcoin
-source retains Satoshi Nakamoto's original notices. See `LICENSE` for the named copyright holder.
+MIT © 2026 parthod0x — the licence applies to new laboratory material only; historical artifacts
+retain their original notices and licences, and the original Bitcoin source retains Satoshi Nakamoto's.
+See `LICENSE` for the named copyright holder.
 
 ---
 

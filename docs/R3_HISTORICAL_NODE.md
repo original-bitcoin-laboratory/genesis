@@ -112,3 +112,7 @@ no relationship to and no value on the historical Bitcoin network. This environm
 proves *what the released binary does*; it is **not** a Bitcoin fork or continuation.
 (The separate, new-genesis *experimental* networks are a later, clearly-labelled
 phase — see the roadmap.)
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

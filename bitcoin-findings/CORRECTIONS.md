@@ -261,7 +261,7 @@ A file-by-file read of every findings set, recorded here rather than edited into
 - **Block 1, sealed:** `2026-08-05-block1/FINDINGS.md` names the chain without saying which one. Read every
   "the chain" in it as Bitcoin (2026), the laboratory's experimental chain — not the 2009 Bitcoin, not money.
 - **"never", sealed:** `2026-08-06-block2/FINDINGS.md` ("Tier 1, never published"), `2026-08-10-blocks5-28/FINDINGS.md`
-  ("never committed", "never enters a repository") and `2026-08-12-blocks61-63/FINDINGS.md` say "never" where
+  ("never committed") and `2026-08-12-blocks61-63/FINDINGS.md` ("never enters a repository", line 133) say "never" where
   the project now says "not". Read each as a statement of what is the case, not a promise about the future.
 - **Block 4, sealed:** line 95 gives a command with a local-workspace path
   (`original-bitcoin-laboratory/lab/genesis/derivatives/bitcoin/net.py`); inside the repository the path is
@@ -277,3 +277,13 @@ A file-by-file read of every findings set, recorded here rather than edited into
   while preparing the laboratory's paper on executing the earliest Bitcoin (a manuscript, not a public record
   a reader can follow); the distinction itself is the one stated in the surrounding sentence.
 
+## 14 September 2026 — forward corrections to the signed release texts and one sealed set
+
+Recorded here because the release texts are signed and the findings sets are sealed; none of them is edited.
+
+- **`derivatives/bitcoin/RELEASE-0.1.4.txt`, signed:** "no market" — read as: the chain is not offered on any
+  market. "unprovable by any available means" — read as: not provable by the means available.
+- **`derivatives/bitcoin/RELEASE-0.1.5.txt`, signed:** "never rewritten" — read as: the record is appended to, not
+  rewritten. "no market" — as above.
+- **`2026-08-09-block4/FINDINGS.md` line 101, sealed:** "never the bytes" — read as: the published findings carry
+  the hashes and the reasoning, not the bytes.

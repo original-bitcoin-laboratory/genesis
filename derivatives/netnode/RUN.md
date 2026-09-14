@@ -142,6 +142,5 @@ for anything of value. **Not money.** (The faithful wallet model this builds on:
 
 ## Remember
 
-It's a research microscope, not a currency. If it gets treated as money on unaudited,
-easy‑difficulty experimental code, people get hurt — don't let that happen. See
+It's a research microscope, not a currency. It is not money. See
 [`SECURITY.md`](SECURITY.md) and [`../../docs/PUBLIC_TESTNET_SCOPE.md`](../../docs/PUBLIC_TESTNET_SCOPE.md).

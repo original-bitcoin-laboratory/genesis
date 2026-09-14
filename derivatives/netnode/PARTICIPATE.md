@@ -2,8 +2,7 @@
 
 > **This is not money.** `NOV08‑X` / `JAN09‑X` are experimental research networks that run the earliest
 > Bitcoin script vocabulary with **nothing disabled**. There is no coin to buy, sell, or hold, and the
-> code runs at an easy, unaudited difficulty. Nothing here has value; treating it as money would hurt
-> people. Read [`SECURITY.md`](SECURITY.md) before exposing a node.
+> code runs at an easy, unaudited difficulty. Nothing here has value; it is not money. Read [`SECURITY.md`](SECURITY.md) before exposing a node.
 
 This guide answers two questions: **how you generate, mine, send and receive coins**, and **what else you
 can express** — the opcode vocabulary and the contract forms the node actually validates. For installing

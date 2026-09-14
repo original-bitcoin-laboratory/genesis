@@ -46,7 +46,7 @@ with the one in this repo's `LICENSE`, on the release pages, and on bitcoin-lab.
 
 ## Verify a download
 
-Each release carries the tarball, its detached signature (`.asc`), and a signed `SHA256SUMS`.
+Each release with attached artifacts carries the tarball, its detached signature (`.asc`), and a signed `SHA256SUMS`. Two exceptions: `Bitcoin-v0.1.0`'s tarball was withdrawn on 12 September 2026 (its signature and manifest stand; see `PRESERVATION.md`), and `netnode-v0.1.0-experimental` is a source-only tag with no artifacts.
 
 ```bash
 # 1. verify the checksum manifest is genuinely from the maintainer
@@ -91,3 +91,7 @@ alongside it and can be checked with `gh attestation verify`.
 - **Does not:** make the chain money, make it safe to attach value to, or make it "the real Bitcoin."
   What lasts is separate and stronger — `scripts/verify_genesis.py` re‑derives both
   genesis blocks from source, so you do not have to trust *us* about the chain itself. **Not money.**
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

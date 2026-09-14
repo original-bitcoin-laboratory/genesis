@@ -46,7 +46,7 @@ PRE-RELEASE    3 Oct 2008    183,697 B   8 pages
 
 A JANUARY 2009 DOWNLOAD — IN THE COURT RECORD, NOT IN PUBLIC HANDS
   The judgment in COPA v Wright [2024] EWHC 1198 (Ch) records (¶271.9) that Nicholas Bohm provided
-  a version he downloaded in January 2009, authenticated by the court's expert and used as a control
+  a version he downloaded in January 2009, authenticated in evidence (¶271.9) and used as a control
   copy. Its date, hashes and text are in evidence that is not published and are not reproduced here.
 ```
 
@@ -65,3 +65,7 @@ from such an appendix; that material was removed.
 
 **Full version-by-version record:** [bitcoinwhitepaper.online](https://bitcoinwhitepaper.online) —
 which hosts no PDF either, for the same reason.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

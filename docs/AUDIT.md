@@ -93,3 +93,7 @@ hostile peer is dropped, not the node. That is the bar for "plug in and play" on
 It is **not** a clean bill of health, and it is **not** independent. Until the review in
 `AUDIT_SCOPE.md` signs off **and** the "not money" framing holds, this remains a **valueless
 experiment**. **Not money.**
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

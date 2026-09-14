@@ -50,3 +50,6 @@ block. **A sealed set is not edited in place.** Two things may happen to it afte
 Revisions are numbered and dated. The direction is fixed: new seals beside old ones, not in
 place of them. `scripts/revise_findings.py` is the instrument, and its edit table is the record.
 
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

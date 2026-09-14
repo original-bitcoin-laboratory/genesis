@@ -66,7 +66,7 @@ SHA256: b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553
 ```
 
 **Both match this file, and match the copy recovered from the block chain**, on two independent hash
-functions. The same report quotes its metadata:
+functions. The file's own metadata reads:
 
 ```
 << /Creator: Writer  /Producer: OpenOffice.org 2.4
@@ -154,7 +154,7 @@ file carries `satoshin@gmx.com`, attested only from March 2009.
 ### A court has already examined this file
 
 The 3 October 2008 draft is not merely something that appeared on archive.org. In
-**COPA v Wright, [2024] EWHC 1198 (Ch)**, the court's document expert examined the whitepaper-
+**COPA v Wright, [2024] EWHC 1198 (Ch)**, an expert witness (Mr Madden, ¶295) examined the whitepaper-
 related documents in disclosure and selected two as **control copies** (¶320):
 
 > *"After significant scrutiny and verification via third party sources, he identified {ID_000226}
@@ -180,7 +180,7 @@ a different route.
 contributor that **OpenOffice 2.4.0 was released on 26 March 2008**. Nothing produced with it can
 predate that.
 
-The judgment also states the forgery method plainly (¶123): a document could be made *"by downloading
+The expert's summary, quoted in the judgment at ¶193, states that a document could be made *"by downloading
 and running that software on a computer (or virtual computer) with a **backdated clock**."* Which is
 exactly why the dating below does not rely on the file's own metadata.
 
@@ -232,7 +232,7 @@ write any `CreationDate`; it cannot put a citation into a document before its au
 remove a paragraph they had not yet written.
 
 The file's internal date of 3 October 2008 is *consistent* with the bracket. It is corroboration, not
-proof — a creation date is writable, which is the property the court relied on in COPA v Wright (¶123).
+proof — a creation date is writable, which is what the expert's summary quoted in the judgment at ¶193 describes.
 
 ### It is also the same toolchain and the same document lineage
 
@@ -277,11 +277,11 @@ carried the announcement:
 
 | date | record |
 |---|---|
-| **2015-01-24** | Asked on the cryptography list whether anyone saved the original, the pseudonymous **StealthMonger** replies: *"Looks like I have it… the local date of the file I have is **2008 Nov 2**"* — **183697 bytes** |
+| **2015-01-24** | Asked on the cryptography list whether anyone saved the original, the pseudonymous **StealthMonger** [replies](https://www.metzdowd.com/pipermail/cryptography/2015-January/024438.html): *"Looks like I have it… the local date of the file I have is **2008 Nov 2**"* — **183697 bytes** |
 | **2015-01-25** | Posts the hash: **`427c63b3…982faa`**. Bryan Bishop replies that *"the one everyone else has"* is `b1674191…` — the community had only the canonical file |
 | **2015-01-30** | **David Johnston** receives it by anonymous remailer in ~26 parts, reassembles it, and **republishes it** — same hash |
 | **2015-02-14** | The Internet Archive [captures that page](https://web.archive.org/web/20150214024140if_/https://www.blacksheepatorenco.com/bitcoin.html), hash and all |
-| **2017-08-17** | **Ray Dillinger** — who argued with Satoshi in the original November 2008 thread — confirms: *"Yes. The hash matches. That's definitely it."* |
+| **2017-08-17** | **Ray Dillinger** — who argued with Satoshi in the original November 2008 thread — [confirms](https://www.metzdowd.com/pipermail/cryptography/2017-August/032662.html): *"Yes. The hash matches. That's definitely it."* |
 
 So the hash is fixed in **two independent third-party records from early 2015**, five years before the
 archive.org copy existed, and confirmed by a participant from 2008.
@@ -309,7 +309,7 @@ proposal, so the dating is unaffected — but the two statements are not identic
 
 The judgment in COPA v Wright [2024] EWHC 1198 (Ch) records (¶271.9) that **Nicholas Bohm**, a retired
 solicitor who corresponded with Satoshi shortly after the January 2009 release, provided a version of
-the whitepaper he had downloaded in January 2009, which the court's expert authenticated and which was
+the whitepaper he had downloaded in January 2009, which an expert witness (Mr Madden, ¶271.9) authenticated and which was
 used in the evidence as a control copy. It is a version other than the two held ones, and it is in no
 public hands.
 
@@ -333,24 +333,19 @@ parties, and this project does not reproduce, re-host or rely on copies of them 
 14 September 2026 this section quoted an expert report and a witness statement for the version's
 exhibit references, download time and creation date; that material was removed.
 
-### The clock across the three dated files
+### The clock across the two dated files
 
 ```
 3 Oct 2008    13:49:58  UTC-07:00   ->  2008-10-03 20:49:58 UTC     (held)
-11 Nov 2008   08:00:34  UTC-08:00   ->  2008-11-11 16:00:34 UTC     (Bohm's copy, not held)
 24 Mar 2009   11:33:15  UTC-06:00   ->  2009-03-24 17:33:15 UTC     (held)
 ```
 
-US daylight saving ended **2 November 2008**, so North American Pacific time was `UTC-07:00` on
-3 October and `UTC-08:00` on 11 November. **The two 2008 drafts straddle that transition exactly** —
-they are consistent with one machine whose clock simply changed between them. The March 2009 file is
-an hour off that pattern (Pacific would read `UTC-07:00` after DST resumed on 8 March 2009).
+The 3 October 2008 file carries `UTC-07:00` and the 24 March 2009 file carries `UTC-06:00`.
 
 **This is a coherence observation, not an identification.** A PDF's UTC offset records the machine's
 timezone setting at save time — it can be set to anything by anyone, it is not a location, and an
-ordinary change of machine or preference over five months explains the 2009 file without any
-deception. What it shows is that the two 2008 files agree with each other in a way nobody
-constructed.
+ordinary change of machine or preference over five months explains the difference without any
+deception.
 
 ## The court's agreed chronology
 
@@ -635,3 +630,7 @@ December 2008 that is likewise not preserved.
 *Reproduce: `strings bitcoin.pdf | grep -a CreationDate` on a copy obtained as described in `WHITEPAPER.md`, for the date; the Internet Archive CDX
 API for the capture history; `verify/pdf_text.py` in the workshop notes for text extraction (the PDF
 uses per-font ToUnicode CMaps — a decoder that merges them produces nonsense).*
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

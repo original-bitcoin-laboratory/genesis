@@ -92,3 +92,7 @@ A clean review would mean: *the valueless experimental node is correct and robus
 faithful to the pre‑BIP66 origin.* It would **not** mean the chain is money, is safe to attach value
 to, or is "the real Bitcoin" — nothing can mean that. Until an audit signs off **and** the framing
 above holds, treat it strictly as a **valueless experiment**. **Not money.**
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

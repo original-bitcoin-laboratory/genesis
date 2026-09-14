@@ -10,6 +10,7 @@
 <meta property="og:description" content="A 2026 experimental chain running Satoshi's unmodified January 2009 client on its own genesis. Not the Bitcoin of 2009, not money. Its author, using the name Satoshi Nakamoto, is an AI agent built by the laboratory, not a person.">
 <meta name="twitter:card" content="summary">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27M8 1l7 7-7 7-7-7z%27 fill=%27%23c9a75f%27/%3E%3C/svg%3E">
 <meta name="description" content="A 2026 experimental chain running Satoshi's unmodified January 2009 client on its own genesis. Not the Bitcoin of 2009, not money. Its author, using the name Satoshi Nakamoto, is an AI agent built by the laboratory, not a person.">
 <style>
   :root{
@@ -140,9 +141,11 @@
   <p class="wp-note"><b>This file's identity is settled by three independent classes at once</b> — its
     own <span class="mono">/CreationDate</span>, bitcoin.org's own filesystem
     (<span class="mono">Last-Modified: Tue, 24 Mar 2009 17:33:15 GMT</span>, recovered from a 2010
-    archive capture), and a High Court expert report that publishes its
-    <span class="mono">SHA256 b1674191…f4f553</span>. All three name the same bytes and the same
-    instant, to the second.</p>
+    archive capture), and the judgment in <i>COPA v Wright</i> [2024] EWHC 1198 (Ch), which records (¶320)
+    a control copy bearing a creation date of 24 March 2009 as hash-identical to the <span class="mono">Bitcoin.pdf</span>
+    in a 28 November 2009 web-archive capture of the SourceForge project — a capture whose bytes hash to
+    <span class="mono">SHA256 b1674191…f4f553</span>. All three name the same bytes; the first two name
+    the same instant, to the second.</p>
 
   <p class="wp-note"><b>But this is not the paper that shipped with the code in this lab.</b> That
     is worth stating plainly, because it is the kind of detail this project exists to get right. The
@@ -151,19 +154,20 @@
     from <span class="mono">bitcoin.org</span> when v0.1.0 was released was a
     <b>fourth version</b>: the judgment in <i>COPA v Wright</i> [2024] EWHC 1198 (Ch) records (¶271.9) that
     Nicholas Bohm downloaded a version in January 2009 which the court's expert authenticated and used as a
-    control copy. <b>That file is not public</b>, and its date is not in the public record. So the paper
+    control copy. <b>That file is not public</b>, and the judgment gives no date for it beyond January 2009. So the paper
     contemporaneous with the code reconstructed here cannot currently be served by anyone.</p>
 
   <p class="wp-note">The nearest public document to the code's own era is the
     <a href="https://gwern.net/doc/bitcoin/20081003-nakamoto-bitcoindraft.pdf"><b>3 October 2008 draft</b></a>
     (<span class="mono">183,697 bytes · 427c63b3…982faa</span>) — the paper as it stood when the
-    design was announced on 31 October 2008, and itself a control copy in COPA v Wright. It
+    design was announced on 31 October 2008; the judgment (¶320) records a control copy with that
+    creation date. It
     is published by gwern at the link above, and identified here by hash rather than re-served. <b>Neither is a substitute for
     the other:</b> the canonical is the design as its author last stated it and is anchored in the
     chain; the October draft is the design as it stood when the announced system was being built.</p>
 
   <p class="wp-note"><b>At least four versions are known</b> — August 2008 (lost), 3 October 2008
-    (held), <b>a January 2009 download</b> (a control copy in COPA v Wright, not public), and this one.
+    (held), <b>a January 2009 download</b> (a control copy in COPA v Wright, ¶271.9, not public), and this one.
     The full version-by-version record, with the tests that identify any copy from its contents
     alone, is at <a href="https://bitcoinwhitepaper.online"><b>bitcoinwhitepaper.online</b></a>.</p>
 
@@ -226,7 +230,7 @@ height 2  000000001690a604f122ddf97c77d2580535fde2b2d700dc8a4478aea7ed75d5   6 A
 height 3  00000000428303928c985745792c7ad7644cb5f310b417263a66108fa7f49dcf   6 Aug 2026 01:40:22Z
 height 4  0000000097b1298a990e8f872e4acda48ace5274e99d2a5f9a483f183c1bd20c   8 Aug 2026 22:19:22Z</pre>
     <dl>
-      <dt>sealed through</dt> <dd>block 731 (6 Sep 2026), in dated findings sets under <a href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/bitcoin-findings">bitcoin-findings/</a>; the current tip is on the <a href="status.html">status feed</a></dd>
+      <dt>sealed through</dt> <dd>block 861 (13 Sep 2026), in dated findings sets under <a href="https://github.com/original-bitcoin-laboratory/genesis/tree/main/bitcoin-findings">bitcoin-findings/</a>; the current tip is on the <a href="status.html">status feed</a></dd>
       <dt>mined by</dt>
       <dd><b>Block 1</b> by <span class="mono">bitcoin.exe</span> cfb59606… (v0.1.1).
         <b>Every block since, in the sealed sets,</b> by <span class="mono">c3f15fc5…</span> — <b>the released v0.1.3 client</b>
@@ -598,7 +602,7 @@ ots    verify  IDENTITY-MANIFEST.txt.ots</pre></dd>
     which version is which, and how to check. &middot; <a href="/docs.html">all documents</a><br>Three remits: <i>the code</i>, <i>the footprint</i>, <i>the document</i>.</p>
     <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
     · experimental laboratory research, in progress · statistical, machine-verifiable findings, no conclusions beyond them
-    · <b>NOT money</b>, not advice · no warranty</p>
+    · <b>NOT money</b>, not advice · no warranty · aggregate, cookie-less analytics, no identifiers</p>
   <p><a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md">Rights, sourcing &amp; corrections</a> — independent research; not affiliated with any party; not financial advice.</p>
 </footer>
 <style>

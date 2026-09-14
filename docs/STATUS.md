@@ -301,3 +301,7 @@ behavioral oracle. (Contrast: the NOV08 pre-release is 5 files.)
     > between them voids the pair and a fresh `pre` is required"* — and a fresh `pre` **was** taken
     > (2026-08-06T01:58) with the new PIDs, bracketing the ~65-hour process that actually produced the
     > spend. **The rule was written down before it was needed, and then it was followed.**
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

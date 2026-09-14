@@ -123,3 +123,7 @@ the conclusion is committed with the same provenance discipline.
   allows 8333. Capture both `debug.log`s and send them — the IRC lines tell us why.
 - **mining seems stuck:** a lone node does not hash (the miner waits for a peer); with two
   nodes peered, give it an hour, and confirm *Generate Coins* is checked.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

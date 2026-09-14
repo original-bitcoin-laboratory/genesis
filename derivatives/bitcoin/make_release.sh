@@ -203,7 +203,7 @@ TXT
 fi
 
 cd "$OUT"
-tar --format=ustar -czf "$NAME.tar.gz" "$NAME"
+tar --format=ustar --owner=0 --group=0 --numeric-owner --sort=name --mtime="@${SOURCE_DATE_EPOCH:-0}" -czf "$NAME.tar.gz" "$NAME"
 sha256sum "$NAME.tar.gz" > "$NAME.tar.gz.sha256"
 
 echo "built $OUT/$NAME.tar.gz"

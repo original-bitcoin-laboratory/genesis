@@ -125,3 +125,7 @@ that block — which is what a forgery cannot reproduce.
 - **Old releases can still be covered.** A counter-signature made today and anchored today protects a
   release published earlier, because the anchor proves it predates any break. **The deadline is
   "before a break", not "at release."**
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

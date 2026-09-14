@@ -184,3 +184,7 @@ cell witnessed on the real binary.
 - `docs/STATUS.md` and the paper §8 record sustained mining + reorg as **witnessed (r4-findings/…)**.
 
 **NOT money.** Isolated networks, real genesis, valueless by design.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

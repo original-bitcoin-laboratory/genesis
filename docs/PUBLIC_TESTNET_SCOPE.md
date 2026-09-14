@@ -124,8 +124,7 @@ reconstruction.**
 ## Non‑negotiable framing
 
 - **Experimental / educational, not money.** The coinbase already says so. No
-  premine, no sale, no "value," no promises. If value attaches to insecure
-  experimental code, people get hurt — don't let that happen.
+  premine, no sale, no "value," no promises. It is not money.
 - **Security review before any public liveness.** MODEL code is not safe to expose;
   stage 1 is a rewrite for adversarial conditions, not a wrapper.
 - **Provenance discipline stays.** New network code is `NEW‑EXP`; N‑ORIG consensus
@@ -140,3 +139,7 @@ obligations (security, maintenance, and the framing above) and lasts only
 if strangers choose to run it. Do stage 1–2 if you want the technical satisfaction of two
 machines syncing a full‑capability chain over the real internet; go past stage 3 only
 with eyes open about the community + responsibility it entails.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

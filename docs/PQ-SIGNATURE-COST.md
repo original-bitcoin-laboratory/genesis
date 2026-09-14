@@ -189,3 +189,7 @@ validation so it can be checked rather than trusted.
 
 **If something here is wrong, it is a defect and is corrected in the open rather than argued
 about.** Corrections are published, dated, and not made silently.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

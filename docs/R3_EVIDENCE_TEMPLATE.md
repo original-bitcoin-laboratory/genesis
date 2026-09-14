@@ -39,3 +39,7 @@ gitignored `r3-evidence/<RUN>/`). Fill this in from the observed run; cite the
 
 One paragraph: which claims are now supported at `JAN09-EXECUTED` level, and which
 remain at `MODEL`/`PORT`/`JAN09-SOURCE`.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

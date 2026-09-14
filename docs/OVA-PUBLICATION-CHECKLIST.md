@@ -4,10 +4,10 @@
 Everything else in this laboratory is a description of an execution; the image **is** the execution,
 handed over.
 
-⚠️ **It is also the single most dangerous thing this project could publish.** A VM image captures a
+⚠️ **It is also the artifact that needs the most care before publication.** A VM image captures a
 whole machine: wallet files, shell history, SSH keys, browser state, saved credentials, the datadir,
-deleted-but-not-overwritten disk blocks. **A published image with a private key inside it cannot be
-recalled** — it will be mirrored within hours and content-addressed for as long as anyone keeps a copy.
+deleted-but-not-overwritten disk blocks. **A published image with a private key inside it is out of this project's hands once served** — it can be
+mirrored within hours and content-addressed for as long as anyone keeps a copy.
 
 **So the order is: audit, then hash, then sign, then decide about distribution. Not the reverse.**
 
@@ -24,9 +24,9 @@ obl-r4-nodes.ova   23.8 GiB   sha256 5C37A79ED31F53BD4D6AB6D5C645777C0869B309C4A
                    contains obl-r4-node-a and obl-r4-node-b as they stood after R4c
 ```
 
-> **"Both guests carry `wallet.dat`, including the keys to the coins spent in tx `f4309c`… the
-> appliance is key material and is handled as such: it stays on that machine or on encrypted media,
-> not in a repository, not in a cloud sync, not published."**
+The record states that both guests carry `wallet.dat`, including the keys to the coins spent in tx
+`f4309c`, and that the appliance is key material and is handled as such: it stays on that machine or
+on encrypted media, not in a repository, not in a cloud sync, not published.
 
 **That is the correct call and it stands.** This checklist was drafted as though publishing *that*
 image were the goal. It is not, and could not be — **a VM containing wallet keys is a secret, and no
@@ -46,9 +46,9 @@ a clean appliance    the REPRODUCIBILITY artifact -- a fresh guest with the bina
 also apply to the first — and are already done — because a hash on record makes any copy that
 surfaces checkable, whether or not it is meant to circulate.
 
-⚠️ **And the record names the deeper reason the research appliance must stay private:** *"it is also
-the only artifact that could later prove WHO ran the experiment. Anyone can copy a block file; only
-the key-holder can sign."* **Publishing it would give that away for good.**
+⚠️ **And the record names the deeper reason the research appliance stays private:** it is also the
+only artifact that could later show who ran the experiment; anyone can copy a block file, and only
+the key-holder can sign. **Publishing it would give that away.**
 
 ---
 
@@ -145,3 +145,7 @@ on request      publish the hash and the manifest; hand the image to anyone who 
 ---
 
 **Not money.** No premine, no token, no sale, no price. The image is a laboratory instrument.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

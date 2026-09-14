@@ -250,3 +250,7 @@ been about to build from files that only exist on a machine that already did the
 It now starts where a stranger starts: fetch `bitcoin-0.1.0.tgz`, check it against `ce9da465…`,
 extract, run `make_chain.py` (which refuses unless each of the ten edits matches exactly once), then
 build and compare. The whole chain, on a machine nobody here controls.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

@@ -151,3 +151,7 @@ the evidence ladder, **JAN09-EXECUTED**.
   few minutes; the very first block can take longest.
 - **(Option 3) the two nodes won't connect:** check both VMs can `ping 172.20.0.10`, the
   discovery server is running, the `hosts` line is exact, and the IPs are `172.20.x`.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

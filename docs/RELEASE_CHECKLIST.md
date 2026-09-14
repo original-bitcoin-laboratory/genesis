@@ -283,3 +283,7 @@ distinguished from one that did not look.
 | IPFS pin | on release | CIDs still need writing down by hand |
 | reproducible rebuild | build inputs change | the only check a stranger also runs |
 | **Radicle** | — | **skips with a warning unless `RAD_KEYPAIR` is set, and it deliberately is not** |
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

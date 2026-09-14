@@ -51,7 +51,7 @@ carries a 96-byte checkpoint commitment in each coinbase — **but by the same h
 this was the first external *implementation*, not yet the first external *party*
 ([findings](../../bitcoin-findings/2026-08-19-external-blocks221-222/FINDINGS.md)). Both of those
 coinbases pay the agent's genesis key; the anchoring project kept nothing. So the concentration
-survives in full: **no third party holds any coin on this chain.** No allocation, no sale, no token,
+survives in full: **as of the last sealed set (block 861, 13 September 2026), no third party holds any coin on this chain.** No allocation, no sale, no token,
 nothing set aside. **None of it has been spent, offered, priced or transferred, and none of it
 is for sale.** **The first genuinely third-party block remains unmined** — and requires no
 permission and nothing from us.
@@ -69,7 +69,7 @@ NAME=bitcoin-0.1.x bash make_release.sh   # -> dist/bitcoin-0.1.x.tar.gz
 ```
 
 `make_chain.py` composes the client source from two inputs: the source tree distributed as v0.1.0 (its contents are v0.1.1 by PE timestamp and size — [VERSION_LABEL](https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md); `bitcoin-0.1.0.tgz`, SHA256 `ce9da46516e3042741224a7f9061e3181a5a4d17abba72b6e82922af3753d756`; the same tree ships as
-`bitcoin-0.1.0.rar`, SHA256 `8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56`), and
+`bitcoin-0.1.0.rar`, SHA256 `8b17eb9a5707f2519defda4cdf8d14fa1b8dee630e11e6ef85ff9f5547555b56`; both fetched from the Nakamoto Institute, https://satoshi.nakamotoinstitute.org/code/, by `scripts/fetch-artifacts.sh`), and
 [`bitcoin-v0.1.0.patch`](bitcoin-v0.1.0.patch) — this chain's genesis, network magic and port, and
 bootstrap channel. It refuses to run unless every substitution matches exactly once, so the build
 either reproduces or fails loudly.
@@ -121,3 +121,7 @@ git times are self-asserted and are labelled as such. It also lists the known ga
 content is withheld and whose hash is not.
 
 MIT. `license.txt` in the release is the source's own and is unmodified.
+
+---
+
+*Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

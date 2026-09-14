@@ -34,3 +34,4 @@
 *.asc    binary
 *.sig    binary
 *.bundle binary
+.mailmap export-ignore

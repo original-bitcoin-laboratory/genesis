@@ -64,7 +64,7 @@ $rec = [ordered]@{
   }
   bitcoin_exe_matches_oracle = ($exeHash -eq $ORACLE)
   oracle_sha256      = $ORACLE
-  data_dir           = (Join-Path $env:APPDATA 'Bitcoin')
+  data_dir           = '%APPDATA%\Bitcoin'   # recorded symbolically: the absolute path names the account
 }
 
 $outName = "EXECUTED_BINARY_BINDING_${Node}_${Phase}.json"
