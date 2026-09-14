@@ -30,7 +30,7 @@ Gavin Andresen.
 
 \bibitem[{Bitcoin Cash Node}(2026)]{bch_upgrades}
 {Bitcoin Cash Node}.
-\newblock Bitcoin cash upgrade specifications.
+\newblock {Bitcoin Cash} upgrade specifications.
 \newblock \url{https://upgradespecs.bitcoincashnode.org/}, 2026.
 \newblock May 2018 re-enabled opcodes; Nov 2018 CTOR; May 2019 Schnorr; Nov
   2020 ASERT; May 2024 ABLA; May 2025 VM Limits and BigInt.
@@ -61,7 +61,8 @@ Gavin Andresen.
 
 \bibitem[{bitjson and 0353F40E}(2023)]{bch_abla}
 {bitjson and 0353F40E}.
-\newblock {CHIP-2023-04}: Adaptive blocksize limit algorithm for bitcoin cash.
+\newblock {CHIP-2023-04}: Adaptive blocksize limit algorithm for {Bitcoin
+  Cash}.
 \newblock \url{https://gitlab.com/0353F40E/ebaa}, 2023.
 \newblock Activated on Bitcoin Cash mainnet 15 May 2024.
 
@@ -115,7 +116,7 @@ Satoshi Nakamoto.
 \bibitem[Saxena(2026{\natexlab{a}})]{saxena_beforegenesis}
 Parth~Mauria Saxena.
 \newblock Bitcoin's earliest source codebases: A hash-matched, reproducible
-  differential study of the november 2008 preview, the sni-labelled v0.1.0
+  differential study of the {November} 2008 preview, the {SNI}-labelled v0.1.0
   archive, and v0.1.3.
 \newblock \url{https://doi.org/10.5281/zenodo.21513374}, 2026{\natexlab{a}}.
 \newblock Preprint and replication package, archived on Zenodo.
@@ -123,11 +124,11 @@ Parth~Mauria Saxena.
 \bibitem[Saxena(2026{\natexlab{b}})]{saxena_ledger}
 Parth~Mauria Saxena.
 \newblock Executing the earliest {Bitcoin}: A hash-anchored reconstruction of
-  the january 2009 client and a source-bounded model of the november 2008
+  the {January} 2009 client and a source-bounded model of the {November} 2008
   preview, 2026{\natexlab{b}}.
 \newblock Manuscript under review. Its historical-binary evidence (two-node
-  runs of the unmodified January 2009 client) is archived on Zenodo, {DOI}
-  10.5281/zenodo.21978132, \url{https://doi.org/10.5281/zenodo.21978132}.
+  runs of the unmodified January 2009 client) is archived on Zenodo at
+  \url{https://doi.org/10.5281/zenodo.21978132}.
 
 \bibitem[Stefanov(2020)]{chainbulletin}
 G.~Stefanov.

@@ -56,11 +56,11 @@ header-includes:
 "Which chain is closest to the original Bitcoin?" is usually answered as narrative or advocacy. We give a
 *reproducible* answer to a *narrower, well-posed* question: across a fixed set of consensus-protocol axes,
 how far do each descendant chain's rules sit from a chosen historical reference? Every specified cell of the
-comparison is a **source-anchored encoding** — a consensus value decided by a stated criterion against a
-primary source (a BIP, an upgrade specification, or a self-describing commit), at a frozen evaluation date, with
-**{{FIG:aud_fetched}} of the {{FIG:aud_specified}} chain cells additionally verified by fetching that source
-mechanically**, and {{FIG:aud_absence}} cells that assert the *absence* of a rule resting on chronology rather
-than on a citable record (Section 7) — so
+comparison is an **encoding with a stated warrant**: a consensus value decided by a stated criterion, at a
+frozen evaluation date, against a primary source (a BIP, an upgrade specification, or a self-describing
+commit) — or, for the {{FIG:aud_absence}} cells that assert the *absence* of a rule, against chronology, since
+non-adoption leaves no record to cite — with **{{FIG:aud_fetched}} of the {{FIG:aud_specified}} chain cells
+additionally verified by fetching their source mechanically** (Section 7). So
 the whole table is **machine-recomputable** from that encoding. **We are careful not to claim more.**
 Reproducibility means that anyone scoring the same encoding gets the same number; it does not make
 the encoding the uniquely correct reading of the protocol. **Judgement is not eliminated, it is relocated
@@ -68,7 +68,7 @@ to individuation** — which axes exist, how finely they are cut, and what each 
 is visible and can be perturbed on purpose, and we perturb it (Section 5). We report a
 **mismatch rate** and an explicit **coverage** for each reference$\rightarrow$chain pair (the mismatch rate is
 undefined where coverage is zero), and four sensitivity analyses over axis choice and label granularity. Applied to BTC, BCH, BSV, XEC and BTG under three references (the 2008 whitepaper, the November 2008 pre-release, and the January 2009
-v0.1.0 client), the method shows that the comparison is *degenerate* under the whitepaper (coverage 1/{{FIG:n_axes}} $\approx$ {{FIG:wp_cov}}), *low-coverage* under the preview, and only well-posed under v0.1.0 — a pattern the axis rule partly builds in, since most axes are admitted because a rule changed after January 2009 and only the January 2009 client can specify them — where, on the enumerated axes,
+v0.1.0 client), the method shows that the comparison is *degenerate* under the whitepaper (coverage 1/{{FIG:n_axes}} $\approx$ {{FIG:wp_cov}}), *low-coverage* under the preview, and only well-posed under v0.1.0 — a pattern the axis rule partly builds in, since most axes are admitted because a rule changed after January 2009, and the earlier references specify almost none of them — where, on the enumerated axes,
 BSV carries the fewest mismatches, a result that is source-anchored yet, we stress, *reference-relative and
 individuation-sensitive*, and not a claim about which chain "is" Bitcoin. Two further results sharpen that
 caution into measurement rather than hedging. First, decomposing each chain's *agreements* with v0.1.0
@@ -98,8 +98,9 @@ contested question of protocol identity; it makes one *bounded, well-posed* comp
 — consensus-rule displacement — reproducible.
 The design principle is that **reproducibility relocates inter-rater disagreement rather than removing
 it**. In content analysis and empirical software engineering, subjective codings are made credible by
-multiple independent coders reporting their agreement [@krippendorff; @easterbrook]. Here each cell is a
-consensus value determined by a stated criterion against a cited primary record, and the scoring step is
+multiple independent coders reporting their agreement [@krippendorff; @easterbrook]. Here each specified cell
+is a consensus value determined by a stated criterion against a cited primary record — or, for a claim of
+absence, against chronology — and the scoring step is
 mechanical — so two coders working from the *same encoding* cannot disagree about the result.
  **They can still disagree about the encoding, and an earlier draft of this paper wrongly claimed they
 could not.** The shipped dataset contains the counterexample: v0.1.0's block-size state is labelled
@@ -108,7 +109,7 @@ because the match rule is string equality. **Section 5 measures what that costs.
 that the locus of judgement moves from scoring, where it is invisible, to individuation, where it is
 explicit and testable. This is the
 same move the surrounding project makes elsewhere — replacing narrative about the earliest Bitcoin with
-regenerable computation [@saxena_ledger; @saxena_beforegenesis] — applied to cross-chain comparison.
+regenerable computation [@saxena_beforegenesis; @saxena_ledger] — applied to cross-chain comparison.
 
 # 2. Method
 
@@ -181,8 +182,8 @@ measured by this instrument at all."*
 > **The cost is stated rather than hidden:** the boundary is drawn where auditability becomes
 > expensive, not where measurement becomes impossible, and a different study could legitimately draw
 > it further out. A reader who supplies the missing record — or who does the diff-reading and cites
-> it — can add a column, and the engine accepts it. **This was found by an external referee, who
-> noticed that criterion (3) contradicted our own source model.**
+> it — can add a column, and the engine accepts it. **The contradiction was found by an external
+> referee, who noticed that criterion (3) contradicted our own source model.**
 
 *A note on that label.* The archive distributed as `bitcoin-0.1.0.rar` **contains v0.1.1, not the 8 January 2009 release** — its size matches the figure Satoshi states for `bitcoin-0.1.1.rar` in a 10 January 2009 message, and the shipped executable's PE `TimeDateStamp` is 2009-01-10, two days after v0.1.0 was announced. Prior archival analysis reached this first [@chainbulletin]. **It does not affect anything reported here:** the v0.1.0-to-v0.1.1 delta is confined to `irc.cpp` and `serialize.h`, neither of which carries a consensus rule, so no axis or behaviour below changes. We retain the conventional filename because the published digests are recorded under it.
 
@@ -233,6 +234,10 @@ changed it. **{{FIG:n_class_ii}} axes: the initial block subsidy and the target 
 > > rationale while every number stayed correct. Found by an external referee in round 7, three
 > > rounds after the axis that broke it was added.
 >
+> $\Rightarrow$ The class-(ii) revision is stated before the results so that its effect on every
+> reported number is visible rather than absorbed. **We do not claim it was fixed before the analysis
+> began — this section records that it was not, and why.**
+>
 > ### The cost of that revision, stated here rather than discovered later
 >
 > **{{FIG:n_constant}} axes carry a single value across all five chains and therefore cannot separate
@@ -255,10 +260,7 @@ changed it. **{{FIG:n_class_ii}} axes: the initial block subsidy and the target 
 > say, BIP34's coinbase-height rule was not. **The finding survives without the axis and is stated
 > here instead: the halving interval and asymptotic cap are identical on v0.1.0 and on all five
 > descendants.** An axis on which every profile agrees carries no comparative information.
->
-> $\Rightarrow$ The class-(ii) revision is stated before the results so that its effect on every
-> reported number is visible rather than absorbed. **We do not claim it was fixed before the analysis
-> began — this section records that it was not, and why.**
+
 The engine validates that the declared classes are **consistent with the frozen states** — a
 class-(ii) axis must be one on which every profile agrees *and* which an early reference specifies —
 **and the validator fails if a cell edit breaks that.** What it cannot check is the historical
@@ -302,8 +304,12 @@ protection, transaction ordering, and the early monetary parameters.
 > rates moved — Bitcoin Gold's from 0.50 to 0.00, because the proof-of-work mismatch left the
 > comparison, and eCash's from 0.50 to 1.00, because its one remaining jointly specified cell is
 > best-chain selection, which the encoding labels `most-work+avalanche` for its avalanche
-> post-consensus and which therefore mismatches the whitepaper's `most-work` (Table 2 shows the label). **It also restored a sentence the same referee had
-> falsified**, which is exactly why it is flagged rather than quietly banked.
+> post-consensus and which therefore mismatches the whitepaper's `most-work` (Table 2 shows the label).
+> That row is therefore entirely a labelling decision: the label re-scoring of Section 5.1 is defined
+> under v0.1.0 only, and a relabelling of that one cell under the whitepaper would move eCash's row
+> from 1.00 to 0.00. It is stated here so that the whitepaper row is not read as a finding about eCash.
+> **It also restored a sentence the same referee had falsified**, which is exactly why it is flagged
+> rather than quietly banked.
 >
 > **This section already holds that "a criterion invented after seeing which chain it removes is not
 > a criterion." A cell reversed after seeing which claim it falsifies is the same shape**, and it
@@ -335,12 +341,14 @@ individuated, the engine computes, for every reference$\rightarrow$chain pair, f
 mismatch rate; a *merged-cluster* variant that collapses the post-2017 witness/signature upgrades
 (segwit, Taproot, Schnorr) into a single axis; the range over *every* subset obtained by dropping
 up to three of the {{FIG:n_axes}} axes; and a re-scoring under alternative labels. Section 5 reports them
-for the v0.1.0 reference only, because a perturbation over one or {{FIG:nov_spec}} jointly specified axes
-carries no information; the other pairs' values are in `comparison.json`. We report a conclusion only to the extent it survives all four perturbations.
+for the v0.1.0 reference only: the three axis perturbations carry no information over one or {{FIG:nov_spec}}
+jointly specified axes, and the label re-scoring is defined under v0.1.0 (Section 5.1; the one labelling
+decision that moves a low-coverage row is stated in Section 2's proof-of-work box); the other pairs' axis
+perturbations are in `comparison.json`. We report a conclusion only to the extent it survives all four perturbations.
 
 **Evaluation date.** All chain values are asserted as of the evidence freeze, **1 August 2026**, and
 the engine refuses to evaluate any other date (Section 7).
-Table 2 gives the axes and the value each profile takes; the machine-readable artifact records the criterion and the primary source for every cell. **The two earlier references are omitted from its body because they are almost entirely empty** — the whitepaper specifies one of these axes, the November 2008 pre-release {{FIG:nov_spec}} — and mostly blank cells would misrepresent them as sparse data rather than as documents that do not legislate consensus rules. Their values follow the table.
+Table 2 gives the axes and the value each profile takes; the machine-readable artifact records the criterion and the cited source for every specified cell. **The two earlier references are omitted from its body because they are almost entirely empty** — the whitepaper specifies one of these axes, the November 2008 pre-release {{FIG:nov_spec}} — and mostly blank cells would misrepresent them as sparse data rather than as documents that do not legislate consensus rules. Their values follow the table.
 
 \blandscape
 
@@ -416,8 +424,8 @@ Regenerated by `figures/mismatch_heatmap.py` from the same engine that produces 
 
 A chain can agree with the reference for two very different reasons: it did not change the rule
 (**retention**), or it adopted a change and later removed it (**restoration**). A bare mismatch rate
-cannot tell these apart, and the distinction is the largest part of the caution this method must
-carry (Section 5.1 measures the other part, the labelling). We therefore report it as a count.
+cannot tell these apart, and the distinction is one of the two parts of the caution this method must
+carry (Section 5.1 measures the other, the labelling). We therefore report it as a count.
 
 : Decomposition of each chain's agreement with v0.1.0. A match counts as a
 *restoration* only where the chain demonstrably **held a different value and later removed it**,
@@ -576,7 +584,7 @@ than a technicality: **the only axis on which any two references agree is the pr
 function, and they differ on every other axis they share.**
 
 **No historical evaluation.** Values are asserted at a single frozen date, 1 August 2026. The engine
-accepts an `--at` argument and **refuses** any earlier date. It previously accepted one and returned
+accepts an `--at` argument and **refuses** any other date, earlier or later. It previously accepted one and returned
 byte-identical output, because no cell records when its rule activated; that silent no-op has been
 replaced by an explicit refusal naming what is missing. Making the instrument answer historically
 would require replacing each chain cell's single value with a sourced timeline — roughly {{FIG:aud_specified}} cells,
@@ -654,22 +662,24 @@ algorithm originates in the November 2017 Bitcoin Cash upgrade rather than the A
 **Claims of absence are the dataset's weakest footing, and they are structurally so.** The
 absence-warranted cells — {{FIG:aud_absence}} of them: **segwit on BCH, BSV and XEC** (Bitcoin Gold
 forked after segwit activated and therefore has it), **Taproot on BCH, BSV, XEC and BTG**, and **the
-Schnorr signature scheme on BSV and BTG** — cannot be confirmed by any audit, because **no document
-establishes that a rule was not adopted**: a specification can record a removal, as Bitcoin SV's
+Schnorr signature scheme on BSV and BTG** — cannot be confirmed by a fetch, because **no document
+establishes that a rule was not adopted** and so no fetch can return a document asserting the value: a specification can record a removal, as Bitcoin SV's
 Genesis specification does for P2SH and the element-size limit, but non-adoption leaves nothing to
 cite. They rest on chronology, a fork cannot remove what it did not have, together with the absence
 of any upgrade specification introducing them. This is weaker than a positive citation, it is not
 remediable by searching for a record that non-adoption does not produce, and it is reported here
 rather than left for a reader to infer from the fact that the audit did not cover it. *The partition
-is by warrant, not by label: three further chain cells carry the value `none` — BTC's replay
-protection, inherited from v0.1.0, and BSV's P2SH and element-size limit, documented removals — and
-they are classified as inherited or fetched accordingly.*
+is by warrant, not by label. Of the {{FIG:aud_absence}}, seven carry the value `none` and the two Schnorr
+cells carry `ecdsa-only`; three other chain cells carry `none` — BTC's replay protection, inherited from
+v0.1.0, and BSV's P2SH and element-size limit, documented removals — and are classified as inherited
+or fetched accordingly, so Table 2 shows ten `none` cells on the chains and the partition shows
+{{FIG:aud_absence}} absence cells.*
 
 # 8. Conclusion
 
 Situating chains against a historical reference need not be advocacy. By making the axes explicit
 and freezing them before each reported run,
-anchoring every value to a primary source, reporting coverage alongside mismatch, and exposing sensitivity,
+anchoring every value to a stated warrant — a primary source for all but the absence cells — reporting coverage alongside mismatch, and exposing sensitivity,
 the comparison becomes a computation a reader can rerun and contest cell by cell — reproducibility standing
 in for the inter-rater machinery a subjective coding would need. The worked result is itself instructive:
 the "distance from the origin" question is degenerate against the whitepaper, low-coverage against the
@@ -689,14 +699,14 @@ footnote.**
 Every numerical result and table in this paper regenerates from `obl_metric.py`, and
 `figures/mismatch_heatmap.py` renders Figure 1 deterministically from the engine's axis-matrix
 output. The engine carries the axis dataset it embeds. Running it writes `comparison.json` (the
-full cell-level record, including the criterion, primary source and confidence for each of the {{FIG:n_cells}}
-cells), `comparison.csv` (the summary), and `axis_matrix.csv` (the raw axis values); the figure
+full cell-level record, including the criterion, cited source and confidence for each of the {{FIG:n_cells}}
+cells, {{FIG:n_unspecified}} of which are unspecified), `comparison.csv` (the summary), and `axis_matrix.csv` (the raw axis values); the figure
 regenerates from the same engine. **The replication package is archived on Zenodo under the concept DOI
-<https://doi.org/10.5281/zenodo.21964446>, which resolves to the latest version — 1.0.3 for this
+<https://doi.org/10.5281/zenodo.21964446>, which resolves to the latest version — 1.0.4 for this
 text, whose own version DOI is printed in that record; version 1.0.0, deposited on 16 August 2026,
 remains at <https://doi.org/10.5281/zenodo.21964447>** — and the same artifacts are in the repository at
 <https://github.com/original-bitcoin-laboratory/genesis>, under `paper-artifacts/obl-metric/` at
-the signed tag `obl-metric-v1.0.3`. *The DOI is the durable address; the signed tag identifies the
+the signed tag `obl-metric-v1.0.4`. *The DOI is the durable address; the signed tag identifies the
 frozen repository version, and the commit it resolves to is recorded in the Zenodo version record
 (a document cannot carry the digest of the commit that contains it); the repository path is a
 convenience that may move.* **Every reported rate, count and coverage figure in this paper is interpolated from the engine's output
@@ -771,8 +781,8 @@ comparison state and summary outputs are unchanged.
 
 **The final entry pins the remaining link between that state and a printed table.** The
 manuscript's numerical tables are substituted from files the engine emits, and the manifest is one
-SHA-256, computed by `obl_metric.py` over each emitted table's file name followed by the SHA-256 of
-its bytes, in sorted file-name order, so those {{FIG:n_tables_manifest}} files are pinned without
+SHA-256, computed by `obl_metric.py` over each emitted table's file name (as UTF-8 bytes) followed by the
+raw 32-byte SHA-256 of its contents, with no separator, in sorted file-name order, so those {{FIG:n_tables_manifest}} files are pinned without
 adding {{FIG:n_tables_manifest}} lines. *One presentation artifact remains deliberately outside the
 list: `tables/figures.json`, which carries the scalar substitutions — it is the file every digest
 above is recorded in, so it cannot contain its own. `revision_check_live.py` covers it the other way

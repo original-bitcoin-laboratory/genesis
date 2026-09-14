@@ -86,8 +86,10 @@ def main() -> int:
                        Patch(color="#d9a34a", label="mismatches reference"),
                        Patch(color="#c9ccce", label="unspecified")],
               loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=3, frameon=False, fontsize=8)
-    ax.text(0.0, 1.03, "Reference-relative displacement, not a metric or quality score; every cell is "
-            "source-anchored (../METHOD.md). NOT money.", transform=ax.transAxes, fontsize=6.5, color="#7d7d7d")
+    # R22: the subtitle used to say "every cell is source-anchored"; nine specified cells rest on
+    #      chronology (claims of absence), so the claim is stated as the paper states it.
+    ax.text(0.0, 1.03, "Reference-relative displacement, not a metric or quality score; every specified cell "
+            "carries a stated warrant (../METHOD.md). NOT money.", transform=ax.transAxes, fontsize=6.5, color="#7d7d7d")
     fig.tight_layout()
     out = Path(__file__).resolve().parent / f"mismatch_heatmap_{ref.replace('.', '')}.png"
     fig.savefig(out, dpi=200, bbox_inches="tight")

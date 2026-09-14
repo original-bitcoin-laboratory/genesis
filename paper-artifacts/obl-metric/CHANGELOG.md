@@ -10,6 +10,49 @@ compressed to a sentence each. The account of *how* each one was found lives her
 ★ **Nothing is deleted, only relocated.** A finding that cost something to learn is worth keeping;
 it is simply not what a reader of the paper came for. Rounds 5–12 are not reproduced here.
 
+## Round 22 (14 Sep 2026) — verification read of round 21: GO from both readers, with residuals
+
+Both readers confirmed every round-21 change landed and found no numerical, structural, advocacy or
+bibliography problem introduced. Reader 1's one residual and reader 2's list are applied here.
+
+- **Abstract.** "Every specified cell … is a source-anchored encoding … and 9 cells … rest on
+  chronology" put the universal and its exception in one sentence, since the 9 absence cells are
+  among the 95 specified. Now: every specified cell is an *encoding with a stated warrant* — a primary
+  source, or chronology for the 9 absence cells. The clause "only the January 2009 client can specify
+  them" was false (the pre-release specifies `pow_function`, the very fact §2's superseded box turns
+  on); now "the earlier references specify almost none of them".
+- **The scoping propagated.** §1 ("against a cited primary record — or, for a claim of absence,
+  against chronology"), §2 ("the cited source for every specified cell"), §8 ("a stated warrant — a
+  primary source for all but the absence cells"), Data Availability ("152 cells, 34 of which are
+  unspecified"), and Figure 1's own subtitle, which said "every cell is source-anchored" inside the
+  PNG. The heat-map renders byte-identically, so the figure was regenerated with the corrected
+  subtitle and its digest re-derived by the engine; no value, table or rate changed. METHOD.md's
+  retraction header now lists the absence claim as the third narrowed argument.
+- **§2.** The ⇒ that concludes the class-(ii) discussion sat at the end of the "third axis" box;
+  moved to follow the superseded nested box. The class-validation paragraph and "The enumeration
+  yields 19 axes" were joined to that box by lazy continuation and are main flow again. "This was
+  found by an external referee" → "The contradiction was found by …".
+- **The proof-of-work box** now says what the eCash whitepaper row is: entirely a labelling
+  decision. The label re-scoring of §5.1 is defined under v0.1.0 only; a relabelling of that one cell
+  under the whitepaper would move the row from 1.00 to 0.00. Stated, not computed — the instrument
+  is frozen — so that the row is not read as a finding about eCash. The Sensitivity paragraph's
+  "carries no information" is scoped to the three axis perturbations accordingly.
+- **§4.1** "the largest part of the caution" was an unranked ranking; now "one of the two parts".
+- **§7.** "9 absence cells" beside "three further `none` cells" read as 12 against Table 2's 10; the
+  paragraph now says seven of the 9 carry `none` and the two Schnorr cells carry `ecdsa-only`.
+  "Cannot be confirmed by any audit" → "cannot be confirmed by a fetch … no fetch can return a
+  document asserting the value". "Refuses any earlier date" → "any other date, earlier or later",
+  which is what the engine does and what §3's "new evaluation freeze" needs.
+- **Data Availability.** The manifest digest is over the file name as UTF-8 bytes followed by the
+  raw 32-byte digest, no separator.
+- **Bibliography.** Proper nouns brace-protected (January, November, SNI, Bitcoin Cash); the
+  companion-paper note prints its evidence DOI once; the two self-citations are cited a-then-b.
+- **This changelog.** Round 21's Table 3 / Table 4 bullet named the wrong tables (they are Table 4
+  and Table 6); corrected in place and noted.
+- Deposited as replication package 1.0.4 at the signed tag `obl-metric-v1.0.4`. Round 21's tag
+  `obl-metric-v1.0.3` was signed and pushed but not deposited; its text went to the verification read
+  instead.
+
 ## Round 21 (14 Sep 2026) — internal review of round 20: two readers, one verdict of "minor revision"
 
 Both readers found the arithmetic reconciled and the central claim held; what follows is every
@@ -43,9 +86,10 @@ correction they asked for, applied, and one they asked for that could not be.
 - **§4.1.** Heading "Why BSV is lowest, measured rather than asserted" → "Decomposing agreement with
   v0.1.0: retention and restoration". "The whole of the caution" → "the largest part" (§5.1 carries
   the rest). "Narrower … and sharper" → "more specific".
-- **Table 3 caption** now says every chain's matches include the 2 constant agreeing axes, counted
-  as retentions. **The Table 4 note** said "the exact fraction beside them"; only the base column
-  carries one.
+- **Table 4's caption** (the retention/restoration decomposition) now says every chain's matches
+  include the 2 constant agreeing axes, counted as retentions. **Table 6's note** (merged
+  individuation) said "the exact fraction beside them"; only the base column carries one.
+  *(This bullet first named them Table 3 and Table 4; corrected in round 22.)*
 - **§7.** Bitcoin Gold's 5 probes had no verdict stated; now "confirms 5 of 5" (the ledger records
   5/5 matched). The two doubly probed cells are named (BTC timelock opcodes via BIP65 and BIP112;
   BSV script-number width via two specifications). "The `none` cells — 9 of them" was wrong by
@@ -76,7 +120,7 @@ correction they asked for, applied, and one they asked for that could not be.
 - **Not done: printing the 1.0.3 version DOI inside the text.** A version DOI exists only once the
   deposit is made, and the deposit contains this text. The concept DOI resolves to the latest
   version and the version record prints its own DOI, tag and commit.
-- Deposited as replication package 1.0.3 at the signed tag `obl-metric-v1.0.3`. Round 20's tag
+- Tagged `obl-metric-v1.0.3` (signed, pushed, not deposited — see round 22). Round 20's tag
   `obl-metric-v1.0.2` was signed and pushed but not deposited, its text having gone to internal
   review instead.
 
