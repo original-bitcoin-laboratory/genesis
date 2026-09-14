@@ -77,7 +77,7 @@ fn tx_len_safe(d: &[u8], off: usize) -> Option<usize> {
 
 /// True iff `raw` is a structurally well-formed block (bounds-checked) — a **panic-safe** gate for
 /// untrusted network bytes before any further parsing.
-fn well_formed_block(raw: &[u8]) -> bool {
+pub(crate) fn well_formed_block(raw: &[u8]) -> bool {
     if raw.len() < 81 {
         return false;
     }

@@ -289,6 +289,10 @@ function vCandidate(){                              // a Bitcoin — the "a, not
     "A running system that isn't proof‑of‑work secured (or that leans on a trusted third party) is outside "+
     "the type — so it isn't a Bitcoin instance."};
   if(unk("pow")) return {b:"Indeterminate", c:"ind", why:"Set the proof‑of‑work property first."};
+  if(is("genesis") && is("faithful")) return {b:"Yes — the origin instance itself", c:"fact", why:
+    "It both is (or faithfully reconstructs) the frozen origin artifact and traces to genesis <code>000000000019d668…</code>: "+
+    "the launched chain as released. Every later branch is measured against it; the question of which branch "+
+    "<em>continues</em> it is the one this compass asks of the others, not of the origin."};
   if(is("genesis")) return {b:"Yes — a continuity candidate", c:"cand", why:
     "It traces to genesis <code>000000000019d668…</code> — a branch of the launched chain. Its claim is "+
     "<em>“I am what that chain became.”</em> A real candidacy — but <b>a</b> Bitcoin, not <b>the</b> "+
@@ -348,6 +352,8 @@ function bottomLine(){
     return "In short: a <b>unit of value</b>, not a system — its atomic structure is fact; its name and ratio are convention.";
   if(no("pow") && !is("ledger"))
     return "In short: <b>outside Bitcoin‑the‑design</b> — no proof‑of‑work ledger to attach the predicate to.";
+  if(is("ledger") && is("pow") && is("genesis") && is("faithful"))
+    return "In short: <b>the origin instance itself</b> — the launched chain as released; the branches that claim to continue it are measured against it.";
   if(is("ledger") && is("pow") && is("genesis"))
     return "In short: a <b>continuity candidate</b> for <em>a</em> Bitcoin — a branch of the launched chain; not <em>the</em> Bitcoin, which is convention.";
   if(is("ledger") && is("pow") && is("faithful"))

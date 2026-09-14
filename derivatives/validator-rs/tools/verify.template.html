@@ -176,13 +176,22 @@ function readResult(rptr){
   return JSON.parse(s);
 }
 function call(fn,str){
-  const mem=EXPORTS.memory;
-  const bytes=new TextEncoder().encode(str);
-  const ptr=EXPORTS.__alloc(bytes.length);
-  new Uint8Array(mem.buffer,ptr,bytes.length).set(bytes);
-  const rptr=EXPORTS[fn](ptr,bytes.length);
-  EXPORTS.__dealloc(ptr,bytes.length);
-  return readResult(rptr);
+  if(!EXPORTS) return {error:"the validator is reloading after a malformed input — try again in a moment"};
+  try{
+    const mem=EXPORTS.memory;
+    const bytes=new TextEncoder().encode(str);
+    const ptr=EXPORTS.__alloc(bytes.length);
+    new Uint8Array(mem.buffer,ptr,bytes.length).set(bytes);
+    const rptr=EXPORTS[fn](ptr,bytes.length);
+    EXPORTS.__dealloc(ptr,bytes.length);
+    return readResult(rptr);
+  }catch(e){
+    // A trap inside the module (an index past the end of a malformed input) must not leave the
+    // previous verdict on screen. Report it, drop the instance, and load a fresh one.
+    EXPORTS=null;
+    WebAssembly.instantiate(b64ToBytes(WASM_B64),{}).then(({instance})=>{ EXPORTS=instance.exports; }).catch(()=>{});
+    return {error:"the validator stopped on this input (malformed or truncated bytes) and was reloaded"};
+  }
 }
 
 // ---- rendering helpers ----

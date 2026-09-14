@@ -1,6 +1,6 @@
 [package]
 name = "obl-validator"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A dependency-free Rust port of the X-chain context-free block validator. NOT money."
 license = "MIT"

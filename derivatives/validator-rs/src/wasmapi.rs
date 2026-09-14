@@ -135,6 +135,17 @@ pub extern "C" fn verify_block(ptr: *const u8, len: usize) -> *mut u8 {
             })
             .to_string();
         }
+        // The consensus parsers index the byte stream without bounds checks; on wasm32 a panic is a
+        // trap that `guard` cannot catch. So the body is scanned with the checked reader first.
+        // (a declared count of zero is left to the consensus check, which names it precisely)
+        if raw[80] != 0 && !crate::net::well_formed_block(&raw) {
+            return json!({
+                "ok": false, "not_money": true, "block_hash": bh, "header": header,
+                "pow_ok": pow, "target": target,
+                "error": "the body is shorter than its declared transaction lengths, or a transaction is malformed (truncated block?)",
+            })
+            .to_string();
+        }
         match validate_context_free(&raw) {
             Ok(sum) => {
                 let txs: Vec<Value> = parse_block_txs(&raw)
