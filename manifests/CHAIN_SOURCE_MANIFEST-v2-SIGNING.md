@@ -66,9 +66,15 @@ changed: 44 files, the same identity values.
    ```
    python verify/prove.py sign 051de993426662608f2bfbcd4281cfbfb98571a4dc4993750e0506e191acc9d1 --key <secret.hex>
    ```
-   It prints `r` and `s`. Write `manifests/CHAIN_SOURCE_MANIFEST.json.secp256k1` in the same layout as the
-   schema-1 file (header line, `message signed`, `r`, `s`, `public key` across two lines) —
-   `verify/prove.py check` parses exactly that layout.
+   It prints `r` and `s`. **That is the only step that needs the key.** Hand the two values to the
+   finalize tool, which does steps 2–4 mechanically and refuses before touching anything if the
+   signature does not verify against the staged hash:
+   ```
+   python verify/finalize_chain_source_manifest.py --r <r> --s <s> --dry-run   # rehearses in a temp copy
+   python verify/finalize_chain_source_manifest.py --r <r> --s <s>             # applies
+   ```
+   It writes the `.secp256k1` in the exact layout `prove.py check` parses (proven by parsing it back
+   before it is placed), renames rather than deletes, and re-checks on the real paths.
 
 2. **Retire schema 1 under the SUPERSEDED prefix. Delete nothing.** Its OpenTimestamps proofs are
    over its bytes, not its name, and they stay valid:
