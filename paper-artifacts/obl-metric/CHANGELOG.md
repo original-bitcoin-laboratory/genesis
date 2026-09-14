@@ -18,7 +18,8 @@ it is simply not what a reader of the paper came for. Rounds 5–12 are not repr
 - **`figures.json` → `tables/figures.json`** in the three places the prose names it. The bare name
   does not resolve in the package.
 - Nothing numeric changes; every figure still comes through `{{FIG:...}}` and the checks are green.
-  The published arXiv version predates this round; the next version carries it.
+  The arXiv submission (submit/7956167) was still on hold when this round was made, so its source was
+  replaced with this round's bundle and the announced version carries it.
 
 ## Round 19 (16 Aug 2026) — the gate closes, and a claim about my own edit was wrong
 
