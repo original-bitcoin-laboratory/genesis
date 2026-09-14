@@ -5,8 +5,8 @@ operator alone; nothing below can be done by anyone else, and nothing below has 
 
 ```
 staged      manifests/CHAIN_SOURCE_MANIFEST.v2-UNSIGNED.json
-sha256      ab2783c708cb6c26d0e5b9b69b07a5ef8f6f9d27f7b0fb3bc778cc06cfc71db2
-size        9,451 B · 44 files pinned by bytes · 28 carrying Satoshi's 2009 notice
+sha256      051de993426662608f2bfbcd4281cfbfb98571a4dc4993750e0506e191acc9d1
+size        9,059 B · 44 files pinned by bytes · 28 carrying Satoshi's 2009 notice
 identity    magic f00ba726 · port 18026 · genesis 00000000ad12f3ec…  pinned BY VALUE,
             cross-checked against the patch on 8 constants
 built by    verify/build_chain_source_manifest.py   (deterministic: a rebuild reproduces these bytes)
@@ -23,11 +23,11 @@ Two scope errors, in opposite directions, and one fix that corrects both:
 
 | | schema 1 | schema 2 |
 |---|---|---|
-| `PROVENANCE.txt` — a note for a reader; the compiler never reads it | pinned by bytes | excluded, by class (`*.txt`, `*.md` at the root) |
+| `PROVENANCE.txt` — a note for a reader; the compiler does not read it | pinned by bytes | excluded, by class (`*.txt`, `*.md` at the root) |
 | `net.py` — magic, port, coinbase headline, genesis hash/time/nonce/bits, public key, the genesis block itself | **not pinned at all** | pinned **by value**: the constants are read out and recorded; a verifier re-reads `net.py` *and* the patch and requires all three to agree |
 | `src/**`, `bitcoin-v0.1.0.patch` — what was compiled into the binary that mined block 0 | pinned by bytes | pinned by bytes (unchanged) |
 
-⇒ The signature now breaks only when **the program or the chain** changes — never when a sentence
+⇒ The signature now breaks only when **the program or the chain** changes, not when a sentence
 does. That is the rule `docs/PRESERVATION.md` already states for the DNS record: *a binding that
 breaks whenever the thing it binds is improved is the wrong binding.*
 
@@ -52,11 +52,19 @@ existing v1 signature
     -> VERIFIES cryptographically today (verify/prove.py check)   — so the v1 binding is stale, not forged
 ```
 
+**Revised the same day, before signing.** The first staged document (`ab2783c7…`) enumerated every
+root entry it had classified, including the build-output directories that happened to sit on the
+generating machine (`build-*/`, `dist/`, `__pycache__/`). That made the signed bytes a function of
+one machine rather than of the source, so a rebuild elsewhere would not reproduce them. The document
+now enumerates only the pinned entries; excluded entries are classified live by the verifier on every
+run, which is the control. Two absolutes in the emitted text were also reworded. Nothing pinned
+changed: 44 files, the same identity values.
+
 ## The steps, in order — only the key holder can do these
 
 1. **Sign the staged hash with the genesis key.**
    ```
-   python verify/prove.py sign ab2783c708cb6c26d0e5b9b69b07a5ef8f6f9d27f7b0fb3bc778cc06cfc71db2 --key <secret.hex>
+   python verify/prove.py sign 051de993426662608f2bfbcd4281cfbfb98571a4dc4993750e0506e191acc9d1 --key <secret.hex>
    ```
    It prints `r` and `s`. Write `manifests/CHAIN_SOURCE_MANIFEST.json.secp256k1` in the same layout as the
    schema-1 file (header line, `message signed`, `r`, `s`, `public key` across two lines) —
@@ -101,7 +109,7 @@ printed `ok`. It now:
 - verifies the ECDSA signature against the agent key, over the manifest's *current* bytes;
 - for schema 2, regenerates the pinned set from the **rule** and fails on any omission or extra;
 - for schema 2, re-reads the chain identity from `net.py` and the patch and fails on any drift;
-- reports a staged, unsigned successor on every run, so this state is never silent.
+- reports a staged, unsigned successor on every run, so this state is not silent.
 
 ⚠️ Both the generator and the verifier **refuse** if a file appears at the root of
 `derivatives/bitcoin/` that matches none of the rule's classes. That is deliberate. Classify it in

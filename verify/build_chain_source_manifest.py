@@ -48,7 +48,7 @@ Schema 2 pins by TWO different rules, chosen by what a change would MEAN:
                                             (This is the "gate the claim, not the shape" rule this
                                             workshop keeps paying to relearn.)
 
-  EXCLUDED, BY CLASS *.md, *.txt at the root  prose for a reader; the build never reads it
+  EXCLUDED, BY CLASS *.md, *.txt at the root  prose for a reader; the build does not read it
                      make_chain.py          the composer; its effect is the patch, which is pinned
                      make_release.sh, deploy/, dist/   packaging, downstream of the source
                      build*/, obj/, __pycache__/       outputs, not reproducible across toolchains
@@ -305,7 +305,13 @@ def build(schema=2):
                     **{k + "*/": v for k, v in EXCLUDE_DIR_PREFIX.items()},
                 },
                 "fail_closed": "a root-level entry matching none of these classes aborts the build",
-                "root_as_classified": {k: v[0] for k, v in classes.items()},
+                # Only the PINNED entries are enumerated in the signed document. Excluded entries
+                # (build-*/, dist/, __pycache__/ ...) are whatever outputs happen to sit on the
+                # machine that ran the generator; listing them would make the signed bytes depend
+                # on that machine rather than on the source. The verifier classifies the root LIVE
+                # on every run and refuses on anything unclassified, which is the control.
+                "root_pinned": {k: v[0] for k, v in classes.items() if v[0] != "excluded"},
+                "root_excluded": "not enumerated: excluded entries are build outputs and prose present on the generating machine, not source; the verifier re-classifies the root on every run",
             },
             "chain_identity": net,
             "identity_cross_checked_against_patch": checked,
@@ -316,7 +322,7 @@ def build(schema=2):
                 "schema": 1,
                 "manifest_sha256": SUPERSEDED_V1_SHA256,
                 "signed": "2026-08-12",
-                "why": ("schema 1 pinned PROVENANCE.txt, prose the build never reads, and omitted "
+                "why": ("schema 1 pinned PROVENANCE.txt, prose the build does not read, and omitted "
                         "net.py, which holds the chain's identity. A prose correction on 2026-09-12 "
                         "left the signed manifest describing a tree that no longer existed. Schema 2 "
                         "pins source by bytes and identity by value, so the signature breaks only "

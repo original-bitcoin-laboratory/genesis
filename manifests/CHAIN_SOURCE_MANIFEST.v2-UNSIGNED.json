@@ -270,27 +270,9 @@
   "pinned_by_value": {
    "net.py": "chain identity is READ from here and pinned as values, not bytes"
   },
-  "root_as_classified": {
-   ".gitignore": "excluded",
-   "CHRONOLOGY.md": "excluded",
-   "NOTARY.md": "excluded",
-   "PROVENANCE.txt": "excluded",
-   "README.md": "excluded",
-   "RELEASE-0.1.4.txt": "excluded",
-   "RELEASE-0.1.5.txt": "excluded",
-   "__pycache__": "excluded",
+  "root_excluded": "not enumerated: excluded entries are build outputs and prose present on the generating machine, not source; the verifier re-classifies the root on every run",
+  "root_pinned": {
    "bitcoin-v0.1.0.patch": "pin-bytes",
-   "build": "excluded",
-   "build-detA": "excluded",
-   "build-detB": "excluded",
-   "build-repro1": "excluded",
-   "build-sdeE": "excluded",
-   "build-sdeF": "excluded",
-   "build-v012": "excluded",
-   "deploy": "excluded",
-   "dist": "excluded",
-   "make_chain.py": "excluded",
-   "make_release.sh": "excluded",
    "net.py": "pin-value",
    "src": "pin-bytes"
   }
@@ -300,7 +282,7 @@
   "manifest_sha256": "62ba1cee54f26cf5a17070be6a7389818e75e2069d043a4f4828724606855beb",
   "schema": 1,
   "signed": "2026-08-12",
-  "why": "schema 1 pinned PROVENANCE.txt, prose the build never reads, and omitted net.py, which holds the chain's identity. A prose correction on 2026-09-12 left the signed manifest describing a tree that no longer existed. Schema 2 pins source by bytes and identity by value, so the signature breaks only when the program or the chain changes."
+  "why": "schema 1 pinned PROVENANCE.txt, prose the build does not read, and omitted net.py, which holds the chain's identity. A prose correction on 2026-09-12 left the signed manifest describing a tree that no longer existed. Schema 2 pins source by bytes and identity by value, so the signature breaks only when the program or the chain changes."
  },
  "what": "the source that produced this chain's genesis block -- the client tree and the substitution patch pinned by their bytes, and the chain's identity constants pinned by their values"
 }
