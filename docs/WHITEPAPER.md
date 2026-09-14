@@ -44,28 +44,22 @@ PRE-RELEASE    3 Oct 2008    183,697 B   8 pages
   A control copy in COPA v Wright. Published by gwern at
   https://gwern.net/doc/bitcoin/20081003-nakamoto-bitcoindraft.pdf
 
-11 NOVEMBER 2008 — NOT HELD BY ANYONE PUBLIC
-  sha256  e6cc7c952c688b234f9872c3e2f50060ae6556fd27925cba503c6460048e50a9
-  md5     3e5e11e1e3208d2829e887fb1c86bd05
-  source  Patrick Madden, Appendix PM3 §§42–52, COPA v Wright [2024] EWHC 1198 (Ch)
-  Larger than 182,801 bytes. Eight archives searched, all controlled — it is in none of them.
+A JANUARY 2009 DOWNLOAD — IN THE COURT RECORD, NOT IN PUBLIC HANDS
+  The judgment in COPA v Wright [2024] EWHC 1198 (Ch) records (¶271.9) that Nicholas Bohm provided
+  a version he downloaded in January 2009, authenticated by the court's expert and used as a control
+  copy. Its date, hashes and text are in evidence that is not published and are not reproduced here.
 ```
 
 **Hash any copy you have and look it up.** If it matches nothing above, it is not one of the
 documents this project has identified — and that is worth investigating, not assuming.
 
-## And if you want to recognise the 11 November version by reading rather than hashing
+## Court material
 
-Three sentences appear in it and in **neither** surviving public version:
-
-```
-"The incentive is also funded with transaction fees"
-"The output value of every transaction is equal to the input value minus a transaction fee"
-"and the incentive is increased by the total transaction fees in the block"
-```
-
-**A hash verifies; a sentence finds.** No search engine indexes a digest, and nobody can compute one
-over a document they have only read.
+This project cites the published judgment by paragraph and nothing else from the proceedings: the
+expert appendices and witness statements it refers to are not published by the court or the parties,
+and this project does not reproduce, re-host or rely on copies of them in circulation. Until
+14 September 2026 this note carried the court-record version's hashes and three sentences of its text
+from such an appendix; that material was removed.
 
 ---
 

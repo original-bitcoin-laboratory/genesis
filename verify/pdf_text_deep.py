@@ -3,13 +3,13 @@
 WHY THIS EXISTS. Two earlier extractors failed on the same class of document for two DIFFERENT
 reasons, and each failure nearly produced a false negative:
 
-  1. A naive "pull the literal strings" pass on Rosendahl's expert report returned 41,957
-     characters of DocuSign envelope stamps and page numbers. Searching it for `AR3` gave ZERO
-     hits. The conclusion "the fourth whitepaper version does not exist" was one step away -- and
+  1. A naive "pull the literal strings" pass on a long, DocuSign-stamped PDF returned 41,957
+     characters of envelope stamps and page numbers. Searching it for a short label known to be
+     in the body gave ZERO hits. The conclusion "it is not there" was one step away -- and
      it would have been wrong. That body was HEX-encoded: 35,868 hex tokens against 356 literal
      strings.
 
-  2. `pdf_text.py`, written to fix case 1, returned ONE CHARACTER on Madden's report. Also not a
+  2. `pdf_text.py`, written to fix case 1, returned ONE CHARACTER on a second, larger PDF. Also not a
      data problem: that file has 425 inflatable streams, 199 of them carrying Tj/TJ operators,
      457 font references and 27 ToUnicode CMaps.
 

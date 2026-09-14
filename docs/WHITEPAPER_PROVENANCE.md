@@ -56,8 +56,9 @@ sends it.*
 
 ### And a third class agrees: the High Court's own control copy
 
-Patrick Madden's First Expert Report, §180, publishes the hashes of the document the court used as
-its control copy of the canonical whitepaper (ID_000865):
+The judgment records (¶320) that the court's control copy of the canonical whitepaper (ID_000865)
+bears a creation date of 24 March 2009 and is hash-identical to a `Bitcoin.pdf` captured from the
+SourceForge project by a web archive on 28 November 2009 — a capture that hashes to:
 
 ```
 MD5:    d56d71ecadf2137be09d8b1d35c6c042
@@ -79,9 +80,9 @@ and the same instant:
 |---|---|---|
 | self-asserted | the PDF's own `/CreationDate` | `D:20090324113315-06'00'` |
 | server-recorded | `X-Archive-Orig-Last-Modified`, bitcoin.org | `Tue, 24 Mar 2009 17:33:15 GMT` |
-| adjudicated | Madden's report, on the court's control copy | same stamp, and the hashes above |
+| adjudicated | the judgment (¶320), on the court's control copy | same stamp, and hash-identical to the archived capture |
 
-A self-claim, a web server the author did not run, and an expert cross-examined on his work. **On the
+A self-claim, a web server the author did not run, and a finding in a public judgment. **On the
 canonical file there is nothing further to establish.**
 
 ### It is also in the block chain — the strongest anchor it has
@@ -153,8 +154,8 @@ file carries `satoshin@gmx.com`, attested only from March 2009.
 ### A court has already examined this file
 
 The 3 October 2008 draft is not merely something that appeared on archive.org. In
-**COPA v Wright, [2024] EWHC 1198 (Ch)**, COPA's forensic document expert examined 68 whitepaper-
-related documents in disclosure and selected two as **control copies**:
+**COPA v Wright, [2024] EWHC 1198 (Ch)**, the court's document expert examined the whitepaper-
+related documents in disclosure and selected two as **control copies** (¶320):
 
 > *"After significant scrutiny and verification via third party sources, he identified {ID_000226}
 > and {ID_000865} as suitable **'control' copies** of versions of the Bitcoin White Paper.
@@ -304,22 +305,13 @@ proposal, so the dating is unaffected — but the two statements are not identic
   dated 3 October and its content is pre-9-November; whether the announcement linked *this* file is
   consistent with the record but not demonstrated by it.
 
-## A fourth version exists: 11 November 2008
+## A fourth version exists: in the court record, not in public hands
 
-Arthur Rosendahl's expert report in COPA v Wright lists his exhibits:
-
-```
-Exhibit AR2: Bitcoin White Paper - March 2009 version
-Exhibit AR3: Bitcoin White Paper - November 2008 version
-Exhibit AR4: Bitcoin White Paper - October 2008 version
-```
-
-and states in the body:
-
-> *"I was also provided with two further copies of the Bitcoin White Paper, one from **3 October 2008**
-> (Exhibit AR4) and another from **11 November 2008** (Exhibit AR3). I understand these to be further
-> copies of the White Paper which are also deemed, for the purposes of these proceedings, **control
-> copies**."*
+The judgment in COPA v Wright [2024] EWHC 1198 (Ch) records (¶271.9) that **Nicholas Bohm**, a retired
+solicitor who corresponded with Satoshi shortly after the January 2009 release, provided a version of
+the whitepaper he had downloaded in January 2009, which the court's expert authenticated and which was
+used in the evidence as a control copy. It is a version other than the two held ones, and it is in no
+public hands.
 
 **So the sequence is at least four versions, not three:**
 
@@ -327,40 +319,19 @@ and states in the body:
 Aug 2008     "Electronic Cash Without a Trusted Third Party"     lost
 3 Oct 2008   the draft we hold          created 20:49:58 UTC     held
 9 Nov 2008   Satoshi proposes transaction fees on the list
-11 Nov 2008  the fourth version         created 16:00:34 UTC     NOT HELD, contents not public
+Jan 2009     a fourth version, downloaded by a member of the public   in the court record; date not public
 24 Mar 2009  the canonical              created 17:33:15 UTC     held, chain-anchored
 ```
 
-**The November version is dated two days after the fee proposal.** Whether it contains the Section 6
-transaction-fee paragraph would date that addition to within 48 hours — and if it does not, that is
-more interesting still. The file itself is not public and we do not hold it.
+Whether that version contains the Section 6 transaction-fee paragraph would date the fee mechanism's
+arrival against the 9 November proposal; its text is not in the public record, so the question stays
+open here.
 
-Rosendahl also records that all three versions he examined are alike in construction: *"All three are
-very similar in each respect, and I have reached the same conclusion about those 2008 versions for
-the same reasons as the 2009 version"* — i.e. all OpenOffice output, not LaTeX.
-
-### One file, three names — and a custodian
-
-The same document appears across the court record as Rosendahl's **Exhibit AR3**, Bohm's **Exhibit
-NB1**, and Madden's **BWP-NB1**. Its custodian is named, and his evidence is sworn.
-
-**Nicholas Bohm** was a retired solicitor who read the metzdowd cryptography list — not a private
-correspondent, an ordinary reader. His witness statement, §19:
-
-> *"I was able to locate a version (which I have then included within my zip file Exhibit NB1) which
-> according to the metadata on my system was **downloaded on 18 January 2009 at 13:27 GMT**. The
-> metadata also states that the file has a **creation date of 11 November 2008, at 08:00:34 in the
-> time zone UTC-08:00**."*
-
-Two things follow that were not previously establishable:
-
-1. **This was the version the public could obtain in January 2009** — after the 3 October draft and
-   before the canonical. Whatever SourceForge served in that window, this is what a member of the
-   public actually got.
-2. Madden analysed it at **Appendix PM3 §§41–73** and considers it *"very likely to be an authentic
-   intermediate draft between those two versions"* (Third Expert Report §167).
-
-Bohm died in January 2024, before cross-examination.
+**Court material.** This note cites the judgment by paragraph and nothing else from the proceedings:
+the expert appendices and witness statements it refers to are not published by the court or the
+parties, and this project does not reproduce, re-host or rely on copies of them in circulation. Until
+14 September 2026 this section quoted an expert report and a witness statement for the version's
+exhibit references, download time and creation date; that material was removed.
 
 ### The clock across the three dated files
 
@@ -581,7 +552,7 @@ aware of the b-money page… I'll e-mail him to confirm the year of publication 
 
 **That generates a testable prediction:** if b-money was then inserted as `[1]`, Hashcash must shift
 from `[5]` to `[6]` in every later version. Both surviving files were checked — **Hashcash is `[6]`
-in both**. A claim derived from a court exhibit, confirmed against files obtained from an entirely
+in both**. A claim derived from the judgment's quotation of the email, confirmed against files obtained from an entirely
 different source.
 
 So a candidate for the lost August draft can be settled in seconds: **title *Electronic Cash Without
