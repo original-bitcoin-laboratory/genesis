@@ -10,6 +10,34 @@ compressed to a sentence each. The account of *how* each one was found lives her
 ★ **Nothing is deleted, only relocated.** A finding that cost something to learn is worth keeping;
 it is simply not what a reader of the paper came for. Rounds 5–12 are not reproduced here.
 
+## Round 23 (14 Sep 2026) — verification read of round 22: GO from both readers; reader 2's wording residuals
+
+- **§1 (ii)** still said each value is "tied to a primary source", two sentences before the sentence
+  round 22 scoped; now "a stated warrant — a primary source for all but the absence cells". §3's
+  "every value, its criterion, its primary source, and its confidence" and Data Availability's
+  "criteria, primary sources and confidence alongside values" describe the cell schema, which carries
+  a source field for every cell, and are left as they are.
+- **§2.** The Sensitivity paragraph pointed at "Section 2's proof-of-work box" from inside §2 — the
+  defect round 21 removed three instances of; now "the proof-of-work box above". "That row is
+  entirely a labelling decision" overshot (that the row is one axis is a coverage fact; eCash's
+  avalanche behaviour is sourced); now "turns on a labelling decision".
+- **Two statements made by inspection, in a paper that says its figures are interpolated.** The
+  eCash 1.00 → 0.00 counterfactual (§2) and the ten-`none`-cells count (§7) are correct but are not
+  engine output. Each now says so where it stands, and the Data Availability sentence names them as
+  the two exceptions to the interpolation claim.
+- **§4** accounted for "four of the five chains" scoring 0.00 against the whitepaper and said nothing
+  about the fifth, two pages before Table 3 prints eCash's 1.0000; one clause now says why, with the
+  pointer to §2.
+- **Table 7's caption** said each row "re-scores the whole comparison"; the label re-scoring is
+  defined under v0.1.0, so a reader could take the table as showing that no relabelling moves a
+  whitepaper rate — the opposite of what §2 discloses. Now "re-scores the v0.1.0 comparison".
+- **This changelog.** Round 22's figure bullet said the heat-map "renders byte-identically" beside a
+  digest that necessarily changed; now "renders deterministically". Its in-place-edit bullet claimed
+  one edit to round 21; there were two. Round 21's "Not done" bullet named a version DOI for a
+  version that was not deposited; it names none now.
+- Deposited as replication package 1.0.6 at the signed tag `obl-metric-v1.0.6`; tag `obl-metric-v1.0.5`
+  (round 22) was signed and pushed but not deposited.
+
 ## Round 22 (14 Sep 2026) — verification read of round 21: GO from both readers, with residuals
 
 Both readers confirmed every round-21 change landed and found no numerical, structural, advocacy or
@@ -25,8 +53,9 @@ bibliography problem introduced. Reader 1's one residual and reader 2's list are
   against chronology"), §2 ("the cited source for every specified cell"), §8 ("a stated warrant — a
   primary source for all but the absence cells"), Data Availability ("152 cells, 34 of which are
   unspecified"), and Figure 1's own subtitle, which said "every cell is source-anchored" inside the
-  PNG. The heat-map renders byte-identically, so the figure was regenerated with the corrected
-  subtitle and its digest re-derived by the engine; no value, table or rate changed. METHOD.md's
+  PNG. The heat-map renders deterministically (the same input gives the same bytes), so the figure
+  was regenerated with the corrected subtitle and its digest re-derived by the engine; no value,
+  table or rate changed. METHOD.md's
   retraction header now lists the absence claim as the third narrowed argument.
 - **§2.** The ⇒ that concludes the class-(ii) discussion sat at the end of the "third axis" box;
   moved to follow the superseded nested box. The class-validation paragraph and "The enumeration
@@ -47,15 +76,16 @@ bibliography problem introduced. Reader 1's one residual and reader 2's list are
   raw 32-byte digest, no separator.
 - **Bibliography.** Proper nouns brace-protected (January, November, SNI, Bitcoin Cash); the
   companion-paper note prints its evidence DOI once; the two self-citations are cited a-then-b.
-- **This changelog.** Round 21's Table 3 / Table 4 bullet named the wrong tables (they are Table 4
-  and Table 6); corrected in place and noted.
+- **This changelog.** Two in-place edits to round 21: its Table 3 / Table 4 bullet named the wrong
+  tables (they are Table 4 and Table 6), corrected and noted; and its deposit bullet now records
+  that tag 1.0.3 was not deposited.
 - **After tag 1.0.4 was signed: README.md still printed the old figure and renderer digests.**
   The engine re-derived `sha_figpng` and `sha_figscript`, the paper interpolated them, every check
   passed — and the README's "Verify before you trust" block, maintained by hand, kept the two old
   values. Found by grepping for the old hash. The README is corrected, and `stress_test.py` gains
   test N, which checks every digest line in the README against the file on disk and the manifest
   line against `tables/figures.json`; it fails on the stale README and passes on the corrected one.
-- Deposited as replication package 1.0.5 at the signed tag `obl-metric-v1.0.5`. Tags `obl-metric-v1.0.3`
+- Tagged `obl-metric-v1.0.5` (signed, pushed, not deposited — see round 23). Tags `obl-metric-v1.0.3`
   (round 21, verification read) and `obl-metric-v1.0.4` (this round, before the README defect was found)
   were signed and pushed but not deposited.
 
@@ -123,7 +153,7 @@ correction they asked for, applied, and one they asked for that could not be.
   typeset the `.bbl` left by the round before; the arXiv preview, built clean-room after bibtex, was
   right. Invisible in every round where `paper.bib` did not change. The script now copies the
   clean-room build over `paper.pdf`, and the two are checked byte-identical.
-- **Not done: printing the 1.0.3 version DOI inside the text.** A version DOI exists only once the
+- **Not done: printing the version DOI inside the text.** A version DOI exists only once the
   deposit is made, and the deposit contains this text. The concept DOI resolves to the latest
   version and the version record prints its own DOI, tag and commit.
 - Tagged `obl-metric-v1.0.3` (signed, pushed, not deposited — see round 22). Round 20's tag

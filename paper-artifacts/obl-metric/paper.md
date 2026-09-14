@@ -92,7 +92,7 @@ unfalsifiable; a reader cannot re-derive them or locate where a disagreement lie
 We take the opposite stance. Rather than argue *which* chain is closest, we build a **measurement
 instrument** that (i) makes the axes of comparison explicit and freezes them before each reported run,
 drawing them from documented change logs, (ii) records
-each chain's value on each axis as a fact tied to a primary source, and (iii) computes displacement from a
+each chain's value on each axis as a fact tied to a stated warrant — a primary source for all but the absence cells — and (iii) computes displacement from a
 reference by a stated rule, exposing coverage and sensitivity. The instrument does not decide the
 contested question of protocol identity; it makes one *bounded, well-posed* component of that question
 — consensus-rule displacement — reproducible.
@@ -311,9 +311,10 @@ protection, transaction ordering, and the early monetary parameters.
 > comparison, and eCash's from 0.50 to 1.00, because its one remaining jointly specified cell is
 > best-chain selection, which the encoding labels `most-work+avalanche` for its avalanche
 > post-consensus and which therefore mismatches the whitepaper's `most-work` (Table 2 shows the label).
-> That row is therefore entirely a labelling decision: the label re-scoring of Section 5.1 is defined
+> That row therefore turns on a labelling decision: the label re-scoring of Section 5.1 is defined
 > under v0.1.0 only, and a relabelling of that one cell under the whitepaper would move eCash's row
-> from 1.00 to 0.00. It is stated here so that the whitepaper row is not read as a finding about eCash.
+> from 1.00 to 0.00 — a counterfactual stated by inspection of the one jointly specified cell, not
+> computed by the engine. It is stated here so that the whitepaper row is not read as a finding about eCash.
 > **It also restored a sentence the same referee had falsified**, which is exactly why it is flagged
 > rather than quietly banked.
 >
@@ -349,7 +350,7 @@ mismatch rate; a *merged-cluster* variant that collapses the post-2017 witness/s
 up to three of the 19 axes; and a re-scoring under alternative labels. Section 5 reports them
 for the v0.1.0 reference only: the three axis perturbations carry no information over one or 3
 jointly specified axes, and the label re-scoring is defined under v0.1.0 (Section 5.1; the one labelling
-decision that moves a low-coverage row is stated in Section 2's proof-of-work box); the other pairs' axis
+decision that moves a low-coverage row is stated in the proof-of-work box above); the other pairs' axis
 perturbations are in `comparison.json`. We report a conclusion only to the extent it survives all four perturbations.
 
 **Evaluation date.** All chain values are asserted as of the evidence freeze, **1 August 2026**, and
@@ -431,7 +432,9 @@ coverage beside it.
 *Under the whitepaper*, coverage is 1/19 $\approx$ 0.053 — a single jointly-specified consensus axis (best-chain
 selection). We print the row in full **because it is the row most easily quoted out of context**:
 four of the five chains score 0.00 against the whitepaper, which sounds like a strong result and is not one. It
-means only that those four agree with the whitepaper on the one axis both specify. A ranking built
+means only that those four agree with the whitepaper on the one axis both specify; the fifth, eCash, scores
+1.00 on that same single axis because of how its fork choice is labelled (the proof-of-work box in
+Section 2 states this). A ranking built
 on one axis is degenerate: the whitepaper simply does not constrain enough of the protocol to situate
 chains against it, which is itself a useful and often-overlooked finding. *Under the November 2008
 pre-release*, coverage is 3/19 $\approx$ 0.158 (3 specified parameters — the 100-coin subsidy, the 15-minute
@@ -579,7 +582,7 @@ Conversely, a coder could reasonably argue the opposite way on `script_opcodes`:
 vocabulary is not v0.1's, since it adds `OP_CHECKDATASIG`, `OP_SPLIT` and `NUM2BIN`/`BIN2NUM` while
 still disabling `OP_2MUL`, `OP_2DIV`, `OP_VERIF` and `OP_VERNOTIF`.
 
-: Label granularity. Each row re-scores the whole comparison under one defensible alternative
+: Label granularity. Each row re-scores the v0.1.0 comparison under one defensible alternative
 *labelling* of states that are already agreed as facts. **Only BSV moves.** Relabelling shifts it
 0.0526 from its base rate against 0.0322 for removing any single axis
 — **one cell's individuation can matter more than an entire axis** — though dropping up to three
@@ -730,8 +733,8 @@ rather than left for a reader to infer from the fact that the audit did not cove
 is by warrant, not by label. Of the 9, seven carry the value `none` and the two Schnorr
 cells carry `ecdsa-only`; three other chain cells carry `none` — BTC's replay protection, inherited from
 v0.1.0, and BSV's P2SH and element-size limit, documented removals — and are classified as inherited
-or fetched accordingly, so Table 2 shows ten `none` cells on the chains and the partition shows
-9 absence cells.*
+or fetched accordingly, so Table 2 shows ten `none` cells on the chains (a count by inspection of
+Table 2, not an engine figure) and the partition shows 9 absence cells.*
 
 # 8. Conclusion
 
@@ -760,15 +763,16 @@ output. The engine carries the axis dataset it embeds. Running it writes `compar
 full cell-level record, including the criterion, cited source and confidence for each of the 152
 cells, 34 of which are unspecified), `comparison.csv` (the summary), and `axis_matrix.csv` (the raw axis values); the figure
 regenerates from the same engine. **The replication package is archived on Zenodo under the concept DOI
-<https://doi.org/10.5281/zenodo.21964446>, which resolves to the latest version — 1.0.5 for this
+<https://doi.org/10.5281/zenodo.21964446>, which resolves to the latest version — 1.0.6 for this
 text, whose own version DOI is printed in that record; version 1.0.0, deposited on 16 August 2026,
 remains at <https://doi.org/10.5281/zenodo.21964447>** — and the same artifacts are in the repository at
 <https://github.com/original-bitcoin-laboratory/genesis>, under `paper-artifacts/obl-metric/` at
-the signed tag `obl-metric-v1.0.5`. *The DOI is the durable address; the signed tag identifies the
+the signed tag `obl-metric-v1.0.6`. *The DOI is the durable address; the signed tag identifies the
 frozen repository version, and the commit it resolves to is recorded in the Zenodo version record
 (a document cannot carry the digest of the commit that contains it); the repository path is a
-convenience that may move.* **Every reported rate, count and coverage figure in this paper is interpolated from the engine's output
-when the manuscript is built, not typed**, so the reported
+convenience that may move.* **Every rate, coverage figure and engine count reported in this paper is interpolated from the engine's output
+when the manuscript is built, not typed** — the two statements made by inspection rather than by the engine
+(the eCash counterfactual in Section 2 and the `none`-label count in Section 7) say so where they stand — so the reported
 values are re-derived on every build rather than compared against the engine as of a date. The
 digests below identify the engine outputs from which the reported results can be independently
 reconstructed.
@@ -872,4 +876,4 @@ mismatch rate must not be read as a statement about any of them as an asset.**
 
 # References
 
-<!-- GENERATED by build_paper.py from paper.template.md -- DO NOT EDIT -- 88c18f96bea2edb0 -->
+<!-- GENERATED by build_paper.py from paper.template.md -- DO NOT EDIT -- 65ea027e2e11dc78 -->

@@ -161,23 +161,23 @@ stance. Rather than argue \emph{which} chain is closest, we build a
 \textbf{measurement instrument} that (i) makes the axes of comparison
 explicit and freezes them before each reported run, drawing them from
 documented change logs, (ii) records each chain's value on each axis as
-a fact tied to a primary source, and (iii) computes displacement from a
-reference by a stated rule, exposing coverage and sensitivity. The
-instrument does not decide the contested question of protocol identity;
-it makes one \emph{bounded, well-posed} component of that question ---
-consensus-rule displacement --- reproducible. The design principle is
-that \textbf{reproducibility relocates inter-rater disagreement rather
-than removing it}. In content analysis and empirical software
-engineering, subjective codings are made credible by multiple
-independent coders reporting their agreement
-\citep{krippendorff, easterbrook}. Here each specified cell is a
-consensus value determined by a stated criterion against a cited primary
-record --- or, for a claim of absence, against chronology --- and the
-scoring step is mechanical --- so two coders working from the \emph{same
-encoding} cannot disagree about the result. \textbf{They can still
-disagree about the encoding, and an earlier draft of this paper wrongly
-claimed they could not.} The shipped dataset contains the
-counterexample: v0.1.0's block-size state is labelled
+a fact tied to a stated warrant --- a primary source for all but the
+absence cells --- and (iii) computes displacement from a reference by a
+stated rule, exposing coverage and sensitivity. The instrument does not
+decide the contested question of protocol identity; it makes one
+\emph{bounded, well-posed} component of that question --- consensus-rule
+displacement --- reproducible. The design principle is that
+\textbf{reproducibility relocates inter-rater disagreement rather than
+removing it}. In content analysis and empirical software engineering,
+subjective codings are made credible by multiple independent coders
+reporting their agreement \citep{krippendorff, easterbrook}. Here each
+specified cell is a consensus value determined by a stated criterion
+against a cited primary record --- or, for a claim of absence, against
+chronology --- and the scoring step is mechanical --- so two coders
+working from the \emph{same encoding} cannot disagree about the result.
+\textbf{They can still disagree about the encoding, and an earlier draft
+of this paper wrongly claimed they could not.} The shipped dataset
+contains the counterexample: v0.1.0's block-size state is labelled
 \texttt{no-dedicated-cap} and BSV's \texttt{no-consensus-cap}, which
 name the same condition and are scored a \emph{mismatch} because the
 match rule is string equality. \textbf{Section 5 measures what that
@@ -530,13 +530,14 @@ eCash's from 0.50 to 1.00, because its one remaining jointly specified
 cell is best-chain selection, which the encoding labels
 \texttt{most-work+avalanche} for its avalanche post-consensus and which
 therefore mismatches the whitepaper's \texttt{most-work} (Table 2 shows
-the label). That row is therefore entirely a labelling decision: the
-label re-scoring of Section 5.1 is defined under v0.1.0 only, and a
+the label). That row therefore turns on a labelling decision: the label
+re-scoring of Section 5.1 is defined under v0.1.0 only, and a
 relabelling of that one cell under the whitepaper would move eCash's row
-from 1.00 to 0.00. It is stated here so that the whitepaper row is not
-read as a finding about eCash. \textbf{It also restored a sentence the
-same referee had falsified}, which is exactly why it is flagged rather
-than quietly banked.
+from 1.00 to 0.00 --- a counterfactual stated by inspection of the one
+jointly specified cell, not computed by the engine. It is stated here so
+that the whitepaper row is not read as a finding about eCash. \textbf{It
+also restored a sentence the same referee had falsified}, which is
+exactly why it is flagged rather than quietly banked.
 
 \textbf{This section already holds that ``a criterion invented after
 seeing which chain it removes is not a criterion.'' A cell reversed
@@ -587,7 +588,7 @@ alternative labels. Section 5 reports them for the v0.1.0 reference
 only: the three axis perturbations carry no information over one or 3
 jointly specified axes, and the label re-scoring is defined under v0.1.0
 (Section 5.1; the one labelling decision that moves a low-coverage row
-is stated in Section 2's proof-of-work box); the other pairs' axis
+is stated in the proof-of-work box above); the other pairs' axis
 perturbations are in \texttt{comparison.json}. We report a conclusion
 only to the extent it survives all four perturbations.
 
@@ -800,16 +801,18 @@ single jointly-specified consensus axis (best-chain selection). We print
 the row in full \textbf{because it is the row most easily quoted out of
 context}: four of the five chains score 0.00 against the whitepaper,
 which sounds like a strong result and is not one. It means only that
-those four agree with the whitepaper on the one axis both specify. A
-ranking built on one axis is degenerate: the whitepaper simply does not
-constrain enough of the protocol to situate chains against it, which is
-itself a useful and often-overlooked finding. \emph{Under the November
-2008 pre-release}, coverage is 3/19 \(\approx\) 0.158 (3 specified
-parameters --- the 100-coin subsidy, the 15-minute spacing, and the
-proof-of-work function). \textbf{The subsidy and spacing differ from
-every descendant. The proof-of-work function agrees with four of the
-five --- and differs on Bitcoin Gold, which replaced it} --- which is
-exactly why the November rate is 0.6667 against BTC, BCH, BSV and XEC
+those four agree with the whitepaper on the one axis both specify; the
+fifth, eCash, scores 1.00 on that same single axis because of how its
+fork choice is labelled (the proof-of-work box in Section 2 states
+this). A ranking built on one axis is degenerate: the whitepaper simply
+does not constrain enough of the protocol to situate chains against it,
+which is itself a useful and often-overlooked finding. \emph{Under the
+November 2008 pre-release}, coverage is 3/19 \(\approx\) 0.158 (3
+specified parameters --- the 100-coin subsidy, the 15-minute spacing,
+and the proof-of-work function). \textbf{The subsidy and spacing differ
+from every descendant. The proof-of-work function agrees with four of
+the five --- and differs on Bitcoin Gold, which replaced it} --- which
+is exactly why the November rate is 0.6667 against BTC, BCH, BSV and XEC
 and still 1.00 against BTG. \emph{A single axis separating one chain's
 rate from four others is the clearest illustration in the paper of how
 much a low-coverage reference rests on.}
@@ -1044,7 +1047,7 @@ since it adds \texttt{OP\_CHECKDATASIG}, \texttt{OP\_SPLIT} and
   >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
   >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
   >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}@{}}
-\caption{Label granularity. Each row re-scores the whole comparison
+\caption{Label granularity. Each row re-scores the v0.1.0 comparison
 under one defensible alternative \emph{labelling} of states that are
 already agreed as facts. \textbf{Only BSV moves.} Relabelling shifts it
 0.0526 from its base rate against 0.0322 for removing any single axis
@@ -1305,7 +1308,8 @@ the value \texttt{none} and the two Schnorr cells carry
 BTC's replay protection, inherited from v0.1.0, and BSV's P2SH and
 element-size limit, documented removals --- and are classified as
 inherited or fetched accordingly, so Table 2 shows ten \texttt{none}
-cells on the chains and the partition shows 9 absence cells.}
+cells on the chains (a count by inspection of Table 2, not an engine
+figure) and the partition shows 9 absence cells.}
 
 \section{8. Conclusion}\label{conclusion}
 
@@ -1347,22 +1351,25 @@ which are unspecified), \texttt{comparison.csv} (the summary), and
 from the same engine. \textbf{The replication package is archived on
 Zenodo under the concept DOI
 \url{https://doi.org/10.5281/zenodo.21964446}, which resolves to the
-latest version --- 1.0.5 for this text, whose own version DOI is printed
+latest version --- 1.0.6 for this text, whose own version DOI is printed
 in that record; version 1.0.0, deposited on 16 August 2026, remains at
 \url{https://doi.org/10.5281/zenodo.21964447}} --- and the same
 artifacts are in the repository at
 \url{https://github.com/original-bitcoin-laboratory/genesis}, under
 \texttt{paper-artifacts/obl-metric/} at the signed tag
-\texttt{obl-metric-v1.0.5}. \emph{The DOI is the durable address; the
+\texttt{obl-metric-v1.0.6}. \emph{The DOI is the durable address; the
 signed tag identifies the frozen repository version, and the commit it
 resolves to is recorded in the Zenodo version record (a document cannot
 carry the digest of the commit that contains it); the repository path is
-a convenience that may move.} \textbf{Every reported rate, count and
-coverage figure in this paper is interpolated from the engine's output
-when the manuscript is built, not typed}, so the reported values are
-re-derived on every build rather than compared against the engine as of
-a date. The digests below identify the engine outputs from which the
-reported results can be independently reconstructed.
+a convenience that may move.} \textbf{Every rate, coverage figure and
+engine count reported in this paper is interpolated from the engine's
+output when the manuscript is built, not typed} --- the two statements
+made by inspection rather than by the engine (the eCash counterfactual
+in Section 2 and the \texttt{none}-label count in Section 7) say so
+where they stand --- so the reported values are re-derived on every
+build rather than compared against the engine as of a date. The digests
+below identify the engine outputs from which the reported results can be
+independently reconstructed.
 
 \textbf{The bytes, not just the address.} A repository URL is a promise:
 it can be edited after publication and a reader cannot tell. So the
