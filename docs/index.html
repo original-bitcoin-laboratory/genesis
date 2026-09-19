@@ -268,10 +268,16 @@
     window was fetched and tested individually; the genesis interpreter was compiled and executed rather
     than read. It claims no priority — the commits are public — only the dating, the method, and the artifacts.
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/SCRIPT-LIMITS-RETROFITTED.md" style="color:var(--focus)">The note →</a></p>
+  <p class="note"><b>The 1 MB block-size limit was retrofitted in two steps.</b> The constant
+    <code>MAX_BLOCK_SIZE = 1000000</code> was defined on 15 July 2010 in a commit about OpenSSL linkage and a tray icon,
+    and only the miner honoured it. It became a rule of block validity on 7 September 2010, activating at block 79,401,
+    in a commit whose message reads &ldquo;cleanup&rdquo;. The January 2009 release already rejected blocks over 32&nbsp;MiB.
+    Every line is a fetched commit; the note claims no priority and takes no position on any block size.
+    <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/MAX-BLOCK-SIZE-RETROFITTED.md" style="color:var(--focus)">The note →</a></p>
   <p class="note"><b>Related research</b> (a separate project). <a href="https://satoshioncha.in" style="color:var(--focus)">satoshi‑onchain</a>
     — a reproducible verifier + Patoshi classifier for the <i>original Satoshi's on‑chain footprint</i>
     (the genesis block, the ~1.1M‑BTC Patoshi mining pattern, the block‑170 Satoshi→Finney spend) —
-    statistical, not cryptographic, in the same honest, evidence‑tiered style. A companion angle on the same
+    statistical, not cryptographic, in the same evidence‑tiered style. A companion angle on the same
     origin: this lab reconstructs the earliest <b>code</b>; that one measures the earliest <b>chain</b>.</p>
   <div class="tags"><span>authority = 2 hash-verified archives &middot; whitepaper (2009 rev.) qualified</span><span>MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory" style="color:inherit">parthod0x</a></span><span>not money</span></div>
 </div>
