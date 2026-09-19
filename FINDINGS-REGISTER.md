@@ -35,4 +35,5 @@ Experimental laboratory research, in progress. Not money, not advice, no warrant
 - `OBL-C-nnnn`: consensus-rule entries of the constitution register, one per rule, each with the commit that
   introduced it, its message verbatim, whether the message describes the change (`message_match`), the argument
   the record carries for it, and an executed witness or a stated reason for its absence. Not yet started; the
-  checker reports its `message_match` tally with the number of surface rows as the denominator.
+  checker reports its `message_match` tally with the number of surface rows as the denominator, counting rules,
+  with origin commits as a sub-count (a rule with several commits lists them as `sha:false,sha:true`).

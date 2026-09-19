@@ -2,7 +2,7 @@
 """Check the findings register and every `OBL-F-` / `OBL-C-` reference across the laboratory.
 
 The register (`FINDINGS-REGISTER.md`) is the index of claims: one row per finding, a stable ID that is
-never reused, the evidence grade from `docs/EVIDENCE_POLICY.md`, and the artifact the claim rests on.
+not reused, the evidence grade from `docs/EVIDENCE_POLICY.md`, and the artifact the claim rests on.
 This script fails when the register or a reference to it is wrong, so a commit cannot carry a
 dangling or renamed ID:
 
