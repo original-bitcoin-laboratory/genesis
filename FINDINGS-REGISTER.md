@@ -36,6 +36,7 @@ Experimental laboratory research, in progress. Not money, not advice, no warrant
 | `OBL-F-0022` | the Berkeley DB lock table was a block-validity rule with no commit: block 225,430 (11 Mar 2013) forked the chain, and the written response `8bd028818` (15 Mar 2013) limited a block to 4,500 distinct transaction ids until 15 May 2013 | `DESCENDANT` | `docs/CONSENSUS-ATLAS.md` | 2026-09-20 |
 | `OBL-F-0023` | OpenSSL's DER parser was a signature-validity rule with no commit until BIP 66 wrote strictness into consensus (`80ad135a5`, 13 Jan 2015; merged 3 Feb 2015; enforced from 4 Jul 2015 under the 950-of-1,000 version-3 rule) | `DESCENDANT` | `docs/CONSENSUS-ATLAS.md` | 2026-09-20 |
 | `OBL-F-0024` | `CScriptNum` (PR 3965, 26 Mar to 9 May 2014) replaced OpenSSL's `BIGNUM` in script arithmetic without changing the rule; the four-byte operand cap is the 2010 rule of `4bd188c43` | `DESCENDANT` | `docs/CONSENSUS-ATLAS.md` | 2026-09-20 |
+| `OBL-F-0025` | the two rules nobody wrote, executed side by side: a block referencing 4,501 distinct transaction ids passes v0.1's `CheckBlock` size and count clauses and fails the 0.8.1 clause of `8bd028818` inside its 2013 window; BIP 66's `IsValidSignatureEncoding`, ported, passes the corpus's 7 strict signatures and fails its 3 probes, which a BER-tolerant reader recovers to the same (r, s) | `MODEL` | `derivatives/emergent/README.md` | 2026-09-20 |
 
 ## Series
 

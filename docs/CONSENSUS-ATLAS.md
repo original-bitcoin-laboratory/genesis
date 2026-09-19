@@ -306,9 +306,10 @@ August 2013 block 252,451 was accepted by the network, forking unpatched nodes o
 
 - **Kind:** emergent. **message_match:** `true` (for the written rule; the emergent rule has no
   message). **Argument:** accidental. **Failure cited:** block 225,430, 11 March 2013.
-- **Witness:** open — a block referencing more than 4,500 distinct transaction ids is valid under
-  the January rules and under 0.8.0, and invalid under 0.8.1 between the two timestamps; a
-  model-level port of the two checks would exhibit it. Grade: `DESCENDANT`.
+- **Witness:** `OBL-F-0025` — a block referencing 4,501 distinct transaction ids passes v0.1's size
+  and count clauses and fails the 0.8.1 clause inside its window; the same block passes after 15 May
+  2013, and a block with 4,499 ids passes throughout (`derivatives/emergent/bdb_locks.py`). Grade:
+  `DESCENDANT` + `MODEL`.
 
 ## 9. OpenSSL's DER parsing — the second rule nobody wrote (`OBL-C-0014`)
 
@@ -336,9 +337,12 @@ that the 950-of-1,000 threshold was reached, that a miner produced an invalid ve
 - **Kind:** emergent. **message_match:** `true` (for the written rule). **Argument:** accidental, and
   the written rule cites its failure. **Failure cited:** OpenSSL 1.0.0p and 1.0.1k changing what they
   accept (BIP 66, Motivation).
-- **Witness:** `OBL-F-0010`, in part — three non-strict DER encodings in the corpus are rejected by the
-  OpenSSL 1.0.2u the laboratory's release build links; the acceptance side needs the unmodified 2009
-  binary (OpenSSL 0.9.8), which has not been replayed. Grade: `EXECUTED (release build)`, one side.
+- **Witness:** `OBL-F-0025` — BIP 66's function, ported line for line, passes the corpus's seven
+  strict signatures and fails its three probes (a long-form length, a redundant pad, a byte before
+  the flag), each of which a BER-tolerant reader recovers to an (r, s) whose strict re-encoding
+  passes (`derivatives/emergent/der_strictness.py`); `OBL-F-0010` — the OpenSSL 1.0.2u of the
+  laboratory's release build rejects the three. The acceptance side needs the unmodified 2009 binary
+  (OpenSSL 0.9.8), not yet replayed. Grade: `EXECUTED (release build)` + `MODEL`.
 
 ## 10–13. The four rules already written up
 
@@ -377,8 +381,8 @@ NOT complete                the rules named in the register's target list are co
                             after 2015 (BIP 65, 68, 112, 113, 141 and later) are not entered
 BOUNDED by the record       GitHub's copy of bitcoin/bitcoin on 20 September 2026; the history can be
                             rewritten by its owners, so a re-run is dated
-WITNESS gaps stated         the transaction-size rule and the Berkeley DB rule have no executed
-                            witness; the DER rule has one side
+WITNESS gaps stated         the transaction-size rule has no executed witness; the DER rule's
+                            acceptance side waits on the 2009 binary
 ```
 
 **Corrections to this document are published, dated, and not made silently.**
