@@ -81,7 +81,7 @@ with the address `satoshin@gmx.com`. The record shows the string; it does not sh
   every pair. This laboratory cites that copy and records the other in a `lineage_note`
   (`CONSTITUTION-REGISTER.md`). Example: the alert system is `401926283` (25 Aug 2010, trailer) and
   `522dfe342` (28 Aug 2010, "Satoshi Nakamoto"); 0.3.11 shipped later still.
-- The eight differing pairs mean "the same commit" is not always the same change. A claim about the
+- The eight differing pairs mean "the same commit" is not the same change in every pair. A claim about the
   content of a 2010 commit should name the hash it read, not the message.
 - BIP 347's date of "Aug 25 2010" for `4bd188c43` is not explained by the lineages: both copies of that
   commit are dated 15 August (recorded in `docs/SCRIPT-LIMITS-RETROFITTED.md`).
@@ -109,8 +109,8 @@ gh api repos/bitcoin/bitcoin/commits/<sha> --jq '[(.stats.additions|tostring),(.
 The pairing is by first message line among non-merge commits; the comparison of additions, deletions and
 file lists is what makes a pair a fact rather than a coincidence of wording. The same census runs as one
 script in the sibling project that keeps Satoshi's dated record:
-`satoshi-onchain/verify/github_history_census.py` (`--out census.json`; add `--no-stats` to skip the
-per-commit comparison). GitHub's API was read on 19 September 2026; the repository's history can be
+`satoshi-onchain/verify/github_history_census.py` (`--out census.json`; four unauthenticated API calls; add
+`--stats` to compare each pair's change statistics, which needs a token). GitHub's API was read on 19 September 2026; the repository's history can be
 rewritten by its owners, so a re-run is dated.
 
 ---
