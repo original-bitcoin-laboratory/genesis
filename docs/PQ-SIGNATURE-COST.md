@@ -153,6 +153,12 @@ cannot be chosen without choosing an output type at the same time.
 
 ---
 
+## 3b. The second half of the question
+
+At these sizes, how many spends fit a block, how many settle in a day, and how long a population of
+outputs takes to move once: [`PQ-SETTLEMENT-CAPACITY.md`](PQ-SETTLEMENT-CAPACITY.md), computed from the
+figures above by `verify/pq_settlement_capacity.py` (20 September 2026).
+
 ## 4. What this does not establish
 
 ```

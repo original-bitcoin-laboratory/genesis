@@ -60,6 +60,10 @@ is the implementation that takes those bounds when its genesis is defined, addin
 constitution does not contain, the signature scheme. Two chains with two rule sets would split the
 argument; one specification and one implementation do not.
 
+The specification is written: [`docs/JAN09-B-SPECIFICATION.md`](docs/JAN09-B-SPECIFICATION.md) (20 September
+2026), one line per rule with its row, its status (inherited, installed for a cited argument, chosen and marked,
+or excluded) and, for every chosen magnitude, the statement that it is a choice.
+
 ## What is still open
 
 Every rule on the target list has a row. Two witnesses are open and say so in their cells: the
