@@ -3,11 +3,11 @@
 **20 September 2026.** `JAN09-B` is the January 2009 design with the rules the record argues for
 installed, the rules the record does not argue for chosen deliberately and marked as chosen, and no
 consensus-critical third-party library in the validation path. It is a specification, not a chain:
-it is not mined, and by the decision recorded in `CONSTITUTION-REGISTER.md` ("Where a designed
-successor fits", 20 September 2026) the laboratory's post-quantum successor is its implementation,
-adding the one delta this specification does not contain, the signature scheme. Writing it is the
-test the direction document set for the constitution: whether the register is complete enough to
-construct from.
+it is not mined, and it has no implementer (`CONSTITUTION-REGISTER.md`, "Where a designed successor
+fits", corrected 20 September 2026: the laboratory's post-quantum instrument is not one, since its
+charter confines it to the signature change on the January base). Writing it is the test the
+direction document set for the constitution: whether the register is complete enough to construct
+from.
 
 Every rule below cites its constitution row (`OBL-C-nnnn`) and takes its status from that row's
 `argument` field. Where the field reads `not-in-record`, the magnitude below is a choice, and the
@@ -84,8 +84,8 @@ OpenSSL 1.0.2u for signatures, and the corpus records what that library decides 
 ## 6. What this specification leaves to its implementation
 
 - **The signature scheme.** This specification is written for secp256k1 ECDSA, as the January design
-  is; its implementation replaces the scheme and inherits every other line. `PQ-SIGNATURE-COST.md`
-  and `PQ-SETTLEMENT-CAPACITY.md` are the costs of that replacement.
+  is. An implementer may replace the scheme and inherit every other line; `PQ-SIGNATURE-COST.md` and
+  `PQ-SETTLEMENT-CAPACITY.md` are the costs of that replacement. No implementer exists yet.
 - **The chain's identity.** Genesis, network magic, port and the coinbase's calendar anchor are the
   implementation's, and are not assigned here; no two of the laboratory's chains share a genesis,
   and each is pinned by digest in its own repository.

@@ -49,20 +49,23 @@ record argues. They do not say why.
 | `OBL-C-0013` | Berkeley DB lock table as block validity, with no commit that wrote it; the written response limits a block to 4,500 distinct transaction ids between 11 Mar and 15 May 2013 | emergent | `8bd028818:2013-03-15:true` ("CheckBlock rule until 15-May for 10,000 BDB lock compatibility"), `fc6deb521:2013-03-15:true` ("Before 15 May, limit created block size to 500K") | `true` (the written rule) | accidental | block 225,430, 11 Mar 2013 (BIP 50; bitcoin.org alert "11/12 March 2013 Chain Fork Information") | `OBL-F-0025`: a block referencing 4,501 distinct transaction ids passes v0.1's size and count clauses and fails the 0.8.1 clause inside its window, passes it after 15 May 2013 (`MODEL`) | `DESCENDANT` + `MODEL` | post-2010. Atlas §8; `derivatives/emergent/` |
 | `OBL-C-0014` | OpenSSL's DER parser as signature validity, with no commit that wrote it; the written rule is BIP 66 strict DER | emergent | `80ad135a5:2015-01-13:true` ("Change IsDERSignature to BIP66 implementation"), `5a47811da:2015-01-19:true` ("BIP66 changeover logic"; PR 5713, merged 2015-02-03, enforced from 2015-07-04) | `true` (the written rule) | accidental | OpenSSL 1.0.0p and 1.0.1k rejecting encodings earlier releases accepted (BIP 66) | `OBL-F-0025`: BIP 66's function, ported, passes the corpus's 7 strict signatures and fails its 3 probes, which a tolerant reader recovers (`MODEL`); `OBL-F-0010`: the release build's OpenSSL 1.0.2u rejects the 3; `open`: acceptance by 0.9.8 on the 2009 binary | `EXECUTED (release build)` + `MODEL` | post-2010. Atlas §9; `derivatives/emergent/` |
 
-## Where a designed successor fits — decided 20 September 2026
+## Where a designed successor fits — decided 20 September 2026, corrected the same day
 
-The constitution is the specification; a chain built from it is its executable expression. Only one
-designed successor is kept. `JAN09-B` is that expression on paper: the January 2009 design with the
-rules whose argument is in the record installed, the not-in-record ones chosen deliberately and marked,
-and no consensus-critical third-party library. It is written as a profile specification when the register
-is complete, and it is not mined. The laboratory's post-quantum successor (`pqBitcoin`, its own repository)
-is the implementation that takes those bounds when its genesis is defined, adding the one delta the
-constitution does not contain, the signature scheme. Two chains with two rule sets would split the
-argument; one specification and one implementation do not.
+The constitution is the specification; `JAN09-B` (`docs/JAN09-B-SPECIFICATION.md`) is its expression
+on paper: the January 2009 design with the rules whose argument is in the record installed, the
+not-in-record ones chosen deliberately and marked, and no consensus-critical third-party library. It
+is not mined, and it has no implementer. An implementation of it, if one is ever wanted, is a fresh
+decision, and the order that would make it evidence is: an executed `JAN09-B`, by an implementer
+working from the page, before any variant of it.
 
-The specification is written: [`docs/JAN09-B-SPECIFICATION.md`](docs/JAN09-B-SPECIFICATION.md) (20 September
-2026), one line per rule with its row, its status (inherited, installed for a cited argument, chosen and marked,
-or excluded) and, for every chosen magnitude, the statement that it is a choice.
+**Correction, 20 September 2026.** The first version of this section, published earlier the same
+day, said that the laboratory's post-quantum instrument "is the implementation that takes those
+bounds when its genesis is defined, adding the one delta the constitution does not contain, the
+signature scheme." That was wrong, and it is withdrawn. That instrument's charter, signed and
+anchored before this register existed, confines its change to the signature scheme and forbids every
+rule `JAN09-B` installs, so that the cost it measures is the signature change alone against the
+executed January 2009 base. The two documents answer different questions and neither implements
+the other. The earlier wording is kept in this repository's history and is not rewritten here.
 
 ## What is still open
 
