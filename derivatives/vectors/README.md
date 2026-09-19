@@ -43,7 +43,7 @@ full-vocabulary EvalScript suite needs a complete Script interpreter, so it is r
 | file | rule tested | vectors | oracle |
 |---|---|---|---|
 | `evalscript.json` | v0.1 `EvalScript` on scriptSig-free scripts: completion (`ok`), `CastToBool(top)` (`valid`), top element, depth | 136: the Rust generator's opcode-coverage cases + the C++ port's arithmetic DSL cases | `model/evalscript_model.py` == `port/port.cpp` (OpenSSL BN) == `validator-rs` |
-| `retarget.json` | `GetNextWorkRequired` (`main.cpp:685-728`): 2015-interval measurement, 4× clamps, pow-limit cap; the `nBits` codec | 15: integer-spacing windows (no language-dependent rounding), one forged-boundary (timewarp) window | `retarget/retarget.py` |
+| `retarget.json` | `GetNextWorkRequired` (`main.cpp:685-728`): 2015-interval measurement, 4× clamps, pow-limit cap; the `nBits` codec | 9 window vectors (integer spacing, no language-dependent rounding; one forged-boundary timewarp window) plus 6 `nBits` codec cases outside the vectors array | `retarget/retarget.py` |
 | `merkle.json` | `BuildMerkleTree` (`main.h:868-882`): odd levels pair the last node with itself | 9: n = 1…8, plus `[A,B,C]` == `[A,B,C,C]` (CVE-2012-2459) | `p2p/p2p.py` == `validator-rs/src/lib.rs` == `node/node_port.cpp` |
 | `headers.json` | 80-byte header serialization, `dsha256`, `hash <= SetCompact(nBits)` | 4: both genesis headers (2009 and this lab's 2026 chain), each with a nonce+1 negative control | the executed 2009 binary (`r3-findings/run1`); `derivatives/bitcoin/net.py` |
 | `sighash.json` | `SignatureHash` (`script.cpp:818`): every hash type on both inputs, the two `return 1` cases, `OP_CODESEPARATOR` removal | 15 | `model/tx_sighash.py` == `port/sighash.cpp` (OpenSSL) |
@@ -117,3 +117,22 @@ sees an actual transaction, not a bare branch. That format rule costs nothing an
 change anywhere. Prefer it to any redesign of the tree.
 
 MIT. Generated files are reproducible from `export_vectors.py`; edit the generator, not the JSON.
+
+## What the corpus does not cover — stated after two clean-room replays, 20 September 2026
+
+Two independent implementations replayed all 317 vectors in January-2009 mode and agreed; one of them
+also carried a consensus bug the corpus could not see. Stated so that a pass is read for what it is:
+
+- **Undefined and two-byte opcodes.** No vector uses a byte in `0xb0`–`0xef` (undefined in v0.1, fails
+  the script) or a first byte at or above `0xf0` (a two-byte opcode). A validator that treats `0xb0`–`0xb9`
+  as later `OP_NOP`s passes the corpus. The vector format carries opcode names, so raw undefined bytes
+  are not expressible in it; this is a stated gap, not a pending vector.
+- **The rules `JAN09-B` installs.** Of the rules that page installs, the corpus exercises strict DER (three
+  probes) and the four-byte numeric cap (one vector, `evalscript.json/bignum_add`, in `JAN09-B` mode). It
+  does not exercise the output value bounds, the sigop rule, cumulative-work selection (the block chain
+  has uniform `nBits`, so work and height order identically) or time-based locks. A validator can score
+  317/317 while implementing none of them; those are witnessed elsewhere (`derivatives/overflow/`,
+  `derivatives/emergent/`, `paper-artifacts/height-vs-work.json`, `derivatives/temporal/`).
+- **Six vectors depend on the `OP_VERIFY`/`OP_RETURN` stop** (`CONSENSUS_BEHAVIORS.md` row 6), which the
+  corpus exercises but the prose had not stated until 20 September 2026.
+

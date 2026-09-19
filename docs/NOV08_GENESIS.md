@@ -9,7 +9,7 @@ object both releases contain and almost nobody examines: **the genesis block its
 
 The finding, in one line: **the November genesis carries no proof of time.** Its coinbase is a bare
 integer, its timestamp predates the whitepaper's publication, and the work behind it is roughly one
-fourteen-thousandth of January's. It is a developer's test fixture, not a commitment — and the
+fourteen-thousandth of January's. It commits to no date and anchors to nothing outside itself — and the
 archive it lives in is, by Satoshi's own description, not a complete program.
 
 ---
@@ -299,3 +299,5 @@ The merkle root above is the one the solve earlier on this page reproduces. Ever
 ---
 
 *Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*
+
+*Correction, 20 September 2026: the opening once called the November genesis "a developer's test fixture"; that is a statement about purpose the bytes do not carry, and it is replaced by what they do carry. Found by an adversarial review recorded in `REPRODUCTIONS.md`.*

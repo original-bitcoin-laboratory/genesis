@@ -24,6 +24,8 @@ consensus rules (`OBL-C-0001` …): origin commits, whether their messages descr
 the record carries, and the executed witness. `scripts/check_register.py` keeps every reference to an ID resolvable.
 [`docs/CONSENSUS-ATLAS.md`](docs/CONSENSUS-ATLAS.md) is the atlas behind those rows: one section per rule, the origin
 commit's message verbatim and the lines its diff adds, dated from the repository's own record.
+[`REPRODUCTIONS.md`](REPRODUCTIONS.md) is the ledger of every attempt by another party to rebuild or review this
+work, with its access and its label; what each found is corrected in place.
 
 ## Quick start
 

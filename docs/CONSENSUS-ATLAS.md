@@ -51,7 +51,7 @@ It does not say why.
 | 2010-07-17 | `ae922a36a` (r107) | `s_nakamoto` | hard-coded checkpoints at 11111, 33333, 68555 | yes ("security safeguards") |
 | 2010-07-25 | `3b7cd5d89` (r109) | `s_nakamoto` | best chain by cumulative work, not height | no |
 | 2010-07-29 | `757f0769d` | `s_nakamoto` | script element, size, stack and numeric caps | no |
-| 2010-08-15 | `d4c6b90ca` | `s_nakamoto` | `MoneyRange`, output-sum overflow check | yes |
+| 2010-08-15 | `d4c6b90ca` | `s_nakamoto` | output value bounds and the output-sum check (named `MoneyRange` in `05454818d`, four days later) | yes |
 | 2010-08-15 | `4bd188c43` | `s_nakamoto` | disabled opcodes; element and numeric caps tightened; checkpoint at 74000 | no |
 | 2010-08-19 | `05454818d` (r140) | `s_nakamoto` | transaction replacement by `nSequence` disabled | no |
 | 2010-08-25 | `401926283` (r142) | `s_nakamoto` | alert system; per-transaction 32 MiB size check | yes / no |
@@ -268,9 +268,10 @@ holds those operands, `CBigNum` over OpenSSL's `BIGNUM`, with a class of the sam
 - **Kind:** consensus (script arithmetic), with the rule unchanged by these commits: the change is in
   which code enforces it. **message_match:** `true`. **Argument:** cited — the pull request's title
   states the reason, removing a third-party library from the validation path.
-- **Witness:** `OBL-F-0003` covers the element and stack caps of the same 2010 commits; the numeric
-  cap itself is read from source, not yet executed (`derivatives/script_limits/` has no numeric-operand
-  case). Grade: `DESCENDANT` + `JAN09-SOURCE`.
+- **Witness:** `OBL-F-0003` covers the element and stack caps of the same 2010 commits; `OBL-F-0034`
+  executes the numeric cap (a 9-byte operand accepted by v0.1, rejected by the 4-byte cap; operands,
+  not results), added 20 September 2026 after a clean-room reproduction pointed out the gap. Grade:
+  `DESCENDANT` + `MODEL`.
 
 ## 8. Berkeley DB lock limits — the rule nobody wrote (`OBL-C-0013`)
 
@@ -464,7 +465,7 @@ output is under one cent) and a price that rises as the block being built passes
 |---|---|---|
 | `MAX_BLOCK_SIZE = 1000000` — constant 15 Jul 2010, validity rule 7 Sep 2010 from block 79,401 | `OBL-C-0001` | `docs/MAX-BLOCK-SIZE-RETROFITTED.md` |
 | script element, size, stack and numeric caps — 29 Jul 2010, tightened 15 Aug 2010 | `OBL-C-0002` | `docs/SCRIPT-LIMITS-RETROFITTED.md` |
-| `MoneyRange` and the output-sum check — 15 Aug 2010, block 74638 | `OBL-C-0003` | `derivatives/overflow/README.md` |
+| output value bounds and the output-sum check — 15 Aug 2010, block 74638 (named `MoneyRange` four days later) | `OBL-C-0003` | `derivatives/overflow/README.md` |
 | `MAX_BLOCK_SIGOPS` — 7 Sep 2010 | `OBL-C-0004` | `docs/MAX-BLOCK-SIZE-RETROFITTED.md` |
 | disabled opcodes — 15 Aug 2010 | `OBL-C-0005` | `docs/SCRIPT-LIMITS-RETROFITTED.md` |
 

@@ -30,6 +30,18 @@ the `CHECKMULTISIG` extra pop, and `SIGHASH_SINGLE` returning 1 (all five era-au
 `derivatives/vectors/`). The 32 MiB `MAX_SIZE` ceiling on a block's serialised size and transaction
 count is inherited (`OBL-C-0006`, `JAN09-SOURCE`).
 
+What "the January 2009 design" denotes, for a reader building from this page: the opcode vocabulary with
+its numbers and the disabled set is `inventory/OPCODES.json`; the monetary constants (`COIN = 10^8`, a
+50-coin subsidy halving every 210,000 blocks, `nTargetSpacing = 600`) and the coinbase value rule (at most
+subsidy plus fees) are in `common/conformance/NOV08_JAN09_DIFF.md`; the seven era-authentic behaviours,
+including the `OP_VERIFY`/`OP_RETURN` stop and the coinbase-maturity fencepost, are in
+`common/conformance/CONSENSUS_BEHAVIORS.md`; Script semantics beyond those exist as the executed corpus
+(`derivatives/vectors/`) and the January source itself, not as prose. The one opcode v0.1 disabled,
+`OP_NOTEQUAL`, stays disabled here; the laboratory's JAN09-X profile re-opens it as a model-level macro,
+and the two documents now say so of each other (`derivatives/profiles/`). A clean-room reproduction on
+20 September 2026 built a validator from this page with the January source open beside it and found the
+cross-references above missing; they are added, and its report is in `REPRODUCTIONS.md`.
+
 Two of the era-authentic behaviours are consequences of defects, and the specification keeps them,
 because the specification is the January design and a design that fixes them is a different one:
 the `CHECKMULTISIG` extra pop and `SIGHASH_SINGLE`'s constant. Their status is recorded, not
@@ -56,11 +68,11 @@ has exhibited; each magnitude is a choice, and is marked as one.
 | rule | row | the failure the January design has without it | chosen value | why this value, stated as a choice |
 |---|---|---|---|---|
 | block validity size limit | `OBL-C-0001` | none exhibited below 32 MiB; the origin's own cap holds | **32 MiB, the inherited `MAX_SIZE`; no 1 MB rule** | the record argues for no magnitude; the specification keeps the origin's and installs no second one |
-| script element, script size, stack depth, numeric operand caps | `OBL-C-0002` | the January interpreter runs a 600-byte element and a 1,500-deep stack; unbounded resource use per script (`OBL-F-0003`) | **520 bytes, 10,000 bytes, 1,000 elements, 4 bytes** | the 2010 values, taken as they are because no argued alternative exists in the record; the choice is the 2010 committer's, adopted here and marked |
-| signature-operation count per block | `OBL-C-0004` | unbounded signature checks per block | **`MAX_SIZE / 50`**, the 2010 ratio applied to the inherited ceiling | the 2010 rule's ratio, not its absolute |
+| script element, script size, stack depth, numeric operand caps | `OBL-C-0002` | the January interpreter runs a 600-byte element and a 1,500-deep stack; unbounded resource use per script (`OBL-F-0003`, `OBL-F-0034`) | **520 bytes, 10,000 bytes, 1,000 elements (stack plus altstack), 4 bytes on numeric operands as read, not on results; an over-cap operand fails the script, as `CastToBigNum`'s throw does** | the 2010 values, taken as they are because no argued alternative exists in the record; the choice is the 2010 committer's, adopted here and marked |
+| signature-operation count per block | `OBL-C-0004` | unbounded signature checks per block | **`MAX_SIZE / 50`**, the 2010 ratio applied to the inherited ceiling, counted as `GetSigOpCount` does: one per `OP_CHECKSIG`/`OP_CHECKSIGVERIFY`, twenty per `OP_CHECKMULTISIG`/`OP_CHECKMULTISIGVERIFY` | the 2010 rule's ratio, not its absolute |
 | transaction size | `OBL-C-0010` | a transaction may fill the block | **no separate rule: the block ceiling bounds it** | the 2010 rule's first step (32 MiB per transaction, `401926283`) is the block ceiling restated; its second step is the 1 MB choice this specification does not make |
 | disabled opcodes | `OBL-C-0005` | the record names no failure; the 2010 commit's message is "misc changes" | **none disabled beyond v0.1's own `OP_NOTEQUAL`** | the specification keeps the January vocabulary because the record argues for removing none of it; a reader who wants the 2010 set has the row |
-| time-based `nLockTime` | `OBL-C-0007` | a lock cannot name a date | **the 500,000,000 split, as in `dd519206a`** | the message describes the change; the magnitude is the 2009 committer's, adopted and marked |
+| time-based `nLockTime` | `OBL-C-0007` | a lock cannot name a date | **the 500,000,000 split, as in `dd519206a`**; finality is consulted where the January client consults it (relay and the miner), not at block acceptance | the message describes the change; the magnitude is the 2009 committer's, adopted and marked |
 | chain selection by cumulative work | `OBL-C-0008` | a branch with more blocks and less work wins (`OBL-F-0001`) | **cumulative work, as in `3b7cd5d89`** | the record does not argue for it; the laboratory installs it because the executed failure is exhibited and the whitepaper's own words are "longest proof-of-work chain" |
 
 ## 4. Excluded: rules that are not consensus, or that expired
