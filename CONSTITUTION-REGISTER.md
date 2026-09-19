@@ -61,8 +61,11 @@ constitution does not contain, the signature scheme. Two chains with two rule se
 argument; one specification and one implementation do not.
 
 The specification is written: [`docs/JAN09-B-SPECIFICATION.md`](docs/JAN09-B-SPECIFICATION.md) (20 September
-2026), one line per rule with its row, its status (inherited, installed for a cited argument, chosen and marked,
-or excluded) and, for every chosen magnitude, the statement that it is a choice.
+2026). Its principle, set by the operator the same day: of the author's own work, from the November 2008 code to
+the last commit under the author's name (`629e37dde`, 15 December 2010), the best of it at its last tuning. Every
+rule the author installed is in at its last value; rules that entered after the last commit are out, with one
+stated exception (signature encoding must be written down, because no library may decide validity); the one
+value the author said was provisional, the block-size limit, carries the author's own phase-in mechanism.
 
 ## What is still open
 
