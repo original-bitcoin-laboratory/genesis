@@ -48,15 +48,18 @@ It does not say why.
 | Jan 2009 | v0.1 release, `main.h:17` | — | `MAX_SIZE = 0x02000000` (32 MiB) as a block ceiling — inherited | — |
 | 2009-10-29 | `dd519206a` (r18) | `s_nakamoto` | time-based `nLockTime`: the 500,000,000 split | yes ("non-final tx locktime changes") |
 | 2010-07-15 | `a30b56ebe` | `s_nakamoto` | `MAX_BLOCK_SIZE = 1000000`, miner-only | no |
+| 2010-07-17 | `ae922a36a` (r107) | `s_nakamoto` | hard-coded checkpoints at 11111, 33333, 68555 | yes ("security safeguards") |
 | 2010-07-25 | `3b7cd5d89` (r109) | `s_nakamoto` | best chain by cumulative work, not height | no |
 | 2010-07-29 | `757f0769d` | `s_nakamoto` | script element, size, stack and numeric caps | no |
 | 2010-08-15 | `d4c6b90ca` | `s_nakamoto` | `MoneyRange`, output-sum overflow check | yes |
-| 2010-08-15 | `4bd188c43` | `s_nakamoto` | disabled opcodes; element and numeric caps tightened | no |
+| 2010-08-15 | `4bd188c43` | `s_nakamoto` | disabled opcodes; element and numeric caps tightened; checkpoint at 74000 | no |
+| 2010-08-19 | `05454818d` (r140) | `s_nakamoto` | transaction replacement by `nSequence` disabled | no |
 | 2010-08-25 | `401926283` (r142) | `s_nakamoto` | alert system; per-transaction 32 MiB size check | yes / no |
 | 2010-09-07 | `f1e1fb4bd` (r148) | `s_nakamoto` | 1 MB block validity rule from block 79,401; `MAX_BLOCK_SIGOPS` | no |
 | 2010-09-13 | `3df62878c` (r154) | `s_nakamoto` | per-transaction size bound lowered to `MAX_BLOCK_SIZE` | no |
 | 2010-09-19 | `172f00602` (r156) | `s_nakamoto` | the 1 MB test moved into `CheckBlock`, replacing the 32 MiB test; the 79,400 gate removed for size and sigops | no |
 | 2010-12-07 | `a206a2398` (r197) | `gavinandresen` | `IsStandard` (policy) | yes |
+| 2010-12-12 | `97ee01ad8` (r199) | `s_nakamoto` | relay requires the fee; free transactions rate-limited (policy) | yes |
 | 2011-07-09 | `aa496b75c` | Wladimir J. van der Laan | the split named `LOCKTIME_THRESHOLD` (no rule change) | yes |
 | 2013-03-15 | `8bd028818`, `fc6deb521` | Gavin Andresen | the written response to the Berkeley DB lock rule nobody wrote | yes |
 | 2014-03-26 | `48d8eb184` … `05e3ecffa` (PR 3965) | Cory Fields | `CScriptNum` replaces `CBigNum` in script arithmetic (no rule change) | yes |
@@ -350,7 +353,112 @@ that the 950-of-1,000 threshold was reached, that a miner produced an invalid ve
   laboratory's release build rejects the three. The acceptance side needs the unmodified 2009 binary
   (OpenSSL 0.9.8), not yet replayed. Grade: `EXECUTED (release build)` + `MODEL`.
 
-## 10–13. The four rules already written up
+## 10. Transaction replacement by sequence number — shipped, then disabled (`OBL-C-0015`)
+
+**The origin has it.** `CTransaction::IsNewerThan` (`main.h:408`) compares two transactions with the
+same inputs by their sequence numbers, and `AcceptTransaction` (`main.cpp:428–446`) accepts a newer
+version of a transaction it already holds, erasing the old one ("Allow replacing with a newer version
+of the same transaction"). That is the machinery under the author's contract ideas; the December 2010
+post on fee-based replacement (mirror post 534: "You intentionally write a double-spend. You write it
+with the same inputs and outputs, but this time with a fee.") describes a later design for the same
+mechanism that the record does not implement.
+
+**Disabled in `05454818d`** (SVN r140, 2010-08-19T22:43:19Z, `s_nakamoto`; 5 files, +126 −62).
+Message, verbatim:
+
+```
+block index checking on load, extra redundant checks, misc refactoring
+```
+
+The diff adds, at the top of the conflict branch:
+
+```
++            // Disable replacement feature for now
++            return false;
+```
+
+and leaves the replacement code below it in place, unreachable. The message names three things;
+none of them is this.
+
+- **Kind:** policy (memory pool). **message_match:** `false`. **Argument:** not-in-record.
+- **Witness:** `OBL-F-0028` — the January port accepts the newer version and erases the old; the
+  0.3.11 port refuses every conflict (`derivatives/origin_policy/replacement.py`). Grade:
+  `JAN09-SOURCE` + `MODEL`.
+- **Lineage:** `7a37c906a`, 2010-08-28, author string `Satoshi Nakamoto`, no trailer.
+
+## 11. Hard-coded checkpoints (`OBL-C-0016`)
+
+**The origin names no block but the genesis.** Its `AcceptBlock` follows proof of work and ancestry.
+
+**Introduced in `ae922a36a`** (SVN r107, 2010-07-17T23:51:16Z, `s_nakamoto`; +20 −7). Message,
+verbatim:
+
+```
+security safeguards,
+limited addr messages
+-- version 0.3.2
+```
+
+The diff adds to `AcceptBlock`:
+
+```
++    // Check that the block chain matches the known block chain up to a checkpoint
++    if (pindexPrev->nHeight+1 == 11111 && hash != uint256("0x0000000069e2...7c1d"))
++        return error("AcceptBlock() : rejected by checkpoint lockin at 11111");
+```
+
+with the same for 33333 and 68555. `813505cc1` (2010-07-27, a message about Crypto++ and SHA-256
+speed) adds 70567; `4bd188c43` (2010-08-15, "misc changes") adds 74000 and folds the five into one
+test. The author's post of that evening, during the overflow incident, calls the last one "the most
+recent security lockin" (`docs/INCIDENT-2010-08-15.md`).
+
+- **Kind:** consensus (a chain that does not pass through the named blocks is rejected).
+  **message_match:** `true` for the first commit, `false` for the two that extended it. **Argument:**
+  not-in-record.
+- **Witness:** `OBL-F-0029` — a block at height 11111 with another hash: the January port accepts,
+  the 0.3.2 port rejects (`derivatives/origin_policy/checkpoints.py`). Grade: `JAN09-SOURCE` + `MODEL`.
+- **Lineage:** `4110f33cd`, 2010-07-19, author string `Gavin Andresen`, no trailer.
+
+## 12. The fee rule: a build-and-send policy, then a relay gate (`OBL-C-0017`)
+
+**The origin's rule** is `GetMinFee` (`main.h:504`): one cent (`CENT = 1,000,000` satoshi) per started
+kilobyte, and zero for a transaction under 10,000 bytes when the discount applies. The miner applies
+the discount to the first 100 transactions of a block it builds (`main.cpp:2250`); the wallet applies
+it when it sends (`main.cpp:2577`). A received transaction is not tested for its fee, and a block is
+valid whatever its transactions paid.
+
+**The relay gate is `97ee01ad8`** (SVN r199, 2010-12-12T18:20:36Z, `s_nakamoto`; +37 −40). Message,
+verbatim:
+
+```
+added some DoS limits, removed safe mode
+```
+
+The diff adds to `AcceptToMemoryPool`:
+
+```
++        // Don't accept it if it can't get into a block
++        if (nFees < GetMinFee(1000))
++            return error("AcceptToMemoryPool() : not enough fees");
++
++        // Limit free transactions per 10 minutes
++        if (nFees < CENT && GetBoolArg("-limitfreerelay"))
+...
++            if (nFreeCount > 150000 && !IsFromMe())
++                return error("AcceptToMemoryPool() : free transaction rejected by rate limiter");
+```
+
+By then `GetMinFee` (`main.h:576` at that commit) also carries a dust clause (a one-cent fee if any
+output is under one cent) and a price that rises as the block being built passes half of
+`MAX_BLOCK_SIZE_GEN`.
+
+- **Kind:** policy, on both sides. **message_match:** `true`. **Argument:** cited (the message names
+  the class of change; no incident is named).
+- **Witness:** `OBL-F-0030` — the January port relays anything; the 0.3.19 port refuses a 26,500-byte
+  fee-less transaction and the 602nd free 250-byte transaction in a ten-minute window
+  (`derivatives/origin_policy/fees.py`). Grade: `JAN09-SOURCE` + `MODEL`.
+
+## 13–17. The four rules already written up
 
 | rule | row | note |
 |---|---|---|
@@ -383,8 +491,9 @@ The later rules are dated by their pull requests' commits and merge dates.
 
 ```
 NOT a claim about intent    no statement about why any message reads as it does
-NOT complete                the rules named in the register's target list are covered; rules added
-                            after 2015 (BIP 65, 68, 112, 113, 141 and later) are not entered
+NOT complete                the rules named in the register's target list are covered, and three
+                            policies of the origin (replacement, checkpoints, fees); rules added after
+                            2015 (BIP 65, 68, 112, 113, 141 and later) are not entered
 BOUNDED by the record       GitHub's copy of bitcoin/bitcoin on 20 September 2026; the history can be
                             rewritten by its owners, so a re-run is dated
 WITNESS gaps stated         the transaction-size rule has no executed witness; the DER rule's

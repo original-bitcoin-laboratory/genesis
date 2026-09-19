@@ -40,6 +40,7 @@ SUITES = [
     ("vectors    (language-neutral JSON corpus: export == committed, replays from the rules alone)", DERIV / "vectors"),
     ("temporal   (median-time-past, block timestamps, tx finality)", DERIV / "temporal"),
     ("emergent   (the BDB lock rule of 0.8.1 and BIP 66 DER, against the January side)", DERIV / "emergent"),
+    ("origin_pol (replacement by nSequence, checkpoints, the fee rule: the origin against 2010)", DERIV / "origin_policy"),
     ("tracker    (origin-distance of each claimant over time)",      DERIV / "tracker"),
     ("nov08x     (NOV08 counterfactual + live network)",           DERIV / "nov08x"),
     ("jan09x     (released chain, full vocab + live network)",     DERIV / "jan09x"),
