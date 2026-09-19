@@ -54,7 +54,7 @@ record argues. They do not say why.
 The constitution is the specification; `JAN09-B` (`docs/JAN09-B-SPECIFICATION.md`) is its expression
 on paper: the January 2009 design with the rules whose argument is in the record installed, the
 not-in-record ones chosen deliberately and marked, and no consensus-critical third-party library. It
-is not mined, and it has no implementer. An implementation of it, if one is ever wanted, is a fresh
+is not mined, and it has no implementer. An implementation of it, if one is wanted, is a fresh
 decision, and the order that would make it evidence is: an executed `JAN09-B`, by an implementer
 working from the page, before any variant of it.
 
