@@ -15,6 +15,9 @@ on:
       - "derivatives/**"
       - "scripts/**"
       - ".github/workflows/tests.yml"
+      - "FINDINGS-REGISTER.md"
+      - "CONSTITUTION-REGISTER.md"
+      - "**/*.md"
   pull_request:
   workflow_dispatch:
 
@@ -89,3 +92,15 @@ jobs:
             mingw-w64-x86_64-rust
       - name: Reproduce the findings on Windows/MSYS2 (Rust + C++/OpenSSL)
         run: python scripts/reproduce_claims.py --rust --cpp
+
+  # The findings register: every OBL-F-/OBL-C- ID referenced anywhere resolves, every artifact exists,
+  # and the constitution tally is printed with its denominator. Cheap, and it fails on a dangling ID.
+  register:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check the findings register and every ID reference
+        run: python scripts/check_register.py

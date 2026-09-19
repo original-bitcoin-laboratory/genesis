@@ -73,6 +73,7 @@
   .tags span{border:1px solid var(--line-strong);border-radius:5px;padding:3px 8px}
   a{color:var(--focus)}
   @media(max-width:540px){.row{grid-template-columns:1fr;gap:2px}}
+  .permalink{margin:8px 0 0;font-size:12px} .permalink a{color:var(--ink-dim)} .permalink a[href]{text-decoration:underline dotted}
 </style>
 
 <div class="wrap">
@@ -101,6 +102,7 @@
     </div>
     <div class="verdict" id="v-block"><div class="vdot"></div><div class="vtext"><b id="vb-t">…</b><span id="vb-s"></span></div></div>
     <div class="rows" id="r-block"></div>
+    <p class="permalink"><a id="pl-block" hidden></a></p>
   </section>
 
   <!-- SCRIPT -->
@@ -117,6 +119,7 @@
     </div>
     <div class="verdict" id="v-script"><div class="vdot"></div><div class="vtext"><b id="vs-t">…</b><span id="vs-s"></span></div></div>
     <div class="rows" id="r-script"></div>
+    <p class="permalink"><a id="pl-script" hidden></a></p>
   </section>
 
   <!-- SPEND -->
@@ -131,6 +134,7 @@
     </div>
     <div class="verdict" id="v-spend"><div class="vdot"></div><div class="vtext"><b id="vp-t">…</b><span id="vp-s"></span></div></div>
     <div class="rows" id="r-spend"></div>
+    <p class="permalink"><a id="pl-spend" hidden></a></p>
   </section>
 
   <p class="note"><b>What this proves.</b> The earliest Bitcoin survives as hash-identified source, and most claims about
@@ -207,10 +211,35 @@ function rowsHTML(pairs){
 const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const yn=b=>b?'<span class="y">yes</span>':'<span class="n">no</span>';
 
+// ---- permalinks: the input travels in the URL fragment, so a result can be cited and re-run ----
+// The link carries the bytes and the engine that produced the verdict; nothing is stored anywhere.
+const LINK_MAX=200000;
+let ENGINE="";
+function setLink(pre,frag){
+  const a=$("pl-"+pre);
+  if(!frag){ a.hidden=true; history.replaceState(null,"",location.pathname+location.search); return; }
+  if(frag.length>LINK_MAX){ a.hidden=false; a.removeAttribute("href"); a.textContent="input too large to carry in a link"; return; }
+  const h="#"+frag+"&engine="+encodeURIComponent(ENGINE);
+  history.replaceState(null,"",h);
+  a.hidden=false; a.href=location.origin+location.pathname+h; a.textContent="link to this result";
+}
+function loadFromLink(){
+  const h=location.hash.slice(1); if(!h) return false;
+  const p=new URLSearchParams(h);
+  if(p.has("block")){ $("block-hex").value=p.get("block"); selectTab("tab-block"); }
+  else if(p.has("script")){ $("script-hex").value=p.get("script"); selectTab("tab-script"); }
+  else if(p.has("spend")){ const v=p.get("spend").split("."); $("sp-sig").value=v[0]||""; $("sp-spk").value=v[1]||""; $("sp-tx").value=v[2]||""; $("sp-n").value=v[3]||"0"; selectTab("tab-spend"); }
+  else return false;
+  const eng=p.get("engine");
+  if(eng&&eng!==ENGINE) $("engine").innerHTML+=` <span class="dim">This link was made with ${esc(eng)}; this page runs ${esc(ENGINE)}.</span>`;
+  return true;
+}
+
 // ---- BLOCK ----
 function runBlock(){
   const hex=$("block-hex").value.trim();
-  if(!hex){ setVerdict("block","","waiting for a block…","paste raw block hex above"); $("r-block").innerHTML=""; return; }
+  if(!hex){ setVerdict("block","","waiting for a block…","paste raw block hex above"); $("r-block").innerHTML=""; setLink("block",""); return; }
+  setLink("block","block="+encodeURIComponent(hex));
   const r=call("verify_block",hex);
   if(r.error && !r.header){ setVerdict("block","no","Could not read this block.",r.error); $("r-block").innerHTML=""; return; }
   const valid=r.ok && r.pow_ok;
@@ -244,7 +273,8 @@ function runBlock(){
 // ---- SCRIPT ----
 function runScript(){
   const hex=$("script-hex").value.trim();
-  if(!hex){ setVerdict("script","","waiting for a script…","paste script hex above"); $("r-script").innerHTML=""; return; }
+  if(!hex){ setVerdict("script","","waiting for a script…","paste script hex above"); $("r-script").innerHTML=""; setLink("script",""); return; }
+  setLink("script","script="+encodeURIComponent(hex));
   const r=call("run_script",hex);
   if(r.error){ setVerdict("script","no","Could not read this script.",r.error); $("r-script").innerHTML=""; return; }
   setVerdict("script", r.ok?"ok":"no",
@@ -263,7 +293,8 @@ function runScript(){
 function runSpend(){
   const sig=$("sp-sig").value.trim(), spk=$("sp-spk").value.trim(), tx=$("sp-tx").value.trim();
   const n=parseInt($("sp-n").value.trim()||"0",10)||0;
-  if(!sig||!spk||!tx){ setVerdict("spend","","waiting for a spend…","fill scriptSig, scriptPubKey and the transaction"); $("r-spend").innerHTML=""; return; }
+  if(!sig||!spk||!tx){ setVerdict("spend","","waiting for a spend…","fill scriptSig, scriptPubKey and the transaction"); $("r-spend").innerHTML=""; setLink("spend",""); return; }
+  setLink("spend","spend="+[sig,spk,tx,String(n)].map(encodeURIComponent).join("."));
   const r=call("verify_spend",JSON.stringify({script_sig:sig,script_pubkey:spk,tx:tx,n_in:n}));
   if(r.error){ setVerdict("spend","no","Could not evaluate this spend.",r.error); $("r-spend").innerHTML=""; return; }
   setVerdict("spend", r.ok?"ok":"no",
@@ -307,10 +338,10 @@ on("script-hex",runScript);
 WebAssembly.instantiate(b64ToBytes(WASM_B64),{}).then(({instance})=>{
   EXPORTS=instance.exports;
   const v=readResult(EXPORTS.version());
-  $("engine").innerHTML=`validator: <b>${esc(v.crate)} ${esc(v.version)}</b> — the node's Rust consensus core, compiled to WebAssembly, running on your device.`;
-  // prefill the block example so the page shows a real result immediately
-  $("block-hex").value=EX.block;
-  runBlock();
+  ENGINE=`${v.crate} ${v.version}`;
+  $("engine").innerHTML=`validator: <b>${esc(ENGINE)}</b> — the node's Rust consensus core, compiled to WebAssembly, running on your device. Every result has a link that carries the input and the engine name, so it can be cited and re-run here.`;
+  // a shared link wins; otherwise prefill the block example so the page shows a real result immediately
+  if(!loadFromLink()){ $("block-hex").value=EX.block; runBlock(); }
 }).catch(e=>{
   $("engine").textContent="failed to load the validator: "+e;
 });
