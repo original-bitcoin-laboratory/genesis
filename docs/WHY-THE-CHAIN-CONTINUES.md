@@ -172,23 +172,21 @@ clean pass. A laboratory that only publishes the results it expected is not meas
 
 The paragraph above says that after the retarget the mining "should be described as maintenance rather
 than as an experiment". It did not say what the maintenance is for. It has an answer, and the answer
-predates this note: since height 221 this chain has been the **anchor rail** of the Chronology Protocol
-(`github.com/machine-native/chronology-protocol`), which commits its epoch checkpoints into these
-blocks — blocks 221 and 222 were mined by its anchor miner, the first implementation other than this
-laboratory's to extend the chain — and nanoproof-air's measurement batches ride on those epochs. Those
-commitments exist because the chain kept growing; they stop being renewable if it stops.
+predates this note: since height 221 this chain has served as an **anchor rail** — an implementation other
+than this laboratory's mined blocks 221 and 222 (`bitcoin-findings/2026-08-19-external-blocks221-222/`),
+and external commitments have been written into these blocks since. Those commitments exist because the
+chain kept growing; they stop being renewable if it stops.
 
-So the purpose after 2016 is stated here, once: **the chain continues as an anchor rail for sibling
-projects that commit checkpoints into it.** That is an ongoing purpose rather than a terminal one, and
-it answers the question the earlier text left open in the same terms as everything else on this chain:
-infrastructure, no unit in circulation, no third-party holder, no value. Each round of mining after
-2016 is evidence for the same thing: that the checkpoints already committed remain anchored in a chain
-that is still extended and still re-validated.
+So the purpose after 2016 is stated here, once: **the chain continues as an anchor rail for commitments
+written into it by implementations other than this laboratory's.** That is an ongoing purpose rather than
+a terminal one, and it answers the question the earlier text left open in the same terms as everything
+else on this chain: infrastructure, no unit in circulation, no third-party holder, no value. Each round of
+mining after 2016 is evidence for the same thing: that the commitments already made remain anchored in a
+chain that is still extended and still re-validated.
 
-Halting instead would require the sibling projects to migrate to another anchor, and their existing
-epochs would stay bound to this chain's block hashes whatever happened next. That cost is real and it
-is not this laboratory's alone to pay, which is why the decision is recorded here rather than left to
-whoever runs the miner. The retarget experiment is unchanged: `bitcoin-findings/PREDICTION-first-retarget.md`
+Halting instead would leave every existing commitment bound to a chain that no longer grows. That cost
+falls on whoever committed, not on this laboratory alone, which is why the decision is recorded here rather
+than left to whoever runs the miner. The retarget experiment is unchanged: `bitcoin-findings/PREDICTION-first-retarget.md`
 states, in advance, that the first retarget will leave `nBits` at `0x1d00ffff`; the finding is published
 when height 2016 is reached, and the prediction is judged against the bytes either way.
 

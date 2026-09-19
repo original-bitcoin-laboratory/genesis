@@ -40,6 +40,17 @@ record argues. They do not say why.
 | `OBL-C-0004` | `MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50` | anti-DoS | `f1e1fb4bd:2010-09-07:false` | `false` | not-in-record | none | `open`: no artifact exercises the sigop count against the 2009 binary | `DESCENDANT` | as `OBL-C-0001`'s second commit. Note: `docs/MAX-BLOCK-SIZE-RETROFITTED.md` |
 | `OBL-C-0005` | disabled opcodes: `OP_CAT`, `OP_SUBSTR`, `OP_LEFT`, `OP_RIGHT`, `OP_INVERT`, `OP_AND`, `OP_OR`, `OP_XOR`, `OP_2MUL`, `OP_2DIV`, `OP_MUL`, `OP_DIV`, `OP_MOD`, `OP_LSHIFT`, `OP_RSHIFT` | consensus | `4bd188c43:2010-08-15:false` ("misc changes"; a pre-switch guard that fails the script) | `false` | not-in-record | none | `OBL-F-0010`: the 2009 vocabulary executes on the release client, 136/136 script vectors (`EXECUTED (release build)`); BIP 347 documents the disabling | `EXECUTED (release build)` + `JAN09-SOURCE` | `4bd188c43` is duplicated as `6ac7f9f14`, 2010-08-15, `Satoshi Nakamoto`. BIP 347 dates this commit "Aug 25 2010"; the commit's own fields say 2010-08-15 (recorded in `docs/SCRIPT-LIMITS-RETROFITTED.md`) |
 
+## Where a designed successor fits — decided 20 September 2026
+
+The constitution is the specification; a chain built from it is its executable expression. Only one
+designed successor is kept. `JAN09-B` is that expression on paper: the January 2009 design with the
+rules whose argument is in the record installed, the not-in-record ones chosen deliberately and marked,
+and no consensus-critical third-party library. It is written as a profile specification when the register
+is complete, and it is not mined. The laboratory's post-quantum successor (`pqBitcoin`, its own repository)
+is the implementation that takes those bounds when its genesis is defined, adding the one delta the
+constitution does not contain, the signature scheme. Two chains with two rule sets would split the
+argument; one specification and one implementation do not.
+
 ## Rows still to enter
 
 From `CONSENSUS_SURFACE.md` and `CONSENSUS_BEHAVIORS.md`: the 32 MiB `MAX_SIZE` ceiling as the
