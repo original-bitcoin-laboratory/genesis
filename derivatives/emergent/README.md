@@ -23,7 +23,8 @@ BERKELEY DB LOCK RULE
   0.8.1 block with 4499 ids            : (True, 'ok')
 
 DER STRICTNESS
-  7 strict signatures in the corpus pass BIP 66
+  7 strict signatures pass BIP 66 (the pay-to-pubkey vectors whose scriptSig is one push; the corpus's
+    other strict vectors are multisig or empty-scriptSig cases the extractor does not read)
   3 probes (long-form length; redundant 0x00 pad; a byte before the sighash flag) fail BIP 66,
     and a BER-tolerant reader recovers an (r, s) whose strict re-encoding passes BIP 66
   the release build (OpenSSL 1.0.2u) rejects all three (OBL-F-0010); the 2009 binary is not replayed yet

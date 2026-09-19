@@ -95,9 +95,11 @@ OpenSSL 1.0.2u for signatures, and the corpus records what that library decides 
 
 ## 7. What is open
 
-The three witnesses the register marks `open` are open here too: the transaction-size narrowing
-(`OBL-C-0010`), the acceptance side of DER strictness on the 2009 binary (`OBL-C-0014`), and the
-numeric-operand cap as an executed case (`OBL-C-0002`, `OBL-C-0012`). Rules Bitcoin acquired after
-2015 are not in the register and so not in this specification.
+The five witnesses the register marks `open` are open here too: the 1 MB narrowing against the
+2009 binary (`OBL-C-0001`), the sigop count against the 2009 binary (`OBL-C-0004`), the
+transaction-size narrowing (`OBL-C-0010`), the acceptance side of DER strictness on the 2009 binary
+(`OBL-C-0014`), and the numeric-operand cap as an executed case (`OBL-C-0002`, `OBL-C-0012`). Four of
+the five need the unmodified 2009 binary. Rules Bitcoin acquired after 2015 are not in the register
+and so not in this specification.
 
 **Corrections to this document are published, dated, and not made silently.**

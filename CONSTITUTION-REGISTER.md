@@ -66,10 +66,11 @@ or excluded) and, for every chosen magnitude, the statement that it is a choice.
 
 ## What is still open
 
-Every rule on the target list has a row. Two witnesses are open and say so in their cells: the
-transaction-size rule (`OBL-C-0010`) and the acceptance side of the DER rule (`OBL-C-0014`, which
-needs the unmodified 2009 binary). The numeric-operand cap under
-`OBL-C-0002` and `OBL-C-0012` is read from source and not yet executed. Rules that entered after
+Every rule on the target list has a row. Five witness cells say `open`: the 1 MB narrowing against
+the 2009 binary (`OBL-C-0001`), the sigop count (`OBL-C-0004`), the transaction-size rule
+(`OBL-C-0010`), the acceptance side of the DER rule (`OBL-C-0014`), and the numeric-operand cap under
+`OBL-C-0002` and `OBL-C-0012`, which is read from source and not yet executed. Four of the five need
+the unmodified 2009 binary. Rules that entered after
 2015 are not on the list.
 
 **Corrections.** 20 September, later the same day: a third commit added to `OBL-C-0001` and a second to `OBL-C-0004`. `172f00602` (19 September 2010, message about `-allowreceivebyip`) moved the 1 MB test into `CheckBlock` in place of the 32 MiB `MAX_SIZE` test and removed the 79,400 height gate from both rules, twelve days after the gated rule entered. `docs/MAX-BLOCK-SIZE-RETROFITTED.md` (signed 19 September) does not mention this commit; it is recorded here and in the atlas rather than by editing the signed note.
