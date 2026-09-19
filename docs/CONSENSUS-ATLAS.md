@@ -55,6 +55,7 @@ It does not say why.
 | 2010-08-25 | `401926283` (r142) | `s_nakamoto` | alert system; per-transaction 32 MiB size check | yes / no |
 | 2010-09-07 | `f1e1fb4bd` (r148) | `s_nakamoto` | 1 MB block validity rule from block 79,401; `MAX_BLOCK_SIGOPS` | no |
 | 2010-09-13 | `3df62878c` (r154) | `s_nakamoto` | per-transaction size bound lowered to `MAX_BLOCK_SIZE` | no |
+| 2010-09-19 | `172f00602` (r156) | `s_nakamoto` | the 1 MB test moved into `CheckBlock`, replacing the 32 MiB test; the 79,400 gate removed for size and sigops | no |
 | 2010-12-07 | `a206a2398` (r197) | `gavinandresen` | `IsStandard` (policy) | yes |
 | 2011-07-09 | `aa496b75c` | Wladimir J. van der Laan | the split named `LOCKTIME_THRESHOLD` (no rule change) | yes |
 | 2013-03-15 | `8bd028818`, `fc6deb521` | Gavin Andresen | the written response to the Berkeley DB lock rule nobody wrote | yes |
@@ -63,7 +64,12 @@ It does not say why.
 | 2016-03-21 | PR 7692 (`9e17aac6b`) | BtcDrak | alert system removed (Core 0.13.0) | yes |
 
 Thirteen rules have an origin commit in the record (the 32 MiB ceiling is the release's own); the
-introducing message describes the change for seven of them and does not for six. The register prints
+introducing message describes the change for seven of them and does not for six. Added later on 20 September:
+`172f00602` (19 September 2010, r156, message "only accept transactions sent by IP address if -allowreceivebyip is
+specified") replaced `CheckBlock`'s 32 MiB `MAX_SIZE` test with the 1 MB `MAX_BLOCK_SIZE` test and removed the
+`nHeight > 79400` gate from the size and sigop rules, twelve days after they entered; from that commit the 32 MiB
+constant bounds only network messages (`net.h`) and block files. Rows `OBL-C-0001`, `0004` and `0006` carry it; the
+signed note of 19 September does not, and is not edited. The register prints
 the same tally with its denominator every time it runs (`python scripts/check_register.py`).
 
 ---
