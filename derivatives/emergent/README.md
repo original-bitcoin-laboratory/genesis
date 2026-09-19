@@ -36,7 +36,7 @@ DER STRICTNESS
   references more than 4,500 distinct transaction ids (every transaction's own id plus every
   non-coinbase input's prevout) fails with "15 May maxlocks violation". Against it, the v0.1
   `CheckBlock` clauses that bound a block's size and count (`MAX_SIZE = 0x02000000`). The lock table
-  itself is not modelled: it was never a rule anyone stated, which is what the row records. The
+  itself is not modelled: nobody stated it as a rule, which is what the row records. The
   block is synthetic (no proof of work, no merkle check); those clauses are not under test.
 - **`der_strictness.py`.** `IsValidSignatureEncoding` from BIP 66, in the reference's order. The
   tolerant reader models the three tolerances the corpus probes, so that "a tolerant parser reads
