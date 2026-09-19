@@ -22,6 +22,8 @@ edition and its differential.)
 the ID (`OBL-F-0001` …). [`CONSTITUTION-REGISTER.md`](CONSTITUTION-REGISTER.md) is the parallel series for
 consensus rules (`OBL-C-0001` …): origin commits, whether their messages describe the change, the argument
 the record carries, and the executed witness. `scripts/check_register.py` keeps every reference to an ID resolvable.
+[`docs/CONSENSUS-ATLAS.md`](docs/CONSENSUS-ATLAS.md) is the atlas behind those rows: one section per rule, the origin
+commit's message verbatim and the lines its diff adds, dated from the repository's own record.
 
 ## Quick start
 

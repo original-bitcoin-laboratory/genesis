@@ -26,6 +26,9 @@ historical Satoshi. Nothing here recommends changing any rule of any Bitcoin. No
 - `OBL-F-0010` — a 323-vector conformance corpus replayed over the wire against the release client:
   136/136 scripts, 17/17 signature checks, 19/19 blocks agree. [R5](r5-findings/2026-09-13-binary-replay-release/FINDINGS.md)
 
+**Where every rule came from:** [docs/CONSENSUS-ATLAS.md](docs/CONSENSUS-ATLAS.md), one section per consensus rule
+with its origin commit and message, indexed by [CONSTITUTION-REGISTER.md](CONSTITUTION-REGISTER.md) (`OBL-C-0001` …).
+
 **One command that reproduces something** (Python 3.12, no network):
 
 ```bash
