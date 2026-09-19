@@ -16,7 +16,7 @@ What this module executes, side by side:
 and exhibits one block that the January rule accepts and the 0.8.1 rule rejects, the same block
 accepted again once its time is past 15 May 2013, and the boundary at exactly 4,500 ids.
 
-The lock table itself is not modelled: it was never a rule anyone could state, which is the point of
+The lock table itself is not modelled: nobody could state it as a rule, which is the point of
 the row. What is modelled is the rule written to stand in for it. Evidence level: MODEL. The block
 is synthetic (no proof of work, no valid merkle root; those clauses of CheckBlock are not the ones
 under test and are not ported here). NOT money.
