@@ -57,7 +57,7 @@ winner  000000004ccc5b55de9727622be0e2fb2ae17c4e994b504c1914e366a1ce6f7c   heigh
         coinbase scriptSig  (empty)                                       fresh wallet key
 ```
 
-Both losers carry the **CHRN** marker of the Chronology Protocol's anchor toolchain — the second
+Both losers carry the **CHRN** marker of an anchor toolchain other than this laboratory's — the second
 miner that arrived on 19 August — and both pay the agent's genesis key. Both winners are the VM's,
 with an empty scriptSig and a freshly minted wallet key. **So the external miner's first two
 attempts on this chain lost, and its next four won** (heights 221, 222, 253 and 269).

@@ -287,3 +287,22 @@ Recorded here because the release texts are signed and the findings sets are sea
   rewritten. "no market" — as above.
 - **`2026-08-09-block4/FINDINGS.md` line 101, sealed:** "never the bytes" — read as: the published findings carry
   the hashes and the reasoning, not the bytes.
+
+## 20 September 2026 — revision 4 of three sealed sets: an external project no longer named
+
+The laboratory's record describes other implementations; it does not name other projects. Three sets
+named the project whose anchor toolchain mined heights 221, 222 and 253 and lost the two reorganisations
+recorded in blocks122-295. Each was revised under the revision rule: revision 3's manifest and proof are kept
+as `SHA256SUMS.r3` / `SHA256SUMS.r3.ots`, and the set is re-sealed. Block bytes, payload parses and figures
+are unchanged. The edits:
+
+- **`2026-08-19-external-blocks221-222`, lines 47–48:** the project's name and repository link, in the sentence
+  introducing the 96-byte `CHRN` payload, replaced by "an implementation other than this laboratory's".
+  **Line 91:** "the [project]'s anchor toolchain" replaced by "an anchor toolchain other than this laboratory's".
+  **Lines 119–120:** the link to the project's own acceptance records replaced by a statement that those
+  records are kept by that implementation and not reproduced here.
+- **`2026-08-21-first-reorganization`, line 35:** "the [project]'s anchor toolchain" replaced by "an anchor
+  toolchain other than this laboratory's".
+- **`2026-08-22-blocks122-295`, line 60:** the same replacement in the sentence on the two losing blocks.
+
+`derivatives/bitcoin/README.md` (not sealed) was edited the same way on the same day.

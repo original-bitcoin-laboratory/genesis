@@ -32,7 +32,7 @@ a capture time, never about now.)
 ## Why it happened, stated plainly
 
 **Since 19 August 2026 this chain has had two independent miners.** The laboratory VM
-mines continuously; the Chronology Protocol's anchor toolchain
+mines continuously; an anchor toolchain other than this laboratory's
 (a separate implementation, on a separate machine) mines whenever it anchors a
 checkpoint — that is how heights 221, 222 and 253 were produced. Two uncoordinated
 miners at difficulty 1 with ~1-hour spacing will collide, and on 21 August they did.

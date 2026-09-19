@@ -45,8 +45,8 @@ it with a different implementation. **Mining is open: the next block belongs to 
 **Who holds the coins — stated as the invariant, because the number moves.** Through height 220
 every block was mined by this project's own client and every coin was held by keys this project
 minted. **On 19 August 2026 that state half-ended, and the half matters:** heights 221 and 222 were
-mined by a different toolchain — the Chronology Protocol's anchor miner
-([machine-native/chronology-protocol](https://github.com/machine-native/chronology-protocol)), which
+mined by a different toolchain — an anchor miner other than this laboratory's, a separate
+implementation on a separate machine, which
 carries a 96-byte checkpoint commitment in each coinbase — **but by the same human operator**, so
 this was the first external *implementation*, not yet the first external *party*
 ([findings](../../bitcoin-findings/2026-08-19-external-blocks221-222/FINDINGS.md)). Both of those

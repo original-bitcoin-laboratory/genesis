@@ -11,6 +11,7 @@ Use one of these prefixes in reports:
 - `DERIVATIVE:` introduced by this project.
 - `DESCENDANT:` observed in a later Bitcoin implementation.
 - `UNRESOLVED:` evidence is incomplete or contradictory.
+- `EXECUTED (release build):` witnessed on this laboratory's release client (the reconstruction as shipped), not on the unmodified 2009 binary; a compound grade such as `JAN09-SOURCE + EXECUTED (release build)` lists each basis.
 
 ## Required evidence for an opcode claim
 

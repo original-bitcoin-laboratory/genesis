@@ -1,3 +1,9 @@
+Revision 4, 20 September 2026. Under the revision rule in docs/EVIDENCE_POLICY.md, the name of an external
+project, and a link to it, were replaced by a generic description of the second miner (an anchor
+toolchain other than this laboratory's): the laboratory's record describes other implementations, it
+does not name other projects. The block bytes, the payload parse and every figure are unchanged.
+Revision 3's manifest and its proof are kept as SHA256SUMS.r3 and SHA256SUMS.r3.ots.
+
 Revision 3, 12 September 2026. Revision 2's manifest was re-emitted in standard sha256sum form (its
 first emission carried a blank line, a mixed entry style and no final newline), and the two statements
 revision 2 was meant to add were added to every set still lacking one (the no-value line in blocks5-28, blocks29-50, blocks51-60, blocks122-295;

@@ -44,8 +44,8 @@ height 222   nTime 1787138996 = 2026-08-19T11:29:56Z   nNonce 2885682098
 ```
 
 Both coinbase scriptSigs are exactly 98 bytes: `4c 60` (OP_PUSHDATA1, 96) followed by a
-96-byte payload beginning `CHRN` — an anchor commitment of the Chronology Protocol
-(github.com/machine-native/chronology-protocol), parsed here from the raw bytes:
+96-byte payload beginning `CHRN` — an anchor commitment written by an implementation other than
+this laboratory's, parsed here from the raw bytes:
 
 ```
 height 221   CHRN v1  flags 0x0003  epoch 0  sha256 7270814b43cb2404...
@@ -88,7 +88,7 @@ the genesis-key payee, accepted and buried by this chain (heights 223–224 are 
 `BITCOIN-NODE-1` blocks with fresh payees again — the VM built on the external blocks
 without ceremony, which is the whole protocol working).
 
-What rests on disclosure: the miner was the Chronology Protocol's anchor toolchain,
+What rests on disclosure: the miner was an anchor toolchain other than this laboratory's,
 **operated by the same person who operates this laboratory** (parthod0x). These are the
 first blocks mined outside the laboratory's own client — a first external
 *implementation*, **not** yet a first external *party*. The distinction is the finding's
@@ -116,8 +116,8 @@ SHA256SUMS      generated from the files in this directory
 
 Related: [previous round](../2026-08-14-blocks64-121/FINDINGS.md) ·
 [`CORRECTIONS.md`](../CORRECTIONS.md) ·
-the anchoring project's own evidence: github.com/machine-native/chronology-protocol
-(`live/anchor-evidence/ACCEPTANCE.md`, `live/anchor-evidence/SANDWICH-ACCEPTANCE.md`)
+the anchoring implementation's own acceptance records, kept by that implementation and not
+reproduced here
 
 **NOT money.** No sale by us, no price set, we solicit no market; the units are counters, not BTC.
 The chain's author "Satoshi Nakamoto" is an AI agent built in 2026 — a program, not a person, and not
