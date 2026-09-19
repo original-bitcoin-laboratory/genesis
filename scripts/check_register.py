@@ -15,7 +15,7 @@ dangling or renamed ID:
 - for the constitution series it prints the `message_match` tally with its denominator, the rows
   entered against the rows of `common/conformance/CONSENSUS_SURFACE.md`, so the count is not
   reported without the bound that produced it. The tally counts RULES (one row each); a rule whose
-  history has several origin commits carries them in a `commits` cell as `sha:false,sha:true`, and
+  history has several origin commits carries them in an origin-commits cell as `sha:date:false`, `sha:date:true`, and
   the script reports commits as a sub-count, so two false values inside one rule's history (the 1 MB
   limit: `a30b56ebe` and `f1e1fb4bd`) count once at the rule level and twice at the commit level.
 
@@ -142,10 +142,14 @@ def main() -> int:
     else:
         denom = "surface table not in this checkout"
     mm_false = sum(1 for r in c_rows if any(c.strip("` ").lower() == "false" for c in r["cells"]))
-    commit_pairs = [m for r in c_rows for c in r["cells"] for m in re.findall(r"([0-9a-f]{7,40}):(true|false)", c)]
-    commit_false = sum(1 for _, v in commit_pairs if v == "false")
+    commit_pairs = [m for r in c_rows for c in r["cells"] for m in re.findall(r"([0-9a-f]{7,40}):(?:\d{4}-\d{2}-\d{2}:)?(true|false)", c)]
+    # one commit can introduce two rules (f1e1fb4bd: the block-size rule and the sigop limit); count each sha once
+    by_sha: dict[str, str] = {}
+    for sha, v in commit_pairs:
+        by_sha[sha] = "false" if by_sha.get(sha) == "false" or v == "false" else v
+    commit_false = sum(1 for v in by_sha.values() if v == "false")
     say(f"findings register: {sum(1 for k in known if k.startswith('OBL-F-'))} rows; constitution register: {len(c_rows)} rules entered ({denom}); "
-        f"message_match false: {mm_false} of {len(c_rows)} rules, {commit_false} of {len(commit_pairs)} origin commits")
+        f"message_match false: {mm_false} of {len(c_rows)} rules, {commit_false} of {len(by_sha)} distinct origin commits")
     for n in notes:
         say("note", n)
     for x in failures:

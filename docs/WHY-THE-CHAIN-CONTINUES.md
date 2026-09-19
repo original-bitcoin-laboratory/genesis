@@ -168,4 +168,33 @@ clean pass. A laboratory that only publishes the results it expected is not meas
 
 ---
 
+## Purpose after height 2016 — recorded 19 September 2026, at height 1,085
+
+The paragraph above says that after the retarget the mining "should be described as maintenance rather
+than as an experiment". It did not say what the maintenance is for. It has an answer, and the answer
+predates this note: since height 221 this chain has been the **anchor rail** of the Chronology Protocol
+(`github.com/machine-native/chronology-protocol`), which commits its epoch checkpoints into these
+blocks — blocks 221 and 222 were mined by its anchor miner, the first implementation other than this
+laboratory's to extend the chain — and nanoproof-air's measurement batches ride on those epochs. Those
+commitments exist because the chain kept growing; they stop being renewable if it stops.
+
+So the purpose after 2016 is stated here, once: **the chain continues as an anchor rail for sibling
+projects that commit checkpoints into it.** That is an ongoing purpose rather than a terminal one, and
+it answers the question the earlier text left open in the same terms as everything else on this chain:
+infrastructure, no unit in circulation, no third-party holder, no value. Each round of mining after
+2016 is evidence for the same thing: that the checkpoints already committed remain anchored in a chain
+that is still extended and still re-validated.
+
+Halting instead would require the sibling projects to migrate to another anchor, and their existing
+epochs would stay bound to this chain's block hashes whatever happened next. That cost is real and it
+is not this laboratory's alone to pay, which is why the decision is recorded here rather than left to
+whoever runs the miner. The retarget experiment is unchanged: `bitcoin-findings/PREDICTION-first-retarget.md`
+states, in advance, that the first retarget will leave `nBits` at `0x1d00ffff`; the finding is published
+when height 2016 is reached, and the prediction is judged against the bytes either way.
+
+If this purpose ends — the sibling projects move, or stop — that is recorded here as a dated note before
+the mining stops, not after.
+
+---
+
 *Experimental laboratory research, in progress: what re-runnable methods find, and no conclusion beyond that. Not money — no premine, no sale, no value assigned, no token. Not financial advice. No warranty. [Rights, sourcing and corrections](https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md).*

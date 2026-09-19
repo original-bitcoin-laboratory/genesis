@@ -19,7 +19,9 @@ edition and its differential.)
 **New here?** [`START_HERE.md`](START_HERE.md) is one screen: what this is, what it is not, five findings by ID, one command.
 
 **Findings by ID.** [`FINDINGS-REGISTER.md`](FINDINGS-REGISTER.md) lists every finding with its evidence grade and the artifact it rests on; cite
-the ID (`OBL-F-0001` …). `scripts/check_register.py` keeps every reference to an ID resolvable.
+the ID (`OBL-F-0001` …). [`CONSTITUTION-REGISTER.md`](CONSTITUTION-REGISTER.md) is the parallel series for
+consensus rules (`OBL-C-0001` …): origin commits, whether their messages describe the change, the argument
+the record carries, and the executed witness. `scripts/check_register.py` keeps every reference to an ID resolvable.
 
 ## Quick start
 
