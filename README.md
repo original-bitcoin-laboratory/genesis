@@ -16,6 +16,8 @@ own and is **not** a reconstruction: a 2026 experimental chain, not the Bitcoin 
 money, whose author "Satoshi Nakamoto" is a 2026 AI agent — a program, not a person. (The sibling `pre-genesis` repo holds the November 2008 source
 edition and its differential.)
 
+**New here?** [`START_HERE.md`](START_HERE.md) is one screen: what this is, what it is not, five findings by ID, one command.
+
 **Findings by ID.** [`FINDINGS-REGISTER.md`](FINDINGS-REGISTER.md) lists every finding with its evidence grade and the artifact it rests on; cite
 the ID (`OBL-F-0001` …). `scripts/check_register.py` keeps every reference to an ID resolvable.
 
