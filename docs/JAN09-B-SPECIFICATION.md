@@ -1,21 +1,18 @@
-# JAN09-B — Satoshi's Bitcoin from the first surviving code to the last commit, specified on paper
+# JAN09-B — the constitution's executable expression, specified on paper
 
-**20 September 2026.** `JAN09-B` is the consensus design of Bitcoin as its author left it: the
-January 2009 release as this laboratory executes it, with every consensus rule the author installed
-between the earliest surviving code (the November 2008 pre-release) and the last commit the record
-carries under the author's name (`629e37dde`, 15 December 2010, "get external ip from irc"; the last
-consensus change is `97ee01ad8`, 12 December 2010, version 0.3.19), at the values the author left,
-and with the author's own recorded statements where a value was said to be temporary. It is a
-specification, not a chain: it is not mined, and by the decision recorded in
-`CONSTITUTION-REGISTER.md` the laboratory's post-quantum successor is its implementation, adding
-the one delta this specification does not contain, the signature scheme.
+**20 September 2026.** `JAN09-B` is the January 2009 design with the rules the record argues for
+installed, the rules the record does not argue for chosen deliberately and marked as chosen, and no
+consensus-critical third-party library in the validation path. It is a specification, not a chain:
+it is not mined, and by the decision recorded in `CONSTITUTION-REGISTER.md` ("Where a designed
+successor fits", 20 September 2026) the laboratory's post-quantum successor is its implementation,
+adding the one delta this specification does not contain, the signature scheme. Writing it is the
+test the direction document set for the constitution: whether the register is complete enough to
+construct from.
 
-The principle was set by the operator on 20 September 2026 and is the only one applied here: **of
-the author's own work, the best of it, at its last tuning.** Rules that entered after the last
-commit are not installed, whatever their merit, with one exception that §5 states and justifies.
-Every rule cites its constitution row (`OBL-C-nnnn`); every value is the value at the last commit;
-where the author said in the record that a value would change, the statement is quoted and the
-change is left to the implementation, marked.
+Every rule below cites its constitution row (`OBL-C-nnnn`) and takes its status from that row's
+`argument` field. Where the field reads `not-in-record`, the magnitude below is a choice, and the
+specification says so in the same line, so that a reader who disagrees with the choice can see that
+it is one. Nothing here claims that the chosen values are right; it claims that they are stated.
 
 Experimental laboratory research, in progress. Not money, not advice, no warranty (`RIGHTS.md`).
 
@@ -24,119 +21,83 @@ Experimental laboratory research, in progress. Not money, not advice, no warrant
 ## 1. The base: the January 2009 design, as executed
 
 The substrate is the released January 2009 client's consensus core as the laboratory has
-reconstructed and executed it: serialisation, transaction and block validation, Script, value
-accounting, reorganisation, the 2,016-block retarget with its fencepost (600.30 s fixed point,
-`OBL-F-0006`), coinbase maturity 100, median-time-past of eleven and the two-hour future bound, the
-merkle duplication on odd levels, the `CHECKMULTISIG` extra pop, and `SIGHASH_SINGLE` returning 1
-(the five era-authentic behaviours of `common/conformance/CONSENSUS_BEHAVIORS.md`, executed by the
-corpus of 317 vectors, `derivatives/vectors/`). The author changed none of those five before the
-last commit; the specification keeps them as the author left them.
+reconstructed and executed it: serialisation, transaction and block validation, the full Script
+vocabulary with nothing disabled beyond what v0.1 itself disabled, value accounting, reorganisation,
+the 2,016-block retarget with its fencepost (600.30 s fixed point, `OBL-F-0006`), coinbase maturity
+100, median-time-past of eleven and the two-hour future bound, the merkle duplication on odd levels,
+the `CHECKMULTISIG` extra pop, and `SIGHASH_SINGLE` returning 1 (all five era-authentic behaviours of
+`common/conformance/CONSENSUS_BEHAVIORS.md`, executed by the corpus of 317 vectors,
+`derivatives/vectors/`). The 32 MiB `MAX_SIZE` ceiling on a block's serialised size and transaction
+count is inherited (`OBL-C-0006`, `JAN09-SOURCE`).
 
-The November 2008 pre-release is the earliest surviving code and is the base's own ancestor: its
-`CheckBlock` already tests the 32 MiB `MAX_SIZE` (`pre-genesis/extracted/main.cpp:1164`), its
-monetary parameters differ from January's at all five values (`Executing the Earliest Bitcoin`, §5),
-and its genesis carries no calendar anchor (`OBL-F-0005`). The January values supersede the November
-ones by the author's own hand; nothing from November is installed that January removed.
+Two of the era-authentic behaviours are consequences of defects, and the specification keeps them,
+because the specification is the January design and a design that fixes them is a different one:
+the `CHECKMULTISIG` extra pop and `SIGHASH_SINGLE`'s constant. Their status is recorded, not
+silently repaired. A third, the retarget fencepost, is kept for the same reason. The value-overflow
+defect is not kept; §2 installs its rule.
 
-## 2. The rules the author installed, at the values of the last commit
+## 2. Installed: rules whose argument is in the record (`argument: cited`)
 
-In the order they entered the record. "Last value" is the value in the tree at `629e37dde`.
-
-| rule | row | entered | last value | the author's recorded statement, if any |
-|---|---|---|---|---|
-| time-based `nLockTime` | `OBL-C-0007` | `dd519206a`, 29 Oct 2009 | locks below 500,000,000 are heights, at or above are Unix times | source comment: "Time based nLockTime implemented in 0.1.6" |
-| best chain by cumulative work | `OBL-C-0008` | `3b7cd5d89`, 25 Jul 2010 | `bnChainWork` summed from each block's target; height no longer selects | none in the commit |
-| script element, script size, stack depth, numeric operand caps | `OBL-C-0002` | `757f0769d`, 29 Jul 2010; tightened `4bd188c43`, 15 Aug 2010 | 520 bytes, 10,000 bytes, 1,000 elements, 4 bytes | none in the commits |
-| `MoneyRange` and the output-sum check | `OBL-C-0003` | `d4c6b90ca`, 15 Aug 2010 | every output in `[0, 21,000,000 × 10^8]`, running sum in range | commit message: "fix for block 74638 overflow output transaction" |
-| fifteen opcodes disabled | `OBL-C-0005` | `4bd188c43`, 15 Aug 2010 | `OP_CAT`, `OP_SUBSTR`, `OP_LEFT`, `OP_RIGHT`, `OP_INVERT`, `OP_AND`, `OP_OR`, `OP_XOR`, `OP_2MUL`, `OP_2DIV`, `OP_MUL`, `OP_DIV`, `OP_MOD`, `OP_LSHIFT`, `OP_RSHIFT` fail the script | none in the commit ("misc changes") |
-| transaction size | `OBL-C-0010` | `401926283`, 25 Aug 2010 (32 MiB); `3df62878c`, 13 Sep 2010 (1 MB) | a transaction's serialised size at most `MAX_BLOCK_SIZE` | none in the commits |
-| block size | `OBL-C-0001` | `a30b56ebe`, 15 Jul 2010 (constant); `f1e1fb4bd`, 7 Sep 2010 (rule from 79,401); `172f00602`, 19 Sep 2010 (unconditional in `CheckBlock`) | `MAX_BLOCK_SIZE = 1,000,000` on serialised size and transaction count | 4 Oct 2010: "It can be phased in, like: `if (blocknumber > 115000) maxblocksize = largerlimit`" (see §4) |
-| signature operations per block | `OBL-C-0004` | `f1e1fb4bd`, 7 Sep 2010; gate removed `172f00602` | `MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE / 50` = 20,000 | none in the commits |
-| the 32 MiB `MAX_SIZE` | `OBL-C-0006` | the release; demoted `172f00602`, 19 Sep 2010 | bounds network messages and serialised containers, not block validity | none |
-
-Two of the author's changes in the window are not validity rules and are recorded here so that the
-list is the whole of the author's consensus-adjacent work, not a selection:
-
-- **the alert system** (`OBL-C-0009`, `401926283`, 25 Aug 2010): a network message verified by one
-  key. Not installed: the specification has no rule that depends on a key held by a person, and the
-  system was retired by its own maintainers with the key published. Its exclusion is the one place
-  this specification departs from the author's last tree on grounds other than "after the last
-  commit", and it is stated as such.
-- **`IsStandard`** (`OBL-C-0011`, `a206a2398`, 7 Dec 2010, in the author's tree by another hand)
-  and the DoS limits of `97ee01ad8` (12 Dec 2010): node policy, not validity. A specification of
-  block validity has no relay rules; an implementation may carry them.
-
-## 3. What the author did not install, and is therefore not here
-
-| rule | row | entered | status |
+| rule | row | what the record argues | installed as |
 |---|---|---|---|
-| `CScriptNum` replacing `CBigNum` | `OBL-C-0012` | 2014 | not installed as a rule: the 4-byte operand cap is the author's (row `OBL-C-0002`) and is in; the type that holds it is the implementation's business under §5 |
-| the Berkeley DB lock rule and its written stand-in | `OBL-C-0013` | 2013 | not installed: after the last commit, and expired on 15 May 2013 |
-| BIP 66 strict DER as a rule | `OBL-C-0014` | 2015 | after the last commit; see §5 for the one thing the specification must say about signature encoding |
-| every rule after 2015 | — | — | not in the register, not here |
+| `MoneyRange` and the output-sum overflow check | `OBL-C-0003` | block 74638, 15 August 2010: the commit message names the failure | as in `d4c6b90ca`: every output in `[0, MAX_MONEY]` and the running sum in range; `MAX_MONEY = 21,000,000 × 10^8` |
+| strict DER signature encoding | `OBL-C-0014` | BIP 66 cites OpenSSL 1.0.0p and 1.0.1k rejecting encodings earlier releases accepted | `IsValidSignatureEncoding` as in BIP 66, from genesis, with no changeover (`derivatives/emergent/der_strictness.py`) |
+| script arithmetic without a third-party bignum | `OBL-C-0012` | PR 3965 states the reason: remove the library from the validation path | numeric operands of at most four bytes, in a type of the specification's own |
 
-## 4. The one value the author said would change
+The DER rule is installed for the reason its own record gives, and for a second reason the
+constitution makes explicit: a rule that lived in a library's parser was a rule nobody wrote
+(`OBL-C-0014`, kind `emergent`), and this specification has no such rules by construction (§5).
 
-The block-size limit is the only rule in §2 with a recorded statement by the author that its value
-was provisional. On 3 October 2010, to a patch raising it: "Don't use this patch, it'll make you
-incompatible with the network, to your own detriment. We can phase in a change later if we get
-closer to needing it." On 4 October 2010: "It can be phased in, like: `if (blocknumber > 115000)
-maxblocksize = largerlimit`. It can start being in versions way ahead, so by the time it reaches
-that block number and goes into effect, the older versions that don't have it are already obsolete."
-(Nakamoto Institute mirror, Bitcointalk posts 478 and 485.)
+## 3. Chosen: rules whose magnitude the record does not argue for (`argument: not-in-record`)
 
-The specification therefore installs the author's last value, 1,000,000 bytes, and the author's
-mechanism for changing it, a height-scheduled increase announced in advance; the height and the
-larger limit are the implementation's to choose and to state. No other value in §2 carries such a
-statement, and none is marked provisional here.
+Each is installed because the January design without it has an executed failure mode the laboratory
+has exhibited; each magnitude is a choice, and is marked as one.
 
-A note on the 32 MiB figure, because it is often remembered as the author's "real" limit: the
-record contains no statement by the author about it. It entered as the ceiling in `CheckBlock` in
-the November 2008 code and the January 2009 release, and the author replaced it with the 1 MB test
-on 19 September 2010 (`172f00602`), leaving the constant as a bound on network messages. The
-author's own trajectory ran from 32 MiB to 1 MB with a stated plan to raise the latter.
+| rule | row | the failure the January design has without it | chosen value | why this value, stated as a choice |
+|---|---|---|---|---|
+| block validity size limit | `OBL-C-0001` | none exhibited below 32 MiB; the origin's own cap holds | **32 MiB, the inherited `MAX_SIZE`; no 1 MB rule** | the record argues for no magnitude; the specification keeps the origin's and installs no second one |
+| script element, script size, stack depth, numeric operand caps | `OBL-C-0002` | the January interpreter runs a 600-byte element and a 1,500-deep stack; unbounded resource use per script (`OBL-F-0003`) | **520 bytes, 10,000 bytes, 1,000 elements, 4 bytes** | the 2010 values, taken as they are because no argued alternative exists in the record; the choice is the 2010 committer's, adopted here and marked |
+| signature-operation count per block | `OBL-C-0004` | unbounded signature checks per block | **`MAX_SIZE / 50`**, the 2010 ratio applied to the inherited ceiling | the 2010 rule's ratio, not its absolute |
+| transaction size | `OBL-C-0010` | a transaction may fill the block | **no separate rule: the block ceiling bounds it** | the 2010 rule's first step (32 MiB per transaction, `401926283`) is the block ceiling restated; its second step is the 1 MB choice this specification does not make |
+| disabled opcodes | `OBL-C-0005` | the record names no failure; the 2010 commit's message is "misc changes" | **none disabled beyond v0.1's own `OP_NOTEQUAL`** | the specification keeps the January vocabulary because the record argues for removing none of it; a reader who wants the 2010 set has the row |
+| time-based `nLockTime` | `OBL-C-0007` | a lock cannot name a date | **the 500,000,000 split, as in `dd519206a`** | the message describes the change; the magnitude is the 2009 committer's, adopted and marked |
+| chain selection by cumulative work | `OBL-C-0008` | a branch with more blocks and less work wins (`OBL-F-0001`) | **cumulative work, as in `3b7cd5d89`** | the record does not argue for it; the laboratory installs it because the executed failure is exhibited and the whitepaper's own words are "longest proof-of-work chain" |
 
-## 5. The laboratory's one addition: no consensus-critical third-party library
+## 4. Excluded: rules that are not consensus, or that expired
 
-This is not the author's rule. The register's two `emergent` rows (`OBL-C-0013`, `OBL-C-0014`) are
-rules that existed because a library's behaviour decided validity, and the second of them lived in
-the author's own client: what OpenSSL 0.9.8 accepted as a signature encoding was what the chain
-accepted, and nobody had written it down. A specification cannot leave a validity decision to a
-library it does not state, so this specification requires that every validity decision be made by
-code the specification states, with a library used only where its output is checked against that
-statement.
+| rule | row | status here | reason |
+|---|---|---|---|
+| `IsStandard` | `OBL-C-0011` | not part of the specification | policy, node-local; a specification of block validity has no relay rules |
+| the alert system | `OBL-C-0009` | not part of the specification | a network message, not a validity rule; retired by its own maintainers with the key published |
+| the Berkeley DB lock rule and its written stand-in | `OBL-C-0013` | not part of the specification | the written rule expired on 15 May 2013; the emergent rule is excluded by §5 |
 
-The one consequence for §2: signature encoding must be stated. The specification states it as the
-encoding the author's own client produced when it signed, which is strict DER with a trailing
-sighash byte; that is the same set BIP 66 later wrote down, and the specification takes the
-statement from the author's signer, not from the 2015 rule. `derivatives/emergent/der_strictness.py`
-is the executable form. Whether OpenSSL 0.9.8 also accepted looser encodings is the open witness of
-`OBL-C-0014` and does not change what the author's client emitted.
+## 5. The construction rule: no consensus-critical third-party library
 
-The laboratory's own reconstruction does not yet satisfy this rule in full: its release build links
-OpenSSL 1.0.2u for signatures (`OBL-F-0010`). `JAN09-B` states the rule; its implementation is where
-the rule is met.
+The two emergent rows (`OBL-C-0013`, `OBL-C-0014`) are rules that existed because a library's
+behaviour decided validity. The specification forbids the class: every validity decision is made by
+code the specification states, and a library may be used only where its output is checked against
+that statement (a hash function whose test vectors are part of the corpus, for instance). The
+laboratory's own reconstruction does not yet satisfy this rule in full: its release build links
+OpenSSL 1.0.2u for signatures, and the corpus records what that library decides (`OBL-F-0010`).
+`JAN09-B` states the rule; its implementation is where the rule is met.
 
 ## 6. What this specification leaves to its implementation
 
-- **The signature scheme.** Written for secp256k1 ECDSA, as the author's client is; the
-  implementation replaces the scheme and inherits every other line. `PQ-SIGNATURE-COST.md` and
-  `PQ-SETTLEMENT-CAPACITY.md` are the costs of that replacement.
-- **The block-size schedule** of §4: the height and the larger limit.
+- **The signature scheme.** This specification is written for secp256k1 ECDSA, as the January design
+  is; its implementation replaces the scheme and inherits every other line. `PQ-SIGNATURE-COST.md`
+  and `PQ-SETTLEMENT-CAPACITY.md` are the costs of that replacement.
 - **The chain's identity.** Genesis, network magic, port and the coinbase's calendar anchor are the
-  implementation's; no two of the laboratory's chains share a genesis, and each is pinned by digest
-  in its own repository.
-- **Policy.** Relay, standardness and DoS limits, as the author's tree carried them or otherwise.
+  implementation's, and are not assigned here; no two of the laboratory's chains share a genesis,
+  and each is pinned by digest in its own repository.
 - **The test of completeness.** If a rule the implementation needs is not on this page and not in
   the register, the register is incomplete and the rule is entered there first, with its origin, its
   argument and its witness, before it is built.
 
 ## 7. What is open
 
-The witnesses the register marks `open` are open here too: the transaction-size narrowing
-(`OBL-C-0010`), the acceptance side of signature encoding on the 2009 binary (`OBL-C-0014`), and the
-numeric-operand cap as an executed case (`OBL-C-0002`). The last commit is taken from GitHub's copy
-of the repository on 20 September 2026, on the lineage that carries the Subversion trailer; the
-record can be rewritten by its owners, so the date is stated with the reading.
+The three witnesses the register marks `open` are open here too: the transaction-size narrowing
+(`OBL-C-0010`), the acceptance side of DER strictness on the 2009 binary (`OBL-C-0014`), and the
+numeric-operand cap as an executed case (`OBL-C-0002`, `OBL-C-0012`). Rules Bitcoin acquired after
+2015 are not in the register and so not in this specification.
 
 **Corrections to this document are published, dated, and not made silently.**
