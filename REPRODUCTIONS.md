@@ -54,9 +54,13 @@ Experimental laboratory research, in progress. Not money, not advice, no warrant
 
 ## The files
 
-`reproductions/2026-09-20-clean-room-ai-sessions/` holds the two clean-room reports and the two adversarial
-reviews as received (`REPORT-run1.md`, `REPORT-run2.md`, `REVIEW-adversarial-1.md`, `REVIEW-adversarial-2.md`; the
-truncated first receipt of review 1 is kept as `REVIEW-adversarial-partial.md`) and the validators the clean-room
-sessions wrote (`run1-cleanroom_jan09b_validator.py`; `run2/jan09b.py`, `run_corpus.py`, `selftest.py`), with their
-digests in `SHA256SUMS`. They are third-party text and code, kept as evidence of the attempt; nothing in this
-repository imports them.
+`reproductions/2026-09-20-clean-room-ai-sessions/` holds the two clean-room reports as received
+(`REPORT-run1.md`, `REPORT-run2.md`) and the two adversarial reviews (`REVIEW-adversarial-1.md`,
+`REVIEW-adversarial-2.md`; the truncated first receipt of review 1 is kept as `REVIEW-adversarial-partial.md`),
+with the validators the clean-room sessions wrote (`run1-cleanroom_jan09b_validator.py`; `run2/jan09b.py`,
+`run_corpus.py`, `selftest.py`) and the pair census the reviews prompted (`docs/bitcoin-git-history-pairs.tsv`),
+digests in `SHA256SUMS`. The review files carry each session's findings tables and its closing objections as
+received and unedited, since those are the record my summary rows above are audited against; each session's
+method-and-scope preamble, and review 2's paragraph enumerating what it verified as already correct, are held in
+the laboratory's workspace and not reproduced here. They are third-party text and code, kept as evidence of the
+attempt; nothing in this repository imports them.

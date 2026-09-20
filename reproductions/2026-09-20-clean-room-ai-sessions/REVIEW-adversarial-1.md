@@ -1,16 +1,15 @@
 # Adversarial review 1 — report as received, 20 September 2026
 
-*Recorded verbatim from the session's output. The session was an AI session commissioned by the
-operator, working from the adversarial-review brief in `../../REPRODUCTIONS.md`, with no access to
-this laboratory's workspace. Its runtime could not reach GitHub, so it audited the test sources
-rather than executing them, and says so. An earlier, truncated receipt of this same report (two
-table rows) was recorded as `REVIEW-adversarial-partial.md`; this file supersedes it. Nothing here
-has been edited by the laboratory; what was corrected from it, and what was not and why, is in
-`../../REPRODUCTIONS.md`, dated.*
+*The session's findings and conclusions, as received. The session was an AI session commissioned by
+the operator, working from the adversarial-review brief in `../../REPRODUCTIONS.md`, with no access to
+this laboratory's workspace; its runtime could not reach GitHub, so it audited the test sources rather
+than executing them, and its findings table is a source-level audit, not a report of runs. Its
+scope-and-limitation preamble is held locally and not reproduced here; the findings and both closing
+paragraphs below are unedited. An earlier, truncated receipt of two table rows is
+`REVIEW-adversarial-partial.md`; this file supersedes it. What was corrected from each finding, and
+what was not and why, is in `../../REPRODUCTIONS.md`, dated.*
 
 ---
-
-**Scope and execution limitation.** I audited the public register rows and the cited public artifacts, checked the cited Bitcoin commits against the public `bitcoin/bitcoin` records available to me, and inspected the derivative test logic. I could not honestly claim to have *executed* the laboratory's repository tests in this runtime: the execution environment could not establish a network connection to `github.com`. Accordingly, the derivative section below is a source-level audit of the tests and their assertions, not a fabricated report of successful runs.
 
 | file · line | the claim | the defect | severity | what would fix it |
 | --- | --- | --- | --- | --- |

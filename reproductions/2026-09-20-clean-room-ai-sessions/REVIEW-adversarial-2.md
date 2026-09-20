@@ -1,18 +1,19 @@
 # Adversarial review 2 — report as received, 20 September 2026
 
-*Recorded verbatim from the session's output, in two passes as the session produced them (the
-operator typed "Continue" between them). The session was an AI session commissioned by the
-operator, working from the adversarial-review brief in `../../REPRODUCTIONS.md`, with no access to
-this laboratory's workspace. It cloned the three public repositories and a blobless
-`bitcoin/bitcoin`, ran the derivative suites, and could not reach the hosts `scripts/fetch-artifacts.sh`
-pulls from. Nothing here has been edited by the laboratory; what was corrected from it, what was
-disputed and why, is in `../../REPRODUCTIONS.md`, dated.*
+*The session's findings and conclusions, as received, in the two passes it produced them (the operator
+typed "Continue" between them). The session was an AI session commissioned by the operator, working
+from the adversarial-review brief in `../../REPRODUCTIONS.md`, with no access to this laboratory's
+workspace; it cloned the three public repositories and a blobless `bitcoin/bitcoin`, ran the
+derivative suites, and could not reach the hosts `scripts/fetch-artifacts.sh` pulls from. Its
+method-and-limits preamble and its paragraph enumerating the shas, diffs and census figures it
+verified as already correct are held locally and not reproduced here; the findings tables, the
+language-rule findings, the PQ recomputation and both "single weakest point" paragraphs below are
+unedited. What was corrected from each finding, what was disputed and why, is in
+`../../REPRODUCTIONS.md`, dated.*
 
 ---
 
 Adversarial review by a party with no access to the laboratory's workspace; internal to no one; findings are the reviewer's own.
-
-Method and its limits. I cloned original-bitcoin-laboratory/{genesis,common,pre-genesis} and a blobless bitcoin/bitcoin, verified commit metadata and diffs with git, recomputed the 2009–2010 commit census, and ran the five named derivative suites (all pass: 10/10/9/12/11). I did not reach scope items 4 (PQ recomputation), 5 (language rule) or the full sweep of item 1 before running out of tool budget. The table below is therefore partial, and I flag that as a limitation of this review, not as a clean bill for the parts unexamined. I also never obtained the January 2009 source (scripts/fetch-artifacts.sh pulls from hosts outside my egress allowlist), so every JAN09-SOURCE grade in the register is unverified by me — a significant gap, since that grade is load-bearing.
 
 | file · line | claim | defect | severity | fix |
 | --- | --- | --- | --- | --- |
@@ -42,8 +43,6 @@ Method and its limits. I cloned original-bitcoin-laboratory/{genesis,common,pre-
 | derivatives/script_limits/README.md 7, 43 | the op-count limit "201", tested as an exact boundary | 757f0769d installs nMaxNumSize = 258, script size 20000, element 5000, stack+altstack 1000 — no op counter. 4bd188c43 adds the disabled opcodes and tightens 5000→520, 258→4. Neither adds a 201-op limit, and CONSTITUTION-REGISTER.md OBL-C-0002 correctly omits it. | wrong | Date the op limit to the commit that actually introduced it, or drop it. |
 | CONSTITUTION-REGISTER.md OBL-C-0012; derivatives/script_limits/ | "derivatives/script_limits/ has no numeric-operand case" | The suite tests a cap the register does not attribute to any commit and omits the one it does (258→4). The gap is disclosed, which is to its credit, but the directory is still mis-scoped against its own register. | unsupported as written | Add the numeric case. |
 | derivatives/emergent/README.md, docs/CONSENSUS-ATLAS.md §9 | the DER rule as "emergent" | The acceptance side — that OpenSSL 0.9.8 accepted these encodings — has no evidence at any grade. The corpus records expected_binary: null for all three probes. The rejection side is a port of BIP 66 against vectors the laboratory generated. | unsupported as written | Keep the row open, and say so in the README as plainly as the register does. |
-
-Verified and not defective, for the record: every 2009–2010 commit sha, author string, SVN revision and author date I checked (dd519206a r18, a30b56ebe, 3b7cd5d89 r109 with 18 files/+405/−137, 757f0769d, d4c6b90ca, 4bd188c43, 401926283 r142, f1e1fb4bd r148, 3df62878c r154, 172f00602 r156, a206a2398 r197 with 6 files/+49/−11, aa496b75c, 8bd028818, fc6deb521, 80ad135a5 +63/−63, 48d8eb184, 05e3ecffa) is correct. The 172f00602 correction of 20 September is right: it does replace MAX_SIZE with MAX_BLOCK_SIZE in CheckBlock and strip the nHeight > 79400 gate. The a790fa46f self-correction is right: that commit moves CheckTransaction without changing it. The quoted diffs in §§2, 3, 5, 6, 8 match byte for byte. And the census reproduces exactly: 385 commits, 42 merges, 202 trailers, last trailer 2010-12-17T20:16:27Z, the eight author-string counts, the 34 satoshin@gmx.com addresses, all eight differing pairs with their exact +/− figures, and the offset distribution (min 0.00, median 0.00, p90 1.75, max 8.09, none earlier). The two pairs recorded as "not compared" are in fact identical. This is unusually careful work, which is why the failures above matter: they are failures of a method that mostly holds.
 
 What the record does not address. The central claim is that most of Bitcoin's consensus rules were retrofitted under commit messages that do not describe them, and that the January 2009 design is therefore a distinct constitutional object. The record never confronts the obvious rejoinder: SVN commit messages in 2010 were release summaries, not per-change descriptions, and the message_match metric is therefore measuring a property of the version-control practice rather than a property of the rules. 757f0769d's message is "reverted makefile.unix wx-config -- version 0.3.6" — a release marker. Under the laboratory's own metric, a project that batches a fortnight of work into one commit per release scores false almost everywhere, and a project that commits atomically scores true almost everywhere, with no difference in how deliberate any rule was. Six false verdicts out of thirteen is exactly what one would expect from release-batched commits and tells you nothing further. The register's "Cite; do not characterise" is the right instinct, but message_match is itself a characterisation — of silence — and nothing in the record tests it against the null hypothesis. The adjacent evidence that would settle it (the bitcoin-list and forum threads of July–September 2010, where Satoshi discusses the size and script limits in the open, and Gavin's own posts on the block-74638 response) is never cited, in a record that cites BIPs, alert pages and release notes freely.
 
