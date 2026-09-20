@@ -36,5 +36,14 @@ Expected: source hashes OK, `sha.cpp` compiles, SHA-256 vectors **ALL PASS**, an
 `serialize.h` / `bignum.h` **BLOCK** at their documented lines. The `build/` output dir is
 git-ignored. This module reads only the read-only `extracted/` tree; it modifies nothing.
 
-`EXPECTED_SHA256` is the digest of the Bitcoin (2026) `bitcoin.exe` that `.github/workflows/reproducible.yml`
-rebuilds from `derivatives/bitcoin/src`; it is not a 2009 digest.
+## Three digests, and which one CI enforces
+
+| binary | sha256 | what it is |
+|---|---|---|
+| the released 2009 `bitcoin.exe` | `fbcac071…` (full digest in `provenance/`) | the unmodified historical binary, the `JAN09-EXECUTED` oracle; not built here |
+| the Bitcoin (2026) client | `c3f15fc5…` (`EXPECTED_SHA256`) | the 2009 source with the nine chain-separation substitutions (`derivatives/bitcoin/src`), OpenSSL 1.0.2u; **this is the digest `.github/workflows/reproducible.yml` enforces** |
+| the unmodified-source rebuild | `2bbc6cb83575a12e8ae66ed0c57b84d369573ca708b8b5aa68db08c7f679fc82` | the output of `full_build_wsl.sh` on 20 September 2026: every original `.cpp` against the real `headers.h`, period libraries cross-built, WSL Ubuntu 24.04 + mingw i686 gcc 13, `BUILD=debug`, `SOURCE_DATE_EPOCH=1785781375`; 15,529,604 bytes. Toolchain-dependent, so it is a record of one build, not a digest CI enforces or a byte-exact match to the 2009 binary |
+
+An outside reader pointed out (20 September 2026) that this directory's prose claimed an unmodified rebuild
+while its `EXPECTED_SHA256` pinned the patched client and the rebuild had no published digest; the table
+above is the correction.

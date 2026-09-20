@@ -555,7 +555,7 @@ class Node:
                 self._log(f"block {h[::-1].hex()[:12]} failed full validation")
                 return 5
             self.mempool.reconcile(self.state.utxo, self.state.height)   # drop mined/conflicting txs
-            if self.height % 100 == 0 or not self.chain.orphans and self._caught_up_hint():
+            if self.height % 100 == 0:                 # one copy-able line per hundred blocks
                 self._log(f"synced to height {self.height}, tip {self.tip[::-1].hex()}")
             await self._announce([(MSG_BLOCK, h)], exclude=origin)
             return 0
@@ -565,12 +565,6 @@ class Node:
                              locator_payload(self.state.get_locator(), root))
             return 0
         return 5 if status == "invalid" else 0
-
-    def _caught_up_hint(self) -> bool:
-        """True when this accepted block extended our tip and no further blocks are queued from
-        the peer's inv -- the point at which an operator wants one line to copy. Cheap and
-        conservative: a false negative only delays the line to the next multiple of 100."""
-        return not getattr(self.chain, 'pending_inv', None)
 
     # -- mining ----------------------------------------------------------------
     async def _mine_loop(self):

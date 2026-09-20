@@ -70,6 +70,9 @@ The pages that tell you to `docker run` the node point at `ghcr.io/original-bitc
 none for anyone to steal:
 
 ```bash
+# by digest — the reference the join commands print (a tag can be moved; the digest is the bytes):
+cosign verify ghcr.io/original-bitcoin-laboratory/xnode@sha256:56e761eea55fa935a55e2c96db8314e3c627cb9db36a5d4da2196cb7dd8811ea   --certificate-identity-regexp '^https://github.com/original-bitcoin-laboratory/genesis/'   --certificate-oidc-issuer https://token.actions.githubusercontent.com
+# or by tag:
 cosign verify ghcr.io/original-bitcoin-laboratory/xnode:Bitcoin-v0.1.5   --certificate-identity-regexp '^https://github.com/original-bitcoin-laboratory/genesis/'   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 

@@ -77,7 +77,7 @@ impl Mempool {
         if tx.vin.is_empty() || tx.vout.is_empty() {
             return Err("no inputs or outputs");
         }
-        let mut value_in: i64 = 0;
+        let mut value_in: i128 = 0; // exact sums, as chainstate.rs
         let mut seen = HashSet::new();
         for (i, vin) in tx.vin.iter().enumerate() {
             let key = (vin.prevhash, vin.n);
@@ -100,16 +100,19 @@ impl Mempool {
             if !verify_spend(&vin.script, &coin.spk, &tx, i) {
                 return Err("input script does not satisfy output");
             }
-            value_in += coin.value;
+            value_in += coin.value as i128;
         }
         if tx.vout.iter().any(|o| o.value < 0) {
             return Err("negative output");
         }
-        let value_out: i64 = tx.vout.iter().map(|o| o.value).sum();
+        let value_out: i128 = tx.vout.iter().map(|o| o.value as i128).sum();
         if value_in < value_out {
             return Err("inflation (inputs < outputs)");
         }
-        let fee = value_in - value_out;
+        let fee = match i64::try_from(value_in - value_out) {
+            Ok(f) => f,
+            Err(_) => return Err("inflation (inputs < outputs)"),
+        };
         for vin in &tx.vin {
             self.spent.insert((vin.prevhash, vin.n), txid);
         }

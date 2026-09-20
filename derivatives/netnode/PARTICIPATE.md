@@ -35,8 +35,21 @@ python -m netnode --chain jan09x --datadir ./data \
 ```
 
 (For `nov08x` use `--connect seed.bitcoin-lab.org:18008`. The RPC is **loopback‑only and unauthenticated** —
-do not expose it. All nodes on one network must share the same `--min-difficulty` floor; ask the operator or
-match the seed's published value.)
+do not expose it. All nodes on one network must share the same `--min-difficulty` floor. **The seed runs
+with no floor set** (`deploy/xnode.service`), so leave the flag unset to match it; whether to set one is an
+open operator item in `docs/AUDIT_SCOPE.md`, and a change is announced on the status page before it is made.)
+
+Outbound TCP to 18008/18009 has to be open; sandboxes, CI runners and office networks tend to block it, and
+the symptom is a silent timeout. The node logs a line every hundred blocks, and
+`python -m netnode --chain jan09x --datadir ./data --print-tip` prints the height and tip it reached.
+
+The same node as a container, pinned to the `Bitcoin-v0.1.5` release image by digest (a tag can move; the
+digest is the bytes — `docs/VERIFY_RELEASES.md` has the `cosign verify` line):
+
+```bash
+docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode@sha256:56e761eea55fa935a55e2c96db8314e3c627cb9db36a5d4da2196cb7dd8811ea
+# to accept inbound peers as well: add  -p 18009:18009  and  --listen 0.0.0.0:18009
+```
 
 ---
 

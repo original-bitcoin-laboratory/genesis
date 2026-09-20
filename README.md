@@ -73,14 +73,19 @@ and machine‑verified in [`derivatives/profiles/`](derivatives/profiles/): each
 checked against the source opcode inventory and the live engine, so the distinction cannot silently
 drift.
 
-**Requirements.** Python 3.10+ with `cryptography` and `pytest` (the faithful crypto + test runner); `bitcoinx` is optional and
-only enables the ~7× `libsecp256k1` verifier. The Rust node needs a stable Rust toolchain (`cargo`);
-the optional C++ port differentials need `g++`. Install the pinned Python environment in one step with
-`python -m venv .venv && pip install -e ".[test]"` (see `pyproject.toml`).
+**Requirements.** Python 3.10+ with `cryptography` and `pytest` (the faithful crypto + test runner). The
+`refs` extra installs the two reference implementations the descendant matrix is executed against
+(`python-bitcoinlib`, `bitcoinx`; the latter also enables the ~7× `libsecp256k1` verifier); without them
+the reproducer's artifact step finds the regenerated matrix differs from the committed one and **fails**,
+which is the honest result (an earlier reproducer rewrote the files and reported a pass; an outside run
+found it, 20 September 2026). The Rust node needs a stable Rust toolchain (`cargo`); the optional C++ port
+differentials need `g++` and the OpenSSL headers. Install the pinned Python environment in one step with
+`python -m venv .venv && pip install -e ".[test,refs]"` (see `pyproject.toml`).
 
 ```bash
-python scripts/reproduce.py        # every Python suite + regenerated artifacts (add --rust for the Rust node)
-python scripts/verify_genesis.py   # both experimental genesis blocks re-derive from source
+python scripts/reproduce.py                    # every Python suite + regenerated artifacts compared to the committed bytes
+                                               #   (add --rust for the Rust node, --cpp for the C++/OpenSSL port, --strict to fail on skips)
+python scripts/verify_genesis.py --historical  # Bitcoin's 3 January 2009 genesis, in pure Python, plus the two laboratory blocks
 ```
 
 > **Run the suites through `reproduce.py`, not a bare `pytest` from the repository root.** Each
@@ -133,7 +138,13 @@ git clone https://github.com/original-bitcoin-laboratory/genesis
 cd genesis/derivatives
 python -m netnode --chain jan09x --datadir ./data-jan09 --connect seed.bitcoin-lab.org:18009   # JAN09-X (Jan 2009 edition)
 python -m netnode --chain nov08x --datadir ./data-nov08 --connect seed.bitcoin-lab.org:18008   # Nov 2008
+python -m netnode --chain jan09x --datadir ./data-jan09 --print-tip                            # the height and tip your node reached
 ```
+
+Outbound TCP to 18008/18009 has to be open (sandboxes and office networks tend to block it; the symptom
+is a silent timeout). The seed runs with no `--min-difficulty` floor, so leave the flag unset to match it
+(`derivatives/netnode/PARTICIPATE.md`; the floor is an open item in `docs/AUDIT_SCOPE.md`). The anchor's own
+tip is published as plain JSON on this repository's `status` branch.
 
 A third chain lives here too, and is **not** one of the reconstructions: **Bitcoin**
 ([`derivatives/bitcoin/`](derivatives/bitcoin/)) — its own genesis, its own network, its own signed

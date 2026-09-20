@@ -414,7 +414,9 @@ pub fn sum_outputs(tx: &Tx) -> i64 {
 /// The chain's coinbase‑value rule: NOV08 requires `claimed == subsidy + fees`; JAN09 allows
 /// `claimed <= subsidy + fees`. (Mirrors `consensus.Rules.coinbase_ok`.)
 pub fn check_coinbase_value(claimed: i64, subsidy: i64, fees: i64, strict: bool) -> bool {
-    let allowed = subsidy + fees;
+    // `subsidy + fees` in i128 so the comparison is exact whatever the operands.
+    let allowed = subsidy as i128 + fees as i128;
+    let claimed = claimed as i128;
     if strict {
         claimed == allowed
     } else {

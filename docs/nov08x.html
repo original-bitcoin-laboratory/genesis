@@ -179,8 +179,8 @@
       <dt>status</dt><dd id="lv-up">&mdash;</dd>
       <dt></dt><dd id="lv-when" style="opacity:.7">&mdash;</dd>
     </dl>
-    <pre># join it
-docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode \
+    <pre># join it (the Bitcoin-v0.1.5 release image, pinned by digest; cosign line in docs/VERIFY_RELEASES.md)
+docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode@sha256:56e761eea55fa935a55e2c96db8314e3c627cb9db36a5d4da2196cb7dd8811ea \
     --chain nov08x --datadir /data --connect seed.bitcoin-lab.org:18008
 
 # or from source

@@ -61,7 +61,7 @@ hashing, sighash, and value rules are pinned down.
    January genesis is witnessed only by the unmodified 2009 binary, not by this lab's code; `scripts/reproduce.py` runs the whole lab (every step must pass; the count is printed). No
    node required, no way to be misled. This is the part that lasts.
 2. **Run a node** — one command with the prebuilt image
-   (`docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode`), or from source
+   (`docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode@sha256:56e761eea55fa935a55e2c96db8314e3c627cb9db36a5d4da2196cb7dd8811ea`), or from source
    via [`../derivatives/netnode/RUN.md`](../derivatives/netnode/RUN.md) and the Docker/systemd
    templates in [`../derivatives/netnode/deploy/`](../derivatives/netnode/deploy/). Two people on two
    machines can sync a chain over the internet.
@@ -90,10 +90,10 @@ All three experimental, all **NOT money**. Join in **one command** with the preb
 run from source:
 
 ```bash
-# Docker — one command, no setup (JAN09-X):
-docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode
+# Docker — one command, no setup (JAN09-X); the Bitcoin-v0.1.5 release image pinned by digest, see VERIFY_RELEASES.md:
+docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode@sha256:56e761eea55fa935a55e2c96db8314e3c627cb9db36a5d4da2196cb7dd8811ea
 # NOV08-X (its own genesis + proof-of-work):
-docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode \
+docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode@sha256:56e761eea55fa935a55e2c96db8314e3c627cb9db36a5d4da2196cb7dd8811ea \
     --chain nov08x --datadir /data --connect seed.bitcoin-lab.org:18008
 
 # or from source (needs Python 3 + cryptography):

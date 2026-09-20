@@ -39,7 +39,11 @@ pub(crate) fn apply_txs(
     let txs = parse_block_txs(raw);
     let mut created: Vec<Outpoint> = Vec::new();
     let mut spent_prior: Vec<(Outpoint, Coin)> = Vec::new();
-    let mut fees: i64 = 0;
+    // Value sums are taken in i128: v0.1's own `int64 nValueOut` wrapped (derivatives/overflow/
+    // models what that did), and the Python oracle sums unbounded integers, so a transaction whose
+    // outputs sum past i64 is rejected here as inflation rather than accepted by a wrapped sum in a
+    // release build or a panic in a debug build. Widened 20 September 2026 after an outside read.
+    let mut fees: i128 = 0;
 
     macro_rules! bail {
         ($e:expr) => {{
@@ -56,7 +60,7 @@ pub(crate) fn apply_txs(
     for (tx, tid) in &txs {
         let coinbase = is_coinbase(tx);
         if !coinbase {
-            let mut value_in: i64 = 0;
+            let mut value_in: i128 = 0;
             for (i_in, vin) in tx.vin.iter().enumerate() {
                 let key = (vin.prevhash, vin.n);
                 let coin = match utxo.get(&key) {
@@ -69,7 +73,7 @@ pub(crate) fn apply_txs(
                 if !verify_spend(&vin.script, &coin.spk, tx, i_in) {
                     bail!("input script does not satisfy output");
                 }
-                value_in += coin.value;
+                value_in += coin.value as i128;
                 utxo.remove(&key);
                 if let Some(pos) = created.iter().position(|k| *k == key) {
                     created.remove(pos); // same-block output consumed -> nets out
@@ -77,7 +81,7 @@ pub(crate) fn apply_txs(
                     spent_prior.push((key, coin));
                 }
             }
-            let value_out: i64 = tx.vout.iter().map(|o| o.value).sum();
+            let value_out: i128 = tx.vout.iter().map(|o| o.value as i128).sum();
             if value_in < value_out {
                 bail!("inflation (inputs < outputs)");
             }
@@ -91,7 +95,11 @@ pub(crate) fn apply_txs(
     }
 
     if !is_genesis {
-        let claimed: i64 = txs[0].0.vout.iter().map(|o| o.value).sum();
+        let claimed: i128 = txs[0].0.vout.iter().map(|o| o.value as i128).sum();
+        let (claimed, fees) = match (i64::try_from(claimed), i64::try_from(fees)) {
+            (Ok(c), Ok(f)) => (c, f),
+            _ => bail!("coinbase value violates the chain rule"),
+        };
         if !check_coinbase_value(claimed, subsidy, fees, strict) {
             bail!("coinbase value violates the chain rule");
         }
@@ -118,7 +126,7 @@ impl ChainState {
     }
 
     pub fn balance(&self) -> i64 {
-        self.utxo.values().map(|c| c.value).sum()
+        self.utxo.values().map(|c| c.value as i128).sum::<i128>().clamp(i64::MIN as i128, i64::MAX as i128) as i64
     }
 
     /// Connect `raw` at `height` (atomically). `Ok(())` on success, or the first failing reason

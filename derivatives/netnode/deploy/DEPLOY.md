@@ -15,15 +15,16 @@ CI ([`.github/workflows/docker.yml`](../../../.github/workflows/docker.yml)) pub
 image to GHCR, so joining needs no Python/venv:
 
 ```bash
-# JOIN the live network — dial the public seed and sync JAN09-X:
-docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode
+# JOIN the live network — dial the public seed and sync JAN09-X (the Bitcoin-v0.1.5 release image, pinned
+# by digest; verify it per docs/VERIFY_RELEASES.md):
+docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode@sha256:56e761eea55fa935a55e2c96db8314e3c627cb9db36a5d4da2196cb7dd8811ea
 # NOV08-X:
-docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode \
+docker run --rm -v xnode-data:/data ghcr.io/original-bitcoin-laboratory/xnode@sha256:56e761eea55fa935a55e2c96db8314e3c627cb9db36a5d4da2196cb7dd8811ea \
     --chain nov08x --datadir /data --connect seed.bitcoin-lab.org:18008
 
 # run a reachable ANCHOR (listens, mines, wallet + localhost RPC):
 docker run -d --name xnode -p 18009:18009 -v xnode-data:/data \
-    ghcr.io/original-bitcoin-laboratory/xnode \
+    ghcr.io/original-bitcoin-laboratory/xnode@sha256:56e761eea55fa935a55e2c96db8314e3c627cb9db36a5d4da2196cb7dd8811ea \
     --chain jan09x --datadir /data --listen 0.0.0.0:18009 --advertise YOUR_PUBLIC_IP --mine --wallet
 ```
 

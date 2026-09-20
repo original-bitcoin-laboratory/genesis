@@ -277,7 +277,7 @@ distinguished from one that did not look.
 | | trigger | note |
 |---|---|---|
 | tests | push | |
-| docker image | push | |
+| docker image | push | a release publishes a new digest; print it where the join command is pinned: `docs/jan09x.html`, `docs/nov08x.html`, `docs/ANNOUNCE.md`, `docs/VERIFY_RELEASES.md`, `derivatives/netnode/PARTICIPATE.md`, `derivatives/netnode/deploy/DEPLOY.md` |
 | status probe | cron `*/15` | GitHub throttles it; real gaps run 60–140 min |
 | Software Heritage | daily cron | forceable via its save API |
 | IPFS pin | on release | CIDs still need writing down by hand |

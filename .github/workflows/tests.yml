@@ -37,7 +37,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Install Python dependencies
-        run: pip install --quiet cryptography pytest
+        # `refs` = the two reference implementations the descendant matrix executes against; without
+        # them the artifact step reports the regenerated matrix as drift and fails (by design).
+        run: pip install --quiet -e ".[test,refs]"
 
       - name: Verify genesis re-derives from source
         run: python scripts/verify_genesis.py

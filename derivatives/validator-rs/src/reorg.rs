@@ -56,7 +56,7 @@ impl NodeState {
     }
 
     pub fn balance(&self) -> i64 {
-        self.utxo.values().map(|c| c.value).sum()
+        self.utxo.values().map(|c| c.value as i128).sum::<i128>().clamp(i64::MIN as i128, i64::MAX as i128) as i64
     }
 
     /// The current validated UTXO set (for a mempool to validate against).
