@@ -109,7 +109,11 @@ COUNT_RE = re.compile(r"\b(zero|one|two|three|four|five|six|seven|eight|nine|ten
 EXTERNAL_ANCHORS = {
     961803: "release asset: the pq counter-signing public key's proof (docs/PQ-COUNTERSIGN-DESIGNATION.txt names it)",
     961879: "release assets: SHA256SUMS.slhdsa.ots on every release counter-signed on 2026-08-10",
+    961652: "release assets of Bitcoin-v0.1.4: bitcoin-0.1.4.tar.gz.ots, .asc.ots, SHA256SUMS.ots, SHA256SUMS.asc.ots",
+    961885: "release assets of Bitcoin-v0.1.5: the five proofs on that release (SHA256SUMS.ots, .asc.ots, .slhdsa.ots, the tarball's two)",
 }
+# The release proofs also sit under derivatives/bitcoin/dist/ on the operator's disk, untracked: the
+# checker reads the tracked tree only, so a proof that is not committed does not count as present here.
 HEIGHT_RE = re.compile(r"\bblock\s+(9[5-9]\d{4})\b")   # Bitcoin heights the laboratory has anchored in (950,000+)
 TEXT_SUFFIXES = {".md", ".txt", ".html"}
 
@@ -230,14 +234,27 @@ def check_open_cells(c_rows: list[dict], failures: list[str], say) -> None:
     say(f"open witness cells: {len(opened)} ({', '.join(opened) or 'none'}); enumerated in {len(OPEN_SECTIONS)} document(s)")
 
 
+def _tracked_proofs() -> set[str] | None:
+    """Paths of the .ots files git tracks, or None when git is unavailable (then every file counts)."""
+    try:
+        import subprocess
+        out = subprocess.run(["git", "ls-files", "--", "*.ots"], cwd=REPO, capture_output=True, text=True, check=True).stdout
+        return {ln.strip() for ln in out.splitlines() if ln.strip()}
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def check_anchor_heights(failures: list[str], notes: list[str], say) -> None:
     """Every `block NNNNNN` written in prose must agree with a proof: a proof named on the same line,
     or, when none is named, some proof this repository carries."""
     proofs: dict[str, set[int]] = {}
     pending_total = 0
+    tracked = _tracked_proofs()
     for p in REPO.rglob("*.ots"):
         if any(part in SKIP_DIRS for part in p.relative_to(REPO).parts):
             continue
+        if tracked is not None and str(p.relative_to(REPO)).replace("\\", "/") not in tracked:
+            continue                                              # untracked on this disk: not part of the record
         h, pend = ots_heights(p.read_bytes())
         pending_total += pend if not h else 0
         proofs[str(p.relative_to(REPO)).replace("\\", "/")] = h
