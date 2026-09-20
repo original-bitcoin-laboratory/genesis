@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  issues: write          # the height watch opens one issue when the retarget height is reached
 
 concurrency:
   group: status
@@ -33,6 +34,21 @@ jobs:
             --chain bitcoin:18026@bitcoin.bitcoin-lab.org \
             --anchor-host seed.bitcoin-lab.org \
             --recent 15 --timeout 8
+
+      - name: Height watch (Bitcoin (2026) against the first retarget, 2016)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          python scripts/height_watch.py --status /tmp/status.json
+          rc=$?
+          set -e
+          if [ "$rc" = 2 ]; then
+            title="Bitcoin (2026) reached height 2016: seal the retarget findings set"
+            if [ -z "$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$title\" in:title" --json number --jq '.[0].number')" ]; then
+              gh issue create --repo "$GITHUB_REPOSITORY" --title "$title"                 --body "The scheduled status probe read the chain at or past height 2016. WHY-THE-CHAIN-CONTINUES.md states what this height is for; CONSENSUS_BEHAVIORS.md states the expected retarget result at difficulty 1. Seal the findings set (raw block bytes, the measured interval series across the window) at the standard of the other sets, within days. Opened by the status workflow; not money."
+            fi
+          fi
 
       - name: Publish to the 'status' branch
         run: |

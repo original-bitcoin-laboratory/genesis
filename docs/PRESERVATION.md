@@ -48,6 +48,12 @@ IDENTITY-MANIFEST.txt.slhdsa    7,856 B   SLH-DSA-SHA2-128s, verified against th
 > `00000000000000000000b1914635ada20cd0992856ebba4ba21b5ea4815eda1b`, merkle root
 > `cf62d5d80f9e0a2fecdba1c129eff6fb42ce259572649c163e42e8641ea90864`, 2026-08-11 20:03:25 UTC).
 > **That anchor stands and is not withdrawn** — it proves revision 1 existed before that block.
+> Revision 1's manifest, signatures and proofs were overwritten in place on 12 August 2026 when revision 2
+> replaced them, a month before the revision rule of `EVIDENCE_POLICY.md` (kept beside, never replaced)
+> was written; they were restored beside the current revision on 20 September 2026 from commit
+> `c5c0f71` as `IDENTITY-MANIFEST.r1.txt*` (sha256 `11b3f7db…`, 11,394 B; proofs anchored in blocks
+> 962049 and 962050), after `scripts/check_register.py` began reading every proof and found no proof in
+> the tree for the height this paragraph states.
 > Revision 2's proofs are anchored in Bitcoin block 962081 (block hash
 > `000000000000000000000d3c4cb24b2fd84a2f65eb39c14f5708285820e9e0a1`, merkle root
 > `cbf9d141073c02fc3d955dfa6c8e7e758b5ec7388eb529eb9c4f7ee86d8d9b48`, 2026-08-12 03:29:39 UTC).

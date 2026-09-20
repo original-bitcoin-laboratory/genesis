@@ -1,0 +1,221 @@
+ORIGINAL BITCOIN LABORATORY -- IDENTITY MANIFEST
+=================================================
+
+A single signed list of the identities that speak publicly for this project, so that a stranger can
+check any of them without asking anyone anything.
+
+Issued 12 August 2026 by parthod0x.
+
+
+WHY IT EXISTS
+-------------
+
+This project publishes to more than one place on purpose -- GitHub, three websites, Software
+Heritage, IPFS, Radicle, OpenTimestamps -- so that no single host can end it. The cost of that
+redundancy is that the periphery grew faster than the record of it. Until this file, the only thing
+connecting a Radicle repository ID to this project was PROSE IN A DOCUMENT, which is worth nothing
+to someone who has reason to doubt it.
+
+This file replaces that prose with one signature.
+
+
+WHAT IT PROVES, AND WHAT IT DOES NOT
+------------------------------------
+
+  PROVES      that whoever holds the OpenPGP key below asserted, at the time this was signed and
+              anchored, that these identifiers belong to this project.
+
+  DOES NOT    prove who that person is. A legal identity is not a key, and no signature can make it
+  PROVE       one. That limit is stated in this laboratory's own published findings about somebody
+              else, and it applies to us exactly as it applies to them.
+
+  DOES NOT    prove exclusive control forever. It is a dated statement, not a standing guarantee. If
+  PROVE       it goes stale, that is a defect and it will be corrected in the open.
+
+Nothing here is money. No premine, no token, no sale, no offer, no price, no warranty.
+
+
+WHAT IS IN SCOPE
+----------------
+
+Every identity below is one that PUBLISHES -- it signs an artifact, owns a repository, or serves a
+site. Each is already public, and this file adds a signature over the set rather than disclosing
+anything new.
+
+  !! THIS IS NOT A LIST OF EVERY KEY THE PROJECT HOLDS, and it does not claim to be. Purely
+    operational credentials -- server access keys, node keys that identify a machine rather than a
+    publication, and keys not yet published -- are DELIBERATELY EXCLUDED. They authenticate
+    infrastructure, not statements. Listing them would expose the machines they belong to while
+    proving nothing a reader could check.
+
+  A signed inventory that quietly omitted things while saying "every" would be the exact failure
+  this project exists not to make. So the omission is stated instead of hidden.
+
+
+1. THE SIGNING IDENTITY
+-----------------------
+
+  OpenPGP     B128 526A F85A E4A8 F22B  949F B014 5F74 B78C F1DA
+              ed25519, created 2026-07-27, [SC] sign/certify ONLY -- the key has no subkeys at all
+              and no encryption capability, by design
+              uid: parthod0x <parthms.id@gmail.com>
+
+              fetch it independently of this repository:
+                gpg --keyserver hkps://keys.openpgp.org \
+                    --recv-keys B128526AF85AE4A8F22B949FB0145F74B78CF1DA
+              also served as parthod0x-signing-key.asc from bitcoin-lab.org and satoshioncha.in
+
+  parthms.id@gmail.com is the ONLY address that speaks for this project. Any other address that has
+  appeared in this project's git history is superseded and speaks for nothing.
+
+  Post-quantum counter-signing key
+              SLH-DSA-SHA2-128s (NIST FIPS 205) -- stateless by deliberate choice, never LMS/XMSS
+              published as parthod0x-pq-countersign.pem, a 126-byte PEM holding a 32-byte raw key
+              sha256 of that file, exactly as published:
+                0624d2c7149d4af09e25b558e76f5e6b1a8855d60723c45333829c46488ceda4
+
+  Why two keys: ed25519 does not survive a cryptographic break of elliptic-curve signatures. The
+  SLH-DSA key does, because its security rests only on hashes. Every published release manifest
+  carries both signatures, and the post-quantum one is Bitcoin-anchored, so it provably predates any
+  such break rather than being added after one.
+
+
+2. CODE AND ACCOUNTS
+--------------------
+
+  GitHub user     github.com/parthod0x
+  organisations   github.com/original-bitcoin-laboratory   -- exactly one member: parthod0x
+                  github.com/satoshi-onchain               -- exactly one member: parthod0x
+
+  repositories    original-bitcoin-laboratory/genesis
+                  original-bitcoin-laboratory/pre-genesis
+                  original-bitcoin-laboratory/common
+                  original-bitcoin-laboratory/bitcoin-whitepaper
+                  satoshi-onchain/satoshi-onchain
+
+                  Each organisation also holds a `.github` repository. Those carry the organisation
+                  profile page and no project content; they are named here so that the list is the
+                  whole list rather than only the interesting part of it.
+
+  Release tags and release manifests are signed with the OpenPGP key in section 1. Ordinary commits
+  are NOT signed, deliberately: the signature belongs on the artifact a stranger downloads, not on
+  every intermediate step.
+
+
+3. WEBSITES
+-----------
+
+  bitcoin-lab.org             the laboratory
+  satoshioncha.in             the on-chain tracker -- a separate project
+  bitcoinwhitepaper.online    a study of the 2008 document. Publishes no software, signs nothing,
+                              and hosts no release keys. It should never host any.
+
+  Each serves /.well-known/security.txt, /robots.txt and /llms.txt.
+
+
+4. DECENTRALISED MIRRORS
+------------------------
+
+  Radicle identity   did:key:z6MkqZAx6fnZ3iosXhTk7K3GzyzcNC2pxy5peUAuvYL45kUA   alias parthod0x
+    genesis          rad:z4ZYBKCfJFomHvbS8d8oKzfgbR6Hg
+    satoshi-onchain  rad:z4AkHVo5aTCwsbJFR8Q1AsJqszsjL
+
+  The Radicle identity is listed because it is load-bearing and unavoidable: on Radicle the node
+  identity IS the repository owner, it is written into the repository's own identity document, and
+  the remote URL cannot be formed without it. A reader clones the repository and sees it regardless.
+
+  IPFS               Release assets are pinned by content hash through a hosted pinning service run
+                     from CI, not from any machine of this project's. There is therefore no node
+                     identity to publish, and none is needed: an IPFS copy is checked by its CID and
+                     against the release's own SHA256SUMS, so a gateway copy either matches or does
+                     not. Per-release CIDs are in docs/PRESERVATION.md.
+
+  Software Heritage  archival of the repositories above is REQUESTED by CI, daily and on each
+                     release. Whether any individual visit succeeded is Software Heritage's record
+                     to report and not ours to assert, so check it there rather than here:
+                       archive.softwareheritage.org/browse/origin/directory/
+                         ?origin_url=https://github.com/<org>/<repo>
+
+                     !! Check it in a BROWSER. The archive sits behind an anti-bot proof-of-work
+                       challenge, so a scripted request can return HTTP 200 carrying a challenge
+                       page instead of an answer. A 200 from that host is not evidence of anything
+                       on its own -- this manifest previously claimed archival on exactly that
+                       mistake, and the claim was withdrawn rather than left standing.
+
+  OpenTimestamps     release manifests, their signatures, and the post-quantum counter-signatures
+                     are anchored in the Bitcoin blockchain. An anchor proves a file existed before
+                     a given block; it proves nothing about who made it. A signature proves the
+                     reverse. Both are published because neither substitutes for the other.
+
+
+5. THE 2026 EXPERIMENTAL CHAIN
+------------------------------
+
+  THIS IS NOT THE BITCOIN OF 2008-2009. Both use version numbers of the form v0.1.x, because this
+  laboratory reconstructs that era. A version number will not tell you which chain you are looking
+  at. Read the coinbase of block 0.
+
+    2009, Satoshi's chain   genesis  000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+                            coinbase The Times 03/Jan/2009 Chancellor on brink of second bailout
+                                     for banks
+
+    2026, this chain        genesis  00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a
+                            coinbase The Times 03/Aug/2026 Toll of schooling 'straitjacket'
+                            magic    f00ba726        port 18026
+                            a separate network that cannot connect to Bitcoin mainnet, and cannot
+                            relay a block or a transaction to it
+
+  Its author is an AI agent using the name "Satoshi Nakamoto". It is not a person, and it is not the
+  author of the 2008-2009 Bitcoin, whose identity is unknown and which this project does not claim
+  to have settled.
+
+  agent key   04c0414cfdcc009830708543b06e43a03570dc1ffa45ddf98657045e594a815eba794ca0602e8527d7
+              ba3197e53c0c2f226892212aa99b827e8e2fd95fcea2f834
+  address     1N6X4uVvB82vcMXrCFpn3qMQjTp51AbCci
+
+  That public key is not merely asserted here -- it is INSIDE the genesis block, as the coinbase
+  output script (0x41 <pubkey> OP_CHECKSIG). Anyone can read it straight out of the chain and check
+  a signature against it without trusting this file, this project, or anyone at all. That makes it
+  the one link in this manifest that needs no manifest.
+
+  The coins on that chain have never been sold, offered, priced or transferred, and will not be.
+
+
+6. WHAT IS DELIBERATELY ABSENT
+------------------------------
+
+  No legal name appears in this manifest. It appears in LICENSE and CITATION.cff, which is where a
+  copyright notice belongs, and nowhere else. Binding it here would broadcast a permanent copy of it
+  with every signature this project makes, in exchange for binding something that remains a
+  declaration either way. The cryptography would not get stronger; only the exposure would.
+
+  No secret material of any kind appears here. No wallet, no seed phrase, no private key, no server
+  credential, no host address, no machine identity.
+
+  No other email address, handle or account speaks for this project. Identity multiplicity is a
+  liability rather than redundancy: every additional identity is one more thing a stranger must be
+  told to trust.
+
+
+HOW TO CHECK THIS FILE
+----------------------
+
+  gpg --verify IDENTITY-MANIFEST.txt.asc IDENTITY-MANIFEST.txt
+
+  openssl pkeyutl -verify -pubin -inkey parthod0x-pq-countersign.pem \
+    -rawin -in IDENTITY-MANIFEST.txt -sigfile IDENTITY-MANIFEST.txt.slhdsa
+
+  ots verify IDENTITY-MANIFEST.txt.ots
+
+  The OpenPGP signature says who. The post-quantum counter-signature says who, still, after a break
+  in elliptic-curve cryptography. The timestamp says this existed before a particular Bitcoin block,
+  and therefore before any dispute that comes later.
+
+  Compare the fingerprint in section 1 against LICENSE and against keys.openpgp.org before trusting
+  a signature that this file verifies. A key fetched from the same place as the thing it signs has
+  been checked against itself.
+
+  If any identifier above is wrong, or if this file has gone stale, it is a defect. Corrections are
+  published, dated, and never made silently.
+
+                                                                          -- parthod0x, 12 Aug 2026
