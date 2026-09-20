@@ -1,0 +1,111 @@
+{
+  "openssl": "OpenSSL 3.5.4 30 Sep 2025 (Library: OpenSSL 3.5.4 30 Sep 2025)",
+  "samples": 200,
+  "timing_n": 100,
+  "chain_validation": {
+    "blocks": 2,
+    "txs": 2
+  },
+  "schemes": [
+    {
+      "scheme": "secp256k1-ECDSA",
+      "available": true,
+      "sig_min": 70,
+      "sig_max": 72,
+      "sig_median": 71,
+      "sig_distinct": 3,
+      "samples": 200,
+      "sk_file": 242,
+      "pk_onchain": 65,
+      "sign_ms": 15.24,
+      "verify_ms": 14.07
+    },
+    {
+      "scheme": "ML-DSA-44",
+      "available": true,
+      "sig_min": 2420,
+      "sig_max": 2420,
+      "sig_median": 2420,
+      "sig_distinct": 1,
+      "samples": 200,
+      "sk_file": 3670,
+      "pk_onchain": 1312,
+      "sign_ms": 15.83,
+      "verify_ms": 11.97
+    },
+    {
+      "scheme": "ML-DSA-65",
+      "available": true,
+      "sig_min": 3309,
+      "sig_max": 3309,
+      "sig_median": 3309,
+      "sig_distinct": 1,
+      "samples": 200,
+      "sk_file": 5692,
+      "pk_onchain": 1952,
+      "sign_ms": 15.57,
+      "verify_ms": 12.64
+    },
+    {
+      "scheme": "ML-DSA-87",
+      "available": true,
+      "sig_min": 4627,
+      "sig_max": 4627,
+      "sig_median": 4627,
+      "sig_distinct": 1,
+      "samples": 200,
+      "sk_file": 6880,
+      "pk_onchain": 2592,
+      "sign_ms": 19.38,
+      "verify_ms": 15.46
+    },
+    {
+      "scheme": "SLH-DSA-SHA2-128s",
+      "available": true,
+      "sig_min": 7856,
+      "sig_max": 7856,
+      "sig_median": 7856,
+      "sig_distinct": 1,
+      "samples": 200,
+      "sk_file": 172,
+      "pk_onchain": 32,
+      "sign_ms": 305.57,
+      "verify_ms": 13.5
+    },
+    {
+      "scheme": "SLH-DSA-SHA2-128f",
+      "available": true,
+      "sig_min": 17088,
+      "sig_max": 17088,
+      "sig_median": 17088,
+      "sig_distinct": 1,
+      "samples": 200,
+      "sk_file": 172,
+      "pk_onchain": 32,
+      "sign_ms": 35.68,
+      "verify_ms": 17.06
+    },
+    {
+      "scheme": "SLH-DSA-SHA2-192s",
+      "available": true,
+      "sig_min": 16224,
+      "sig_max": 16224,
+      "sig_median": 16224,
+      "sig_distinct": 1,
+      "samples": 200,
+      "sk_file": 218,
+      "pk_onchain": 48,
+      "sign_ms": 621.66,
+      "verify_ms": 17.84
+    }
+  ],
+  "tx_bytes": {
+    "secp256k1-ECDSA": 200,
+    "ML-DSA-44": 3804,
+    "ML-DSA-65": 5333,
+    "ML-DSA-87": 7291,
+    "SLH-DSA-SHA2-128s": 7956,
+    "SLH-DSA-SHA2-128f": 17188,
+    "SLH-DSA-SHA2-192s": 16340
+  }
+}

@@ -34,7 +34,7 @@ sha256  b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553   -- ma
 Exits non-zero if the hash does not match. Uses a public API so no node is needed; the same thing
 works with `bitcoin-cli getrawtransaction`.
 
-**Establishes:** proof-of-work cannot be backdated, so the canonical text is fixed to April 2013
+**Establishes:** the bytes sit under the proof-of-work of block 230009 and every block since, so the canonical text is fixed to April 2013
 independently of bitcoin.org, of the Internet Archive, and of this lab.
 **Does not establish:** anything about October 2008.
 

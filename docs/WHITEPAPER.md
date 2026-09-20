@@ -27,8 +27,8 @@ sha256sum out.pdf     # b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc2
 ```
 
 That reads the data from **block 230009**, reassembles the file, and gives you the authentic bytes —
-**from the chain itself, with nobody in between.** It is a better source than any website, including
-this one, because it has not changed since block 230009 and cannot be changed without redoing that proof-of-work.
+**from a public API's copy of the chain, checked against the published digest.** It is a better source than any
+website, including this one, because the bytes have not changed since block 230009 and a changed copy fails the digest.
 
 ## The versions, by hash
 

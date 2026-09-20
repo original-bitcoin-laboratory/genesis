@@ -306,3 +306,14 @@ are unchanged. The edits:
 - **`2026-08-22-blocks122-295`, line 60:** the same replacement in the sentence on the two losing blocks.
 
 `derivatives/bitcoin/README.md` (not sealed) was edited the same way on the same day.
+
+## 20 September 2026 — two sealed sets read against two adversarial reviews; nothing edited
+
+- **`r5-findings/2026-09-13-binary-replay-release/FINDINGS.md`, line 10** says "17/17 signatures". Three of the
+  seventeen are DER probes that carry no expected verdict; the set's own line 49 has the figure the run supports,
+  **14/14 graded vectors**, with the three probes recorded as rejected by OpenSSL 1.0.2u. The set is sealed and stays
+  as written; `OBL-F-0010`, `START_HERE.md` and `derivatives/vectors/README.md` now say 14/14 and three probes rejected.
+- **`r4-findings/2026-08-06-relayed-spend/`**: the four process-image binding records and the capture script that the
+  sealed `EVIDENCE_MANIFEST.json` pins (`bitcoin.exe` sha256 `fbcac071…`) are published beside the set under the
+  manifest's paths, with a dated note (`PUBLISHED-2026-09-20.md`). No file of the set changed.
+

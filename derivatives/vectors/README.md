@@ -3,8 +3,8 @@
 **Evidence level: `MODEL`, and EXECUTED against the release client.** On 13 September 2026 the
 corpus (then 317 vectors) was replayed over the wire against this lab's release `bitcoin.exe` (`c3f15fc5…`, the v0.1
 source with the nine chain-separation substitutions, OpenSSL 1.0.2u), running on an isolated full
-clone of the mining node with its chain at height 963: **136/136 script vectors, 17/17 signature
-vectors and 19/19 block cases agreed with the binary; each of the 16 rejected blocks
+clone of the mining node with its chain at height 963: **136/136 script vectors, 14/14 graded signature vectors and 19/19 block cases agreed with the binary, and the
+three DER probes, which carry no expected verdict, were rejected; each of the 16 rejected blocks
 produced its exact `main.cpp` error string in the node's `debug.log`, and the 3 the corpus expects to be accepted were accepted.** The three non-strict DER
 signatures were rejected by that OpenSSL; the verdict is recorded per vector under `witnessed`. The
 unmodified 2009 binary (OpenSSL 0.9.8) has not been replayed yet; its column stays `expected_binary`.

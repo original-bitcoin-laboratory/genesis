@@ -25,7 +25,7 @@ the record carries, and the executed witness. `scripts/check_register.py` keeps 
 [`docs/CONSENSUS-ATLAS.md`](docs/CONSENSUS-ATLAS.md) is the atlas behind those rows: one section per rule, the origin
 commit's message verbatim and the lines its diff adds, dated from the repository's own record.
 [`REPRODUCTIONS.md`](REPRODUCTIONS.md) is the ledger of every attempt by another party to rebuild or review this
-work, with its access and its label; what each found is corrected in place.
+work, with its access and its label; what each found is corrected, dated, under `docs/EVIDENCE_POLICY.md`.
 
 ## Quick start
 
@@ -34,12 +34,15 @@ work, with its access and its label; what each found is corrected in place.
 python scripts/verify-artifacts.py    # hash-check against manifests/EXPECTED_CHECKSUMS.json
 ```
 
-Archives land in `artifacts/jan09/` (gitignored) and are not edited. Verified
+Archives land in `artifacts/jan09/` and are not edited. Since 20 September 2026 the two archives are committed there
+(5 MB, MIT-licensed by their author), so the base every `JAN09-SOURCE` claim rests on is reachable from this
+repository and not only from a third party's host; the verifier checks them against the published digests before
+anything reads them. Verified
 values: MD5/SHA-1 (SNI catalogue) plus SHA-256 matching the 2012 Hal Finney
 recovery thread — `bitcoin-0.1.0.rar` = `8b17eb9a…`, `bitcoin-0.1.0.tgz` =
 `ce9da465…`.
 
-> **These files are named `bitcoin-0.1.0` by everyone who serves them, but their contents are
+> **These files are named `bitcoin-0.1.0` by the hosts that serve them, but their contents are
 > v0.1.1** — Satoshi gives its exact byte size in a 10 January 2009 email, and its `bitcoin.exe`
 > carries a **10 January** PE link stamp, two days after v0.1.0 was announced. We keep the filename
 > because the published hashes are under it. **No consensus rule differs**; the whole delta is

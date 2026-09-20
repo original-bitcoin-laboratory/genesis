@@ -1,19 +1,35 @@
 """Executable reproduction of v0.1's missing Script resource limits -- MODEL.
 
 Makes runnable the other CONSENSUS_SURFACE.md finding: v0.1's EvalScript enforces
-**no** resource ceilings -- no per-element size limit (520 bytes), no op-count limit
-(201), no stack-size limit (1000). The v0.1 interpreter (`../model/evalscript_model.py`,
-the same one differential-tested against the C++/OpenSSL PORT) has only *underflow*
-guards (`if stack.size() < N`), no upper bound; the modern/2010 ceilings are absent.
+**no** resource ceilings -- no per-element size limit, no op-count limit, no stack-size limit,
+no numeric-operand cap. The v0.1 interpreter (`../model/evalscript_model.py`, the same one
+differential-tested against the C++/OpenSSL PORT) has only *underflow* guards
+(`if stack.size() < N`), no upper bound; the 2010 ceilings are absent.
 
 Same shape as ../overflow/ and ../crypto_conformance/: one engine, the v0.1 rule vs the
 later hardened rule, side by side. We run each script on the REAL v0.1 model -- it completes
 and validates -- while MEASURING (through the model's trace hook) the peak element size,
-op count, and peak stack it actually reached; then we apply the documented 2010 limits and
+op count, and peak stack it actually reached; then we apply the dated 2010 limits and
 show they reject exactly what v0.1 accepted.
 
-Evidence level: MODEL (the executed v0.1 interpreter; the ceilings are the documented
-constants introduced in the 2010 Script hardening). Not a live-exploit claim.
+The ceilings, each dated to the commit that installed it (docs/CONSENSUS-ATLAS.md, OBL-C-0002):
+
+    element size   5000 in 757f0769d (29 Jul 2010, 0.3.6) -> 520 in 4bd188c43 (15 Aug 2010, 0.3.10)
+    stack depth    1000 (stack + altstack) in 757f0769d
+    numeric cap    258 in 757f0769d -> 4 in 4bd188c43
+    script size    20000 in 757f0769d -> 10000 in 6ff5f718b (31 Jul 2010, 0.3.7)
+    op count       `nOpCount++ > 200` in 6ff5f718b ("additional security limits"), i.e. 201 allowed;
+                   `opcode > OP_16 && ++nOpCount > 201` in f1e1fb4bd (7 Sep 2010), same boundary,
+                   pushes and OP_1..OP_16 excluded from the count (the form modelled here)
+
+(Until 20 September 2026 this module's README dated the op-count limit to the 29 July and 15 August
+commits; neither carries it. An adversarial review caught that, and the atlas now dates it.)
+
+Every check returns (ok, clause), where `clause` is one identifier from CLAUSES, so a test asserts
+the clause that fired and not a substring of a sentence this module wrote.
+
+Evidence level: MODEL (the executed v0.1 interpreter; the ceilings are the dated constants of the
+2010 Script hardening). Not a live-exploit claim.
 """
 
 from __future__ import annotations
@@ -27,13 +43,17 @@ import evalscript_model as evalmodel                                     # noqa:
 from evalscript_model import num, valid                                  # noqa: E402
 
 # -- the ceilings the 2010 Script hardening added (all ABSENT in v0.1) --------
-MAX_SCRIPT_ELEMENT_SIZE = 520     # bytes, per stack element
-MAX_OPS_PER_SCRIPT = 201          # opcodes past OP_16 (pushes don't count)
-MAX_STACK_SIZE = 1000             # stack + altstack elements
+MAX_SCRIPT_ELEMENT_SIZE = 520     # bytes, per stack element (4bd188c43; 5000 in 757f0769d)
+MAX_OPS_PER_SCRIPT = 201          # opcodes past OP_16 (6ff5f718b as `nOpCount++ > 200`; f1e1fb4bd form)
+MAX_STACK_SIZE = 1000             # stack + altstack elements (757f0769d)
+MAX_NUM_SIZE_JULY_2010 = 258      # nMaxNumSize in 757f0769d (29 Jul 2010)
+MAX_NUM_SIZE_2010 = 4             # nMaxNumSize in 4bd188c43 (15 Aug 2010)
+
+CLAUSES = ("ok", "structural", "op-count", "element-size", "stack-size", "numeric-operand")
 
 
 def _counts_as_op(op) -> bool:
-    """Modern nOpCount: an opcode with value > OP_16 (data pushes / OP_0..OP_16 don't)."""
+    """nOpCount as f1e1fb4bd counts it: an opcode with value > OP_16 (data pushes / OP_0..OP_16 don't)."""
     return isinstance(op, str) and op not in evalmodel._PUSH_NUM
 
 
@@ -63,16 +83,16 @@ def measure(script: list):
 
 
 def hardened_check(script: list):
-    """Apply the 2010 resource limits to a genuine v0.1 execution. (ok, reason)."""
+    """Apply the 2010 resource limits to a genuine v0.1 execution. (ok, clause)."""
     ok, peak_elem, op_count, peak_stack = measure(script)
     if not ok:
-        return False, "structural error (v0.1 itself rejects)"
+        return False, "structural"                       # v0.1 itself rejects: no ceiling applies
     if op_count > MAX_OPS_PER_SCRIPT:
-        return False, f"op count {op_count} > {MAX_OPS_PER_SCRIPT}"
+        return False, "op-count"
     if peak_elem > MAX_SCRIPT_ELEMENT_SIZE:
-        return False, f"element size {peak_elem} > {MAX_SCRIPT_ELEMENT_SIZE}"
+        return False, "element-size"
     if peak_stack > MAX_STACK_SIZE:
-        return False, f"stack size {peak_stack} > {MAX_STACK_SIZE}"
+        return False, "stack-size"
     return True, "ok"
 
 
@@ -82,11 +102,10 @@ def v01_valid(script: list) -> bool:
 
 
 # -- the numeric-operand cap (added 20 September 2026, after a clean-room reproduction asked for it) --
-MAX_NUM_SIZE_2010 = 4             # nMaxNumSize: 258 in 757f0769d (29 Jul 2010), 4 in 4bd188c43 (15 Aug 2010)
-
 # opcodes whose operands v0.1 reads through CBigNum(vch), with how many stack elements they read that way;
-# in 4bd188c43 that read becomes CastToBigNum, which throws when the element is over nMaxNumSize, and
-# EvalScript catches the throw and fails the script
+# in 757f0769d that read is guarded by `stacktop(-k).size() > nMaxNumSize` (258) and in 4bd188c43 it
+# becomes CastToBigNum, which throws when the element is over nMaxNumSize (4); EvalScript catches the
+# throw and fails the script
 _NUMERIC_ARITY = {
     "OP_1ADD": 1, "OP_1SUB": 1, "OP_2MUL": 1, "OP_2DIV": 1, "OP_NEGATE": 1, "OP_ABS": 1, "OP_NOT": 1,
     "OP_0NOTEQUAL": 1,
@@ -114,12 +133,13 @@ def measure_numeric(script: list):
 
 
 def numeric_cap_check(script: list, cap: int = MAX_NUM_SIZE_2010):
-    """The 2010 cap applied to a genuine v0.1 execution: (ok, reason)."""
+    """The 2010 cap applied to a genuine v0.1 execution: (ok, clause). `cap` selects the July (258)
+    or August (4) value."""
     ok, peak_num = measure_numeric(script)
     if not ok:
-        return False, "structural error (v0.1 itself rejects)"
+        return False, "structural"
     if peak_num > cap:
-        return False, f"numeric operand {peak_num} bytes > {cap} (CastToBigNum() : overflow)"
+        return False, "numeric-operand"
     return True, "ok"
 
 
@@ -158,7 +178,12 @@ def demo() -> None:
         print(f"{label}")
         print(f"  v0.1 EvalScript (no limits) : {'VALID' if v01_valid(script) else 'invalid'}"
               f"   (peak elem {elem}B, ops {ops}, stack {depth})")
-        print(f"  2010 hardened rule          : {'accept' if hard_ok else 'REJECT'}  ({why})")
+        print(f"  2010 hardened rule          : {'accept' if hard_ok else 'REJECT'}  (clause: {why})")
+    s = oversize_numeric_script(9)
+    print("9-byte numeric operand")
+    print(f"  v0.1 EvalScript (no cap)    : {'VALID' if v01_valid(s) else 'invalid'}")
+    print(f"  29 Jul 2010 cap (258)       : {numeric_cap_check(s, MAX_NUM_SIZE_JULY_2010)}")
+    print(f"  15 Aug 2010 cap (4)         : {numeric_cap_check(s)}")
 
 
 if __name__ == "__main__":

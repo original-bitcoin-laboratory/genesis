@@ -1,0 +1,22 @@
+﻿{
+    "run":  "2026-08-06-relayed-spend",
+    "node":  "nodeB",
+    "phase":  "post",
+    "captured_utc":  "2026-08-08T19:00:50.7787513Z",
+    "vm_hostname":  "DESKTOP-K1CEGSV",
+    "binding_method":  "live-process-image",
+    "process":  {
+                    "pid":  7632,
+                    "executable_path":  "C:\\obl\\bitcoin.exe",
+                    "command_line":  "\"C:\\obl\\bitcoin.exe\" ",
+                    "create_time":  "2026-08-06T01:57:09.2020940Z"
+                },
+    "sha256":  {
+                   "bitcoin.exe":  "fbcac071d92e26d82ec917214e334bd43850c0691f113bab1d4741c9bdd30d2d",
+                   "libeay32.dll":  "d108cdff2922a60e0054718a84178a40526ba00401fa34a87fb055947c77a182",
+                   "mingwm10.dll":  "1badf3972d9a861a69fafb2c5e3282aecc30007b9d51c199806e542b32d7708f"
+               },
+    "bitcoin_exe_matches_oracle":  true,
+    "oracle_sha256":  "fbcac071d92e26d82ec917214e334bd43850c0691f113bab1d4741c9bdd30d2d",
+    "data_dir":  "C:\\Users\\obl\\AppData\\Roaming\\Bitcoin"
+}

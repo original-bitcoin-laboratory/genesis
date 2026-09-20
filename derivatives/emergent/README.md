@@ -20,13 +20,13 @@ BERKELEY DB LOCK RULE
   v0.1  CheckBlock size/count clauses : (True, 'ok')
   0.8.1 CheckBlock 8bd028818 clause    : (False, '15 May maxlocks violation')   block time inside 11 Mar..15 May 2013
   0.8.1 same block, time after 15 May  : (True, 'ok')
-  0.8.1 block with 4499 ids            : (True, 'ok')
+  0.8.1 block with 4499 ids            : (True, 'ok')     a block with exactly 4,500 passes; 4,501 fails (test_emergent.py)
 
 DER STRICTNESS
   7 strict signatures pass BIP 66 (the pay-to-pubkey vectors whose scriptSig is one push; the corpus's
     other strict vectors are multisig or empty-scriptSig cases the extractor does not read)
   3 probes (long-form length; redundant 0x00 pad; a byte before the sighash flag) fail BIP 66,
-    and a BER-tolerant reader recovers an (r, s) whose strict re-encoding passes BIP 66
+    and the (r, s) a BER-tolerant reader recovers from each verifies under the vector's key (test_emergent.py)
   the release build (OpenSSL 1.0.2u) rejects all three (OBL-F-0010); the 2009 binary is not replayed yet
 ```
 
@@ -46,6 +46,8 @@ DER STRICTNESS
 
 ## What this does not claim
 
-No claim about OpenSSL 0.9.8's verdict on the probes, no claim about how many pre-0.8 nodes rejected
-block 225,430, and no position on either rule. The block bytes of March 2013 are not reproduced; the
+No claim about OpenSSL 0.9.8's verdict on the probes: the acceptance side of the DER rule, that 0.9.8 accepted
+these encodings, has no artifact at any grade, and constitution row `OBL-C-0014` stays open on it. No claim about
+how many pre-0.8 nodes rejected block 225,430, and no position on either rule. The January side of `bdb_locks.py`
+is `CheckBlock`'s size and count clauses only; the tests are named for what they port. The block bytes of March 2013 are not reproduced; the
 rule written about them is. NOT money.

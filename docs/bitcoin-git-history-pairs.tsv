@@ -1,0 +1,133 @@
+sha_a	date_a	author_a	trailer_a	svn_rev_a	add_a	del_a	sha_b	date_b	author_b	trailer_b	svn_rev_b	add_b	del_b	pair_type	same_change	offset_days_b_minus_a	first_message_line
+465e1d99f	2009-08-30T03:50:53Z	sirius-m	T	2	2	0	edffb50b9	2009-08-30T03:50:53Z	sirius-m	-		2	0	one-trailer	identical	0.00	Added changelog.txt
+8dca7864f	2009-09-16T13:26:04Z	sirius-m	T	8	0	0	e00d4805d	2009-09-16T13:26:04Z	sirius-m	-		0	0	one-trailer	identical	0.00	No dll's here
+dba0fd9b6	2009-09-24T04:09:56Z	sirius-m	T	10	3362	2445	d1b70ffa0	2009-09-24T04:09:56Z	sirius-m	-		3362	2445	one-trailer	identical	0.00	tray icon + ask before closing
+6d97df0e9	2009-10-02T10:14:05Z	sirius-m	T	11	55	24	75aa0fbf7	2009-10-02T10:14:05Z	sirius-m	-		55	24	one-trailer	identical	0.00	startup shortcut works
+429187c6a	2009-10-03T11:52:21Z	sirius-m	T	12	5	1	f01a4ca4e	2009-10-03T11:52:21Z	sirius-m	-		5	1	one-trailer	identical	0.00	Startup folder shortcut opens the program minimized. Restoring a minimized-to-tray window works correctly.
+661f87800	2009-10-03T17:02:59Z	sirius-m	T	13	138	0	f13dff697	2009-10-03T17:02:59Z	sirius-m	-		138	0	one-trailer	identical	0.00	Added NSIS installer generation script
+0cc05617d	2009-10-04T11:38:29Z	sirius-m	T	14	63	71	c199b8499	2009-10-04T11:38:29Z	sirius-m	-		63	71	one-trailer	identical	0.00	Fixed the installer script and made the autostart registry based.
+99cef996c	2009-10-21T01:08:05Z	s_nakamoto	T	15	1898	1303	521099868	2009-10-21T01:08:05Z	s_nakamoto	-		1898	1303	one-trailer	identical	0.00	flush wallet.dat, multi-proc, reorg options, revert to startup folder shortcut
+e39dfe8ea	2009-10-24T16:50:39Z	sirius-m	T	16	0	2	44e1254d1	2009-10-24T16:50:39Z	sirius-m	-		0	2	one-trailer	identical	0.00	Removed autorun regkey creation
+fa2a0338d	2009-10-25T04:35:01Z	s_nakamoto	T	17	75	28	6ccefea62	2009-10-25T04:35:01Z	s_nakamoto	-		75	28	one-trailer	identical	0.00	fix display of new generated coins, fix assertion in bitcoinminer
+dd519206a	2009-10-29T02:52:48Z	s_nakamoto	T	18	1209	339	cc0b4c3b6	2009-10-29T02:52:48Z	s_nakamoto	-		1209	339	one-trailer	identical	0.00	addr relaying fixes, proxy option and privacy patches, detect connect to self, non-final tx locktime changes, fix hide unconfirmed generated
+dc73b326f	2009-10-29T05:55:56Z	s_nakamoto	T	19	35	22	fc0e97a70	2009-10-29T05:55:56Z	s_nakamoto	-		35	22	one-trailer	identical	0.00	CCriticalSection using wxWidgets instead of Windows OS calls
+e8474beb6	2009-10-29T20:10:46Z	s_nakamoto	T	20	121	75	7be46ce48	2009-10-29T20:10:46Z	s_nakamoto	-		121	75	one-trailer	identical	0.00	better wallet.dat flush, consolidated QueryPerformanceCounter, PRI64d printf portability
+a0c17c03e	2009-10-30T00:45:35Z	sirius-m	T	21	3	0	ae3ae3df7	2009-10-30T00:45:35Z	sirius-m	-		3	0	one-trailer	identical	0.00	setup script removes startup shortcut and runs with highest exec level
+32d490313	2009-10-30T00:57:05Z	s_nakamoto	T	22	4	10	8938414f0	2009-10-30T00:57:05Z	s_nakamoto	-		4	10	one-trailer	identical	0.00	make CheckDiskSpace portable
+fe9f3d626	2009-10-31T09:11:43Z	sirius-m	T	23	40	12	e874738d3	2009-10-31T09:11:43Z	sirius-m	-		40	12	one-trailer	identical	0.00	Linux alternatives for the Windows headers and PerformanceCounter. Some typedefs and #defines for the Linux build. Fixed GetDataDir.
+5750932cd	2009-10-31T09:52:24Z	sirius-m	T	24	1	0	99142385d	2009-10-31T09:52:24Z	sirius-m	-		1	0	one-trailer	identical	0.00	added wx/stdpaths.h
+4ac57f013	2009-11-01T01:16:51Z	s_nakamoto	T	25	416	382	e66ec79b1	2009-11-01T01:16:51Z	s_nakamoto	-		416	382	one-trailer	identical	0.00	move debug.log and db.log to data dir, portable GetDataDir, optimize GetBalance, fix repaint bogdown, -addnode and -? switches
+b7362c07a	2009-11-04T04:58:46Z	s_nakamoto	T	28	91	0	f7d3cc0e5	2009-11-04T04:58:46Z	s_nakamoto	-		91	0	one-trailer	identical	0.00	renamed build.txt to build-msw.txt
+e4c05d317	2009-11-05T04:41:36Z	s_nakamoto	T	32	2184	301	fba408894	2009-11-05T04:41:36Z	s_nakamoto	-		2184	301	one-trailer	identical	0.00	unix build merged in, bitmap resources from xpm instead of rc, better addr relay, better selection of addrs by time last seen for faster connect
+300d4608f	2009-11-06T05:50:05Z	s_nakamoto	T	33	260	235	93cfb02ac	2009-11-06T05:50:05Z	s_nakamoto	-		260	235	one-trailer	identical	0.00	got rid of CheckForShutdown, replaced some thread-unsafe wxWidgets calls, Linux fixes, socket send MSG_NOSIGNAL, bind INADDR_ANY, works reliably on Linux now except if wxMessageBox is used in a thread other than the GUI thread
+8acda009d	2009-11-06T18:53:26Z	s_nakamoto	T	34	44	1284	85c33b960	2009-11-06T18:53:26Z	s_nakamoto	-		44	1284	one-trailer	identical	0.00	UIThreadCall, ThreadSafeMessageBox
+8b4cefd32	2009-11-07T05:05:03Z	s_nakamoto	T	35	346	284	1a01afab2	2009-11-07T05:05:03Z	s_nakamoto	-		346	284	one-trailer	identical	0.00	UI tweaks, use BindListenPort to detect instance already running, setsockopt(SO_REUSEADDR) so can bind during TIME_WAIT after exit and restart
+b4e235f9f	2009-11-07T18:51:41Z	s_nakamoto	T	36	948	313	158ea66c6	2009-11-07T18:51:41Z	s_nakamoto	-		948	313	one-trailer	identical	0.00	ui tweaks, multiple xpm icon sizes
+956468c29	2009-11-08T04:24:52Z	s_nakamoto	T	37	78	22	e9c2b5c84	2009-11-08T04:24:52Z	s_nakamoto	-		78	22	one-trailer	identical	0.00	Get local host IP on Linux, Shutdown() a little cleaner -- linux-0.1.6-test1 waypoint
+70e79525c	2009-11-13T01:23:08Z	s_nakamoto	T	38	684	391	31e6ea7f5	2009-11-13T01:23:08Z	s_nakamoto	-		684	391	one-trailer	identical	0.00	monitor ThreadSocketHandler and terminate and restart if hung, convert _beginthread to CreateThread wrapper, disconnect inactive connections, ping, break up long messages to speed up initial download, better priorities for initiating connections, track how many nodes have requested our blocks and transactions, status #/offline and warning message on unsent blocks, minimize on close as separate option -- linux-test5
+b349e3dca	2009-11-14T18:04:08Z	s_nakamoto	T	39	1	1	01fe1d213	2009-11-14T18:04:08Z	s_nakamoto	-		1	1	one-trailer	identical	0.00	misc compile error
+c5c7911da	2009-11-18T19:19:41Z	s_nakamoto	T	40	304	184	e4db37442	2009-11-18T19:19:41Z	s_nakamoto	-		304	184	one-trailer	identical	0.00	bugfix Db::open/close and zombie sockets bugs fix double-close of socket handle,
+52f4cb485	2009-11-24T21:04:50Z	s_nakamoto	T	41	24	3	70918a664	2009-11-24T21:04:50Z	s_nakamoto	-		24	3	one-trailer	identical	0.00	minor fix to batched initial download in case requester has more than 500 block non-main branch
+107d9e288	2009-12-06T00:29:09Z	s_nakamoto	T	42	17	14	658b5b414	2009-12-06T00:29:09Z	s_nakamoto	-		17	14	one-trailer	identical	0.00	fix transaction fee bug in CreateTransaction, higher size cutoff for free transactions in GetMinFee
+4ea3f3da1	2009-12-11T16:49:21Z	s_nakamoto	T	44	187	89	0bbbee96b	2009-12-11T16:49:21Z	s_nakamoto	-		187	89	one-trailer	identical	0.00	retry IRC if name in use,
+e39bc50eb	2009-12-13T00:13:16Z	s_nakamoto	T	46	43	15	25b12b883	2009-12-13T00:13:16Z	s_nakamoto	-		43	15	one-trailer	identical	0.00	misc exit code, updated setup.nsi
+e89977945	2009-12-13T02:13:43Z	s_nakamoto	T	47	2	1	bd336ba27	2009-12-13T02:13:43Z	s_nakamoto	-		2	1	one-trailer	identical	0.00	restrict file permissions on linux to the user only
+e2c2648c1	2009-12-14T02:12:01Z	s_nakamoto	T	49	38	19	2da02dd77	2009-12-14T02:12:01Z	s_nakamoto	-		38	19	one-trailer	identical	0.00	filter out duplicate getblocks and don't relay inv messages during initial block download -- 0.2 rc2
+312c2c42b	2009-12-17T18:15:50Z	s_nakamoto	T	51	5	2	9228c53cf	2009-12-17T18:15:50Z	s_nakamoto	-		5	2	one-trailer	identical	0.00	a few header changes for freebsd from madhatter
+9a3656234	2009-12-17T23:16:27Z	s_nakamoto	T	52	15	19	95d839f15	2009-12-17T23:16:27Z	s_nakamoto	-		15	19	one-trailer	identical	0.00	command line switch -noui
+cb0f89646	2010-01-28T00:31:00Z	s_nakamoto	T	53	129	117	80264be42	2010-01-28T00:31:00Z	s_nakamoto	-		129	117	one-trailer	identical	0.00	simplify AddAddress,
+8be979d9a	2010-01-28T21:49:20Z	s_nakamoto	T	54	153	41	9e56521b4	2010-01-28T21:49:20Z	s_nakamoto	-		153	41	one-trailer	identical	0.00	now compiles on 64-bit Ubuntu Karmic with wxWidgets-2.9.0,
+53d508072	2010-02-03T22:58:40Z	s_nakamoto	T	55	1275	1163	2939cab06	2010-02-03T22:58:40Z	s_nakamoto	-		1275	1163	one-trailer	identical	0.00	update fSpent flag on wallet transactions if they're seen spent in case copy of wallet.dat was used elsewhere or restored from backup,
+082e725b3	2010-02-04T15:31:46Z	sirius-m	T	56	101	8	a43c00c56	2010-02-04T15:31:46Z	sirius-m	-		101	8	one-trailer	identical	0.00	Added some basic IPC functionality using wxServer, wxClient and wxConnection.
+c41226d84	2010-02-10T19:33:04Z	s_nakamoto	T	57	8	101	1c5d5e58c	2010-02-10T19:33:04Z	s_nakamoto	-		8	101	one-trailer	identical	0.00	revert revision 56, going in different direction with boost::asio and JSON-RPC
+75990a46a	2010-02-10T19:41:22Z	s_nakamoto	T	58	1968	0	40d324f10	2010-02-10T19:41:22Z	s_nakamoto	-		1968	0	one-trailer	identical	0.00	JSON Spirit library from http://www.codeproject.com/KB/recipes/JSON_Spirit.aspx, MIT license
+fa9dbd6b6	2010-02-10T19:46:04Z	s_nakamoto	T	59	3	1	73278c0a1	2010-02-10T19:46:04Z	s_nakamoto	-		3	1	one-trailer	identical	0.00	better error message in check_type(), tell the types by name instead of by number
+98500d70a	2010-02-12T20:38:44Z	s_nakamoto	T	60	1186	332	22f721dbf	2010-02-12T20:38:44Z	s_nakamoto	-		1186	332	one-trailer	identical	0.00	command line and JSON-RPC first draft, requires Boost 1.35 or higher for boost::asio,
+c85dfb148	2010-02-13T02:09:07Z	s_nakamoto	T	61	6	2	19765903d	2010-02-13T02:09:07Z	s_nakamoto	-		6	2	one-trailer	identical	0.00	updated build-unix.txt
+c4319e678	2010-02-14T00:08:27Z	s_nakamoto	T	62	30	47	7271c7ff3	2010-02-14T00:08:27Z	s_nakamoto	-		30	47	one-trailer	identical	0.00	Workaround for bug on wxWidgets 2.9.0 Ubuntu 9.10 64-bit where first character of the hidden columns were displayed so status column had three numbers overprinted.  Fixed by adding a leading space to the hidden columns.  64-bit compile with wxWidgets 2.9.0 seems to be fully working normally now.
+64a474a49	2010-02-14T22:27:13Z	s_nakamoto	T	63	16	19	297a50a06	2010-02-14T22:27:13Z	s_nakamoto	-		16	19	one-trailer	identical	0.00	renamed a few rpc methods
+5253d1ab7	2010-02-15T04:03:07Z	s_nakamoto	T	64	127	8464	cc4b78d59	2010-02-15T04:03:07Z	s_nakamoto	-		127	8464	one-trailer	identical	0.00	strip out unfinished product, review and market stuff,
+2b63e68bb	2010-02-15T20:36:55Z	s_nakamoto	T	65	1	1	f3cd4206b	2010-02-15T20:36:55Z	s_nakamoto	-		1	1	one-trailer	identical	0.00	fix mingw makefile to use correct wxWidgets include,
+e48065976	2010-02-17T17:22:01Z	s_nakamoto	T	66	281	462	bcd271403	2010-02-17T17:22:01Z	s_nakamoto	-		281	462	one-trailer	identical	0.00	all builds are now with wxWidgets-2.9.0, we are now using UTF-8,
+c6ab3cf6d	2010-02-17T23:55:43Z	s_nakamoto	T	67	34	6	794298063	2010-02-17T23:55:43Z	s_nakamoto	-		34	6	one-trailer	identical	0.00	safer wxGetTranslation wrapper
+75199de53	2010-02-20T21:59:59Z	s_nakamoto	T	68	941	549	6ff4388ff	2010-02-20T21:59:59Z	s_nakamoto	-		941	549	one-trailer	identical	0.00	Address Book with tabs instead of separate Your Address book,
+0184604aa	2010-02-21T21:42:01Z	s_nakamoto	T	69	693	132	ee618d754	2010-02-21T21:42:01Z	s_nakamoto	-		693	132	one-trailer	identical	0.00	transaction filter tabs instead of view->show generated
+cb420a1df	2010-02-23T22:01:39Z	s_nakamoto	T	70	207	47	30158c77e	2010-02-23T22:01:39Z	s_nakamoto	-		207	47	one-trailer	identical	0.00	run as daemon without GUI,
+c2430126d	2010-02-25T21:55:27Z	s_nakamoto	T	71	817	773	5eede9d4d	2010-02-25T21:55:27Z	s_nakamoto	-		817	773	one-trailer	identical	0.00	GUI-less build target bitcoind that links to wxBase and shouldn't need GTK,
+6557910cc	2010-02-26T16:09:43Z	s_nakamoto	T	72	3	3	8a46ed83c	2010-02-26T16:09:43Z	s_nakamoto	-		3	3	one-trailer	identical	0.00	wx/utils.h and wx/clipbrd.h not needed on bitcoind wxbase build
+d7d80a74d	2010-02-28T15:00:32Z	s_nakamoto	T	73	14	14	9a3358220	2010-02-28T15:00:32Z	s_nakamoto	-		14	14	one-trailer	identical	0.00	fix unsafe string handling in wxGetTranslation
+2cffa7ce3	2010-03-05T01:13:27Z	s_nakamoto	T	74	10	4	91e615bfe	2010-03-05T01:13:27Z	s_nakamoto	-		10	4	one-trailer	identical	0.00	fixed runaway memory alloc bug on 64-bit in ParseString found by sirius-m
+2d98de1b3	2010-05-19T00:26:56Z	s_nakamoto	T	76	109	74	240f3fbe2	2010-05-19T00:26:56Z	s_nakamoto	-		109	74	one-trailer	identical	0.00	Mac OS build fixes by laszlo
+124baa4cc	2010-05-25T23:58:27Z	s_nakamoto	T	77	274	0	9c1e9f0b6	2010-05-25T23:58:27Z	s_nakamoto	-		274	0	one-trailer	identical	0.00	build-osx.txt build instructions and makefile.osx from Laszlo
+42605ce8b	2010-05-26T00:05:26Z	s_nakamoto	T	78	364	101	7a47324c7	2010-05-26T00:05:26Z	s_nakamoto	-		364	101	one-trailer	identical	0.00	better prevention of inventory relaying during initial download,
+1da44d2e9	2010-05-27T14:11:03Z	s_nakamoto	T	79	806	0	5fe8bc0b4	2010-05-27T14:11:03Z	s_nakamoto	-		806	0	one-trailer	identical	0.00	Italian translation by Joozero
+2ca175883	2010-06-02T22:10:06Z	s_nakamoto	T	80	808	0	d9dac6772	2010-06-02T22:10:06Z	s_nakamoto	-		808	0	one-trailer	identical	0.00	Dutch translation by Xunie (93% complete)
+f93d5f9ff	2010-06-10T23:10:30Z	s_nakamoto	T	81	267	142	3b318ed09	2010-06-10T23:10:30Z	s_nakamoto	-		267	142	one-trailer	identical	0.00	automatically change displayed address whenever it receives anything,
+bed005b63	2010-06-14T22:34:33Z	s_nakamoto	T	82	1	1	78c7bb8e2	2010-06-14T22:34:33Z	s_nakamoto	-		1	1	one-trailer	identical	0.00	revert makefile.unix from -02 back to -00 to fix compile on linux, -02 doesn't really help on linux anyway
+e5681bb12	2010-06-15T18:26:32Z	s_nakamoto	T	83	23	12	d0ac235c8	2010-06-15T18:26:32Z	s_nakamoto	-		23	12	one-trailer	identical	0.00	more addr message error checking
+6a4a35549	2010-06-16T16:35:34Z	s_nakamoto	T	84	810	0	904ff7d07	2010-06-16T16:35:34Z	s_nakamoto	-		810	0	one-trailer	identical	0.00	German translation by DataWraith
+24ba1b64e	2010-06-18T03:14:24Z	s_nakamoto	T	85	95	19	c58e10565	2010-06-18T03:14:24Z	s_nakamoto	-		95	19	one-trailer	identical	0.00	use seed nodes as fallback if IRC fails or with TOR
+68b973a91	2010-06-21T01:33:44Z	s_nakamoto	T	86	1046	1122	3ca507a6e	2010-06-21T01:33:44Z	s_nakamoto	-		1046	1122	one-trailer	identical	0.00	fixed colors on ubuntu lucid,
+161c38ba6	2010-06-21T17:11:26Z	s_nakamoto	T	87	295	2	a66d097cb	2010-06-21T17:11:26Z	s_nakamoto	-		295	2	one-trailer	identical	0.00	80x80 xpm icon for ubuntu, alignment tweaked to scale nicely to 20x20 and 16x16
+36bb88e1b	2010-06-21T18:41:34Z	s_nakamoto	T	88	4	1	dbe23aada	2010-06-21T18:41:34Z	s_nakamoto	-		4	1	one-trailer	identical	0.00	fix system tray icon on windows
+8efd8f7f4	2010-06-22T03:45:37Z	s_nakamoto	T	89	5	5	bed3ad104	2010-06-22T03:45:37Z	s_nakamoto	-		5	5	one-trailer	identical	0.00	re-enable hiding taskbar button on minimize on linux, though it doesn't work cleanly
+445520bf3	2010-06-22T16:28:15Z	s_nakamoto	T	90	20	10	d63b0adab	2010-06-22T16:28:15Z	s_nakamoto	-		20	10	one-trailer	identical	0.00	added new files to setup.nsi, updated version numbers
+6344edc36	2010-06-22T17:59:00Z	s_nakamoto	T	91	2	2	6970bd96d	2010-06-22T17:59:00Z	s_nakamoto	-		2	2	one-trailer	identical	0.00	version 0.3 rc1
+3c3fc50c7	2010-06-23T22:51:31Z	s_nakamoto	T	92	9	0	2adc9062d	2010-06-23T22:51:31Z	s_nakamoto	-		9	0	one-trailer	identical	0.00	added instructions to build-unix.txt for building wxBase, which is needed to compile bitcoind
+340120853	2010-06-24T16:07:51Z	s_nakamoto	T	93	1	1	6cc56d8e8	2010-06-24T16:07:51Z	s_nakamoto	-		1	1	one-trailer	identical	0.00	updated build-unix.txt instructions: sudo apt-get install libboost-all-dev
+8700fae12	2010-06-26T00:23:16Z	s_nakamoto	T	94	3	3	c929529f9	2010-06-26T00:23:16Z	s_nakamoto	-		3	3	one-trailer	identical	0.00	build-unix.txt: updated a few version numbers
+06c471639	2010-06-26T15:47:45Z	s_nakamoto	T	95	6	4	e2bf70145	2010-06-26T15:47:45Z	s_nakamoto	-		6	4	one-trailer	identical	0.00	version 0.3 rc2
+f077bc0f4	2010-07-02T23:43:29Z	s_nakamoto	T	96	6	5	64f937069	2010-07-02T23:43:29Z	s_nakamoto	-		6	5	one-trailer	identical	0.00	reduced max outbound connections from 15 to 8 --version 0.3 rc4
+d77eac25b	2010-07-04T06:15:06Z	s_nakamoto	T	97	2	11	603c7ccea	2010-07-04T06:15:06Z	s_nakamoto	-		2	11	one-trailer	identical	0.00	version 0.3 release
+d88277378	2010-07-08T16:14:56Z	s_nakamoto	T	99	167	101	a280b4e66	2010-07-08T16:14:56Z	s_nakamoto	-		167	101	one-trailer	identical	0.00	Laszlo's fix to make generate threads idle priority on Linux,
+50d49d9c2	2010-07-08T18:07:14Z	s_nakamoto	T	100	807	0	cefe611ce	2010-07-08T18:07:14Z	s_nakamoto	-		807	0	one-trailer	identical	0.00	Portuguese translation by Tiago Faria
+20c6bfad1	2010-07-09T02:11:50Z	s_nakamoto	T	101	86	6	c8063ff03	2010-07-09T02:11:50Z	s_nakamoto	-		86	6	one-trailer	identical	0.00	Gavin Andresen: implementation of autostart on system startup option on Linux
+6e5d67e82	2010-07-09T15:29:48Z	s_nakamoto	T	102	6	14	f32339e70	2010-07-09T15:29:48Z	s_nakamoto	-		6	14	one-trailer	identical	0.00	switched from wxStandardPaths to GetDefaultDataDir, fixes bug reported by m0mchil when username contains non-lower-ASCII characters
+d01eaf042	2010-07-15T16:46:46Z	s_nakamoto	T	104	5	5	9d2174b6f	2010-07-19T01:02:04Z	Gavin Andresen	-		30	9	one-trailer	differs	3.34	version 0.3.1 rc1
+0bbc812f4	2010-07-15T19:11:51Z	s_nakamoto	T	105	1687	0	05708fc63	2010-07-19T01:08:47Z	Gavin Andresen	-		1687	0	one-trailer	identical	3.25	Spanish translation by milkiway,
+673a6d15d	2010-07-16T23:12:58Z	s_nakamoto	T	106	6	0	8e79c6475	2010-07-19T01:10:37Z	Gavin Andresen	-		6	0	one-trailer	identical	2.08	version 0.3.1 release
+ae922a36a	2010-07-17T23:51:16Z	s_nakamoto	T	107	20	7	4110f33cd	2010-07-19T01:12:24Z	Gavin Andresen	-		20	7	one-trailer	identical	1.06	security safeguards,
+3b7cd5d89	2010-07-25T16:45:21Z	s_nakamoto	T	109	405	137	40cd03694	2010-07-26T17:40:05Z	Satoshi Nakamoto	-		93	25	one-trailer	differs	1.04	Gavin Andresen's JSON-RPC HTTP authentication,
+6966768a5	2010-07-25T21:49:21Z	s_nakamoto	T	111	2	5	f0c11b191	2010-07-26T17:41:47Z	Gavin Andresen	-		2	1	one-trailer	differs	0.83	Gavin: BIO_FLAGS_BASE64_NO_NL
+793200e5e	2010-07-26T17:15:18Z	s_nakamoto	T	112	539	483	b6dc3b517	2010-07-26T17:44:51Z	Satoshi Nakamoto	-		537	469	one-trailer	differs	0.02	bitcoind now compiles without wxWidgets or wxBase
+520f36731	2010-07-27T01:14:33Z	s_nakamoto	T	113	129	57	9f35575ca	2010-07-27T14:21:02Z	--author=Satoshi Nakamoto	-		129	57	one-trailer	identical	0.55	tcatm's cached SHA256 state idea, about 70% faster generating
+813505cc1	2010-07-27T18:14:32Z	s_nakamoto	T	114	6085	893	3dd20ff2f	2010-07-27T20:43:55Z	--author=Satoshi Nakamoto	-		6091	893	one-trailer	differs	0.10	added a subset of Crypto++ 5.6.0 with 48% faster ASM SHA-256, combined speedup 2.5x faster vs 0.3.3, thanks BlackEye for figuring out the alignment problem
+f79751c29	2010-07-27T19:43:04Z	s_nakamoto	T	115	10	14	2689f4d02	2010-07-27T20:46:41Z	--author=Satoshi Nakamoto	-		10	14	one-trailer	identical	0.04	better IsInitialBlockDownload
+0bd084011	2010-07-28T21:11:09Z	s_nakamoto	T	116	2	2	872d60f6e	2010-07-30T17:31:05Z	--author=Satoshi Nakamoto	-		2	2	one-trailer	identical	1.85	fixed makefile.vc
+f6f8237a7	2010-07-28T21:17:35Z	s_nakamoto	T	117	1	1	31ffe954b	2010-07-30T17:31:39Z	--author=Satoshi Nakamoto	-		1	1	one-trailer	identical	1.84	fixed makefile.osx
+757f0769d	2010-07-29T20:27:12Z	s_nakamoto	T	119	718	655	a75560d82	2010-07-30T17:36:06Z	--author=Satoshi Nakamoto	-		718	655	one-trailer	identical	0.88	reverted makefile.unix wx-config -- version 0.3.6
+01bed1828	2010-07-30T23:22:55Z	s_nakamoto	T	120	13	18	e1cb7ce01	2010-07-31T14:14:41Z	--author=Satoshi Nakamoto	-		12	29	one-trailer	differs	0.62	simplified makefile.unix, updated build-unix.txt instructions to include boost 1.37
+2c06be915	2010-08-03T18:25:05Z	s_nakamoto	T	122	81	34	b34e8c3c3	2010-08-04T01:51:34Z	Satoshi Nakamoto	-		81	34	one-trailer	identical	0.31	new safety feature displays a warning message and locks down RPC if it detects a problem that may require an upgrade
+0c5072227	2010-08-04T04:15:38Z	laszloh	T	123	9	7	dd9e71843	2010-08-10T15:57:38Z	Satoshi Nakamoto	-		9	7	one-trailer	identical	6.49	correct typo for mac compile, update makefile to use llvm
+e6b7ab574	2010-08-09T19:54:40Z	s_nakamoto	T	124	14	6	8a38d5663	2010-08-10T16:01:23Z	Satoshi Nakamoto	-		14	6	one-trailer	identical	0.84	enable SSE2 in all builds to fix crypto++ SHA-256 on 64-bit
+94cfec07f	2010-08-09T20:00:17Z	s_nakamoto	T	125	25	9	c2fa70ddf	2010-08-10T16:03:01Z	Satoshi Nakamoto	-		25	9	one-trailer	identical	0.84	always make 8 outbound connections even if have inbound,
+342e1b733	2010-08-10T19:21:17Z	s_nakamoto	T	126	48	56	410b618d1	2010-08-12T13:20:57Z	Satoshi Nakamoto	-		48	56	one-trailer	identical	1.75	json-spirit print reals with 8 decimal places,
+fb83d2876	2010-08-10T22:55:23Z	s_nakamoto	T	127	41	12	9db7bf5f5	2010-08-12T13:23:02Z	Satoshi Nakamoto	-		41	12	one-trailer	identical	1.60	gethashespersec and added version and hashespersec to getinfo
+0cff7a8aa	2010-08-10T23:43:37Z	s_nakamoto	T	128	7	0	f5d2bc8a3	2010-08-12T13:26:20Z	Satoshi Nakamoto	-		7	0	one-trailer	identical	1.57	disable SSE2 on 32-bit
+428773279	2010-08-11T01:38:24Z	s_nakamoto	T	129	2	2	819adfff6	2010-08-12T13:28:22Z	Satoshi Nakamoto	-		2	2	one-trailer	identical	1.49	fix build, thanks jgarzik
+01cd2fdaf	2010-08-12T21:13:43Z	s_nakamoto	T	130	132	39	7f71fd13a	2010-08-13T02:23:46Z	Satoshi Nakamoto	-		132	39	one-trailer	identical	0.22	fix -datadir=./subdir relative path,
+4bd188c43	2010-08-15T21:05:16Z	s_nakamoto	T	131	538	52	6ac7f9f14	2010-08-15T23:06:05Z	Satoshi Nakamoto	-		538	58	one-trailer	differs	0.08	misc changes
+d4c6b90ca	2010-08-15T21:35:24Z	s_nakamoto	T	132	19	2	76793dc96	2010-08-15T23:09:29Z	Satoshi Nakamoto	-		19	2	one-trailer	identical	0.07	fix for block 74638 overflow output transaction
+08fee7520	2010-08-15T22:46:58Z	s_nakamoto	T	134	9	6	7d489192f	2010-08-16T20:50:37Z	Satoshi Nakamoto	-		9	6	one-trailer	identical	0.92	makefile.unix to build with option to enable tcatm's 4-way SSE2 SHA-256 with -4way switch on Linux
+e540144b2	2010-08-16T13:11:32Z	s_nakamoto	T	135	1	1	019b45660	2010-08-16T20:51:46Z	Satoshi Nakamoto	-		1	1	one-trailer	identical	0.32	added -march=amdfam10 to sha256.cpp in makefile.unix
+6da916d4a	2010-08-16T13:37:00Z	s_nakamoto	T	136	4	0	c923cdbd5	2010-08-16T20:52:36Z	Satoshi Nakamoto	-		4	0	one-trailer	identical	0.30	wrap sha256.cpp in FOURWAYSSE2 #ifdef
+15399da9f	2010-08-16T17:05:50Z	s_nakamoto	T	137	81	48	bb3fd0293	2010-08-16T20:53:49Z	Satoshi Nakamoto	-		91	49	one-trailer	differs	0.16	blocks-1,
+a01d5876f	2010-08-16T17:51:10Z	s_nakamoto	T	138	12	0	21ca2d833	2010-08-16T20:54:47Z	Satoshi Nakamoto	-		12	0	one-trailer	identical	0.13	erase the bad chain after disconnecting it
+44a0de186	2010-08-16T18:46:02Z	s_nakamoto	T	139	6	13	43deefa43	2010-08-16T20:55:54Z	Satoshi Nakamoto	-		6	13	one-trailer	identical	0.09	do an extra CheckBlock in ConnectBlock
+05454818d	2010-08-19T22:43:19Z	s_nakamoto	T	140	126	62	7a37c906a	2010-08-28T00:49:30Z	Satoshi Nakamoto	-		126	62	one-trailer	identical	8.09	block index checking on load, extra redundant checks, misc refactoring
+2201a0808	2010-08-20T16:55:14Z	s_nakamoto	T	141	64	14	c545563d4	2010-08-28T00:50:40Z	Satoshi Nakamoto	-		64	14	one-trailer	identical	7.33	warning message if clock is too far off
+401926283	2010-08-25T00:05:37Z	s_nakamoto	T	142	409	86	522dfe342	2010-08-28T00:51:52Z	Satoshi Nakamoto	-		409	86	one-trailer	identical	3.03	alert system
+7d7797b14	2010-08-25T14:18:56Z	s_nakamoto	T	143	21	2	87cfcfd37	2010-08-28T00:54:37Z	Satoshi Nakamoto	-		21	2	one-trailer	identical	2.44	more rpc methods allowed in safe mode
+2ef9cfa5b	2010-08-25T16:33:38Z	s_nakamoto	T	144	2	2	d3631907d	2010-08-28T00:55:19Z	Satoshi Nakamoto	-		2	2	one-trailer	identical	2.35	change switch name to -disablesafemode
+5b721607b	2010-08-25T17:53:09Z	s_nakamoto	T	145	2	0	343328c6b	2010-08-28T00:55:50Z	Satoshi Nakamoto	-		2	0	one-trailer	identical	2.29	added -testsafemode switch
+8c9479c6b	2010-09-07T01:12:53Z	s_nakamoto	T	148	350	278	f1e1fb4bd	2010-09-07T01:12:53Z	s_nakamoto	T	148	350	278	both-trailer	identical	0.00	cleanup,
+14002c8eb	2010-09-08T19:24:32Z	s_nakamoto	T	149	18	1	3f6475377	2010-09-08T19:24:32Z	s_nakamoto	T	149	18	1	both-trailer	identical	0.00	Gavin Andresen: clean shutdown on SIGTERM
+7629d36a5	2010-09-09T01:00:40Z	s_nakamoto	T	150	71	5	8555125a1	2010-09-09T01:00:40Z	s_nakamoto	T	150	71	5	both-trailer	identical	0.00	try to auto-detect whether to use 128-bit 4-way SSE2
+00728c24e	2010-09-10T16:58:59Z	s_nakamoto	T	151	7	6	496823249	2010-09-10T16:58:59Z	s_nakamoto	T	151	7	6	both-trailer	identical	0.00	fix problem sending the last cent with sub-cent fractional change
+2323664a3	2010-09-10T18:07:48Z	s_nakamoto	T	152	1	1	c39b06866	2010-09-10T18:07:48Z	s_nakamoto	T	152	1	1	both-trailer	identical	0.00	fix build on non-intel architectures, thanks teknohog
+c8ad9b837	2010-09-12T17:30:15Z	s_nakamoto	T	153	1	2	fdbf76d4f	2010-09-12T17:30:15Z	s_nakamoto	T	153	1	2	both-trailer	identical	0.00	dropped DB_PRIVATE from dbenv.open
+3df62878c	2010-09-13T22:14:24Z	s_nakamoto	T	154	175	113	71cc095cb	2010-09-13T22:14:24Z	s_nakamoto	T	154	175	113	both-trailer	identical	0.00	reorganize BitcoinMiner to make it easier to add different SHA256 routines
+efae3da41	2010-09-15T22:10:13Z	s_nakamoto	T	155	76	22	fe37c3501	2010-09-15T22:10:13Z	s_nakamoto	T	155	76	22	both-trailer	identical	0.00	config option -rpcallowip= to accept json-rpc connections from another machine
+172f00602	2010-09-19T21:20:34Z	s_nakamoto	T	156	30	18	6aeb45187	2010-09-19T21:20:34Z	s_nakamoto	T	156	30	18	both-trailer	identical	0.00	only accept transactions sent by IP address if -allowreceivebyip is specified
+8d13ca1f1	2010-09-23T16:01:44Z	s_nakamoto	T	157	23	16	9b8eb4d69	2010-09-23T16:01:44Z	s_nakamoto	T	157	23	16	both-trailer	identical	0.00	changed free transactions per block threshold
+2d96276e2	2010-12-20T15:36:48Z	Gavin Andresen	-		4	5	86c2bdfd5	2010-12-20T15:36:48Z	Gavin Andresen	-		4	5	neither	identical	0.00	EndModal fix for Mac from piotrp

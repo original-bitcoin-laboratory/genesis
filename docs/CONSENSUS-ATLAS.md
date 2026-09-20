@@ -51,6 +51,7 @@ It does not say why.
 | 2010-07-17 | `ae922a36a` (r107) | `s_nakamoto` | hard-coded checkpoints at 11111, 33333, 68555 | yes ("security safeguards") |
 | 2010-07-25 | `3b7cd5d89` (r109) | `s_nakamoto` | best chain by cumulative work, not height | no |
 | 2010-07-29 | `757f0769d` | `s_nakamoto` | script element, size, stack and numeric caps | no |
+| 2010-07-31 | `6ff5f718b` (r121) | `s_nakamoto` | op-count limit (200); script-size cap 20,000 → 10,000 | yes ("additional security limits") |
 | 2010-08-15 | `d4c6b90ca` | `s_nakamoto` | output value bounds and the output-sum check (named `MoneyRange` in `05454818d`, four days later) | yes |
 | 2010-08-15 | `4bd188c43` | `s_nakamoto` | disabled opcodes; element and numeric caps tightened; checkpoint at 74000 | no |
 | 2010-08-19 | `05454818d` (r140) | `s_nakamoto` | transaction replacement by `nSequence` disabled | no |
@@ -64,7 +65,7 @@ It does not say why.
 | 2013-03-15 | `8bd028818`, `fc6deb521` | Gavin Andresen | the written response to the Berkeley DB lock rule nobody wrote | yes |
 | 2014-03-26 | `48d8eb184` … `05e3ecffa` (PR 3965) | Cory Fields | `CScriptNum` replaces `CBigNum` in script arithmetic (no rule change) | yes |
 | 2015-01-13 | `80ad135a5`, `5a47811da` (PR 5713) | Pieter Wuille | BIP 66: DER strictness written into consensus, out of OpenSSL | yes |
-| 2016-03-21 | PR 7692 (`9e17aac6b`) | BtcDrak | alert system removed (Core 0.13.0) | yes |
+| 2016-03-21 | PR 7692 (merge `29b2be6ad`) | BtcDrak, Thomas Kerin | alert system removed (Core 0.13.0) | yes |
 
 Thirteen rules have an origin commit in the record (the 32 MiB ceiling is the release's own); the
 introducing message describes the change for seven of them and does not for six. Added later on 20 September:
@@ -102,17 +103,25 @@ bool IsFinal() const
 addr relaying fixes, proxy option and privacy patches, detect connect to self, non-final tx locktime changes, fix hide unconfirmed generated
 ```
 
-The diff adds, in `main.h`:
+The diff adds, in `main.h` (the hunk in full; an earlier text of this section quoted its first and last lines as if adjacent):
 
 ```
 +        // Time based nLockTime implemented in 0.1.6,
++        // do not use time based until most 0.1.5 nodes have upgraded.
++        if (nBlockTime == 0)
++            nBlockTime = GetAdjustedTime();
++        if (nLockTime == 0)
++            return true;
 +        if (nLockTime < (nLockTime < 500000000 ? nBestHeight : nBlockTime))
 ```
 
 A lock below 500,000,000 is a height; at or above it, a Unix time. The message names "non-final tx
 locktime changes": it describes the change. The number itself, 500,000,000 (5 November 1985 00:53:20
 UTC as a Unix time), is not argued for in the commit. The source comment attributes the change to a
-version, 0.1.6, between the 0.1.5 the record starts from and the next release.
+version, 0.1.6, between the 0.1.5 the record starts from and the next release, and gives a reason for
+deferring the time-based form: until most 0.1.5 nodes have upgraded. The same commit adds to
+`AcceptTransaction` in `main.cpp` a refusal of any `nLockTime` above `INT_MAX`, "To help v0.1.5 clients
+who would see it as negative number. please delete this later."
 
 Two later commits touch the check without changing the rule: `2c06be915` (2010-08-03, "new safety
 feature displays a warning message and locks down RPC if it detects a problem that may require an
@@ -120,8 +129,8 @@ upgrade -- version 0.3.8") compares against a block height passed in rather than
 `nBestHeight`; `aa496b75c` (2011-07-09, Wladimir J. van der Laan, "remove magic number: change threshold
 for nLockTime to constant") names the number `LOCKTIME_THRESHOLD`.
 
-- **Kind:** consensus. **message_match:** `true`. **Argument:** not-in-record (the threshold's
-  magnitude).
+- **Kind:** consensus. **message_match:** `true`. **Argument:** not-in-record for the threshold's
+  magnitude; the diff's comment states a reason for the deferral.
 - **Witness:** `OBL-F-0002` — the January 2009 source has no threshold and the laboratory's temporal
   port runs the height-only rule (`derivatives/temporal/`). Grade: `JAN09-SOURCE` + `MODEL`.
 - **Lineage:** `cc0b4c3b6`, same timestamp, author string `s_nakamoto`, no trailer.
@@ -164,10 +173,11 @@ Neither line of the message mentions chain selection or work.
 
 ## 4. The alert system (`OBL-C-0009`)
 
-**Introduced in `401926283`** (SVN r142, 2010-08-25T00:05:37Z, `s_nakamoto`). Message, verbatim:
+**Introduced in `401926283`** (SVN r142, 2010-08-25T00:05:37Z, `s_nakamoto`). Message, verbatim (two lines):
 
 ```
 alert system
+-- version 0.3.11
 ```
 
 The diff adds the `CAlert` message type, its hard-coded verification key, and the safe-mode behaviour
@@ -177,8 +187,9 @@ accepts from anyone holding one private key.
 **Retired, in four dated steps** (the bitcoin.org alert page "Alert System Retirement", whose dated
 updates are the record cited here; and `bitcoin/bitcoin` pull request 7692):
 
-- 2016-03-21: PR 7692 "Remove p2p alert system" merged (`9e17aac6b`; commits by BtcDrak 6–18 March 2016,
-  among them `1b77471bd` "Remove alert keys"); shipped in Bitcoin Core 0.13.0.
+- 2016-03-21: PR 7692 "Remove p2p alert system" merged (`29b2be6ad`, Wladimir J. van der Laan; commits by
+  BtcDrak and Thomas Kerin, 6–18 March 2016, among them `1b77471bd` "Remove alert keys" and `6601ce508`
+  "protocol.h/cpp: Removes NetMsgType::ALERT", 18 March, Thomas Kerin); shipped in Bitcoin Core 0.13.0.
 - 2017-01-19: the final alert broadcast, overriding all others and displaying "Alert Key Compromised".
 - 2017-03-08: Bitcoin Core 0.14.0 released with that final alert hard-coded.
 - 2018-07-03: the key and the alert system's vulnerabilities published.
@@ -249,9 +260,11 @@ applying the check; a block containing one is valid.
 
 - **Kind:** policy. **message_match:** `true`. **Argument:** cited — the message states the reason
   ("CScripts we can understand").
-- **Witness:** `OBL-F-0010` — the laboratory's release build executes, over the wire, 136 of 136 script
-  vectors, among them the escrow, hash-lock and assurance constructions that fall outside the
-  templates. Grade: `EXECUTED (release build)`.
+- **Witness:** `OBL-F-0036` — the January memory-pool path, ported, relays a hash-lock transaction
+  (`OP_SHA256 <h> OP_EQUAL`) that the `a206a2398` clause refuses as nonstandard, and `CheckTransaction`
+  accepts it in both eras (`derivatives/origin_policy/is_standard.py`). Grade: `MODEL`. Until 20 September
+  2026 this cell cited `OBL-F-0010`, the release build executing non-template scripts; that is the script
+  engine, the consensus side, and not this policy.
 - **Lineage:** no second copy within nine days of the same first line.
 
 ## 7. `CScriptNum` — the numeric type after the numeric cap (`OBL-C-0012`)
@@ -263,7 +276,7 @@ holds those operands, `CBigNum` over OpenSSL's `BIGNUM`, with a class of the sam
 - `48d8eb184` "script: add CScriptNum class", `27bff74e3` "script: switch to CScriptNum usage for
   scripts", `4f497cd97`, `05e3ecffa` "script: remove bignum dependency" (all 2014-03-26, Cory Fields),
   with tests `90320d677`, `b1fdd5475` (2014-04-22); pull request 3965 "Remove bignum dependency for
-  scripts", merged 2014-05-09 (`681f02551`).
+  scripts", merged 2014-05-09 (`1c0319bb2`).
 
 - **Kind:** consensus (script arithmetic), with the rule unchanged by these commits: the change is in
   which code enforces it. **message_match:** `true`. **Argument:** cited — the pull request's title
@@ -335,7 +348,7 @@ OpenSSL accepts is what the chain accepts. BIP 66 (Pieter Wuille, assigned 2015-
 
 **The written rule** — pull request 5713 "Implement BIP66": `80ad135a5` (2015-01-13, Pieter Wuille,
 "Change IsDERSignature to BIP66 implementation", `src/script/interpreter.cpp`, +63 −63) and
-`5a47811da` ("BIP66 changeover logic"); merged 2015-02-03 (`bd03a1cb9`). Deployment reuses BIP 34's
+`5a47811da` ("BIP66 changeover logic"); merged 2015-02-03 (`41e6e4cab`). Deployment reuses BIP 34's
 thresholds for block `nVersion = 3`: enforced from the block at which 750 of the preceding 1,000 are
 version 3; version-2 blocks rejected from 950. Strict DER had been relay policy since 0.8.0 (BIP 66,
 Compatibility).
@@ -349,10 +362,11 @@ that the 950-of-1,000 threshold was reached, that a miner produced an invalid ve
   accept (BIP 66, Motivation).
 - **Witness:** `OBL-F-0025` — BIP 66's function, ported line for line, passes the corpus's seven
   strict signatures and fails its three probes (a long-form length, a redundant pad, a byte before
-  the flag), each of which a BER-tolerant reader recovers to an (r, s) whose strict re-encoding
-  passes (`derivatives/emergent/der_strictness.py`); `OBL-F-0010` — the OpenSSL 1.0.2u of the
-  laboratory's release build rejects the three. The acceptance side needs the unmodified 2009 binary
-  (OpenSSL 0.9.8), not yet replayed. Grade: `EXECUTED (release build)` + `MODEL`.
+  the flag), each of which a BER-tolerant reader recovers to an (r, s) that verifies under the vector's
+  own key over its own signature hash (`derivatives/emergent/der_strictness.py`, `test_emergent.py`);
+  `OBL-F-0010` — the OpenSSL 1.0.2u of the laboratory's release build rejects the three. That is the
+  rejection side. The acceptance side, that OpenSSL 0.9.8 on the 2009 binary accepts them, has no
+  artifact at any grade and stays open. Grade: `EXECUTED (release build)` + `MODEL`, rejection side.
 
 ## 10. Transaction replacement by sequence number — shipped, then disabled (`OBL-C-0015`)
 
@@ -459,12 +473,52 @@ output is under one cent) and a price that rises as the block being built passes
   fee-less transaction and the 602nd free 250-byte transaction in a ten-minute window
   (`derivatives/origin_policy/fees.py`). Grade: `JAN09-SOURCE` + `MODEL`.
 
-## 13–17. The four rules already written up
+## 13. The op-count limit — the fifth script cap, dated (`OBL-C-0002`)
+
+`docs/SCRIPT-LIMITS-RETROFITTED.md` dates four caps to `757f0769d` and leaves the op-count limit "noted but not
+dated". Neither that commit nor `4bd188c43` carries it.
+
+**Introduced in `6ff5f718b`** (SVN r121, 2010-07-31T19:15:48Z, `s_nakamoto`; 6 files, +39 −24). Message,
+verbatim (four lines):
+
+```
+fixed segfault in bignum.h,
+additional security limits,
+refactoring
+-- version 0.3.7
+```
+
+The diff adds to `EvalScript` in `script.cpp`:
+
+```
++    int nOpCount = 0;
+...
++            if (opcode > OP_16 && nOpCount++ > 200)
+```
+
+and lowers the script-size cap installed two days earlier:
+
+```
+-    if (script.size() > 20000)
++    if (script.size() > 10000)
+```
+
+`f1e1fb4bd` (2010-09-07, section 5's "cleanup," commit) rewrites the test as `if (opcode > OP_16 && ++nOpCount > 201)`,
+the same boundary (201 counted opcodes pass, the 202nd fails); `a790fa46f` (2010-09-30) and `5cbf75324`
+(2010-10-19) add the keys of a `CHECKMULTISIG` to the count (`nOpCount += nKeysCount`).
+
+- **Kind:** anti-DoS. **message_match:** `true` ("additional security limits" names the class). **Argument:**
+  not-in-record (no failure named, no magnitude argued).
+- **Witness:** `OBL-F-0035` — 201 counted opcodes pass and 202 fail on the ported rule; pushes and
+  `OP_1`–`OP_16` do not count (`derivatives/script_limits/`). Grade: `MODEL`.
+- **Lineage:** no second copy within nine days of the same first line.
+
+## 14–18. The four rules already written up
 
 | rule | row | note |
 |---|---|---|
 | `MAX_BLOCK_SIZE = 1000000` — constant 15 Jul 2010, validity rule 7 Sep 2010 from block 79,401 | `OBL-C-0001` | `docs/MAX-BLOCK-SIZE-RETROFITTED.md` |
-| script element, size, stack and numeric caps — 29 Jul 2010, tightened 15 Aug 2010 | `OBL-C-0002` | `docs/SCRIPT-LIMITS-RETROFITTED.md` |
+| script element, size, stack and numeric caps — 29 Jul 2010, tightened 15 Aug 2010; the op count, 31 Jul 2010, in section 13 | `OBL-C-0002` | `docs/SCRIPT-LIMITS-RETROFITTED.md` |
 | output value bounds and the output-sum check — 15 Aug 2010, block 74638 (named `MoneyRange` four days later) | `OBL-C-0003` | `derivatives/overflow/README.md` |
 | `MAX_BLOCK_SIGOPS` — 7 Sep 2010 | `OBL-C-0004` | `docs/MAX-BLOCK-SIZE-RETROFITTED.md` |
 | disabled opcodes — 15 Aug 2010 | `OBL-C-0005` | `docs/SCRIPT-LIMITS-RETROFITTED.md` |
@@ -485,8 +539,12 @@ gh api "repos/bitcoin/bitcoin/contents/main.h?ref=e071a3f6c" -H "Accept: applica
 Each rule's origin was found by listing the commits that touch `main.h`, `main.cpp` or `script.*` in
 a window and reading every patch for the first added line that carries the rule; the window was then
 widened until the first commit's own copy of the file showed the rule absent. The reference for a
-2009–2010 commit is the copy with the `git-svn-id` trailer; the other copy is recorded under Lineage.
-The later rules are dated by their pull requests' commits and merge dates.
+2009–2010 commit is the copy with the `git-svn-id` trailer; the other copy is recorded under Lineage. Where
+both copies carry the trailer (SVN r148–r157), the reference is the copy on the chain the r158 trailer commit
+`a790fa46f` descends from (`docs/BITCOIN-GIT-HISTORY-PROVENANCE.md`, revision 2).
+The later rules are dated by their pull requests' commits and merge dates; a merge is cited by the merge commit
+on `master`, read from the repository's history, and not by the sha the pull-request API reports as
+`merge_commit_sha`, which for a merged request is a test merge GitHub computes.
 
 ## Limits of this document
 
@@ -500,5 +558,7 @@ BOUNDED by the record       GitHub's copy of bitcoin/bitcoin on 20 September 202
 WITNESS gaps stated         the transaction-size rule has no executed witness; the DER rule's
                             acceptance side waits on the 2009 binary
 ```
+
+**Corrections, 20 September 2026, from two adversarial reviews.** The merge commits of PR 7692, PR 5713 and PR 3965 had been cited as `9e17aac6b`, `bd03a1cb9` and `681f02551`, the `merge_commit_sha` values of GitHub's pull-request records; none is on the repository's history. They are `29b2be6ad`, `41e6e4cab` and `1c0319bb2`. The 18 March 2016 commit of PR 7692 is Thomas Kerin's, not BtcDrak's. `401926283`'s message is two lines, quoted here as one. The `dd519206a` hunk was quoted as two adjacent lines; it is seven, and the omitted comment line gives a reason. Section 13 (the op-count limit) is new. Section 6's witness and section 9's grade wording are corrected as marked. The earlier text is kept in this repository's history.
 
 **Corrections to this document are published, dated, and not made silently.**

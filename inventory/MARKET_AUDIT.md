@@ -102,7 +102,7 @@ gaps are commented bootstrapping (10, 11) and an unfinished persistence TODO (12
   request/reply purchase protocol tied to the wallet, and a reputation graph — years
   before "Bitcoin is just money" became the dominant framing. This corroborates the
   lab thesis that v0.1 is a *general financial predicate engine*, not only a currency.
-- **Off-chain by design.** Products/reviews/atoms live in a **broadcast + local DB**
+- **Off-chain.** Products/reviews/atoms live in a **broadcast + local DB**
   layer (`CReviewDB`, `mapProducts`), not on the blockchain. Listings are **ephemeral**
   (die with the seller's connection). This is a flood pub/sub network with hop counts
   and subscriptions (`MSG_TABLE`/`MSG_PRODUCT`), distinct from block/tx relay.

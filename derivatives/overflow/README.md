@@ -12,7 +12,7 @@ other **rejects**.
 ```
 two outputs of 9223372036854277039 sat each (~92,233,720,368.54 BTC)
   v0.1 CheckTransaction (main.h:442) : ACCEPT  (ok)
-  2010 CheckTransaction (MoneyRange) : REJECT  (txout.nValue out of range (MoneyRange))
+  2010 CheckTransaction (d4c6b90ca)  : REJECT  (output-above-max-money)
   output total as int64 (C++)  :                  -997538 sat  <- wraps negative
   output total, true value     :     18446744073708554078 sat  = 184,467,440,737 BTC minted
   => v0.1's 'inputs >= outputs' sees outputs = -997538 and passes with a tiny input.

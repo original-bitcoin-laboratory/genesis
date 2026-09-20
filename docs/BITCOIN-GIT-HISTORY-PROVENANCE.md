@@ -2,10 +2,12 @@
 
 **19 September 2026.** The repository the field treats as the record of Bitcoin's early development
 was converted from Subversion. For the period from its first commit (30 August 2009) to the end of
-2010 it carries most commits twice, on two parallel lineages: one copy with the `git-svn-id` trailer
-that names the SourceForge revision, and one without, dated the same day or up to eight days later,
-under one of three author strings. A date or hash cited from the second copy can differ from the
-first by up to eight days and, in eight cases, by a few lines of content.
+2010 it carries many commits twice: 132 of its 341 non-merge commits exist as a pair with the same first
+message line. In 121 pairs one copy carries the `git-svn-id` trailer that names the SourceForge revision and
+the other does not, dated the same day or up to eight days later, under one of three author strings; in ten
+pairs (SVN r148–r157) both copies carry the trailer; in one neither does. A date or hash cited from the second
+copy of a one-trailer pair can differ from the first by up to eight days and, in eight cases, by a few lines
+of content.
 
 This note measures that from GitHub's own commit records, states what follows for citing the record,
 and states what it does not claim. Findings register: `OBL-F-0014`.
@@ -18,12 +20,14 @@ and states what it does not claim. Findings register: `OBL-F-0014`.
 > ```
 > ALREADY VISIBLE       git-svn-id trailers on the early history; author strings in three forms
 >
-> ADDED HERE            the count: 122 of 341 non-merge commits in the window exist as a pair
->                       that 112 of the 120 compared pairs carry identical additions, deletions and file lists,
+> ADDED HERE            the count: 132 of 341 non-merge commits in the window exist as a pair
+>                         (121 with the trailer on one copy, 10 on both, 1 on neither), and one first
+>                         line, "misc", eight times
+>                       that 124 of the 132 pairs carry identical additions, deletions and file lists,
 >                         and 8 differ by a few lines
->                       that the copy without the trailer is dated later in every pair (median same day,
->                         90 % within 1.75 days, at most 8.09 days), and is the copy that carries
->                         the strings "Satoshi Nakamoto" and "--author=Satoshi Nakamoto"
+>                       that in the one-trailer pairs the copy without the trailer is dated later in every
+>                         pair (median same day, 90 % within 1.75 days, at most 8.09 days), and is the copy
+>                         that carries the strings "Satoshi Nakamoto" and "--author=Satoshi Nakamoto"
 >                       that the doubling starts at the root: two "First commit" objects, 30 Aug 2009
 > ```
 >
@@ -43,10 +47,12 @@ author strings             s_nakamoto 245 · Satoshi Nakamoto 26 · "--author=Sa
 author addresses           <name>@1a98c847-1fd6-4fd8-948a-caf3550aa51b (the SVN uuid) ·
                            satoshin@gmx.com 34 (26 Jul .. 28 Aug 2010) · gavinandresen@gmail.com 58 · witchspace81@gmail.com 2
 
-duplicate pairs            122 groups of one trailer copy + one non-trailer copy, same first message line
-  same change?             112 identical (additions, deletions, file list) · 8 differ · 2 not compared
-  date offset              non-trailer minus trailer: min 0.00 d · median 0.00 · p90 1.75 · max 8.09 · earlier: 0
-  non-trailer author       s_nakamoto 76 · Satoshi Nakamoto 25 · --author=Satoshi Nakamoto 7 · sirius-m 12 · Gavin Andresen 5
+duplicate pairs            132 groups of two non-merge commits with the same first message line
+  trailer on               one copy 121 · both copies 10 (SVN r148–r157, 7–23 Sep 2010) · neither 1 (20 Dec 2010, Gavin Andresen)
+  same change?             124 identical (additions, deletions, file list) · 8 differ (all one-trailer pairs) · 0 not compared
+  date offset              non-trailer minus trailer, one-trailer pairs: min 0.00 d · median 0.00 · p90 1.75 · max 8.09 · earlier: 0
+  non-trailer author       s_nakamoto 72 · Satoshi Nakamoto 25 · --author=Satoshi Nakamoto 7 · sirius-m 12 · Gavin Andresen 5
+  eight copies             the first line "misc" (Dec 2009 – Mar 2010): four trailer and four non-trailer commits, not paired by this method
 root                       e071a3f6c and 4405b78d6, both "First commit", sirius-m, 2009-08-30
 ```
 
@@ -64,8 +70,8 @@ d01eaf042      9d2174b6f    +5    / -5      +30   / -9     15 → 19 Jul   versi
 15399da9f      bb3fd0293    +81   / -48     +91   / -49    16 Aug        blocks-1,
 ```
 
-Two pairs (`53d508072`/`2939cab06`, `e39bc50eb`/`25b12b883`) were not compared because one fetch
-failed on the run; they are counted as pairs by message and not as identical.
+The two pairs the first run could not compare (`53d508072`/`2939cab06`, `e39bc50eb`/`25b12b883`) are identical
+on the re-run of 20 September 2026, which compared every pair.
 
 ### The eight `--author=` commits
 
@@ -78,8 +84,14 @@ with the address `satoshin@gmx.com`. The record shows the string; it does not sh
 - A commit from this period has two hashes and, in a pair, up to two dates. A citation that names one
   hash and one date without saying which lineage it reads is under-specified by up to eight days.
 - The trailer copy carries the SourceForge revision (`git-svn-id: ... trunk@N`) and the earlier date in
-  every pair. This laboratory cites that copy and records the other in a `lineage_note`
-  (`CONSTITUTION-REGISTER.md`). Example: the alert system is `401926283` (25 Aug 2010, trailer) and
+  every one-trailer pair. This laboratory cites that copy and records the other in a `lineage_note`
+  (`CONSTITUTION-REGISTER.md`). For the ten pairs where both copies carry the trailer (r148–r157) the two share
+  revision, date and author string; the cited copy is the one on the chain that the r158 trailer commit
+  `a790fa46f` descends from by first parent (`f1e1fb4bd`, `3f6475377`, `7629d36a5`, `496823249`, `c39b06866`,
+  `fdbf76d4f`, `3df62878c`, `efae3da41`, `172f00602`, `9b8eb4d69`); the other chain ends in a merge commit of
+  23 September 2010 (`6ce5af574`, "Merge commit 'svn/trunk' into svn"). Where the two copies' messages differ,
+  as `f1e1fb4bd` and `8c9479c6b` do (the latter adds "-- version 0.3.12 release"), `message_match` is read on
+  the cited copy. Example: the alert system is `401926283` (25 Aug 2010, trailer) and
   `522dfe342` (28 Aug 2010, "Satoshi Nakamoto"); 0.3.11 shipped later still.
 - The eight differing pairs mean "the same commit" is not the same change in every pair. A claim about the
   content of a 2010 commit should name the hash it read, not the message.
@@ -123,7 +135,7 @@ NOT a claim about cause   how the second lineage arose (a re-import, a rebase, a
 NOT a claim about intent  no statement about anyone's purpose
 NOT a completeness claim  the window ends at 2010-12-31; the conversion's later effects, and merge
                           commits, are not examined
-BOUNDED by the API        GitHub's records on the run date; 2 of 122 pairs not compared; commit
+BOUNDED by the API        GitHub's records on the run date; every pair compared on the re-run; commit
                           metadata is author-supplied for the non-trailer copies, server-numbered
                           (SVN revision) for the trailer copies
 ```
@@ -133,6 +145,16 @@ BOUNDED by the API        GitHub's records on the run date; 2 of 122 pairs not c
 ## Artifacts
 
 Four paginated API calls and one per-commit call reproduce every number. The census script's JSON
-output for this run is kept beside the satoshi-onchain event that cites it.
+output for this run is kept beside the satoshi-onchain event that cites it. `bitcoin-git-history-pairs.tsv`, beside
+this note, lists every pair: both copies' sha, date, author string, trailer, SVN revision, additions and
+deletions, the pair type, whether the change is identical, and the offset in days; written 20 September 2026 from
+the same API.
 
 **Corrections to this note are published, dated, and not made silently.**
+
+*Revision 2, 20 September 2026, after an adversarial review recounted the pairs: the first text counted 122 pairs
+of one trailer copy and one without, did not distinguish the ten pairs where both copies carry the trailer or the
+one where neither does, left two pairs uncompared, and stated no citation rule for the both-trailer pairs. The
+counts, the author tally, the citation rule and the pair list are corrected and published above; `OBL-F-0014` is
+restated to match. Nothing else changed. Revision 1 and its signatures and proofs are kept beside this file as
+`BITCOIN-GIT-HISTORY-PROVENANCE.r1.md*`; this text is signed and stamped as an operator step, recorded when done.*

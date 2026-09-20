@@ -38,7 +38,7 @@ python -m pytest         # 9 passed
 
 ## Boundary
 
-Off‑chain by design (the audit's finding): this is the commerce layer a node carries,
+Off‑chain (the audit's observation): this is the commerce layer a node carries,
 not blockchain state — it pairs with an X‑chain node (`../nov08x`, `../jan09x`) rather
 than living in its UTXO set. The signature model is mechanism‑faithful, not byte‑exact
 to v0.1's serialization; the atoms algorithm is exact.

@@ -14,7 +14,7 @@ off-chain decentralized marketplace. This runs its two core mechanisms:
    `AddAtomsAndPropagate`'s two-frontier flood over `vLinksOut` (market.cpp:143).
    This is pure algorithm and is reproduced exactly.
 
-Off-chain by design (audit finding): this is the commerce layer a node carries, not
+Off-chain (the audit's observation): this is the commerce layer a node carries, not
 blockchain state. Evidence level: MODEL.
 """
 

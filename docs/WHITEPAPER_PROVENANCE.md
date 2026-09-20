@@ -101,7 +101,8 @@ sha256  b1674191a88ec5cdd733e4240a81803105dc412d6c6708d53ab94fc248f4f553   -- ma
 Check it with `bitcoin-cli getrawtransaction`, or run `verify/whitepaper_from_chain.py`, which does it
 from a public API so no node is required.
 
-**Proof-of-work cannot be backdated.** The canonical text is therefore fixed to April 2013
+**A block's proof-of-work fixes its ordering and its cost, not its stamped date; changing a block already
+extended means redoing the work for it and for every block since.** The canonical text is therefore fixed to April 2013
 independently of bitcoin.org, of the Internet Archive, and of this lab — the only version of the
 paper with a chain anchor. It says **nothing** about October 2008 and is not offered as if it did.
 What it establishes is narrower and worth having: the file cannot have been altered since block

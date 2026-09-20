@@ -7,7 +7,7 @@ as 946 bare-multisig outputs (945 carrying three 65-byte "keys" and one carrying
 the file byte for byte.
 
 Why this matters to this lab's grading: it is the ONLY copy of any whitepaper version carrying a
-CHAIN-class anchor. Proof-of-work cannot be backdated, so this fixes the canonical text to the block
+CHAIN-class anchor. Altering the bytes means redoing the work of that block and every block since, so this fixes the canonical text to the block
 that confirmed it -- 2013, not 2008. It says nothing about October 2008, and it is not offered as if
 it did. It does mean the file we ship cannot have been altered since that block.
 

@@ -230,19 +230,37 @@ def spawn_overhead_ms():
     return round(statistics.median(ts) * 1000, 2)
 
 
+COINBASE_BYTES = 135   # the mean coinbase the validation step parsed on the published run (min 134, max 189);
+                       # fixed here so that this script and verify/pq_settlement_capacity.py count the same block
+
+
+def push_len(n):
+    """The bytes a push of `n` data bytes costs before the data, as v0.1's CScript::operator<< writes
+    it (script.h): one opcode byte below OP_PUSHDATA1 (0x4c = 76), OP_PUSHDATA1 + 1 to 255 bytes,
+    OP_PUSHDATA2 + 2 to 65,535 bytes, OP_PUSHDATA4 + 4 above. An ECDSA signature with its hash-type
+    byte (70-73 B) and a 65-byte key take the one-byte form; every post-quantum signature and every
+    lattice key take OP_PUSHDATA2. (Until 20 September 2026 this model charged one byte for every
+    push; an adversarial review caught it. The base row is unchanged; each post-quantum row grew by
+    two to four bytes.)"""
+    return 1 if n < 0x4c else 2 if n <= 0xff else 3 if n <= 0xffff else 5
+
+
+def varint_len(n):
+    return 1 if n < 0xfd else 3 if n <= 0xffff else 5
+
+
 def model_p2pk_spend(sig_len, pk_len, n_out=1):
     """A v0.1 pay-to-pubkey spend, 1 input, 1 output, sizes from the real serialization:
        tx      = version(4) + varint(nin) + input + varint(nout) + output + locktime(4)
        input   = prevout(36) + varint(scriptlen) + scriptSig + sequence(4)
-       scriptSig for P2PK = PUSH(sig||hashtype)   -> 1 + sig_len + 1
+       scriptSig for P2PK = PUSH(sig||hashtype)   -> push_len(sig_len + 1) + sig_len + 1
        output  = value(8) + varint(scriptlen) + scriptPubKey
-       scriptPubKey P2PK  = PUSH(pubkey) + OP_CHECKSIG -> 1 + pk_len + 1
+       scriptPubKey P2PK  = PUSH(pubkey) + OP_CHECKSIG -> push_len(pk_len) + pk_len + 1
     """
-    ss = 1 + sig_len + 1
-    spk = 1 + pk_len + 1
-    def vlen(n): return 1 if n < 0xfd else 3
-    inp = 36 + vlen(ss) + ss + 4
-    out = 8 + vlen(spk) + spk
+    ss = push_len(sig_len + 1) + sig_len + 1
+    spk = push_len(pk_len) + pk_len + 1
+    inp = 36 + varint_len(ss) + ss + 4
+    out = 8 + varint_len(spk) + spk
     return 4 + 1 + inp + 1 + out * n_out + 4
 
 
@@ -297,37 +315,49 @@ def main():
     ov = spawn_overhead_ms()
     print()
     print("  process-spawn floor, MEASURED: %s ms (openssl version, no cryptography at all)." % ov)
-    print("  SUBTRACT it from both timing columns to get the cryptographic cost. It is measured")
-    print("  rather than hand-waved, because it is most of what the verify column contains.")
+    print("  Each timing above is a whole process, floor included. A median at or below the floor")
+    print("  is not a negative cryptographic cost: it is a cost this method cannot resolve. Read")
+    print("  the columns as 'sign/verify is within N ms of a bare process start', not as N ms of")
+    print("  cryptography; a library benchmark (no process per operation) is the sharper instrument.")
+    print(f"  {'scheme':<20}{'sign - floor':>14}{'verify - floor':>16}")
+    for r in results:
+        if not r["available"]: continue
+        s = r["sign_ms"] - ov; vv = r["verify_ms"] - ov
+        fs = f"{s:.1f} ms" if s > 0 else "<= floor"
+        fv = f"{vv:.1f} ms" if vv > 0 else "<= floor"
+        print(f"  {r['scheme']:<20}{fs:>14}{fv:>16}")
 
     if not base:
         return 1
     print("\n" + "=" * 78)
     print(" WHAT IT COSTS A CHAIN — a v0.1 P2PK spend, 1 input, 1 and 2 outputs")
     print("=" * 78)
-    BLOCK = 1_000_000
+    BLOCK = 1_000_000            # the 2010 rule (MAX_BLOCK_SIZE)
+    BLOCK_V01 = 0x02000000       # the January 2009 ceiling (MAX_SIZE, 32 MiB), the rule v0.1 itself enforces
     b_tx = model_p2pk_spend(base["sig_median"], base["pk_onchain"])
-    b_per = BLOCK // b_tx
-    print(f"  {'scheme':<20}{'1-in':>8}{'1-in':>8}{'x base':>8}{'tx/1MB':>12}{'blk MB for':>12}{'chain GB/yr':>13}")
-    print(f"  {'':<20}{'1-out':>8}{'2-out':>8}{'':>8}{'block':>12}{'same rate':>12}{'same rate':>13}")
-    print("  " + "-" * 82)
+    b_per = (BLOCK - COINBASE_BYTES) // b_tx
+    print(f"  {'scheme':<20}{'1-in':>8}{'1-in':>8}{'x base':>8}{'tx/1MB':>10}{'tx/32MiB':>10}{'blk MB for':>12}{'chain GB/yr':>13}")
+    print(f"  {'':<20}{'1-out':>8}{'2-out':>8}{'':>8}{'block':>10}{'block':>10}{'same rate':>12}{'same rate':>13}")
+    print("  " + "-" * 90)
     for r in results:
         if not r["available"]: continue
         tx = model_p2pk_spend(r["sig_median"], r["pk_onchain"])
-        per = BLOCK // tx
+        per = (BLOCK - COINBASE_BYTES) // tx            # one coinbase per block, then spends
+        per_v01 = (BLOCK_V01 - COINBASE_BYTES) // tx
         # The honest comparison holds THROUGHPUT constant, not block size. Holding block size
         # constant makes chain growth identical for every scheme by construction -- it measures
-        # the 1 MB limit, not the signature. Ask instead: to carry the SAME transactions per
+        # the block limit, not the signature. Ask instead: to carry the SAME transactions per
         # block, how large must a block be, and how fast does the chain then grow?
         need_mb = b_per * tx / 1e6
         gb_yr = b_per * tx * 52560 / 1e9      # 2009 pacing: 6 blocks/h, 52,560 blocks/year
         tx2 = model_p2pk_spend(r["sig_median"], r["pk_onchain"], n_out=2)
-        print(f"  {r['scheme']:<20}{tx:>8}{tx2:>8}{tx/b_tx:>7.1f}x{per:>12,}{need_mb:>12.1f}{gb_yr:>13.1f}")
-    print(f"\n  baseline: secp256k1 tx = {b_tx} B, {b_per:,} per 1 MB block, "
+        print(f"  {r['scheme']:<20}{tx:>8}{tx2:>8}{tx/b_tx:>7.1f}x{per:>10,}{per_v01:>10,}{need_mb:>12.1f}{gb_yr:>13.1f}")
+    print(f"\n  baseline: secp256k1 tx = {b_tx} B, {b_per:,} per 1 MB block after a {COINBASE_BYTES} B coinbase, "
           f"{b_per*b_tx*52560/1e9:.1f} GB/yr")
     print("  'same rate' = the block size and annual growth needed to carry the SAME number of")
-    print("  transactions per block as secp256k1. Holding BLOCK SIZE fixed instead would make")
-    print("  growth identical for every scheme, which measures the 1 MB cap and not the signature.")
+    print("  transactions per block as secp256k1 at 1 MB. Holding BLOCK SIZE fixed instead would make")
+    print("  growth identical for every scheme, which measures the block cap and not the signature.")
+    print("  'tx/32MiB' is the same count under the January 2009 ceiling, the rule v0.1 enforces.")
 
     out = os.path.join(HERE, "pq-cost-measurement.json")
     json.dump({"openssl": v, "samples": SAMPLES, "timing_n": TIMING_N,

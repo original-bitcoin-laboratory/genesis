@@ -146,8 +146,10 @@ done      # -> 0  then  1
 gh api repos/bitcoin/bitcoin/commits/757f0769d --jq '.files[] | "\(.filename) +\(.additions) -\(.deletions)"'
 ```
 
-**Genesis-side confirmation** was executed rather than read. The January 2009 interpreter was
-compiled from the authentic `script.cpp` and evaluated against the script `<N bytes> OP_DROP OP_1`
+**Genesis-side confirmation** was executed rather than read, on a build of this laboratory's own: the
+archive's `script.cpp`, compiled by the laboratory against its compatibility shims
+(`derivatives/build-reconstruction/compat/`; grade `EXECUTED (laboratory build)`, not the 2009 binary), was
+evaluated against the script `<N bytes> OP_DROP OP_1`
 at ten sizes from 71 to 17,088 bytes. **It accepts every one.** Its only `.size()` tests are
 *minimum* stack-depth guards, and push handling is `opcode <= OP_PUSHDATA4` — a four-byte length
 prefix.
@@ -165,10 +167,11 @@ SNI v0.1.0 archive, script.cpp             35,279 B   sha256 347c7526932d42a4d10
                                            BYTE-IDENTICAL
 ```
 
-**Two things follow.** `script.cpp` was unchanged for seven months, from the January 2009 release to
-the first commit of the canonical repository. And the archive copy is **independently authenticated
-against `bitcoin/bitcoin` itself** — for this file, provenance no longer rests on custody and
-published digests alone.
+**One thing follows.** `script.cpp` is byte-identical in two custodies: the archive and the first commit of
+the canonical repository. Identity does not date either copy, since both could descend from one later object;
+the archive's date rests on custody and on the PE link stamp (`common/VERSION_LABEL.md`, which also holds that
+the archive is v0.1.1). What the identity adds is that a claim about this file made from the archive can be
+checked against `bitcoin/bitcoin` at `e071a3f6`.
 
 ---
 
@@ -234,3 +237,10 @@ signatures and timestamp proofs are kept beside this file as `SCRIPT-LIMITS-RETR
 *Revision 3, 14 September 2026: the corrections sentence above is restated in the present tense and
 without absolutes. Nothing else changed. Revision 2 is kept beside this file as
 `SCRIPT-LIMITS-RETROFITTED.r2.md*`.*
+
+*Revision 4, 20 September 2026, after an adversarial review: the "genesis-side confirmation" paragraph now says
+whose build ran the January `script.cpp` (this laboratory's, against its shims; grade `EXECUTED (laboratory build)`,
+and `OBL-F-0003` is regraded to match), and the provenance paragraph claims what byte-identity supports and no more.
+The op-count limit this note leaves undated is dated in `docs/CONSENSUS-ATLAS.md` §13 (`6ff5f718b`, 31 July 2010).
+Nothing else changed. Revision 3 and its signatures and proofs are kept beside this file as
+`SCRIPT-LIMITS-RETROFITTED.r3.md*`; this text is signed and stamped as an operator step, recorded when done.*

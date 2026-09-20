@@ -88,7 +88,9 @@ why. Requests are considered promptly and the outcome is recorded openly.
 ## Errors
 
 This project publishes its mistakes on purpose. Several published claims here have been wrong and
-were corrected in place, with the error and its cause described rather than quietly edited away —
+were corrected, with the error and its cause described rather than quietly edited away: an unsealed document
+in place with a dated line, a sealed or signed one by a numbered revision beside the earlier seal
+(`docs/EVIDENCE_POLICY.md`) —
 because a result is worth what its checking is worth. If you find an error, report it; it is
 reviewed and, where confirmed, corrected and credited.
 

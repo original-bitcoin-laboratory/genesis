@@ -183,7 +183,11 @@ def export_retarget() -> dict:
 
     codec = []
     for nbits in (0x1d00ffff, 0x1c00ffff, 0x1b0404cb, 0x1d00ffff - 1, 0x0300ffff, 0x1c7fffff):
-        target, neg, ovf = retarget.set_compact(nbits)
+        # the general nBits decoder (verify_vectors, the from-spec authority the corpus is checked
+        # against) carries the negative and overflow flags this table reports; retarget/retarget.py
+        # models v0.1's CBigNum::SetCompact, which has no overflow flag, so the codec table is sourced
+        # here rather than from it. Both agree on the value and the sign for every nbits below.
+        target, neg, ovf = spec.set_compact(nbits)
         codec.append({"nbits": f"0x{nbits:08x}", "target_hex": f"{target:064x}",
                       "negative": neg, "overflow": ovf,
                       "roundtrip_nbits": f"0x{retarget.get_compact(target):08x}",
@@ -194,7 +198,7 @@ def export_retarget() -> dict:
         "suite": "retarget",
         "constants": {"nTargetTimespan": retarget.N_TARGET_TIMESPAN, "nTargetSpacing": retarget.N_TARGET_SPACING,
                       "nInterval": retarget.N_INTERVAL, "bnProofOfWorkLimit_nbits": "0x1d00ffff",
-                      "intervals_measured": retarget.intervals_measured()},
+                      "intervals_measured": retarget.intervals_measured(retarget.chain([0] * retarget.N_INTERVAL))},
         "rule": ("times[i] = t0 + i*spacing for i in [0, count), then times[count-1] = last_override if not "
                  "null. nActualTimespan = times[-1] - times[-nInterval]; clamp to [nTargetTimespan/4, "
                  "nTargetTimespan*4]; new = old_target * nActualTimespan / nTargetTimespan (integer "
@@ -276,7 +280,7 @@ def export_headers() -> dict:
         merkle_le = bytes.fromhex(merkle_disp)[::-1]
         hdr = header_bytes(1, b"\x00" * 32, merkle_le, ntime, nbits, nonce)
         h = dsha256(hdr)
-        target, _, _ = retarget.set_compact(nbits)
+        target = retarget.set_compact(nbits)[0]
         assert h[::-1].hex() == expect_disp, label
         assert int.from_bytes(h, "little") <= target
         vectors.append({"label": label, "coinbase_text": coinbase,

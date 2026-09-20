@@ -14,7 +14,7 @@ historical Satoshi. Nothing here recommends changing any rule of any Bitcoin. No
 **Five findings to read first**, by register ID:
 
 - `OBL-F-0013` — the 1 MB block-size limit entered in two steps: a constant on 15 Jul 2010 that only
-  the miner honoured, and a validity rule on 7 Sep 2010 under the message "cleanup", from block 79,401.
+  the miner honoured, and a validity rule on 7 Sep 2010 under a message whose first line is "cleanup,", from block 79,401.
   The January 2009 release already rejected blocks over 32 MiB. [The note](docs/MAX-BLOCK-SIZE-RETROFITTED.md)
 - `OBL-F-0003` — Bitcoin's script resource limits arrived on 29 Jul 2010 under a makefile commit
   message; the January 2009 interpreter runs a 600-byte element and a 1500-deep stack.
@@ -24,7 +24,7 @@ historical Satoshi. Nothing here recommends changing any rule of any Bitcoin. No
 - `OBL-F-0001` — v0.1 selects the best chain by height, not cumulative work.
   [The artifact](paper-artifacts/height-vs-work.json)
 - `OBL-F-0010` — a 323-vector conformance corpus replayed over the wire against the release client:
-  136/136 scripts, 17/17 signature checks, 19/19 blocks agree. [R5](r5-findings/2026-09-13-binary-replay-release/FINDINGS.md)
+  136/136 scripts, 14/14 graded signature vectors, 19/19 blocks agree; the three DER probes were rejected. [R5](r5-findings/2026-09-13-binary-replay-release/FINDINGS.md)
 
 **Where every rule came from:** [docs/CONSENSUS-ATLAS.md](docs/CONSENSUS-ATLAS.md), one section per consensus rule
 with its origin commit and message, indexed by [CONSTITUTION-REGISTER.md](CONSTITUTION-REGISTER.md) (`OBL-C-0001` …).

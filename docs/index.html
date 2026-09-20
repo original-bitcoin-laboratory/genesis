@@ -258,12 +258,12 @@
   <p class="note"><b>Post-quantum signing, measured.</b> What a quantum-resistant signature would
     actually cost a 2009-shaped chain — signature and key sizes cross-checked against FIPS 204/205,
     sign and verify timings against a measured process-spawn floor, and the transaction arithmetic
-    that follows. <b>Verification is not the problem; size is</b> — a transaction grows 19× to 86×.
+    that follows. <b>Verification cost sits below what a per-process measurement resolves; size is the constraint</b> — a transaction grows 19× to 86×.
     Reproducible in one command, and it takes no position on whether Bitcoin should change anything.
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/PQ-SIGNATURE-COST.md" style="color:var(--focus)">The measurement →</a></p>
-  <p class="note"><b>And what that costs a base layer: the second half, computed.</b> At the measured sizes a 1&nbsp;MB block at
-    2009 pacing settles 18,000 to 38,000 one-input spends a day against 720,000 under ECDSA, so a hundred million outputs need
-    seven to thirty-three years of full blocks to each move once. The spend that migrates an exposed key is signed under the
+  <p class="note"><b>And what that costs a base layer: the second half, computed.</b> At the measured sizes a block at v0.1's own
+    32&nbsp;MiB ceiling settles 281,000 to 1,270,000 one-input spends a day against 24 million under ECDSA, and a block at the 2010 1&nbsp;MB rule
+    8,000 to 38,000 against 720,000; a hundred million outputs need 79 to 356 days of full blocks to each move once at 32&nbsp;MiB and seven to thirty-three years at 1&nbsp;MB. The spend that migrates an exposed key is signed under the
     old scheme, so no second layer can make it. Populations are parameters; the script carries the measured sizes as constants.
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/PQ-SETTLEMENT-CAPACITY.md" style="color:var(--focus)">The derivation →</a></p>
   <p class="note"><b>Bitcoin's script limits were retrofitted, and here are the dates.</b> The caps on

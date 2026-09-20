@@ -1,7 +1,7 @@
 # Three policies of the origin, and what 2010 did to them — executed
 
-**Evidence level: `MODEL`.** Constitution rows `OBL-C-0015`, `OBL-C-0016`, `OBL-C-0017`; the
-archaeology is in [`docs/CONSENSUS-ATLAS.md`](../../docs/CONSENSUS-ATLAS.md) §10–§12. Same shape as
+**Evidence level: `MODEL`.** Constitution rows `OBL-C-0015`, `OBL-C-0016`, `OBL-C-0017` and, since 20 September
+2026, `OBL-C-0011`; the archaeology is in [`docs/CONSENSUS-ATLAS.md`](../../docs/CONSENSUS-ATLAS.md) §10–§12 and §6. Same shape as
 [`../overflow/`](../overflow/) and [`../emergent/`](../emergent/): the January 2009 rule and the 2010
 rule ported line for line, side by side, and the input one accepts and the other refuses.
 
@@ -9,7 +9,8 @@ rule ported line for line, side by side, and the input one accepts and the other
 python replacement.py    # transaction replacement by nSequence: shipped in v0.1, disabled 19 Aug 2010
 python checkpoints.py    # hard-coded checkpoints: absent in v0.1, added 17 Jul 2010, five by 15 Aug
 python fees.py           # the fee rule: a build-and-send policy in v0.1, a relay gate from 12 Dec 2010
-python -m pytest -q      # 13 checks
+python is_standard.py    # IsStandard: no such clause in v0.1, a relay-and-mining clause from 7 Dec 2010
+python -m pytest -q      # 18 checks
 ```
 
 ## What it shows
@@ -23,6 +24,9 @@ FEES                     v0.1: one cent per started kilobyte, free under 10 KB w
                          when building and sending, nothing applied on receipt; 0.3.19: relay refuses a
                          transaction below GetMinFee(1000), and free transactions are rate-limited to
                          150,000 bytes per ten minutes under -limitfreerelay (601 of 250 B, then refused)
+ISSTANDARD               v0.1 relays a hash-lock transaction (OP_SHA256 <h> OP_EQUAL); the a206a2398 node refuses
+                         it as nonstandard (two output templates, sigops > 2, under 100 bytes); CheckTransaction
+                         accepts it in both eras, so a block carrying it is valid under both
 ```
 
 ## What is ported, and what is not
@@ -37,6 +41,10 @@ FEES                     v0.1: one cent per started kilobyte, free under 10 KB w
 - **`fees.py`.** `GetMinFee` from v0.1 (`main.h:504`) and from 0.3.19 (`main.h:576-612` at
   `97ee01ad8`, including the dust clause and the price rise near a full block), and the relay gate
   `97ee01ad8` adds to `AcceptToMemoryPool`. Policy on both sides: no block is invalid under either.
+- **`is_standard.py`.** Solver's two templates from the January release (`script.cpp:913`), which `a206a2398`
+  applies to every output; `GetSigOpCount` as `f1e1fb4bd` counts it; and the three-part clause `a206a2398` adds to
+  the memory-pool path. Constitution row `OBL-C-0011`, atlas §6; written 20 September 2026 after an adversarial
+  review observed that the row's witness spoke to the script engine and not to this policy.
 
 ## What this does not claim
 

@@ -95,11 +95,22 @@ def spend(i: int) -> Tx:
 
 
 def block_with_unique_ids(n_ids: int, ntime: int) -> Block:
-    """A coinbase plus k spends gives 1 + 2k distinct ids (k own ids, k prevouts, the coinbase's id).
-    Pass n_ids odd to land exactly; an even count is rounded up to the next odd."""
-    k = max(0, (n_ids - 1 + 1) // 2)
-    b = Block(ntime, [coinbase()] + [spend(i) for i in range(k)])
-    assert unique_txids_referenced(b) == 1 + 2 * k
+    """A block that references exactly `n_ids` distinct transaction ids. A coinbase plus k spends of k
+    distinct prevouts gives 1 + 2k (odd); for an even count the last spend reuses the first spend's
+    prevout, so one id is referenced twice and the distinct count drops by one. (Until 20 September
+    2026 this helper could only build odd counts, so the 4,500 boundary itself was never constructed;
+    an adversarial review pointed that out.)"""
+    if n_ids < 1:
+        raise ValueError("a block references at least its coinbase's id")
+    if n_ids % 2 == 1:
+        k = (n_ids - 1) // 2
+        vtx = [coinbase()] + [spend(i) for i in range(k)]
+    else:
+        k = n_ids // 2
+        vtx = [coinbase()] + [spend(i) for i in range(k)]
+        vtx[-1] = Tx(1, [TxIn(vtx[1].vin[0].prevhash, 1, b"\x51")], [TxOut(1, b"\x51")], 0)   # same prevout hash, other index
+    b = Block(ntime, vtx)
+    assert unique_txids_referenced(b) == n_ids, (unique_txids_referenced(b), n_ids)
     return b
 
 

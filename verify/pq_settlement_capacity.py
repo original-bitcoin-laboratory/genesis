@@ -12,74 +12,97 @@ spend once -- which is the arithmetic behind the statement that state must move 
 and the arithmetic behind its limit: an output whose public key is already on the chain can only be
 moved by a signature under the old scheme, so a second layer does nothing for it.
 
-Inputs are the measured figures of the note (OpenSSL 3.5.4, FIPS 204/205 sizes), restated here as
-constants with their source line, so this script has no dependency on a network or a library. NOT
-money: this computes costs and takes no position on any scheme or any chain.
+Two block ceilings are computed, and the January 2009 one comes first: MAX_SIZE = 0x02000000
+(32 MiB), the rule v0.1 itself enforces in CheckBlock (OBL-F-0016), and the 1 MB rule Bitcoin
+acquired in September 2010 (OBL-C-0001). Until 20 September 2026 this script computed the 1 MB
+table only, in a repository whose own register records that rule as a retrofit; an adversarial
+review pointed that out.
+
+Inputs are the measured signature and key sizes of the note (FIPS 204/205 sizes, matched exactly);
+the transaction sizes come from the SAME serialisation model the note uses (verify/pq_signature_cost.py,
+model_p2pk_spend), so the two scripts cannot disagree on a byte. NOT money: this computes costs and
+takes no position on any scheme or any chain.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
+import sys
 
-BLOCK_BYTES = 1_000_000                 # MAX_BLOCK_SIZE, 1 MB (the 2010 rule; v0.1's own cap is 32 MiB)
-BLOCKS_PER_DAY = 144                    # 600 s target spacing; 2009 pacing (600.30 s executed makes it 143.9)
-COINBASE_BYTES = 135                    # mean coinbase parsed from a live v0.1-format chain (PQ-SIGNATURE-COST §0)
-OLD_PK_BYTES = 65                       # secp256k1 uncompressed public key, the v0.1 output form
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pq_signature_cost import COINBASE_BYTES, model_p2pk_spend   # noqa: E402  (one model for both notes)
 
-# docs/PQ-SIGNATURE-COST.md §1 (measured) and §2 (computed from v0.1 serialization):
-#   scheme: (signature B, raw public key B, 1-in-1-out pay-to-pubkey tx B, 1-in-2-out tx B)
+BLOCKS = {                               # ceiling name: bytes
+    "v0.1 (32 MiB, MAX_SIZE)": 0x02000000,   # main.h:17, tested in CheckBlock; the January 2009 rule
+    "2010 rule (1 MB)": 1_000_000,           # MAX_BLOCK_SIZE, a block-validity rule from block 79,401
+}
+BLOCKS_PER_DAY = 144                     # 600 s target spacing; 2009 pacing (600.30 s executed makes it 143.9)
+OLD_SIG_BYTES = 71                       # secp256k1 ECDSA/DER, the mode of the measured distribution
+OLD_PK_BYTES = 65                        # secp256k1 uncompressed public key, the v0.1 output form
+
+# docs/PQ-SIGNATURE-COST.md §1 (measured): scheme -> (signature B, raw public key B)
 SCHEMES = {
-    "secp256k1-ECDSA":   (71,    65,   200,   276),
-    "ML-DSA-44":         (2420,  1312, 3800,  5125),
-    "ML-DSA-65":         (3309,  1952, 5329,  7294),
-    "ML-DSA-87":         (4627,  2592, 7287,  9892),
-    "SLH-DSA-SHA2-128s": (7856,  32,   7954,  7997),
-    "SLH-DSA-SHA2-128f": (17088, 32,   17186, 17229),
-    "SLH-DSA-SHA2-192s": (16224, 48,   16338, 16397),
+    "secp256k1-ECDSA":   (71,    65),
+    "ML-DSA-44":         (2420,  1312),
+    "ML-DSA-65":         (3309,  1952),
+    "ML-DSA-87":         (4627,  2592),
+    "SLH-DSA-SHA2-128s": (7856,  32),
+    "SLH-DSA-SHA2-128f": (17088, 32),
+    "SLH-DSA-SHA2-192s": (16224, 48),
 }
 POPULATIONS = (1_000_000, 10_000_000, 100_000_000)      # outputs that must each spend once
 
 
-def per_block(tx_bytes: int) -> int:
-    return (BLOCK_BYTES - COINBASE_BYTES) // tx_bytes
+def per_block(block_bytes: int, tx_bytes: int) -> int:
+    """One coinbase, then as many spends as fit."""
+    return (block_bytes - COINBASE_BYTES) // tx_bytes
 
 
 def migration_tx_bytes(new_pk: int) -> int:
     """One spend of an old pay-to-pubkey output into one new output that carries a post-quantum key:
-    the measured ECDSA 1-in-1-out transaction with the old 65-byte key in its output replaced."""
-    return SCHEMES["secp256k1-ECDSA"][2] - OLD_PK_BYTES + new_pk
+    signed under the OLD scheme (the exposed key's), so the input carries the ECDSA signature and the
+    output carries the new key. Same model as every other row."""
+    return model_p2pk_spend(OLD_SIG_BYTES, new_pk)
 
 
 def compute() -> dict:
-    rows = {}
-    for name, (sig, pk, tx1, tx2) in SCHEMES.items():
-        pb = per_block(tx1)
-        pd = pb * BLOCKS_PER_DAY
-        mig = migration_tx_bytes(pk)
-        mig_pb = per_block(mig)
-        mig_pd = mig_pb * BLOCKS_PER_DAY
-        rows[name] = {
-            "sig_bytes": sig, "pk_bytes": pk, "tx_1in1out_bytes": tx1,
-            "spends_per_block": pb, "spends_per_day": pd,
-            "migration_tx_bytes": mig, "migrations_per_block": mig_pb, "migrations_per_day": mig_pd,
-            "days_for_population_to_spend_once": {str(n): round(n / pd, 1) for n in POPULATIONS},
-            "days_for_population_to_migrate": {str(n): round(n / mig_pd, 1) for n in POPULATIONS},
-        }
-    return {"not_money": True, "block_bytes": BLOCK_BYTES, "blocks_per_day": BLOCKS_PER_DAY,
-            "source": "docs/PQ-SIGNATURE-COST.md (measured sizes); this script (arithmetic)", "schemes": rows}
+    out = {"not_money": True, "blocks_per_day": BLOCKS_PER_DAY, "coinbase_bytes": COINBASE_BYTES,
+           "source": "docs/PQ-SIGNATURE-COST.md (measured sizes); verify/pq_signature_cost.py (serialisation model); this script (arithmetic)",
+           "ceilings": {}}
+    for label, block_bytes in BLOCKS.items():
+        rows = {}
+        for name, (sig, pk) in SCHEMES.items():
+            tx1 = model_p2pk_spend(sig, pk)
+            pb = per_block(block_bytes, tx1)
+            pd = pb * BLOCKS_PER_DAY
+            mig = migration_tx_bytes(pk)
+            mig_pb = per_block(block_bytes, mig)
+            mig_pd = mig_pb * BLOCKS_PER_DAY
+            rows[name] = {
+                "sig_bytes": sig, "pk_bytes": pk, "tx_1in1out_bytes": tx1,
+                "spends_per_block": pb, "spends_per_day": pd,
+                "migration_tx_bytes": mig, "migrations_per_block": mig_pb, "migrations_per_day": mig_pd,
+                "days_for_population_to_spend_once": {str(n): round(n / pd, 1) for n in POPULATIONS},
+                "days_for_population_to_migrate": {str(n): round(n / mig_pd, 1) for n in POPULATIONS},
+            }
+        out["ceilings"][label] = {"block_bytes": block_bytes, "schemes": rows}
+    return out
 
 
 def report(d: dict) -> None:
     print("SETTLEMENT CAPACITY OF A 2009-SHAPED BASE LAYER -- computed from measured sizes (NOT money)")
-    print(f"  block {d['block_bytes']:,} B, {d['blocks_per_day']} blocks/day; one-input one-output pay-to-pubkey spends\n")
-    print(f"  {'scheme':<20} {'tx B':>6} {'/block':>7} {'/day':>9} | {'migrate B':>9} {'/day':>9} | days for 1e6 / 1e7 / 1e8 outputs to spend once")
-    print("  " + "-" * 118)
-    for name, r in d["schemes"].items():
-        days = r["days_for_population_to_spend_once"]
-        print(f"  {name:<20} {r['tx_1in1out_bytes']:>6} {r['spends_per_block']:>7,} {r['spends_per_day']:>9,} | "
-              f"{r['migration_tx_bytes']:>9,} {r['migrations_per_day']:>9,} | "
-              f"{days['1000000']:>8,} / {days['10000000']:>8,} / {days['100000000']:>9,}")
-    print()
+    print(f"  {d['blocks_per_day']} blocks/day; one coinbase ({d['coinbase_bytes']} B) then one-input one-output pay-to-pubkey spends\n")
+    for label, c in d["ceilings"].items():
+        print(f"  == {label}: block {c['block_bytes']:,} B ==")
+        print(f"  {'scheme':<20} {'tx B':>6} {'/block':>9} {'/day':>11} | {'migrate B':>9} {'/day':>11} | days for 1e6 / 1e7 / 1e8 outputs to spend once")
+        print("  " + "-" * 122)
+        for name, r in c["schemes"].items():
+            days = r["days_for_population_to_spend_once"]
+            print(f"  {name:<20} {r['tx_1in1out_bytes']:>6} {r['spends_per_block']:>9,} {r['spends_per_day']:>11,} | "
+                  f"{r['migration_tx_bytes']:>9,} {r['migrations_per_day']:>11,} | "
+                  f"{days['1000000']:>8,} / {days['10000000']:>8,} / {days['100000000']:>9,}")
+        print()
     print("  Reading the last three columns: with every block full of nothing but these spends, this is how many")
     print("  days pass before a population of that many outputs has each moved once. 3,650 days is ten years.")
     print("  The migration column is the spend that moves an exposed key to a post-quantum one: it is signed under")

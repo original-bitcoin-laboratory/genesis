@@ -13,12 +13,18 @@ What this module executes:
     the sighash flag -- and returns the (r, s) pair a tolerant parser would recover;
 
 and runs both over the corpus's checksig vectors (../vectors/checksig.json): every signature the
-corpus marks strict passes BIP 66; each of the three probes fails BIP 66 and is read by the tolerant
-reader to the same (r, s) as its strict twin.
+corpus marks strict passes BIP 66; each of the three probes fails BIP 66, and the (r, s) the tolerant
+reader recovers from it verifies under the vector's own key over the vector's own signature hash
+(test_emergent.py, with the laboratory's SignatureHash model and an ECDSA verifier), which is what
+"differs from a strict signature only in encoding" means here. (An earlier docstring said each probe
+is read "to the same (r, s) as its strict twin"; the corpus holds no such twin, and an adversarial
+review of 20 September 2026 said so. The corrected statement is the one above.)
 
 The tolerant reader is a model of the tolerance, not OpenSSL 0.9.8: whether the 2009 binary accepts
 each probe is recorded in the corpus as `expected_binary: null` until that binary is replayed. The
-laboratory's release build (OpenSSL 1.0.2u) rejects all three (finding OBL-F-0010). NOT money.
+laboratory's release build (OpenSSL 1.0.2u) rejects all three (finding OBL-F-0010). The acceptance
+side of the rule, that OpenSSL 0.9.8 accepted these encodings, has no artifact at any grade; the
+constitution row stays open on it. NOT money.
 """
 from __future__ import annotations
 
