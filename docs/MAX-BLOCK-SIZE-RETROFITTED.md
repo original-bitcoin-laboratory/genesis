@@ -1,11 +1,12 @@
-# Bitcoin's 1 MB block-size limit was retrofitted in two steps in mid-2010
+# Bitcoin's 1 MB block-size limit was retrofitted in three steps in 2010
 
 **19 September 2026.** `MAX_BLOCK_SIZE = 1000000` is the rule the 2015–2017 block-size dispute was
-fought over. It is commonly dated to a single commit in July 2010. The record shows two commits, in two
-files, seven weeks apart, neither of whose messages describes the change; and the January 2009 release
-already enforced a block-size ceiling, thirty-two times larger.
+fought over. It is commonly dated to a single commit in July 2010. The record shows three commits: a
+constant in July that only the miner honoured, a validity rule in September gated at a height, and the
+gate's removal twelve days later; none of the three messages describes the change; and the January 2009
+release already enforced a block-size ceiling, thirty-two times larger.
 
-This note dates both steps, gives the method to reproduce the dating, and states what the origin
+This note dates the three steps, gives the method to reproduce the dating, and states what the origin
 enforced before them. Findings register: `OBL-F-0013` (the constant and the rule), `OBL-F-0015`
 (the sigop limit, same commit as the rule), `OBL-F-0016` (the 32 MB ceiling of v0.1).
 
@@ -271,5 +272,6 @@ public block explorer's API and can be re-read from any full node.
 literature: prior accounts of the two-step shape are stated and the first text's claim to have found none
 is withdrawn; the third step (`172f00602`, 19 September 2010) and the message-size cap change in the
 enforcing commit are added; the transaction-size rule's date is corrected to 13 September 2010. The
-finding itself is unchanged. Revision 1 and its signatures and proofs are kept beside this file as
+finding itself is unchanged. The title and opening paragraph were brought to three steps on 21 September
+2026, before this revision was signed. Revision 1 and its signatures and proofs are kept beside this file as
 `MAX-BLOCK-SIZE-RETROFITTED.r1.md*`; this text is signed and stamped as an operator step, recorded when done.*
