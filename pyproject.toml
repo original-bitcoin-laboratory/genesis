@@ -28,6 +28,8 @@ dependencies = ["cryptography"]
 [project.optional-dependencies]
 test = ["pytest"]
 accel = ["bitcoinx"]   # optional: enables the ~7x libsecp256k1 verifier + the crypto-conformance differential
+refs = ["python-bitcoinlib", "bitcoinx"]   # the reference implementations the descendant matrix and the crypto thread compare against;
+                                            # without them those suites SKIP and the matrix cannot be regenerated as committed
 
 [tool.setuptools]
 py-modules = []        # no importable top-level package; installing this only provisions the dependencies above

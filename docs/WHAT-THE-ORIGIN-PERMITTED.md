@@ -60,12 +60,12 @@ purpose.
 - **"Later additions loaded the base layer" conflates two things.** The 2010 consensus additions
   (`MoneyRange`, the caps, the ceiling, cumulative work) *narrowed* what a block may contain and fixed
   holes the record names (`OBL-C-0003` cites block 74638). What is argued over today (arbitrary-data
-  outputs, their relay defaults) is policy the origin never had in either direction.
+  outputs, their relay defaults) is policy the origin did not have in either direction.
 - **A layered design that keeps state above the base layer needs rules the origin lacks.** Time-based
   locks are 29 October 2009 (`OBL-C-0007`); the sequence-lock and check-lock-time rules that payment
   channels rest on, and the malleability fix, are 2015–2017, outside this register's window. The origin's
-  own layering is elsewhere: its marketplace ran beside the chain in a flood pub/sub channel and never
-  touched the ledger (`inventory/MARKET_AUDIT.md`), and its author argued in December 2010 for separate
+  own layering is elsewhere: its marketplace ran beside the chain in a flood pub/sub channel and did not
+  touch the ledger (`inventory/MARKET_AUDIT.md`), and its author argued in December 2010 for separate
   chains rather than one chain carrying everything (`BITDNS-AND-LAYERING.md`).
 
 ## Limits

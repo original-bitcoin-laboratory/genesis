@@ -9,11 +9,24 @@ not about protecting anything of value, because nothing here is sold, offered, p
 
 The single load‑bearing invariant is: **"nothing disabled" is safe only because it is "not money."**
 The reconstructions faithfully carry the origin's *missing* guardrails (no `MoneyRange`/overflow
-check, no block‑size cap, no script element/op/stack limits, unbounded arithmetic — see
+check, no 1 MB block‑size rule — the origin's own ceiling is 32 MiB, `MAX_SIZE` in `CheckBlock`, `OBL-F-0016` —
+no script element/op/stack limits, unbounded arithmetic — see
 [`common/conformance/CONSENSUS_SURFACE.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/conformance/CONSENSUS_SURFACE.md)).
 A review should **confirm the node stays valueless and un‑drifted**, not recommend adding the 2010
 guardrails — adding them would make it no longer the origin. If value were attached (it must not
 be), the review scope changes entirely.
+
+**A third chain is in scope for that invariant.** Besides the two reconstruction networks, the
+laboratory runs *Bitcoin (2026)*: the January 2009 client built from the archive with nine
+chain-separation substitutions (its own genesis, magic and port), publicly reachable and mineable, its
+author an agent named "Satoshi Nakamoto" that is a 2026 program (`START_HERE.md` explains the position).
+It exists as the laboratory's own executed instance of the origin's rules and, since height 221, as an
+anchor rail carrying commitments written by implementations other than this laboratory's
+(`docs/WHY-THE-CHAIN-CONTINUES.md`). It is not a reconstruction. What has to stay true for it to remain
+valueless is the same as for the X-chains and is stated in its charter: no premine, no sale, no price, no
+solicited market, and no coin mined on it spent for value; every coin mined so far is held by one project
+key and unspent, which the repository records as a concentration. A reviewer who finds any of those
+statements false has found the drift this scope exists to catch.
 
 ## In scope
 
@@ -28,8 +41,11 @@ v0.1 source.
   v0.1's off‑by‑one), and the sighash (`tx_sighash.py` / `sighash.rs`).
 - **Difficulty** — the retarget + the authoritative on‑connect check (covers the orphan path);
   `difficulty.py` / `validator-rs/src/difficulty.rs`.
-- **The two implementations agree byte‑for‑byte** — the Rust golden vectors are generated from the
-  Python; a reviewer should re‑derive and diff.
+- **The two implementations agree byte‑for‑byte on the shared vectors** — the Rust golden vectors are
+  generated from the Python, so this is a port validated against the Python model, not two independent
+  readings of the source; a reviewer should re‑derive and diff. The independent differential is the
+  corpus replayed against a real binary over the wire (`r5-findings/`, and the unmodified 2009 binary
+  when its replay is done).
 
 ### 2. Cryptography — the pre‑BIP66 fidelity axis
 The most subtle area. v0.1 verifies with **OpenSSL**, which is *lenient* (accepts high‑S / malleable

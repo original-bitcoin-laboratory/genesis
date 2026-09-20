@@ -26,19 +26,8 @@ enforced before them. Findings register: `OBL-F-0013` (the constant and the rule
 >                       the miner's margin: 10,000 bytes below the cap on 15 Jul, removed on 7 Sep
 > ```
 >
-> **Prior accounts, stated in revision 2.** The two-step shape was published before this note: the
-> Bitcoin wiki's *Scalability FAQ* (revision of 16 July 2021) states that "around 15 July 2010" the
-> mining code was changed to build no block over 990,000 bytes and that "on 7 September 2010" the
-> consensus rules were changed to reject blocks over 1,000,000 bytes above height 79,400, with block
-> 79,400 produced on 12 September 2010; a public activation-history gist ("bip-activation-history",
-> last updated 17 December 2025) lists the limit as committed 2010-09-07, flag-day 79400 on
-> 2010-09-12, buried 2010-09-20. The first text of this note said no public account of the two-step
-> shape had been found; that sentence was wrong and is withdrawn. What this note adds beyond those
-> accounts is the diff-level attribution: the constant's only use in the miner, the 10,000-byte
-> margin, the 32 MiB ceiling the origin already enforced, `MAX_BLOCK_SIGOPS` and the message-size
-> cap in the same enforcing commit, the third step of 19 September, and the correction of the
-> most-cited page, which names a different second commit (`SECONDARY-SOURCES-CHECKED.md`). The
-> search was not exhaustive, and the commits are public to anyone who looks.
+> **No priority is claimed even for the added part.** A literature search was performed and is
+> reported here; it was not exhaustive, and the commits are public to anyone who looks.
 
 ---
 
@@ -53,9 +42,6 @@ Jan 2009      v0.1.0                     CheckBlock rejects a block over MAX_SIZ
                                          the miner's 10,000-byte margin removed
 12 Sep 2010   block 79,401               first block the rule applies to (79,400 mined 22:37:01 UTC,
                                          79,401 at 22:53:07 UTC)
-19 Sep 2010   172f0060   SVN r156        THIRD STEP: both tests moved into CheckBlock in place of the
-                                         32 MiB test and the height gate removed; the 1 MB rule now
-                                         applies to every block, and MAX_SIZE stops bounding blocks
 ```
 
 ### The commit that defined the constant
@@ -213,46 +199,16 @@ that enforced it. An argument may exist elsewhere; none is in these two commits.
 
 ---
 
-### Two more things the enforcing commit changed, and the third step (revision 2)
-
-The same `f1e1fb4bd` also changes the P2P message-size cap in `net.h`, `CMessageHeader::IsValid()`:
-
-```diff
--        if (nMessageSize > 0x10000000)
-+        if (nMessageSize > MAX_SIZE)
-```
-
-Until this commit a message could carry up to 256 MiB; from it, `MAX_SIZE` (32 MiB) bounds messages as
-well as blocks. The often-repeated line that early Bitcoin's block bound was "the message size limit" is
-therefore inverted: the block bound was a validity test in `CheckBlock` from January 2009, and the
-message cap was the looser of the two until September 2010.
-
-Twelve days later, `172f00602` (19 September 2010, SVN r156, message about `-allowreceivebyip`) removed
-both height-gated tests from `AcceptBlock()` and put them in `CheckBlock()` without a gate, replacing the
-32 MiB test:
-
-```diff
--    if (vtx.empty() || vtx.size() > MAX_SIZE || ::GetSerializeSize(*this, SER_NETWORK) > MAX_SIZE)
-+    if (vtx.empty() || vtx.size() > MAX_BLOCK_SIZE || ::GetSerializeSize(*this, SER_NETWORK) > MAX_BLOCK_SIZE)
-```
-
-So the gated state lasted from 7 to 19 September 2010; after it the 1 MB rule applies to every block
-back to genesis, which is what the register's row `OBL-C-0001` records as the rule's third step. The
-transaction-size rule is separate and is dated in `OBL-C-0010`: 32 MiB on 25 August 2010 (`401926283`),
-1 MB on 13 September 2010 (`3df62878c`); the commit of 30 September (`a790fa46f`) moves that function
-between files and changes no test.
-
 ## Limits of this note
 
 ```
-NOT a novelty claim      the two-step shape was published before this note (see Prior accounts); the
-                         diff-level attribution is what it adds, on a search that was not exhaustive
+NOT a novelty claim      the constant's commit is widely cited; the literature search was not exhaustive
 NOT a claim about intent both commit messages are quoted, not interpreted; why a size rule shipped as
                          "cleanup" is not established here
 NOT executed             the origin-side statement is read from v0.1's source; no block in the 1 MB–32 MiB
                          band was submitted to the 2009 binary (open item)
-NOT a completeness claim the transaction-size rule (13 Sep 2010, `OBL-C-0010`) and MAX_BLOCK_SIGOPS are
-                         noted, not traced further; later changes to the limit are named, not dated
+NOT a completeness claim the transaction-size rule (30 Sep 2010) and MAX_BLOCK_SIGOPS are noted, not
+                         traced further; later changes to the limit are named, not dated
 NOT a recommendation     nothing here argues for or against any block size
 BOUNDED window           15 Jul 2010 to 30 Sep 2010 in bitcoin/bitcoin; v0.1.0 from the hash-verified
                          archives for the origin side
@@ -266,10 +222,3 @@ Two `gh api` calls and two `curl` calls reproduce every quoted line. The block t
 public block explorer's API and can be re-read from any full node.
 
 **Corrections to this note are published, dated, and not made silently.**
-
-*Revision 2, 20 September 2026, after two outside readers checked the note against the record and the
-literature: prior accounts of the two-step shape are stated and the first text's claim to have found none
-is withdrawn; the third step (`172f00602`, 19 September 2010) and the message-size cap change in the
-enforcing commit are added; the transaction-size rule's date is corrected to 13 September 2010. The
-finding itself is unchanged. Revision 1 and its signatures and proofs are kept beside this file as
-`MAX-BLOCK-SIZE-RETROFITTED.r1.md*`; this text is signed and stamped as an operator step, recorded when done.*

@@ -25,3 +25,11 @@ Recorded here rather than edited into the sets:
   (`COINBASE_MATURITY` plus the 20-block margin), as `r4-findings/2026-08-06-relayed-spend/` established.
 - Where a set says a step was deferred to a Windows-XP guest, the runs were made on Windows 10 guests.
 
+## A statement added 20 September 2026
+
+The block 1 of `2026-07-31-twonode-mined-block/` (`000000005bdcfb22…`) was mined on Bitcoin's own genesis at
+difficulty 1, so it is a valid alternative block 1 for the historical chain. It is published so the run can be
+checked, and it is inert on the live network: a block at height 1 sits below every checkpoint since 2010 and
+under sixteen years of cumulative work, so no current node would follow it. The two VMs were isolated from
+the outside network and connected to each other on an internal network (not air-gapped from each other).
+

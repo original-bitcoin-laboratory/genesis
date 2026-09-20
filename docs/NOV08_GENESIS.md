@@ -21,7 +21,9 @@ archive it lives in is, by Satoshi's own description, not a complete program.
 | `bitcoin-nov08.rar` | 33,657 bytes · sha256 `f0327ebbea17f7d6e14be5f5534c6ff16c7648f588cbb096fc8fdfcb7e071abf` |
 | `bitcoin-nov08.tgz` | 31,830 bytes · sha256 `ababfeb72cf82ede27fd86a0eb330f3738afd7c5c9595e44a43570f32fcba5d7` |
 
-Held in `pre-genesis/artifacts/nov08/`. Everything below is reproducible from `main.cpp` and
+Committed in `pre-genesis/artifacts/nov08/` since 20 September 2026 (SNI's md5/sha1 and this laboratory's
+sha256 in `pre-genesis/manifests/EXPECTED_CHECKSUMS.json`); until then held locally and obtainable only
+from SNI's host, which outside readers pointed out. Everything below is reproducible from `main.cpp` and
 `main.h` in those archives, with `sha256sum`, a text editor, and about twenty lines of Python.
 
 ### An external anchor for this archive

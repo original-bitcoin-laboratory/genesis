@@ -132,12 +132,21 @@ def main(argv=None):
     ap.add_argument("--wallet", action="store_true",
                     help="enable an experimental wallet in the datadir; a mining node earns its "
                          "coinbase to it (NOT money)")
+    ap.add_argument("--print-tip", action="store_true",
+                    help="open the datadir, print the validated height and tip as JSON, and exit; no network")
     ap.add_argument("--rpc", default=None, metavar="[HOST:]PORT",
                     help="start a localhost control interface on this port (see `netnode ctl`); "
                          "loopback only, no auth — do not expose it")
     args = ap.parse_args(argv)
 
     cfg = CHAINS[args.chain]
+    if args.print_tip:
+        import json
+        node = Node(cfg, args.datadir, listen=None, min_bits=int(args.min_difficulty, 0) if args.min_difficulty else None)
+        print(json.dumps({"chain": cfg.key, "height": node.height, "tip": node.tip[::-1].hex(),
+                          "genesis": cfg.mint_genesis and __import__('chainsync').block_hash(cfg.mint_genesis())[::-1].hex(),
+                          "not_money": True}))
+        return
     listen = None if args.no_listen else _hostport(args.listen or str(cfg.port), "0.0.0.0")
     connect = [_hostport(c, "127.0.0.1") for c in args.connect]
     min_bits = int(args.min_difficulty, 0) if args.min_difficulty else None
