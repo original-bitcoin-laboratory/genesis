@@ -18,3 +18,9 @@ under the paths the manifest names; their digests are the manifest's, so the sea
 set is edited. Each record binds a running process (PID, start time, image path) to `bitcoin.exe` sha256
 `fbcac071d92e26d82ec917214e334bd43850c0691f113bab1d4741c9bdd30d2d`, the archive's binary, and to its two DLLs,
 before and after the run. The guest hostname and the guest user's data directory are the VM's.
+
+The digest `fbcac071…` is the laboratory's own reading of the `bitcoin.exe` inside the archive served as
+`bitcoin-0.1.0.rar` (sha256 `8b17eb9a…`); no 2009-era publication of that binary's hash is known
+(`provenance/SOURCEFORGE_PUBLISHED_HASHES.md`). The binding therefore proves that one uninterrupted process ran that
+file. That the file is the January 2009 build rests on the archive's custody and its internal evidence
+(`common/VERSION_LABEL.md`), as every `JAN09-` grade does.

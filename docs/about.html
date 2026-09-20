@@ -145,6 +145,19 @@
 <!-- umami: self-hosted by the laboratory at analytics.bitcoin-lab.org; no cookies, aggregate only -->
 <script defer src="https://analytics.bitcoin-lab.org/script.js" data-website-id="9085ed4e-a489-4600-9d9c-1926c9b917d5"></script>
 <script src="analytics.js"></script>
+<section id="counted">
+  <h2>What is counted</h2>
+  <p>The three sites use aggregate, cookie-less counters: GoatCounter (account parthod0x) and a self-hosted
+    Umami at analytics.bitcoin-lab.org. Beyond a page view, one small script adds events so the counts say what
+    a page was used for: which outbound link or download was followed, which section was jumped to, how far
+    down a page was read, roughly how long it stayed open, whether it was printed, whether a script threw, and
+    what <i>kind</i> of text was copied (a hash, a command, an address, a key or signature block), and not the
+    text itself. Every event is a fact about a visit, not a visitor: no cookies, no local storage, no
+    fingerprinting, no per-visitor or cross-site identifier. The script is
+    <a href="analytics.js">analytics.js</a>, one file loaded by every page, so what is counted can be read
+    rather than trusted.</p>
+</section>
+
 <footer class="lab-footer" aria-label="provenance and license">
   <div class="lf-brand"><a href="/" title="Home — Original Bitcoin Laboratory" style="color:inherit;text-decoration:none;border:0">◆ Original Bitcoin Laboratory</a></div>
   <p class="lf-anchor">Anchored to block <b>0</b> · 3 January 2009 ·
@@ -165,7 +178,7 @@
     which version is which, and how to check. &middot; <a href="/docs.html">all documents</a><br>Three remits: <i>the code</i>, <i>the footprint</i>, <i>the document</i>.</p>
     <p class="lf-legal">MIT © 2026 <a href="https://github.com/original-bitcoin-laboratory">parthod0x</a>
     · experimental laboratory research, in progress · statistical, machine-verifiable findings, no conclusions beyond them
-    · <b>NOT money</b>, not advice · no warranty · aggregate, cookie-less analytics, no identifiers</p>
+    · <b>NOT money</b>, not advice · no warranty · aggregate, cookie-less analytics, no identifiers (<a href="#counted" style="color:inherit">what is counted</a>)</p>
   <p><a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/RIGHTS.md">Rights, sourcing &amp; corrections</a> — independent research; not affiliated with any party; not financial advice.</p>
 </footer>
 <style>

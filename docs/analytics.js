@@ -6,9 +6,10 @@
  * threw. Every event is a fact about a VISIT, never about a VISITOR.
  *
  * What it does not do, deliberately: no cookies, no localStorage, no fingerprinting, no
- * cross-site or per-visitor identifier, nothing that identifies a person, and nothing sent that
- * a server log would not already see. Aggregate-only is a property of the tools chosen; it is
- * stated here so it cannot drift quietly.
+ * cross-site or per-visitor identifier, nothing that identifies a person. What it does send
+ * beyond what a server log sees: read depth, time open, print, script errors, and the KIND of
+ * text copied (a hash, a command, an address, a key block), not the text. The list is
+ * published at bitcoin-lab.org/about.html#counted so it cannot drift quietly.
  *
  * PATH PREFIX: this site is the account's DEFAULT and reports bare paths ("/verify.html").
  * satoshioncha.in and bitcoinwhitepaper.online prefix themselves with their host, so the three

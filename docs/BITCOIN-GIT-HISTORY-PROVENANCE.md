@@ -48,6 +48,8 @@ author addresses           <name>@1a98c847-1fd6-4fd8-948a-caf3550aa51b (the SVN 
                            satoshin@gmx.com 34 (26 Jul .. 28 Aug 2010) · gavinandresen@gmail.com 58 · witchspace81@gmail.com 2
 
 duplicate pairs            132 groups of two non-merge commits with the same first message line
+  root pair                e071a3f6c / 4405b78d6, both parentless: outside the 341 non-merge commits and not among
+                           the 132 pairs; counted apart (a recount that includes it reads 133)
   trailer on               one copy 121 · both copies 10 (SVN r148–r157, 7–23 Sep 2010) · neither 1 (20 Dec 2010, Gavin Andresen)
   same change?             124 identical (additions, deletions, file list) · 8 differ (all one-trailer pairs) · 0 not compared
   date offset              non-trailer minus trailer, one-trailer pairs: min 0.00 d · median 0.00 · p90 1.75 · max 8.09 · earlier: 0
@@ -157,4 +159,5 @@ of one trailer copy and one without, did not distinguish the ten pairs where bot
 one where neither does, left two pairs uncompared, and stated no citation rule for the both-trailer pairs. The
 counts, the author tally, the citation rule and the pair list are corrected and published above; `OBL-F-0014` is
 restated to match. Nothing else changed. Revision 1 and its signatures and proofs are kept beside this file as
-`BITCOIN-GIT-HISTORY-PROVENANCE.r1.md*`; this text is signed and stamped as an operator step, recorded when done.*
+`BITCOIN-GIT-HISTORY-PROVENANCE.r1.md*`; this text is signed and stamped as an operator step, recorded when done. Later the same day, before signing: the
+root pair is stated as counted apart, after an overall review counted 133 by including it; nothing else changed.*

@@ -5,7 +5,9 @@ carried: where it came from, what the record says for it, and what has been exec
 `OBL-C-nnnn`; the findings series `OBL-F-nnnn` (`FINDINGS-REGISTER.md`) is for claims, and a rule's
 row cites the findings its witness rests on. Started 19 September 2026 from the rows already dated;
 `scripts/check_register.py` counts the rows against `common/conformance/CONSENSUS_SURFACE.md` and
-prints the `message_match` tally with that denominator, by rule and by origin commit.
+prints the `message_match` tally with that denominator, by rule and by origin commit. Rows are corrected in
+place with dated notes; to cite a row's state, name its ID with the register's commit or the date, the git
+history being the version record.
 
 Experimental laboratory research, in progress. Not money, not advice, no warranty (`RIGHTS.md`).
 

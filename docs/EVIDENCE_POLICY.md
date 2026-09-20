@@ -59,7 +59,9 @@ block. **A sealed set is not edited in place.** Two things may happen to it afte
 
 Revisions are numbered and dated. The direction is fixed: new seals beside old ones, not in
 place of them. The record of a revision is the set's `REVISION.txt` and its entry in
-`bitcoin-findings/CORRECTIONS.md`. The script that issued revisions 2 to 4 is kept in the laboratory's workspace
+`bitcoin-findings/CORRECTIONS.md`; and the kept manifests make the edit itself checkable, since the difference
+between the files revision N-1 seals and the files revision N seals is the complete edit, which anyone holding the
+set can take without any instrument of the laboratory's. The script that issued revisions 2 to 4 is kept in the laboratory's workspace
 and is not published: its edit tables quote the strings the revisions removed. (An earlier text here named it as
 if published; corrected 20 September 2026.)
 
@@ -72,7 +74,8 @@ with a dated correction line.
 
 Editable public text carries no promissory or universal-temporal word (the audit
 `_audit_absolutes.py` holds the list), states what is done in the present tense and facts as plain negatives,
-attributes no motive to anyone, and names no jurisdiction or statute. A categorical verdict on one stated, bounded claim ("FALSE" against
+attributes no motive to anyone, and names no jurisdiction or statute in its own statements (a judgment cited as a
+source is named as such). A categorical verdict on one stated, bounded claim ("FALSE" against
 a sentence this laboratory published) is a finding, not an absolute. Quoted words of others are untouched, and a
 signed, sealed or frozen text is corrected forward by a dated note beside it. The workspace control that enforces
 this on every editable file is the laboratory's own and is not published; what it enforces is stated here.

@@ -36,8 +36,10 @@ python scripts/verify-artifacts.py    # hash-check against manifests/EXPECTED_CH
 
 Archives land in `artifacts/jan09/` and are not edited. Since 20 September 2026 the two archives are committed there
 (5 MB, MIT-licensed by their author), so the base every `JAN09-SOURCE` claim rests on is reachable from this
-repository and not only from a third party's host; the verifier checks them against the published digests before
-anything reads them. Verified
+repository and not only from a third party's host; the verifier checks them, before anything reads them, against the
+digests their custodians published (the Nakamoto Institute's catalogue and a 2012 recovery thread), which tie the
+bytes to those publications and not to a 2009 server: `provenance/SOURCEFORGE_PUBLISHED_HASHES.md` records that no
+server-published hash exists for the v0.1.0 code, so the custodian-free check is reproduction, not a digest. Verified
 values: MD5/SHA-1 (SNI catalogue) plus SHA-256 matching the 2012 Hal Finney
 recovery thread — `bitcoin-0.1.0.rar` = `8b17eb9a…`, `bitcoin-0.1.0.tgz` =
 `ce9da465…`.
