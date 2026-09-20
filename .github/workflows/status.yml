@@ -54,9 +54,16 @@ jobs:
         run: |
           git config user.name "obl-status-bot"
           git config user.email "status@users.noreply.github.com"
-          git checkout --orphan status
-          git rm -rf . >/dev/null 2>&1 || true
+          # One commit per probe on top of the last, so the branch is a history of the anchors' tips
+          # (a rewrite of a chain would show against it). Until 20 September 2026 each run replaced the
+          # branch with a single orphan commit.
+          if git fetch --depth=1 origin status 2>/dev/null; then
+            git checkout -q -B status FETCH_HEAD
+          else
+            git checkout -q --orphan status
+            git rm -rfq . >/dev/null 2>&1 || true
+          fi
           cp /tmp/status.json status.json
           git add status.json
-          git commit -m "status $(date -u +%FT%TZ)"
-          git push -f origin status
+          git commit -q -m "status $(date -u +%FT%TZ)" || echo "no change"
+          git push -q origin status

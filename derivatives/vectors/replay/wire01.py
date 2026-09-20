@@ -205,10 +205,20 @@ class Peer:
             p = self.expect(lambda c, _p: c == "inv", timeout=max(0.05, deadline - time.time()))
             if p is None:
                 break
+            blocks_in_this = 0
             for t, h in parse_inv(p):
-                if t == MSG_BLOCK and h not in hashes:
-                    hashes.append(h)
-            deadline = min(deadline, time.time() + 0.8)     # once it starts, it finishes quickly
+                if t == MSG_BLOCK:
+                    blocks_in_this += 1
+                    if h not in hashes:
+                        hashes.append(h)
+            # main.cpp:1795-1866 answers getblocks with one inv of at most 500 block hashes (nLimit), so an
+            # inv carrying fewer than 500 is the whole answer; a full one may be followed by more on the
+            # next tick, so keep listening briefly. (Before 20 September 2026 every answer paid a 0.8 s
+            # settle tail, twice per mined block over a replay.)
+            if 0 < blocks_in_this < 500:
+                break
+            if blocks_in_this:
+                deadline = min(deadline, time.time() + 0.8)
         return hashes
 
     def sync_chain(self, genesis_hash: bytes, on_block=None, batch: int = 50) -> list[bytes]:
@@ -219,6 +229,7 @@ class Peer:
             hashes = self.main_chain_after(cursor, timeout=5.0)
             if not hashes:
                 return raws
+            short = len(hashes) < 500                  # a short answer lists the chain to its tip: no need to ask again
             for i in range(0, len(hashes), batch):
                 chunk = hashes[i:i + batch]
                 self.send("getdata", inv_payload([(MSG_BLOCK, h) for h in chunk]))
@@ -229,6 +240,8 @@ class Peer:
                     raws.append(p)
                     if on_block:
                         on_block(p)
+            if short:
+                return raws
             cursor = hashes[-1]
 
 

@@ -48,3 +48,6 @@ BLOCKSTREAM_TOKEN*
 
 # retarget watcher runtime state -- a moving snapshot, not an artifact
 derivatives/retarget/_retarget_watch_state.json
+
+# setuptools metadata written by an editable install
+*.egg-info/

@@ -113,3 +113,13 @@ Everything else is as in A, with `C:\obl\debug.log` as the log path. That applia
 - Every block the harness mines pays `OP_TRUE`. On an isolated clone that matters to nobody; on the public chain it
   would, which is why the clone is not optional.
 - `state.json` is bound to a `--target`; a different target needs a different `--out`.
+
+## Revision note, 20 September 2026
+
+`submit_block` now sends a locator that starts below the local tip, so the node's answer to `getblocks`
+carries the tip whether or not it accepted the block; before, a rejected block drew no `inv` and the
+harness waited out four timeouts per rejected case, and two seconds before every mined block. `main_chain_after`
+treats an `inv` of fewer than 500 block hashes as the whole answer (main.cpp's `nLimit`), so the 0.8 s settle
+tail is paid only after a full page; `sync_chain` stops after a short answer. The verdict logic is unchanged.
+The r5 replay against the release client was made with the earlier code and its results are sealed as recorded
+there.

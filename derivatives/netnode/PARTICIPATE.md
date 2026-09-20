@@ -36,8 +36,9 @@ python -m netnode --chain jan09x --datadir ./data \
 
 (For `nov08x` use `--connect seed.bitcoin-lab.org:18008`. The RPC is **loopback‑only and unauthenticated** —
 do not expose it. All nodes on one network must share the same `--min-difficulty` floor. **The seed runs
-with no floor set** (`deploy/xnode.service`), so leave the flag unset to match it; whether to set one is an
-open operator item in `docs/AUDIT_SCOPE.md`, and a change is announced on the status page before it is made.)
+with no floor set** (`deploy/xnode.service`), so leave the flag unset to match it. That is a decision, not an
+oversight: `docs/AUDIT_SCOPE.md` states why (nothing at stake; a floor applies to every block, so setting one
+means a restart; every probe of the anchors' tips is kept on the `status` branch, so a rewrite is visible).)
 
 Outbound TCP to 18008/18009 has to be open; sandboxes, CI runners and office networks tend to block it, and
 the symptom is a silent timeout. The node logs a line every hundred blocks, and

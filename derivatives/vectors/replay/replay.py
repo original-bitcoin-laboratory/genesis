@@ -117,12 +117,21 @@ class Replay:
     def ntime_for_next(self) -> int:
         return max(self.chain.median_time_past(self.chain.tip) + 1, self.now())
 
+    def below_tip_locator(self) -> list[bytes]:
+        """Newest first, starting BELOW the local tip (the tip's parent, then older), so the node's answer
+        to `getblocks` carries the tip whatever it did with the last block, and the question is only what
+        follows it. With the tip itself first, "nothing follows" drew no `inv` at all (v0.1 sends no empty
+        inv), indistinguishable from "not ticked yet": a two-second wait before every mined block and four
+        timeouts per rejected case, about ten minutes over the suite (an outside run measured it, 20 September
+        2026). A list survives a reorganisation on the node's side. At height 0 it is the genesis itself."""
+        return list(reversed(self.chain.main[-13:-1])) or [self.chain.main[-1]]
+
     def refresh_tip(self) -> int:
         """Adopt any block the node's main chain has beyond our local tip — its own mined blocks, if its
         miner is on. Returns how many were adopted. The node is the authority on what its tip is."""
         adopted = 0
         while True:
-            after = self.peer.main_chain_after(self.chain.tip, timeout=2.0)
+            after = self.peer.main_chain_after(self.below_tip_locator(), timeout=2.0)
             new = [h for h in after if h not in self.chain.index]
             if not new:
                 return adopted
@@ -156,7 +165,7 @@ class Replay:
         """Send a block; read both signals. Also feed the local validator and compare."""
         h = spec.dsha256(raw[:80])
         prev_tip = self.chain.tip
-        locator = list(reversed(self.chain.main[-12:]))      # newest first; survives a reorganisation on the node
+        locator = self.below_tip_locator()        # see the helper: the node's answer is never silence
         self.peer.send("block", raw)
         served = self.peer.probe(MSG_BLOCK, h, self.genesis)
         in_main = False

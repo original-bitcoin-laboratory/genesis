@@ -79,7 +79,13 @@ From each node's `SECURITY.md`. These are **acceptable for a valueless research 
 so a reviewer can confirm the boundary, not treat them as surprises:
 
 - **Difficulty defaults to easy.** Without an operator‑set `--min-difficulty` floor, the chain is
-  trivially rewritable. Choosing/coordinating a real floor is an operator action.
+  trivially rewritable. **Decided 20 September 2026: no floor is set on the seed.** Nothing is at stake on these chains by
+  design, so a rewrite costs its author electricity and gains nothing; the floor applies to every
+  block (`difficulty.py`, `_floor_bits`), so setting one now would invalidate the chain already
+  built on the easy genesis and mean a restart; and a rewrite is visible rather than silent, because
+  the anchors' tips are probed on a schedule and every probe is kept as a commit on the `status`
+  branch. Joiners leave `--min-difficulty` unset. A floor stays a supported option for a network that
+  chooses to restart with one.
 - **No peer authentication or encryption** — plaintext P2P; no strong eclipse/Sybil resistance.
 - **RPC is loopback‑only and unauthenticated**; the **wallet stores plaintext keys** (no encryption,
   HD, or backup discipline) — experimental keys for a valueless chain.

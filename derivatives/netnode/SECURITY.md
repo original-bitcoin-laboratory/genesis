@@ -65,7 +65,14 @@ value would force adding the 2010 guardrails — at which point it stops being t
 - **The difficulty floor defaults to easy.** The retarget and the optional `--min-difficulty` floor
   work, but **unless an operator sets a real floor** the network starts at regtest‑easy difficulty
   and is **trivially rewritable** by anyone with modest hashpower. Choosing and coordinating a real
-  floor across all nodes is an operator responsibility, not a default. (The orphan‑reconnection
+  floor across all nodes is an operator responsibility, not a default. **Decided 20 September 2026: no floor is set on the seed.** Nothing is at stake on these chains by
+  design, so a rewrite costs its author electricity and gains nothing; the floor applies to every
+  block (`difficulty.py`, `_floor_bits`), so setting one now would invalidate the chain already
+  built on the easy genesis and mean a restart; and a rewrite is visible rather than silent, because
+  the anchors' tips are probed on a schedule and every probe is kept as a commit on the `status`
+  branch. Joiners leave `--min-difficulty` unset. A floor stays a supported option for a network that
+  chooses to restart with one.
+  (The orphan‑reconnection
   difficulty gap is now closed — see "what is defended.")
 - **No peer authentication or encryption.** Connections are plaintext; there is no defense against
   a man‑in‑the‑middle, and no identity for peers.

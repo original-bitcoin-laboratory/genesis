@@ -68,7 +68,11 @@ laboratory anchors to reproduction rather than to a published digest.
 
 **The archive circulated as `bitcoin-0.1.0.rar` is v0.1.1.** Its size, 2,132,686 bytes, is precisely
 the figure Satoshi states for **`bitcoin-0.1.1.rar`** in a 10 January 2009 message; its shipped
-`bitcoin.exe` carries a PE `TimeDateStamp` of 2009-01-10, two days after v0.1.0 was announced. See
+`bitcoin.exe` carries a PE `TimeDateStamp` of 2009-01-10, two days after v0.1.0 was announced. (Listings of
+the archive show its members dated 07 Jan 09; inside the `.rar` every member, `bitcoin.exe` included, carries
+the same modification time to the second, 2009-01-07 01:00:00, so those are the packer's uniform stamps, not
+authoring dates, and an executable cannot predate its own link time. The PE stamp is the datable field.
+Checked 20 September 2026 after an outside reader raised the two dates.) See
 [`common/VERSION_LABEL.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md).
 
 **Neither correction changes any consensus result** — the v0.1.0→v0.1.1 delta is confined to
