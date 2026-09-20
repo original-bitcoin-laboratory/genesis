@@ -234,11 +234,13 @@ def check_open_cells(c_rows: list[dict], failures: list[str], say) -> None:
     say(f"open witness cells: {len(opened)} ({', '.join(opened) or 'none'}); enumerated in {len(OPEN_SECTIONS)} document(s)")
 
 
-def _tracked_proofs() -> set[str] | None:
-    """Paths of the .ots files git tracks, or None when git is unavailable (then every file counts)."""
+def _tracked_files(pattern: str = "") -> set[str] | None:
+    """Paths git tracks (optionally matching a pathspec), or None when git is unavailable (then every
+    file counts). The tracked tree is the record: an untracked file on one disk is not part of it."""
     try:
         import subprocess
-        out = subprocess.run(["git", "ls-files", "--", "*.ots"], cwd=REPO, capture_output=True, text=True, check=True).stdout
+        cmd = ["git", "ls-files"] + (["--", pattern] if pattern else [])
+        out = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, check=True).stdout
         return {ln.strip() for ln in out.splitlines() if ln.strip()}
     except Exception:  # noqa: BLE001
         return None
@@ -249,7 +251,7 @@ def check_anchor_heights(failures: list[str], notes: list[str], say) -> None:
     or, when none is named, some proof this repository carries."""
     proofs: dict[str, set[int]] = {}
     pending_total = 0
-    tracked = _tracked_proofs()
+    tracked = _tracked_files("*.ots")
     for p in REPO.rglob("*.ots"):
         if any(part in SKIP_DIRS for part in p.relative_to(REPO).parts):
             continue
@@ -265,8 +267,11 @@ def check_anchor_heights(failures: list[str], notes: list[str], say) -> None:
         for key in {base, base[:-4]}:                            # `X.ots` and `X`
             by_name.setdefault(key, set()).update(h)
     checked = 0
+    tracked_text = _tracked_files()
     for f in REPO.rglob("*"):
         if f.suffix not in TEXT_SUFFIXES or any(part in SKIP_DIRS for part in f.relative_to(REPO).parts):
+            continue
+        if tracked_text is not None and str(f.relative_to(REPO)).replace("\\", "/") not in tracked_text:
             continue
         for ln, line in enumerate(f.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
             for m in HEIGHT_RE.finditer(line):
@@ -274,13 +279,13 @@ def check_anchor_heights(failures: list[str], notes: list[str], say) -> None:
                 height = int(m.group(1))
                 named = [k for k in by_name if k in line and by_name[k]]
                 where = f"{f.relative_to(REPO)}:{ln}"
+                if height in EXTERNAL_ANCHORS:
+                    continue                                      # declared above, with where the proof lives
                 if named:
                     ok = any(height in by_name[k] for k in named)
                     if not ok:
                         failures.append(f"{where}: says block {height}; the proof(s) named on that line attest "
                                         + ", ".join(f"{k} -> {sorted(by_name[k])}" for k in named))
-                elif height in EXTERNAL_ANCHORS:
-                    pass                                          # declared above, with where the proof lives
                 elif height not in all_heights:
                     failures.append(f"{where}: says block {height}; no proof in this repository attests that height")
     say(f"anchor heights: {len(proofs)} proof(s) read, {len(all_heights)} distinct Bitcoin heights, "
