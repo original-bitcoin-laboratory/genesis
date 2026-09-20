@@ -7,6 +7,10 @@ party working from the operator's brief, is recorded as such and is not independ
 laboratory's own statement of why that distinction matters is §6 of its method paper and the
 second-laboratory criterion of the ancient-DNA literature it cites.
 
+**Independent reproductions recorded, as of 20 September 2026: none.** Every row below is a run commissioned
+by the operator. The absence is stated here rather than left implicit; the first entry from a party the
+operator did not commission lands in this table and is labelled so.
+
 Experimental laboratory research, in progress. Not money, not advice, no warranty (`RIGHTS.md`).
 
 | date | party | access | task | result | evidence of |
