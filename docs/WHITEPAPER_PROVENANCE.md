@@ -309,7 +309,7 @@ proposal, so the dating is unaffected — but the two statements are not identic
 ## A fourth version exists: in the court record, not in public hands
 
 The judgment in COPA v Wright [2024] EWHC 1198 (Ch) records (¶271.9) that **Nicholas Bohm**, a retired
-solicitor who corresponded with Satoshi shortly after the January 2009 release, provided a version of
+solicitor who corresponded with Satoshi shortly after the January 2009 release and who died shortly before the trial began (¶271.9), provided a version of
 the whitepaper he had downloaded in January 2009, which an expert witness (Mr Madden, ¶271.9) authenticated and which was
 used in the evidence as a control copy. It is a version other than the two held ones, and it is in no
 public hands.

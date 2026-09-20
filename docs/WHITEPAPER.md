@@ -45,7 +45,7 @@ PRE-RELEASE    3 Oct 2008    183,697 B   8 pages
   https://gwern.net/doc/bitcoin/20081003-nakamoto-bitcoindraft.pdf
 
 A JANUARY 2009 DOWNLOAD — IN THE COURT RECORD, NOT IN PUBLIC HANDS
-  The judgment in COPA v Wright [2024] EWHC 1198 (Ch) records (¶271.9) that Nicholas Bohm provided
+  The judgment in COPA v Wright [2024] EWHC 1198 (Ch) records (¶271.9) that Nicholas Bohm, who died shortly before the trial began, provided
   a version he downloaded in January 2009, authenticated in evidence (¶271.9) and used as a control
   copy. Its date, hashes and text are in evidence that is not published and are not reproduced here.
 ```

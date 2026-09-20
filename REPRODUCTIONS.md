@@ -60,8 +60,10 @@ Experimental laboratory research, in progress. Not money, not advice, no warrant
   scoped to the laboratory's own statements.
 - Both registers: how to cite a row's state (ID plus commit or date).
 - `r4-findings/…/PUBLISHED-2026-09-20.md`: what the `fbcac071…` binding proves and what rests on custody.
-- Not changed, for the operator: an uncommissioned reproduction (outreach); continuity if the operator stops; whether
-  the material naming a private individual stays; a versioned register beyond the git history (a DOI per revision is
+- The material naming a private individual, decided: it stays. The judgment the pages cite records, in the same
+  paragraph (¶271.9), that Mr Bohm died shortly before the trial began; every mention on the three sites and in
+  the notes now says so, from that paragraph, and the transactions stay unidentified.
+- Not changed, for the operator: an uncommissioned reproduction (outreach); continuity if the operator stops; a versioned register beyond the git history (a DOI per revision is
   an open question of the direction document).
 
 ## Disputed
