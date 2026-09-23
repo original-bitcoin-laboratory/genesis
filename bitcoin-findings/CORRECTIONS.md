@@ -317,3 +317,52 @@ are unchanged. The edits:
   sealed `EVIDENCE_MANIFEST.json` pins (`bitcoin.exe` sha256 `fbcac071…`) are published beside the set under the
   manifest's paths, with a dated note (`PUBLISHED-2026-09-20.md`). No file of the set changed.
 
+
+
+## 23 September 2026 — `2026-09-23-blocks862-1167` calls a key something v0.1 does not have
+
+**That set's `FINDINGS.md`, in the Custody block, reads:**
+
+> ```
+>         not yet used                     1   (the keypool's next key)
+> ```
+
+**v0.1 has no keypool, and this key is not the miner's pending one.** Both halves of the
+parenthesis are wrong, and the source settles it. `BitcoinMiner()` makes one key *in memory* before
+its loop and pays every coinbase it builds to that key; the key reaches the wallet only on the
+line after a block is found, and a fresh one is made immediately:
+
+```
+    CKey key;
+    key.MakeNewKey();                                   // in memory, not in the wallet
+    ...
+        txNew.vout[0].scriptPubKey << key.GetPubKey() << OP_CHECKSIG;
+    ...
+                    // Save key
+                    if (!AddKey(key))                   // written only when a block is found
+                    key.MakeNewKey();                   // then replaced for the next block
+```
+
+⇒ So a wallet from this client holds **one key per block it actually mined, and no pending key** —
+the key being mined toward is in memory and is lost on exit. A count of "one key not yet used"
+therefore cannot be a keypool key or a pending miner key, because this client writes neither to disk.
+
+**What the extra key actually is: the node's own default receiving address** — the one the client's
+window displays beside *Your Bitcoin Address*, generated when the wallet was first created. It has
+not received a payment on this chain, which is why it appears in the wallet and not
+among the coinbase payees.
+
+⚠️ **It is not new to this round, and that is the part the set's wording obscured.** The same
+single non-payee key is present in the previous round's wallet (852 keys, 851 payees at block 861)
+and is the same key: the count has been `payees + 1` for as long as the series has reported it. The
+set presented a standing property of the wallet as if it were a transient artefact of this capture.
+
+**How it was found.** Regenerating `bitcoin-origin-claims/GENERATED-FIGURES.md` after the ingest
+produced the line *"distinct coinbase pubkeys 1158 — one key per block, v0.1 has NO keypool"*,
+which contradicts the set published an hour earlier. The source was then read, and the key's address
+was derived and compared with the address the client's own window shows: they are the same key.
+
+⇒ **Two instruments disagreeing is how this was caught**, which is the same reason the laboratory
+keeps more than one. Nothing else in the set is affected: the chain figures, the binding records,
+the custody verdict (the agent's key is absent) and the payee counts all stand, and the sealed set
+is unedited.
