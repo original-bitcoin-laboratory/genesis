@@ -51,7 +51,9 @@ carries a 96-byte checkpoint commitment in each coinbase — **but by the same h
 this was the first external *implementation*, not yet the first external *party*
 ([findings](../../bitcoin-findings/2026-08-19-external-blocks221-222/FINDINGS.md)). Both of those
 coinbases pay the agent's genesis key; the anchoring project kept nothing. So the concentration
-survives in full: **as of the last sealed set (block 861, 13 September 2026), no third party holds any coin on this chain.** No allocation, no sale, no token,
+survives in full: **as of the last sealed set (block 1167, 23 September 2026), no third party holds any coin on this chain.** That is checkable rather than
+asserted: every one of the 1,170 blocks in the sealed chain file carries exactly one transaction,
+its own coinbase, so no coin has moved between any two parties at any height. No allocation, no sale, no token,
 nothing set aside. **None of it has been spent, offered, priced or transferred, and none of it
 is for sale.** **The first genuinely third-party block remains unmined** — and requires no
 permission and nothing from us.
