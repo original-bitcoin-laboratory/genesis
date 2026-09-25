@@ -2,10 +2,12 @@
 
 **19 September 2026.** The repository the field treats as the record of Bitcoin's early development
 was converted from Subversion. For the period from its first commit (30 August 2009) to the end of
-2010 it carries many commits twice: 132 of its 341 non-merge commits exist as a pair with the same first
-message line. In 121 pairs one copy carries the `git-svn-id` trailer that names the SourceForge revision and
-the other does not, dated the same day or up to eight days later, under one of three author strings; in ten
-pairs (SVN r148–r157) both copies carry the trailer; in one neither does. A date or hash cited from the second
+2010 it carries most commits twice: 264 of its 341 non-merge commits stand as 132 pairs with the same
+first message line. In 121 pairs one copy carries the `git-svn-id` trailer that names the SourceForge revision and
+the other does not, dated the same day or up to eight days later. The copy without the trailer carries
+one of five author strings: 104 under `s_nakamoto`, `Satoshi Nakamoto` or `--author=Satoshi Nakamoto`,
+and seventeen under `sirius-m` or `Gavin Andresen`. In ten pairs (SVN r148–r157) both copies carry the
+trailer; in one neither does. A date or hash cited from the second
 copy of a one-trailer pair can differ from the first by up to eight days and, in eight cases, by a few lines
 of content.
 
@@ -25,8 +27,9 @@ and states what it does not claim. Findings register: `OBL-F-0014`.
 >                         line, "misc", eight times
 >                       that 124 of the 132 pairs carry identical additions, deletions and file lists,
 >                         and 8 differ by a few lines
->                       that in the one-trailer pairs the copy without the trailer is dated later in every
->                         pair (median same day, 90 % within 1.75 days, at most 8.09 days), and is the copy
+>                       that in the one-trailer pairs the copy without the trailer is dated no earlier in
+>                         any pair — the same instant in 84 of the 121, later in 37, at most 8.09 days
+>                         later (median same day, 90 % within 1.75 days) — and is the copy
 >                         that carries the strings "Satoshi Nakamoto" and "--author=Satoshi Nakamoto"
 >                       that the doubling starts at the root: two "First commit" objects, 30 Aug 2009
 > ```
@@ -161,3 +164,22 @@ counts, the author tally, the citation rule and the pair list are corrected and 
 restated to match. Nothing else changed. Revision 1 and its signatures and proofs are kept beside this file as
 `BITCOIN-GIT-HISTORY-PROVENANCE.r1.md*`; this text is signed and stamped as an operator step, recorded when done. Later the same day, before signing: the
 root pair is stated as counted apart, after an overall review counted 133 by including it; nothing else changed.*
+
+*Corrected 25 September 2026, before signing, from this note's own `bitcoin-git-history-pairs.tsv`. Three
+statements were wrong, all three inherited from revision 1 or introduced by revision 2's rewording, and each
+is contradicted by the dataset published beside this note:*
+
+1. *"under one of three author strings" (revision 1 and revision 2). The dataset gives **five** on the copy
+   without the trailer: 104 under the three `s_nakamoto` forms, twelve under `sirius-m`, five under
+   `Gavin Andresen`.*
+2. *"the copy without the trailer is dated later in every pair" (revision 1 and revision 2). It is dated **no
+   earlier in any pair**, which is a different claim: the timestamps are identical in 84 of the 121 and
+   later in 37. `OBL-F-0014` already carried the correct wording; this note did not.*
+3. *"132 of its 341 non-merge commits exist as a pair" (revision 2 only). 132 is the number of **pairs**;
+   they hold **264** distinct commits, so 264 of 341 are paired. Revision 1 said "most commits twice", which
+   is right at 264 of 341; revision 2's rewording silently weakened a signed claim to read as 39 %, and that
+   rewording was not recorded. The lead now says "most" again, with the count.*
+
+*Revision 1 is signed and is not edited; it keeps statements 1 and 2, and this is the correction beside it.
+The pair counts (132, and 121 / 10 / 1), the SVN range r148–r157, the eight pairs whose content differs and
+the 8.09-day maximum offset were each recomputed from the dataset at the same time and are unchanged.*

@@ -4,7 +4,7 @@
 fought over. It is commonly dated to a single commit in July 2010. The record shows three commits: a
 constant in July that only the miner honoured, a validity rule in September gated at a height, and the
 gate's removal twelve days later; none of the three messages describes the change; and the January 2009
-release already enforced a block-size ceiling, thirty-two times larger.
+release already enforced a block-size ceiling of 32 MiB, thirty-three times the later figure.
 
 This note dates the three steps, gives the method to reproduce the dating, and states what the origin
 enforced before them. Findings register: `OBL-F-0013` (the constant and the rule), `OBL-F-0015`
@@ -134,11 +134,14 @@ And in the miner, the margin goes:
 The height gate is a scheduled activation: nodes running this code accept oversized blocks below
 height 79,401 (so the existing chain, whatever it held, stays valid) and reject them above it. The
 commit sits between the 0.3.11 release (alert system, 25–28 Aug) and the commit that names 0.3.13
-(30 Sep, `a790fa46`); the 0.3.12 release commit is not identified here.
+(30 Sep, `a790fa46`). The enforcing commit is itself the 0.3.12 release: its duplicate `8c9479c6` is
+messaged `-- version 0.3.12 release`, so the gated 1 MB rule shipped in 0.3.12 and the ungated one in 0.3.13.
 
-**The transaction-size rule arrived later still.** `a790fa46` (30 Sep 2010) adds `CheckTransaction()`
-with `::GetSerializeSize(*this, SER_NETWORK) > MAX_BLOCK_SIZE` — a transaction may not exceed the
-block cap. Noted, not dated further.
+**The transaction-size rule is separate, and its first step came earlier.** A transaction may not
+exceed the block cap: 32 MiB from `401926283` (25 August 2010) and 1 MB from `3df62878c`
+(13 September 2010), so its first step precedes the 7 September block rule rather than following it
+(`OBL-C-0010`). `a790fa46f` (30 September 2010) moves `CheckTransaction()` from `main.h` into
+`main.cpp` with its size test unchanged on both sides of the move; it introduces no rule.
 
 ### Whether the messages describe the changes
 
@@ -185,21 +188,29 @@ curl -s https://blockstream.info/api/block/$(curl -s https://blockstream.info/ap
 
 **Genesis-side confirmation is read, not executed**, and the note says so: v0.1's `CheckBlock()`
 (`extracted/bitcoin/src/main.cpp:1160`) tests `vtx.size() > MAX_SIZE` and `GetSerializeSize > MAX_SIZE`
-with `MAX_SIZE = 0x02000000` (`serialize.h`). No block between 1 MB and 32 MiB was built and submitted
+with `MAX_SIZE = 0x02000000` (`main.h:17`). No block between 1 MB and 32 MiB was built and submitted
 to the January 2009 binary for this note. That witness is the stated open item below; what it would add
-is narrow: it would show the origin accepting, and 0.3.12 rejecting, one concrete block in the band the
-7 September rule closed. Nobody disputes that a 1 MB cap rejects a 2 MB block, which is why the note
+is narrow: it would show the origin accepting, and **0.3.13** rejecting, one concrete block in the band
+the 7 September rule closed. **0.3.13 and not 0.3.12**, because 0.3.12 is the release that carries the
+enforcing commit while its test is still gated at height 79,400: on an isolated chain at low height
+0.3.12 accepts such a block, and the gate is a fact of the record rather than a witness. It is
+`172f00602`, ungating the test, that makes 0.3.13 reject it. Nobody disputes that a 1 MB cap rejects a 2 MB block, which is why the note
 ships without it.
 
 ---
 
 ## Lineage
 
-`bitcoin/bitcoin` carries its 2010 history twice, on parallel lineages converted from Subversion.
-`f1e1fb4b` has a duplicate, `8c9479c6`, with the same date, author string and message; `a30b56eb`'s
-duplicate carries the `Satoshi Nakamoto` author string. Dates here are from the `s_nakamoto` lineage,
-which carries the SVN identifiers (`git-svn-id: ... trunk@148`) and the earlier timestamps; the other
-lineage's copies differ by zero to three days.
+`bitcoin/bitcoin` carries much of its 2010 history twice, on parallel lineages converted from
+Subversion: 264 of the 341 non-merge commits in the window stand as 132 pairs
+(`BITCOIN-GIT-HISTORY-PROVENANCE.md`). `f1e1fb4b` has a duplicate, `8c9479c6`, with the same date and
+author string; their messages differ, the duplicate adding a third line, `-- version 0.3.12 release`.
+**`a30b56eb` has no duplicate** — it is one of the commits in the window that were not doubled.
+`f1e1fb4b` and `8c9479c6` belong to the ten-pair run r148–r157 in which both copies carry the
+`git-svn-id` trailer, both are authored `s_nakamoto`, and the timestamps are identical, so for this
+commit neither the trailer nor the date distinguishes the two; the copy cited here is the one the
+registers cite. Across the one-trailer pairs generally the untrailered copy is dated no earlier, and
+at most 8.09 days later.
 
 ---
 
@@ -275,3 +286,24 @@ enforcing commit are added; the transaction-size rule's date is corrected to 13 
 finding itself is unchanged. The title and opening paragraph were brought to three steps on 21 September
 2026, before this revision was signed. Revision 1 and its signatures and proofs are kept beside this file as
 `MAX-BLOCK-SIZE-RETROFITTED.r1.md*`; this text is signed and stamped as an operator step, recorded when done.*
+
+*Corrected 25 September 2026, before signing, after a review checked every hash, diff hunk and block
+timestamp in this note against the repository. Four statements were wrong, three of them left behind when
+revision 2 added sections without reconciling the old text:*
+
+1. *The transaction-size paragraph said `a790fa46` "adds" `CheckTransaction()` and that the rule
+   "arrived later still". It moves the function between files with the test unchanged, and the rule's
+   first step (25 August) precedes the 7 September block rule. Revision 2's own changelog claims this was
+   corrected; the paragraph was not touched. It is rewritten.*
+2. *`MAX_SIZE` was attributed to `serialize.h`. It is defined at `main.h:17`, as this note's own diff shows;
+   `serialize.h` does not contain it.*
+3. *The open witness was described as showing "0.3.12 rejecting". 0.3.12 carries the enforcing commit with
+   its test still gated at height 79,400 and so accepts such a block on a low-height chain; the rejector is
+   0.3.13, after `172f00602` ungates it. `OBL-C-0001` carried the same error and is corrected.*
+4. *`a30b56eb` was said to have a duplicate carrying the `Satoshi Nakamoto` author string. It has none, as
+   `CONSTITUTION-REGISTER.md` already recorded. The lineage paragraph is rewritten: the twin of `f1e1fb4b`
+   does not carry the same message either, adding `-- version 0.3.12 release`.*
+
+*The ratio of the two ceilings is stated as thirty-three rather than thirty-two, and the 0.3.12 release
+commit, previously "not identified here", is identified. Every diff hunk, file stat, commit date and the
+block 79,400 / 79,401 timestamps were re-verified in the same pass and are unchanged.*

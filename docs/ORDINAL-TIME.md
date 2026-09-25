@@ -6,7 +6,7 @@ becomes a wall-clock time; and the single external anchor to calendar time, a ne
 sits in the coinbase outside every rule. Wall-clock timestamps enter consensus in three places, and
 none of them is a clock. Two changes of 2009–2010 gave the ordering a physical basis: time-based locks
 on 29 October 2009 and chain selection by cumulative work on 25 July 2010. This note states the four
-executed statements behind the first claim, reads the two commits behind the second, and borrows the
+statements behind the first claim, three of them executed, reads the two commits behind the second, and borrows the
 vocabulary phylogenetics developed for the same problem, as a source of names for structures already in
 the code and not as an analogy about nature. Findings register: `OBL-F-0040`; the statements rest on
 `OBL-F-0001`, `OBL-F-0002`, `OBL-F-0005`, `OBL-F-0006` and the rows `OBL-C-0007`, `OBL-C-0008`.
@@ -28,7 +28,7 @@ the code and not as an analogy about nature. Findings register: `OBL-F-0040`; th
 
 ---
 
-## The four executed statements
+## The four statements, three of them executed
 
 Grades follow `EVIDENCE_POLICY.md`: `JAN09-SOURCE` for what the January source shows, `MODEL` for what
 a line-for-line port executes, `NOV08-SOURCE` for the November pre-release.
@@ -48,7 +48,7 @@ bounded to the January archive). A lock of 500,000,000, which later Bitcoins rea
 January client reads as a block height and holds the transaction until then (`derivatives/temporal/`).
 `JAN09-SOURCE` + `MODEL`.
 
-**3. The wall clock is constrained, not consulted (`OBL-F-0006`; `CONSENSUS_BEHAVIORS.md`).** Three
+**3. The wall clock is constrained, not consulted (`OBL-F-0006`; `common/conformance/CONSENSUS_BEHAVIORS.md`).** Three
 rules read timestamps. `GetMedianTimePast` takes the median of the last eleven block times and
 `AcceptBlock` requires a block's time to exceed it (`main.h:1086`, `main.cpp:1206`); `CheckBlock` rejects
 a block more than two hours in the future (`main.cpp:1164`); `GetNextWorkRequired` reads the elapsed time
@@ -79,17 +79,19 @@ diff lines cited (`CONSENSUS-ATLAS.md`).
 **Time-based locks, 29 October 2009** (`dd519206a`, `OBL-C-0007`). The commit adds
 `if (nLockTime < (nLockTime < 500000000 ? nBestHeight : nBlockTime))` under the comment "Time based
 nLockTime implemented in 0.1.6, / do not use time based until most 0.1.5 nodes have upgraded". Its
-message lists "non-final tx locktime changes" among six items: the message describes the change. The
-threshold's magnitude, 500,000,000, is not argued for in the record, though the comment gives a reason to
+message lists "non-final tx locktime changes" among five comma-separated items: the message describes
+the change. The threshold's magnitude, 500,000,000, is not argued for in the record, though the comment gives a reason to
 defer the time-based form. From this commit a lock is either a position or a wall-clock time, by the
 value's size.
 
 **Cumulative work, 25 July 2010** (`3b7cd5d89`, `OBL-C-0008`). The commit adds `CBigNum bnChainWork` to
 the block index, computes each block's work from its target, sums it along the chain, and replaces
 `if (pindexNew->nHeight > nBestHeight)` with `if (pindexNew->bnChainWork > bnBestChainWork)`. Its message
-reads, in full, "Gavin Andresen's JSON-RPC HTTP authentication, faster initial block download -- version
-0.3.3". Neither line names chain selection. The repository's duplicated 2010 lineage carries a second
-copy (`40cd03694`, 26 July 2010) that differs in size from the first; the selection change is present in
+runs to three lines on the trailer lineage — "Gavin Andresen's JSON-RPC HTTP authentication, / faster
+initial block download / -- version 0.3.3" — above a `git-svn-id` trailer naming `trunk@109`. None of
+the three names chain selection. (The one-line form, joined by commas, is the shape the duplicate
+lineage's copy carries; `OBL-C-0008` marks the line breaks for the same reason.) The repository's
+duplicated 2010 lineage carries a second copy (`40cd03694`, 26 July 2010) that differs in size from the first; the selection change is present in
 both.
 
 From 25 July 2010 the ordering criterion is no longer how many events occurred but how much work they
@@ -137,13 +139,19 @@ no lineage can. The tools transfer; the epistemics do not.
 2. Under the January rule, a lock value in the range later read as a time is a height. Executed:
    `OBL-F-0002`.
 3. The controller's fixed point is above 600 s, not below, because it under-measures elapsed time.
-   Executed: `OBL-F-0006`, with the naive reading (599.70 s) stated beside the executed value (600.30 s).
+   Executed: `OBL-F-0006`. A naive reading of the constants gives 600 s (`1209600 / 2016`) and dividing
+   the other way gives 599.70 s; the ported controller gives neither, settling at 600.30 s
+   (`derivatives/retarget/README.md`).
 4. Pending: the laboratory's experimental chain, running the unmodified January consensus with
    chain-separation substitutions, reaches its first retarget at height 2,016 with inter-block gaps that
    have ranged from minutes to hours; the trace of the controller's first action under that forcing will
-   be published as a sealed findings set when it occurs (`WHY-THE-CHAIN-CONTINUES.md`). At difficulty 1
-   the target cannot fall further, so the predicted result is a no-op; a raised target would be a
-   significant finding and is not predicted.
+   be published as a sealed findings set when it occurs (`WHY-THE-CHAIN-CONTINUES.md`). The clamp is
+   `if (bnNew > bnProofOfWorkLimit) bnNew = bnProofOfWorkLimit` (`main.cpp:719`), so the target cannot
+   rise above the limit. This chain sits at that limit, and it has mined slower than the ten-minute
+   target throughout, which drives the computed target upward — into the clamp. The predicted result
+   is therefore a no-op. A *fall* in the target, which the clamp does not prevent and which a
+   sustained rate faster than ten minutes a block would produce, is not predicted and would be the
+   finding.
 
 ## Limits
 
@@ -151,7 +159,8 @@ The four statements are executed at grade `MODEL` on line-for-line ports, and at
 build)` where the laboratory's build of the January source has replayed them; the unmodified 2009 binary
 has executed the genesis derivation and the two-node runs but not the corpus. The two commits are dated
 from GitHub's copy of the repository on 20 September 2026; the history can be rewritten by its owners,
-and 132 of the 341 non-merge commits of 2009–2010 exist twice. The vocabulary is a source of names for
+and 264 of the 341 non-merge commits of 2009–2010 exist twice, as 132 pairs
+(`BITCOIN-GIT-HISTORY-PROVENANCE.md`). The vocabulary is a source of names for
 structures already in the code; nothing here is evidence about Bitcoin's design intent, and nothing in
 Bitcoin is evidence about biology.
 
@@ -162,6 +171,25 @@ Bitcoin is evidence about biology.
 a row with its grade and artifact, checked in continuous integration.
 
 **Corrections to this note are published, dated, and not made silently.**
+
+*Corrected 25 September 2026, before signing, after a review checked every citation against the January
+source and a clone of `bitcoin/bitcoin`. Six statements were wrong:*
+
+1. *The 25 July 2010 message was quoted "in full" as one comma-joined line. It runs to three lines above a
+   `git-svn-id` trailer; the one-line form is the duplicate lineage's shape, which is the opposite of what
+   the surrounding paragraph claims to be reading. `OBL-C-0008` already marked the line breaks.*
+2. *The 29 October 2009 message was said to list its change "among six items". It lists five.*
+3. *"132 of the 341 non-merge commits exist twice" counted pairs as commits; the 132 pairs hold 264.*
+4. *The retarget prediction said that at difficulty 1 "the target cannot fall further". The clamp is from
+   above (`main.cpp:719`): the target cannot **rise** above the limit, which is what makes the predicted
+   no-op follow from this chain's slow blocks. The direction was inverted.*
+5. *599.70 s was attributed to "the naive reading". The artifact assigns 600 s to that reading and 599.70 s
+   to dividing the other way. `OBL-F-0006` carried the same error and is corrected.*
+6. *The section heading called all four statements executed; the fourth carries source grades only.*
+
+*The path to `common/conformance/CONSENSUS_BEHAVIORS.md` was also qualified, since it resolves in the
+sibling repository rather than this one. Every source-line citation, the fencepost arithmetic, both commit
+diffs and the November genesis figures were re-verified in the same pass and are unchanged.*
 
 ---
 

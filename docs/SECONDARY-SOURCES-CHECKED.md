@@ -1,9 +1,9 @@
 # Secondary sources checked against the commit record
 
-**20 September 2026.** Three statements in public secondary sources about when and how a 2010 rule
-entered Bitcoin, each quoted verbatim with the source's own revision date, each checked against the
-`bitcoin/bitcoin` commit record read on 20 September 2026 (trailer lineage; `BITCOIN-GIT-HISTORY-PROVENANCE.md`
-says why the lineage is named). This note states what the source says and what the record says. It
+**20 September 2026, a fourth entry added 25 September.** Four statements in public secondary sources about
+when and how a 2010 rule entered Bitcoin, each quoted verbatim with the source's own revision date, each
+checked against the `bitcoin/bitcoin` commit record read on 20 and 25 September 2026 (trailer lineage;
+`BITCOIN-GIT-HISTORY-PROVENANCE.md` says why the lineage is named). This note states what the source says and what the record says. It
 attributes no motive to any author and repeats none of the sources' characterisations. Findings register:
 `OBL-F-0039`.
 
@@ -57,24 +57,39 @@ https://github.com/bitcoin/bitcoin/commit/4bd188c4383d6e614e18f79dc337fbabe8464c
 2010, a single commit disabled OP_CAT, along with another 15 opcodes."
 
 **The record says:** `4bd188c43` is dated 2010-08-15 on both of the repository's lineages (author date
-`2010-08-15T23:53:55Z` on the trailer copy; the pair list in `bitcoin-git-history-pairs.tsv`). The hash
-and the message are right; the date is ten days late and is not explained by the duplicated lineages,
-whose copies of this commit agree. The count is fifteen opcodes disabled in that commit, which matches
-"another 15" when `OP_CAT` is counted separately. `OBL-C-0005`, `OBL-F-0014`.
+`2010-08-15T21:05:16Z` on the trailer copy, `2010-08-15T23:06:05Z` on the other; the pair list in
+`bitcoin-git-history-pairs.tsv`). The hash and the message are right; the date is ten days late and is
+not explained by the duplicated lineages, whose copies of this commit agree to the day.
+
+⇒ **The count does not agree, and the diff settles it.** "OP_CAT, along with another 15" reads as
+sixteen. The commit's own diff to `script.cpp` names **fifteen**, `OP_CAT` among them: `OP_CAT`,
+`OP_SUBSTR`, `OP_LEFT`, `OP_RIGHT`, `OP_INVERT`, `OP_AND`, `OP_OR`, `OP_XOR`, `OP_2MUL`, `OP_2DIV`,
+`OP_MUL`, `OP_DIV`, `OP_MOD`, `OP_LSHIFT`, `OP_RSHIFT`. That is the count this laboratory's executed
+corpus rests on and the count `OBL-C-0005` carries. The source is over by one.
+`OBL-C-0005`, `OBL-F-0014`.
 
 ---
 
+## 4. The same wiki, *Common Vulnerabilities and Exposures* (revision of 26 May 2025, 16:22): the release that fixed the value overflow
+
+**The source says** (the page's own `CVE-2010-5139` section, whose table has the columns Affected and Fix):
+
+```
+| bitcoind<br>wxBitcoin || * - 0.3.10 || 0.3.11
+```
+
+**The record says:** `d4c6b90ca`, "fix for block 74638 overflow output transaction", is an ancestor of the
+`v0.3.10` tag and two commits behind it — the intervening commits are `85de7d7c0`, the scanback check
+against the overflow chain, and `08fee7520`, a makefile change. The fix therefore shipped in **0.3.10**,
+on 15 August 2010, the day of the incident (`OBL-C-0003`, `INCIDENT-2010-08-15.md`).
+
+⇒ **The two differ by one release.** The source puts the fix in the version after the one that carries it.
+This note states both and takes the tag as the record.
+
 ## A candidate dropped, and why
 
-The wiki's *Common Vulnerabilities and Exposures* page (revision of 26 May 2025, 16:22) was read as saying
-the value-overflow fix shipped in 0.3.11. Its table, read verbatim, has the columns CVE / Announced /
-Affects / Severity / Attack is… / Flaw / Net, and its CVE-2010-5139 row is "2010-08-15 | wxBitcoin and
-bitcoind | Inflation | Easy | Combined output overflow | 100%": **no fix version appears in the row.** The
-"0.3.11" came from a summary of the page, not from its text, and a statement the source does not make
-cannot be contradicted. (For the record: `d4c6b90ca`, the fix, is two commits behind the `v0.3.10` tag,
-so the fix shipped in 0.3.10, 15 August 2010; `OBL-C-0003`.) The same page's row for CVE-2010-5138
-("2010-07-29 … Unlimited SigOp DoS") states an announcement date, not a fix, and which limit it means is
-unstated; it is not entered either.
+The same page's row for CVE-2010-5138 ("2010-07-29 … Unlimited SigOp DoS") states an announcement date,
+not a fix, and which limit it means is unstated; it is not entered.
 
 ## Limits
 
@@ -87,6 +102,21 @@ BOUNDED by the sources' revisions     wiki pages change; each entry names the re
 ```
 
 **Corrections to this note are published, dated, and not made silently.**
+
+*Corrected 25 September 2026, before signing, after a review read this note against the artifacts it cites.
+Three things were wrong, all in or around §3 and the dropped candidate:*
+
+1. *The author date given for `4bd188c43` was `23:53:55Z`, which matches nothing in the record. The pair
+   list beside this note gives `21:05:16Z` on the trailer copy and `23:06:05Z` on the other, and two
+   sibling notes already carried `21:05:16Z`.*
+2. *The opcode count was reported as agreeing with the source. It does not: the commit's own diff to
+   `script.cpp` names fifteen opcodes including `OP_CAT`, against the source's sixteen. That is an entry
+   of a disagreement, not a confirmation.*
+3. *The CVE page was dropped as a candidate on the ground that it states no fix version. **It does** — in
+   its own `CVE-2010-5139` section, whose table gives Fix `0.3.11` — and the record puts the fix in
+   `0.3.10`. The candidate is now §4, an entry, and the reasoning that dropped it is withdrawn.*
+
+*The quotations already in §§1–3, their revision dates, and every other entry are unchanged.*
 
 ---
 

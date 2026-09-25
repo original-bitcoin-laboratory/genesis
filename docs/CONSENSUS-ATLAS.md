@@ -233,7 +233,7 @@ Recorded here and in the register's row; the earlier text is not rewritten.
 - **Kind:** consensus. **message_match:** `false` (both steps). **Argument:** not-in-record.
 - **Witness:** open — a transaction between 1 MB and 32 MiB submitted to the January client and to a
   build carrying `3df62878c` would show the narrowing executed; no artifact does this yet. Grade:
-  `DESCENDANT`.
+  `RECORD` (*corrected 25 Sep 2026: this read `DESCENDANT`, which `CONSTITUTION-REGISTER.md` replaced with `RECORD` on 20 September; the row itself already read `RECORD`*).
 - **Lineage:** `401926283` as in section 4; `3df62878c` has a second copy `71cc095cb` at the same
   timestamp that also carries the trailer.
 

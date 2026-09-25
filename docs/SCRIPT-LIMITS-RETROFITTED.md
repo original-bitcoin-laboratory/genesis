@@ -194,7 +194,7 @@ SLH-DSA-128f  17,088 B    fits                  no                      no
 
 **This is an observation about byte sizes against a byte limit, and nothing more.** It does not
 claim the 2010 commits considered post-quantum cryptography — they plainly did not; both are
-denial-of-service hardening, seventeen years before the standards existed. It does not claim any
+denial-of-service hardening, fourteen years before the standards existed. It does not claim any
 post-quantum scheme would have been *usable* in 2009: fitting on the stack is necessary, not
 sufficient, and says nothing about verification opcodes, transaction size, block capacity or fees.
 
@@ -244,3 +244,8 @@ and `OBL-F-0003` is regraded to match), and the provenance paragraph claims what
 The op-count limit this note leaves undated is dated in `docs/CONSENSUS-ATLAS.md` §13 (`6ff5f718b`, 31 July 2010).
 Nothing else changed. Revision 3 and its signatures and proofs are kept beside this file as
 `SCRIPT-LIMITS-RETROFITTED.r3.md*`; this text is signed and stamped as an operator step, recorded when done.*
+
+*Corrected 25 September 2026, before signing: the closing section said the 2010 limits were
+"seventeen years before the standards existed". This note dates those standards to August 2024, which is
+fourteen years. Every hash, date, SVN revision, file stat, byte size, code literal and signature size in
+this note was re-checked against the repository in the same pass and is unchanged.*
