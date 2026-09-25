@@ -69,6 +69,34 @@ three primitives left standing, at a cost the reconstruction's authors state pla
 removal was wise, whether the reconstruction is the right way back, and whether the two are the same
 capability in any sense beyond the one stated in the table are questions this essay does not answer.
 
+## A third point on the same line, September 2026
+
+The shape the table describes has a later instance. A paper of 24 September 2026, *Shielded Bitcoin:
+Private Transfers on the Bitcoin L1* (Shikhelman, Komarov and Moskvin), sets out private
+Bitcoin-denominated transfers "requiring no changes to Bitcoin consensus", and states the same
+constraint this essay's table describes, in its own words:
+
+> "More expressive constructions may be possible with proposed opcodes such as `OP_CAT` and
+> `OP_CSFS`, but those constructions depend on changes to Bitcoin's consensus rules."
+
+Two facts from this laboratory's own record sit beside that. Neither is a claim about the paper.
+
+**Its carrier is an opcode whose January behaviour is a different one.** The design publishes its
+envelope in an `OP_RETURN` output, which later Bitcoin treats as provably unspendable. `OBL-F-0032`
+records that the January 2009 interpreter reaches `OP_RETURN` and sets `pc = pend` rather than
+failing the script, so the script completes with its stack as it stands (`script.cpp:170-174`). The
+property the modern carrier rests on is a later one.
+
+**Its carrier budget is policy, not consensus.** The paper fixes its footprint against a relay
+default, stating that Bitcoin Core v30.0 raised `-datacarriersize` from 83 to 100,000 bytes and that
+operators may restore the former limit. `WHAT-THE-ORIGIN-PERMITTED.md` records that the January
+client carries no relay policy at all, and leaves data-carrier limits outside its window as policy of
+later years.
+
+⇒ **This is a third instance of the shape, not new evidence about the origin.** It is recorded
+because this essay's claim is about a pattern in the record, and a pattern is worth more when its
+instances are counted than when one of them is described.
+
 ## One connection the laboratory can measure
 
 The 2023 construction's commitments are hash-based. A Lamport-style commitment's security rests on
@@ -84,6 +112,12 @@ That is an observation about assumptions, not a claim about either design.
 No claim about why the opcodes were disabled, no claim that BitVM restores what was removed in any
 sense the paper does not itself state, and no position on reactivation proposals (BIP 347 is cited
 for its dating of the 2010 commit only). The 2010 commit is quoted from its record; the 2023 paper is
-quoted from its published text at `bitvm.org/bitvm.pdf`.
+quoted from its published text at `bitvm.org/bitvm.pdf`. The 2026 paper is quoted from its published
+text and is cited for the two statements reproduced above and for nothing else; this essay takes no
+position on its design, its security, or its deployment.
 
 **Corrections to this essay are published, dated, and not made silently.**
+
+*Added 25 September 2026, before this essay was signed: the section "A third point on the same line,
+September 2026". The essay's claim, its table, and its findings-register row `OBL-F-0027` are
+unchanged; the section adds a later instance of the pattern and two facts already in the register.*
