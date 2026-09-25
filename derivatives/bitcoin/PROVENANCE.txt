@@ -151,6 +151,16 @@ VERIFY ANY OF THE ABOVE
   python make_chain.py --check    # src/ is the 2009 tree plus that patch, and nothing else
   python net.py                   # re-derives this chain's genesis and checks its proof-of-work
   sha256sum bitcoin.exe           # compare against RELEASE.txt; the build is reproducible
+  gpg --verify CHARTER.md.asc CHARTER.md      # the charter, signed by the release key
+
+Added 25 September 2026: CHARTER.md ships beside this file. It states the same positions this file
+states, standing alone and signed, so that the date they were made is checkable rather than asserted:
+
+  CHARTER.md  sha256 60153f04613bcc88dd074342aa97b2aa2e49996cffef3f378d1b39eaf6715437
+
+Its .asc is the release key's signature, its .slhdsa a post-quantum counter-signature, and its .ots an
+OpenTimestamps proof anchoring the date into Bitcoin. Where this file and the charter disagree, that is
+a defect: report it, and the correction is published dated rather than made silently.
 
 If something here is wrong, it is a defect and is corrected in the open rather than argued
 about. Corrections are published, dated, and not made silently.
