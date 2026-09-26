@@ -153,7 +153,8 @@ VERIFY ANY OF THE ABOVE
   sha256sum bitcoin.exe           # compare against RELEASE.txt; the build is reproducible
   gpg --verify CHARTER.md.asc CHARTER.md      # the charter, signed by the release key
 
-Added 25 September 2026: CHARTER.md ships beside this file. It states the same positions this file
+Added 25 September 2026: CHARTER.md ships beside this file (it is kept in the repository at
+docs/CHARTER.md, since this directory holds chain source only). It states the same positions this file
 states, standing alone and signed, so that the date they were made is checkable rather than asserted:
 
   CHARTER.md  sha256 60153f04613bcc88dd074342aa97b2aa2e49996cffef3f378d1b39eaf6715437

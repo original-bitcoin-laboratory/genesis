@@ -36,9 +36,15 @@ cp    "$HERE/PROVENANCE.txt"  "$OUT/$NAME/00-PROVENANCE.txt"
 # are whose; the charter says what the chain is, what it is not, and what is not promised. Shipping
 # the .md alone would carry the statements and drop the evidence of when they were made, which is
 # the only part a stranger cannot take on trust. .ots anchors the date, .slhdsa outlives the GPG key.
+#
+# It lives in docs/, NOT here. This directory is the chain source, and its manifest -- signed by the
+# genesis key -- classifies every root entry and aborts on one it cannot place. A charter and its
+# signatures are prose and attestations over prose, not source; putting them here broke that rule and
+# would have meant re-signing a genesis-key artifact to accommodate a document.
+DOCS="$HERE/../../docs"
 for f in CHARTER.md CHARTER.md.asc CHARTER.md.slhdsa CHARTER.md.ots CHARTER.md.asc.ots CHARTER.md.slhdsa.ots; do
-  [ -f "$HERE/$f" ] || { echo "!! missing $f -- the charter and its signatures ship together"; exit 2; }
-  cp "$HERE/$f" "$OUT/$NAME/$f"
+  [ -f "$DOCS/$f" ] || { echo "!! missing $f -- the charter and its signatures ship together"; exit 2; }
+  cp "$DOCS/$f" "$OUT/$NAME/$f"
 done
 
 if [ -n "${RELEASE_NOTES:-}" ] && [ -f "$RELEASE_NOTES" ]; then
