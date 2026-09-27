@@ -108,13 +108,31 @@ def test_every_strict_signature_in_the_corpus_passes_bip66():
 
 
 def test_every_probe_fails_bip66_and_reads_under_a_tolerant_parser():
+    """Every pending probe fails BIP 66. Most are recoverable by a tolerant reader; one is not.
+
+    ⚠️ THE SELECTOR USED TO BE A PROXY. `expected_binary is None` was read as "the three
+    BER-recoverable probes", and it only meant that because `der_negative_r` carried an authored
+    value. On 27 September 2026 that value was replaced by a measurement (`OBL-F-0041`: the 2009
+    binary ACCEPTS it, so the answer is per-binary and the column is null), the set became four,
+    and this test broke. The membership is now projected over, not assumed: whichever probes this
+    reader refuses are collected and the set is pinned, so a NEW unreadable probe fails here
+    rather than passing quietly.
+    """
     probes = [(v, sig) for v, sig in _sigs() if v.get("expected_binary") is None]
-    assert len(probes) == 3, [v["note"] for v, _ in probes]
+    assert len(probes) == 4, [v["label"] for v, _ in probes]
+    unreadable = {}
     for v, sig in probes:
         assert v.get("expected_strict_der") is False
         assert not is_valid_signature_encoding(sig), v["note"]
-        r, s, flag = parse_signature_tolerant(sig)
+        try:
+            r, s, flag = parse_signature_tolerant(sig)
+        except ValueError as exc:                    # r and s are unsigned in ECDSA
+            unreadable[v["label"]] = str(exc)
+            continue
         assert r > 0 and s > 0 and flag in (1, 2, 3, 0x81, 0x82, 0x83), v["note"]
+    # the one probe no tolerant reading recovers, and why. That the 2009 binary accepted it anyway
+    # is the finding (OBL-F-0041); it is not a defect in this reader.
+    assert unreadable == {"der_negative_r": "negative integer"}, unreadable
 
 
 def test_the_probes_recover_a_signature_that_verifies_under_the_vectors_key():
@@ -123,14 +141,20 @@ def test_the_probes_recover_a_signature_that_verifies_under_the_vectors_key():
     # themselves fail the strict encoding check. That is what "the same signature, another
     # encoding" means, and it cannot pass for an (r, s) the reader made up.
     pytest.importorskip("cryptography")
+    n = 0
     for v, sig in _sigs():
         if v.get("expected_binary") is None:
-            r, s, flag = parse_signature_tolerant(sig)
+            try:
+                r, s, flag = parse_signature_tolerant(sig)
+            except ValueError:
+                continue          # der_negative_r: no tolerant reading recovers it; see the test above
+            n += 1
             strict = encode_strict(r, s, flag)
             assert is_valid_signature_encoding(strict), v["note"]
             assert strict != sig
             assert _verifies(v, strict), v["note"]
             assert not _verifies(v, encode_strict(r, s ^ 1, flag)), v["note"]     # control: one bit off fails
+    assert n == 3, n
 
 
 def test_strict_signatures_round_trip_through_both_readers_and_verify():
