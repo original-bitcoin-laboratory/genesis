@@ -17,6 +17,7 @@ Use one of these prefixes in reports:
 - `UNRESOLVED:` evidence is incomplete or contradictory.
 - `EXECUTED (release build):` witnessed on this laboratory's release client (the reconstruction as shipped), not on the unmodified 2009 binary; a compound grade such as `JAN09-SOURCE + EXECUTED (release build)` lists each basis.
 - `EXECUTED (laboratory build):` witnessed on a binary this laboratory compiled from the archive's source against its own compatibility shims (`derivatives/build-reconstruction/`): neither the 2009 binary nor the release client. (Added 20 September 2026 for `OBL-F-0003`, which had carried `JAN09-EXECUTED`.)
+- `EXECUTED (period build):` witnessed on a binary this laboratory compiled from a LATER historical release's own unmodified source, against the library versions of that release's era. Distinct from `EXECUTED (laboratory build)`, where the source is the January archive and shims stand in for what the era no longer provides: here nothing is shimmed and nothing is patched, and what is witnessed is that release rather than the origin. (Added 27 September 2026 for `OBL-F-0042`, a v0.3.13 build on Ubuntu 10.04.)
 
 A grade attests the object it names. No grade in this list attests what the 2009 network enforced: two nodes
 running one binary are one implementation, and a later commit shows what later code did

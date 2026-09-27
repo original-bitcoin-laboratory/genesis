@@ -231,9 +231,12 @@ this rule to `a790fa46f`, 30 September 2010. That commit moves `CheckTransaction
 Recorded here and in the register's row; the earlier text is not rewritten.
 
 - **Kind:** consensus. **message_match:** `false` (both steps). **Argument:** not-in-record.
-- **Witness:** open — a transaction between 1 MB and 32 MiB submitted to the January client and to a
-  build carrying `3df62878c` would show the narrowing executed; no artifact does this yet. Grade:
-  `RECORD` (*corrected 25 Sep 2026: this read `DESCENDANT`, which `CONSTITUTION-REGISTER.md` replaced with `RECORD` on 20 September; the row itself already read `RECORD`*).
+- **Witness:** `OBL-F-0042`, 27 September 2026 — a 1,100,007-byte loose transaction. The unmodified
+  January binary ACCEPTED it to its relay pool and RELAYED it to a second guest, which also accepted it;
+  a period build of v0.3.13, which carries `3df62878c`, rejected it with
+  `CTransaction::CheckTransaction() : size limits failed`. 0.3.13 predates `IsStandard` and the
+  relay-fee gate, so size is the only rule that fired. Grade:
+  `RECORD` + `JAN09-EXECUTED` + `EXECUTED (period build)` (*corrected 25 Sep 2026: this read `DESCENDANT`, which `CONSTITUTION-REGISTER.md` replaced with `RECORD` on 20 September; the row itself already read `RECORD`*).
 - **Lineage:** `401926283` as in section 4; `3df62878c` has a second copy `71cc095cb` at the same
   timestamp that also carries the trailer.
 
@@ -559,8 +562,9 @@ NOT complete                the rules named in the register's target list are co
                             2015 (BIP 65, 68, 112, 113, 141 and later) are not entered
 BOUNDED by the record       GitHub's copy of bitcoin/bitcoin on 20 September 2026; the history can be
                             rewritten by its owners, so a re-run is dated
-WITNESS gaps stated         the transaction-size rule has no executed witness; the DER rule's
-                            acceptance side was witnessed on the 2009 binary, 26 Sep 2026
+WITNESS gaps stated         none remain. The DER rule's acceptance side was witnessed on the 2009
+                            binary 26 Sep 2026; the block-size, sigop and transaction-size rules on
+                            27 Sep 2026, both sides. A witness attests a binary, not the network
 ```
 
 **Corrections, 20 September 2026, from two adversarial reviews.** The merge commits of PR 7692, PR 5713 and PR 3965 had been cited as `9e17aac6b`, `bd03a1cb9` and `681f02551`, the `merge_commit_sha` values of GitHub's pull-request records; none is on the repository's history. They are `29b2be6ad`, `41e6e4cab` and `1c0319bb2`. The 18 March 2016 commit of PR 7692 is Thomas Kerin's, not BtcDrak's. `401926283`'s message is two lines, quoted here as one. The `dd519206a` hunk was quoted as two adjacent lines; it is seven, and the omitted comment line gives a reason. Section 13 (the op-count limit) is new. Section 6's witness and section 9's grade wording are corrected as marked. The earlier text is kept in this repository's history.
