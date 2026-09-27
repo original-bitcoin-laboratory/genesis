@@ -365,8 +365,12 @@ that the 950-of-1,000 threshold was reached, that a miner produced an invalid ve
   the flag), each of which a BER-tolerant reader recovers to an (r, s) that verifies under the vector's
   own key over its own signature hash (`derivatives/emergent/der_strictness.py`, `test_emergent.py`);
   `OBL-F-0010` — the OpenSSL 1.0.2u of the laboratory's release build rejects the three. That is the
-  rejection side. The acceptance side, that OpenSSL 0.9.8 on the 2009 binary accepts them, has no
-  artifact at any grade and stays open. Grade: `EXECUTED (release build)` + `MODEL`, rejection side.
+  rejection side. `OBL-F-0041` — the acceptance side: the unmodified 2009 binary (`fbcac071…`, OpenSSL
+  0.9.8) accepts all three, run 26 September 2026 on the R4 appliance. It also accepts a fourth probe,
+  `der_negative_r`, whose expectation had been authored as a rejection “whatever the parser”; execution
+  refutes that and the vector's `expected_binary` is now null. The grade attests the binary, not the
+  2009 network: two guests running one binary are one implementation. Grade:
+  `EXECUTED (release build)` + `MODEL` + `JAN09-EXECUTED`.
 
 ## 10. Transaction replacement by sequence number — shipped, then disabled (`OBL-C-0015`)
 
@@ -556,7 +560,7 @@ NOT complete                the rules named in the register's target list are co
 BOUNDED by the record       GitHub's copy of bitcoin/bitcoin on 20 September 2026; the history can be
                             rewritten by its owners, so a re-run is dated
 WITNESS gaps stated         the transaction-size rule has no executed witness; the DER rule's
-                            acceptance side waits on the 2009 binary
+                            acceptance side was witnessed on the 2009 binary, 26 Sep 2026
 ```
 
 **Corrections, 20 September 2026, from two adversarial reviews.** The merge commits of PR 7692, PR 5713 and PR 3965 had been cited as `9e17aac6b`, `bd03a1cb9` and `681f02551`, the `merge_commit_sha` values of GitHub's pull-request records; none is on the repository's history. They are `29b2be6ad`, `41e6e4cab` and `1c0319bb2`. The 18 March 2016 commit of PR 7692 is Thomas Kerin's, not BtcDrak's. `401926283`'s message is two lines, quoted here as one. The `dd519206a` hunk was quoted as two adjacent lines; it is seven, and the omitted comment line gives a reason. Section 13 (the op-count limit) is new. Section 6's witness and section 9's grade wording are corrected as marked. The earlier text is kept in this repository's history.

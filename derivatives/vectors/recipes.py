@@ -116,8 +116,16 @@ def _der_pad_r(der: bytes) -> bytes:
 
 
 def _der_negative_r(der: bytes) -> bytes:
-    """Strip r's sign pad so its high bit is set: the integer parses as NEGATIVE, so ECDSA rejects it
-    semantically (r must be in [1, n-1]) — no parser leniency can make it valid."""
+    """Strip r's sign pad so its high bit is set, which under DER's own rules is a NEGATIVE integer.
+
+    ⛔ THIS DOCSTRING USED TO SAY "no parser leniency can make it valid", on the reasoning that r must
+    lie in [1, n-1] so the arithmetic rejects it whatever the parser does. **Execution refutes that.**
+    The unmodified January 2009 binary (OpenSSL 0.9.8) ACCEPTS it; the 1.0.2u release build rejects it.
+    So the verdict is a property of the parser after all, and it is binary-dependent: `expected_binary`
+    is None and the per-target answers live in WITNESSED. The leading explanation — that 0.9.8 converts
+    the INTEGER's content octets to a BIGNUM as an unsigned magnitude rather than applying sign
+    semantics, so the same r is recovered — is NOT established here and is not claimed.
+    """
     lr = der[3]
     r = der[4:4 + lr]
     if not (r[0] == 0 and r[1] & 0x80):
@@ -140,6 +148,18 @@ WITNESSED = {
             "hashtype_zero": True, "sighash_none": True, "sighash_single": True, "sighash_all_anyonecanpay": True,
             "empty_signature": False, "compressed_pubkey": True, "der_trailing_byte": False,
             "der_long_form_length": False, "der_r_extra_leading_zero": False, "der_negative_r": False,
+            "multisig_1of2": True, "multisig_2of2_in_order": True, "multisig_2of2_reversed": False,
+        },
+    },
+    "2009-fbcac071-openssl-0.9.8": {
+        "binary_sha256": "fbcac071d92e26d82ec917214e334bd43850c0691f113bab1d4741c9bdd30d2d",
+        "openssl": "0.9.8",
+        "run": "2026-09-26, R4 appliance obl-r4-nodes.ova, two guests, chain 2009 at height 230",
+        "verdicts": {
+            "canonical_low_s": True, "high_s": True, "wrong_key": False, "hashtype_byte_mismatch": False,
+            "hashtype_zero": True, "sighash_none": True, "sighash_single": True, "sighash_all_anyonecanpay": True,
+            "empty_signature": False, "compressed_pubkey": True, "der_trailing_byte": True,
+            "der_long_form_length": True, "der_r_extra_leading_zero": True, "der_negative_r": True,
             "multisig_1of2": True, "multisig_2of2_in_order": True, "multisig_2of2_reversed": False,
         },
     },
@@ -213,8 +233,8 @@ def build_sig_variants(key: dict, wrong_key: dict, key_b: dict) -> list[dict]:
         "outer length in BER long form (81 LL): strict DER rejects; BER-tolerant parsers accept")
     add("der_r_extra_leading_zero", spk, sig(key, spk, SIGHASH_ALL, low_s, _der_pad_r), False, None,
         "r with a redundant 0x00 pad: non-minimal integer, strict DER rejects; BER-tolerant parsers accept")
-    add("der_negative_r", spk, sig(key, spk, SIGHASH_ALL, low_s, _der_negative_r), False, False,
-        "r's sign pad removed so it parses as negative: rejected on the arithmetic, whatever the parser")
+    add("der_negative_r", spk, sig(key, spk, SIGHASH_ALL, low_s, _der_negative_r), False, None,
+        "r's sign pad removed so it parses as negative under DER. Strict DER rejects. Whether a binary rejects it was authored as yes and measured as no: 1.0.2u rejects, the 2009 binary accepts, so the answer is per-binary and is carried in `witnessed`")
     add("multisig_1of2", multisig_1of2, ms([key]), True, True,
         "OP_1 <A> <B> OP_2 OP_CHECKMULTISIG spent with OP_0 <sigA>: the leading dummy is what the off-by-one pop eats",
         kind="multisig")
