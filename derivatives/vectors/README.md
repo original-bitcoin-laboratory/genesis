@@ -121,17 +121,19 @@ MIT. Generated files are reproducible from `export_vectors.py`; edit the generat
 ## What the corpus does not cover — stated after two clean-room replays, 20 September 2026
 
 Two independent implementations replayed all 317 vectors in January-2009 mode and agreed; one of them
-also carried a consensus bug the corpus could not see. Stated so that a pass is read for what it is:
+also carried a consensus bug the corpus could not see. Stated so that a pass is read for what it is.
+⚠️ 317 is the count **on that date**; the corpus has grown since and `verify_vectors.py` prints the
+current total. The gaps below are properties of the corpus, not of its size:
 
 - **Undefined and two-byte opcodes.** No vector uses a byte in `0xb0`–`0xef` (undefined in v0.1, fails
   the script) or a first byte at or above `0xf0` (a two-byte opcode). A validator that treats `0xb0`–`0xb9`
   as later `OP_NOP`s passes the corpus. The vector format carries opcode names, so raw undefined bytes
   are not expressible in it; this is a stated gap, not a pending vector.
-- **The rules `JAN09-B` installs.** Of the rules that page installs, the corpus exercises strict DER (three
+- **The rules `JAN09-B` installs.** Of the rules that page installs, the corpus exercises strict DER (four
   probes) and the four-byte numeric cap (one vector, `evalscript.json/bignum_add`, in `JAN09-B` mode). It
   does not exercise the output value bounds, the sigop rule, cumulative-work selection (the block chain
   has uniform `nBits`, so work and height order identically) or time-based locks. A validator can score
-  317/317 while implementing none of them; those are witnessed elsewhere (`derivatives/overflow/`,
+  every vector while implementing none of them; those are witnessed elsewhere (`derivatives/overflow/`,
   `derivatives/emergent/`, `paper-artifacts/height-vs-work.json`, `derivatives/temporal/`).
 - **Six vectors depend on the `OP_VERIFY`/`OP_RETURN` stop** (`CONSENSUS_BEHAVIORS.md` row 6), which the
   corpus exercises but the prose had not stated until 20 September 2026.
