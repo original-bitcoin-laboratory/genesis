@@ -6,7 +6,11 @@ population of outputs takes to move -- computed from the sizes docs/PQ-SIGNATURE
     python verify/pq_settlement_capacity.py --json     # the same as JSON
 
 The first half of the question (docs/PQ-SIGNATURE-COST.md) measured signature and key sizes and
-found that size, not verification, binds. This is the second half: at those sizes, how many spends
+found that, in the model studied, size is the directly resolvable constraint. (This sentence read
+"size, not verification, binds" until 28 September 2026. That was a stronger claim than the
+measurement supports -- it ranks two costs against each other, where what was measured is that one
+of them can be settled from the sizes alone -- and it is withdrawn here as it was in the paper that
+cites this file.) This is the second half: at those sizes, how many spends
 fit a block, how many settle in a day at 2009 pacing, and how long it takes for N outputs to each
 spend once -- which is the arithmetic behind the statement that state must move off the base layer,
 and the arithmetic behind its limit: an output whose public key is already on the chain can only be
