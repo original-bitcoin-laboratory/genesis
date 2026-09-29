@@ -107,10 +107,13 @@ OpenSSL 1.0.2u for signatures, and the corpus records what that library decides 
 
 ## 7. What is open
 
-The four witnesses the register marks `open` are open here too: the 1 MB narrowing against the
-2009 binary (`OBL-C-0001`), the sigop count against the 2009 binary (`OBL-C-0004`), the
-transaction-size narrowing (`OBL-C-0010`), and the acceptance side of DER strictness on the 2009 binary
-(`OBL-C-0014`). All four need the unmodified 2009 binary. The numeric-operand cap (`OBL-C-0002`,
+**The register marks no witness `open`, so none is open here.** The four that were — the 1 MB
+narrowing (`OBL-C-0001`), the sigop count (`OBL-C-0004`), the transaction-size narrowing
+(`OBL-C-0010`) and the acceptance side of DER strictness (`OBL-C-0014`) — all needed the
+unmodified 2009 binary, and all four were closed by running it on 26–27 September 2026
+(`OBL-F-0041`, `OBL-F-0042`). ⚠️ A closed witness attests the binaries that were run, not the 2009
+network: two guests running one binary are one implementation. This sentence was corrected on
+29 September 2026, when the register gate found the count here disagreeing with the register. The numeric-operand cap (`OBL-C-0002`,
 `OBL-C-0012`) was open in the first text of this section and was executed on 20 September 2026
 (`OBL-F-0034`, `derivatives/script_limits/test_numeric_cap.py`); this count was corrected the same day
 to match the register, which is the source of the count. Rules Bitcoin acquired after 2015 are not in

@@ -43,6 +43,13 @@ REGISTER = REPO / "FINDINGS-REGISTER.md"
 CONSTITUTION = REPO / "CONSTITUTION-REGISTER.md"          # the OBL-C- series, when it exists
 SURFACE = WORKSPACE / "common" / "conformance" / "CONSENSUS_SURFACE.md"
 SIBLINGS = ("common", "pre-genesis")
+# A deposit in the private cold backup is EVIDENCE THIS REPOSITORY CANNOT HOLD: it carries
+# wallets, debug logs and capture images. Resolving such a path against the checkout finds
+# nothing and the gate used to report "artifact does not exist", which is false -- it exists,
+# elsewhere, by design. It is reported as a NOTE instead, so the row is visibly unchecked here
+# rather than silently passing or wrongly failing. The seal in the cell is what a holder of the
+# backup verifies it against; this gate cannot, and now says which rows it did not check.
+COLD = ("OBL-BACKUP",)
 GRADES = {"NOV08-SOURCE", "JAN09-SOURCE", "JAN09-EXECUTED", "MODEL", "DERIVATIVE", "DESCENDANT", "RECORD", "UNRESOLVED", "EXECUTED"}
 ID_RE = re.compile(r"\bOBL-([FC])-(\d{4})\b")
 ROW_RE = re.compile(r"^\|\s*`(OBL-[FC]-\d{4})`\s*\|(.*)$")
@@ -69,6 +76,8 @@ def resolve(artifact: str) -> tuple[Path | None, str]:
     if art.startswith("pending:"):
         return None, "pending"
     first = art.split("/", 1)[0]
+    if first in COLD:
+        return None, "cold-backup deposit, outside this repository by design; existence not checked here"
     if first in SIBLINGS:
         root = WORKSPACE / first
         if not root.is_dir():
