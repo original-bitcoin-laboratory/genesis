@@ -366,3 +366,39 @@ was derived and compared with the address the client's own window shows: they ar
 keeps more than one. Nothing else in the set is affected: the chain figures, the binding records,
 the custody verdict (the agent's key is absent) and the payee counts all stand, and the sealed set
 is unedited.
+
+
+---
+
+## 29 September 2026 — `2026-09-23-blocks862-1167` calls a differing wallet pair "the documented exception"
+
+**That set's `FINDINGS.md` says, of the two wallet copies the capture ships:**
+
+> *"The two wallet copies in this capture are byte-identical (`0e924ba0…`), which returns the series
+> to its long-standing norm. Last round's two copies differed in the Berkeley DB page-header log
+> sequence numbers and had to be reconciled page by page; that did not recur."*
+
+and the cold backup's entry for the same round adds that the earlier pair *"remains the documented
+exception rather than the rule"*.
+
+**The next capture's copies differ again.** Blocks 1168–1181 ship two copies of a 1,064,960-byte
+wallet that disagree in 96 bytes across 24 of 130 pages, at page offsets 0 and 4–6 — the same
+Berkeley DB page-header log sequence number, reconciled the same way and byte-identical once masked.
+
+⇒ **So the differing pair has now occurred in two of three rounds, and "the exception rather than
+the rule" was a characterisation of a sample of one.** Nothing measured in the 862–1167 set is
+wrong: its two copies *were* byte-identical, and that fact stands. What does not stand is the
+inference drawn beside it about what the series does.
+
+⚠️ **The defect is the shape, not the sentence.** A round's document described a property of that
+round correctly and then said what the series would do, from one prior observation. The observation
+was real; the projection had no support and the next round removed it. **A capture is evidence about
+the capture.** Where a set says what the series does, it is making a claim of a different kind from
+the ones its seal covers, and this project has now paid for that twice — the same shape appears at
+§"★ A wording correction that applies to EVERY sealed findings set".
+
+**What follows from it.** Whether the two copies match is a property of when the client last
+checkpointed, not of the wallet's contents, and it is expected to vary between captures. The
+reconciliation is therefore run every round rather than skipped when the sizes agree, and the later
+sets say so. **The sealed set is unedited**, and the sets for blocks 1168–1181 and 1182–1192 record
+the frequency rather than repeating the projection.
