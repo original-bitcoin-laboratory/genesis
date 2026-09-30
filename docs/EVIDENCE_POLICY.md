@@ -43,6 +43,32 @@ running one binary are one implementation, and a later commit shows what later c
 - failure paths and security limitations;
 - explicit distinction between native rule and external coordination.
 
+## Where a sealed set's manifest is meant to be run
+
+**A set's `SHA256SUMS` seals the whole evidence set, and for most sets that is more than this
+repository carries.** Wallet files, `debug.log`, `blk0001.dat` and the run's screenshots are Tier 1
+and live in the laboratory's cold backup; what is published here is the manifest, the binding
+records and the document. So `sha256sum -c SHA256SUMS`, run inside a published set's directory,
+reports those files as missing. **That is what the set is, not damage to it** — the seal is the
+instrument by which someone holding the evidence checks it, and holding the evidence is the
+precondition for running it.
+
+⚠️ **The measurement that separates the two cases is whether a file that IS present disagrees with
+its digest.** A missing file means the manifest covers more than this directory. A differing digest
+would mean something changed after sealing. Read 30 September 2026 across all 29 manifests in the
+laboratory's repositories: **15 verify completely, 14 report missing files, and none reports a digest
+that differs.**
+
+Sets sealed from 23 September 2026 onward list only the files the repository carries, so they verify
+where they sit; earlier sets list the whole capture. Both are seals. Which one a set is, its own
+manifest says, by what it lists — and either way a reader who wants the payload needs the deposit,
+not this repository.
+
+⛔ **A manifest that has been computed but not yet run is a claim, not a control.** Writing one and
+reading back the number it produced tests the generator, not the manifest. The check is to run it
+where its files are, and to compare what it lists against what is there, before the seal is cited
+anywhere.
+
 ## Sealed sets and revisions
 
 A findings set is sealed by its `SHA256SUMS`, whose OpenTimestamps proof anchors it in a Bitcoin
