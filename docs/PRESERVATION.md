@@ -154,7 +154,7 @@ v0.8.0-exp.      all FIVE assets      blocks 970201 + 970202   2026-10-06 16:38:
                  970201 merkle root eaf96c2585eb64d688881a6163a377e7b0e9847eb7b7d6eda40ca1690e1bea17
                  970202 merkle root a6c4b2bd68a1548f7d00c4631d75c222979f782beac39905f349efd5ecb294ad
                  -- each proof walked from the file's sha256 to the block's merkle root and
-                    compared against the chain, 7 October 2026
+                    compared against the chain, 6 October 2026
 
 Bitcoin-v0.1.4   all four assets      block 961652   2026-08-09 00:16:42 UTC
 Bitcoin-v0.1.5   all FIVE assets      block 961885   2026-08-10 14:28:15 UTC
