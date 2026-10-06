@@ -1,0 +1,16 @@
+[
+ {
+  "block": "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+  "tx": "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b",
+  "kind": "TEXT",
+  "reason": "2009 genesis coinbase headline (The Times, 3 Jan 2009) -- consensus bytes of the original chain, public since 2009",
+  "reviewed": "2026-10-06"
+ },
+ {
+  "block": "00000000ad12f3ecd9b14e4276ac98936fb0d658f05dce95ad35d18fceee208a",
+  "tx": "aaa5bdfd6c4075a646db9975aab8515781c67fdd73b02df1773a4e1e21a38085",
+  "kind": "TEXT",
+  "reason": "Bitcoin (2026) genesis coinbase headline (The Times, 3 Aug 2026) -- this chain's own genesis, chosen by the laboratory",
+  "reviewed": "2026-10-06"
+ }
+]

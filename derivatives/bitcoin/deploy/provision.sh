@@ -77,6 +77,17 @@ ProtectSystem=strict
 ProtectHome=yes
 NoNewPrivileges=yes
 PrivateTmp=yes
+# Containment. The 2009 rules carry no script limits, so a few bytes of crafted script (e.g. OP_CAT
+# building large stacks) can exhaust memory or CPU in any node that validates them -- a property of
+# the design this chain runs, not something to patch in consensus. These ceilings keep that inside
+# the service: the kernel stops the node, systemd restarts it, and the host stays up. Raise them
+# when the chain's own blocks need more.
+MemoryHigh=1G
+MemoryMax=1536M
+MemorySwapMax=0
+CPUQuota=150%
+TasksMax=64
+LimitNOFILE=4096
 
 [Install]
 WantedBy=multi-user.target

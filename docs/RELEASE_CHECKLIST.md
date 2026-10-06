@@ -119,6 +119,23 @@ gh release create Bitcoin-v0.1.N \
 IPFS pinning fires automatically on release. Record the CIDs in `docs/PRESERVATION.md` — the workflow
 pins them but nothing writes them down.
 
+### 4b. Content gate — before publishing anything derived from blocks
+
+The January 2009 rules let anyone embed arbitrary bytes in a coinbase or a script, at no cost, and
+mining is open. **We do not control what a third party embeds; we do control what we republish.**
+Before a `bitcoin-findings/` batch, a sealed chain file, or any write-up that quotes block bytes goes
+out, run the gate over the blocks it covers:
+
+```bash
+python scripts/content_gate.py <blk0001.dat | hex-blocks file> --allow scripts/content_gate_allow.json
+python scripts/content_gate.py --self-test        # the positive controls; all must PASS
+```
+
+Exit 0 = nothing unreviewed. Exit 1 lists each finding (`TEXT` / `FILE` / `LARGE`): read it, then
+either add a reviewed entry to `content_gate_allow.json` with its reason, or withhold or redact that
+artifact and record the decision. Exit 2 = it could not scan; treat as not cleared. Run it on the
+seed's chain from time to time as well — the seed stores and serves every block.
+
 ## 5. OpenTimestamps — **manual, and it needs a second visit**
 
 ```bash
