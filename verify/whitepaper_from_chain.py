@@ -10,6 +10,8 @@ Why this matters to this lab's grading: it is the ONLY copy of any whitepaper ve
 CHAIN-class anchor. Altering the bytes means redoing the work of that block and every block since, so this fixes the canonical text to the block
 that confirmed it -- 2013, not 2008. It says nothing about October 2008, and it is not offered as if
 it did. It does mean the file we ship cannot have been altered since that block.
+(6 Oct 2026: a second, later chain anchor of the same text exists, as a derivative with one inserted
+PDF comment line -- see whitepaper_from_chain_2026.py. This one remains the earliest.)
 
 Reproducible from any node with txindex (`bitcoin-cli getrawtransaction <txid> 1`) or, as here, from
 a public API so it can be checked without one.

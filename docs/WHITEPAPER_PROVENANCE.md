@@ -112,6 +112,33 @@ What it establishes is narrower and worth having: the file cannot have been alte
 framing — and note that `vout[945]` carries the 33-byte tail while `vout[946..947]` are ordinary
 change outputs. Getting either wrong yields a corrupt file and a confident-looking wrong hash.*
 
+### And again in 2026 — the same text, with a ground hash
+
+*Recorded 6 October 2026.* Mainnet transaction
+[`00000000000ad996…b65de07`](https://blockstream.info/tx/00000000000ad99639585eb5fb0dc0bb093575719ecd78cfede972637b65de07)
+carries the paper a second way: as one `OP_RETURN` push of 184,303 bytes, beside an `OP_RETURN` note
+reading *"Bitcoin Whitepaper ₿📜⛓️🕰️♥️"* and a 21,000-satoshi payment to the genesis block's public
+key.
+
+```
+block     949973        2026-05-18 18:30:04 UTC
+carved    184,303 bytes  sha256 0000000000003c2287e2a94e93882e1f56fcbfa3c71c5b1c75edf11c6946e6cb
+relation  the canonical file with ONE PDF comment line inserted before %%EOF (11 bytes);
+          remove it and the canonical file comes back byte for byte -- b1674191… exactly
+```
+
+A PDF comment line is ignored by readers, so the file renders as the canonical paper. The line works
+as a nonce: it gives the file's own SHA-256 twelve leading zero hex digits, and the transaction id is
+ground the same way. **It is not another version of the paper** — the content is the canonical text —
+and it is later than block 230009, so it adds nothing to dating. What it adds is a second,
+independent chain anchor of the same bytes. The transaction does not say who made it. Check it with
+`verify/whitepaper_from_chain_2026.py`, which carves the push, hashes it, removes the inserted line
+generically and exits non-zero unless the result is the canonical file.
+
+*Scope of the search that found it:* a whole-chain scan of output scripts for the PDF header
+`%PDF-1.4` returned exactly these two transactions (blocks 230009 and 949973). That scan does not
+cover witness data, where inscription-style copies are carried, so further copies may exist there.
+
 ## What it says about itself
 
 ```

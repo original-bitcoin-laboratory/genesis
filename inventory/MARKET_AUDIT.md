@@ -96,6 +96,24 @@ onward; the zero atom does not propagate; origin atoms do (`market.cpp:120-140`)
 Nothing in the subsystem is fully **absent** — every piece is present in source; the
 gaps are commented bootstrapping (10, 11) and an unfinished persistence TODO (12).
 
+> **Correction, 6 October 2026 — "operational" in rows 1, 2, 6 and 7 described the code's
+> structure, not what the shipped client can do.** A reachability reading of the same source
+> (static: call graph and UI wiring, not executed) finds:
+>
+> | # | Corrected class | Why |
+> |---|---|---|
+> | 1 | present, **unreachable** | the `publish`/`subscribe`/`pub-cancel`/`sub-cancel` messages are sent but have **no receive handler** in `ProcessMessage` (they fall to "ignored unknown message"); `CNode::Subscribe` is never called |
+> | 2 | present, **unreachable** | reached only from the product-edit dialog, which is opened only from a list on a **hidden** panel (`uibase.cpp` "TabsForFutureUse", `->Hide()`) |
+> | 6 | runs **only if a modified peer pushes** a `review` | relay is inventory-only and `AlreadyHave(MSG_REVIEW)` returns `true` (`main.cpp:1598`), so no stock node ever requests one |
+> | 7 | present, **unreachable** | the review dialog is never instantiated; `GetReview` never sets `hashTo` |
+>
+> Rows 3–5 (the order handshake) are the one live part: it is the send-to-IP payment path.
+> ⇒ The §6 claim below that *"a working decentralized marketplace shipped in v0.1"* is withdrawn as
+> stated: **an unfinished marketplace shipped in v0.1, reachable only through its payment
+> handshake.** Satoshi, 9 Mar 2011: *"I rightly abandoned it in favour of JSON-RPC … nothing remains
+> that uses it."* (Hearn correspondence, as released.) This is a reading of the source; it has not
+> yet been executed against the binary.
+
 ## 6. Findings
 
 - **A working decentralized marketplace shipped in v0.1** — signed listings, a

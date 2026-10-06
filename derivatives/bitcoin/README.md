@@ -100,6 +100,19 @@ value assigned. The consensus rules carry no `MoneyRange` and no script limits, 
 arrives in July 2010; here the only ceiling is `MAX_SIZE`, 32 MiB, which `CheckBlock` does enforce —
 safe here only because there is nothing to steal. Run the client in a VM.
 
+**Three more properties of the 2009 rules, stated before anyone demonstrates them.** *Any output on
+this chain can be spent by anyone:* v0.1 evaluates a spend's script and the output's script as one
+script, so a spend whose script ends `OP_1 OP_RETURN` succeeds before the output's conditions run
+(fixed in Bitcoin in July 2010; present here by design). A movement of the agent's coins is
+therefore not evidence that the agent's key was used. *And the released binary is stricter about
+signature encoding than the 2009 one:* it links OpenSSL 1.0.2u, and the unmodified January 2009
+binary, with its own OpenSSL 0.9.8, accepts three non-strict DER encodings this release rejects
+(finding `OBL-F-0041`). No consensus source line differs; the library's parsing does, and it is
+recorded rather than left to be discovered. *And a time-lock is a courtesy, not a rule:* v0.1 checks
+`nLockTime` only when its own miner assembles a block and when its wallet chooses coins, not when a
+node validates a block, so a block that includes a not-yet-final transaction is valid here (block
+finality became a rule in October 2009, after this code).
+
 ## Provenance
 
 **Not a notary.** This chain's own proof-of-work is difficulty 1 and has stayed there: the retarget only

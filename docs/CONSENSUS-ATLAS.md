@@ -194,6 +194,17 @@ updates are the record cited here; and `bitcoin/bitcoin` pull request 7692):
 - 2017-03-08: Bitcoin Core 0.14.0 released with that final alert hard-coded.
 - 2018-07-03: the key and the alert system's vulnerabilities published.
 
+*Note, 6 October 2026 — the safe-mode power lived 109 days, and the published key is the 2010 one.*
+The RPC restriction an alert could impose was removed before the key changed hands, under a message
+that does not name it. `97ee01ad8` (SVN r199, 2010-12-12T18:20:36Z, `s_nakamoto`) "added some DoS
+limits, removed safe mode"; eighteen minutes later `986b5e257` (r200, 18:38:02Z) "correction" restores
+the safe mode that an invalid longer chain triggers and deletes the alert's path to it
+(`strRPC = alert.strRPCError` removed; the field renamed `strReserved`, wire format kept). From r200
+on, an alert sets a status message only. **message_match:** `false` for r200. And the private key
+published on 2018-07-03 is the private half of the key hard-coded in `401926283`: its scalar times the
+secp256k1 generator reproduces that public key, with a negative control (`verify/alert_key.py`, which
+fetches both inputs from their public sources). That shows the key; it does not show who held it.
+
 - **Kind:** policy (network-wide message; not consensus). **message_match:** `true` for the
   introduction; the removal's title describes the removal. **Argument:** not-in-record at
   introduction; the retirement page states its reasons.
@@ -433,6 +444,12 @@ with the same for 33333 and 68555. `813505cc1` (2010-07-27, a message about Cryp
 speed) adds 70567; `4bd188c43` (2010-08-15, "misc changes") adds 74000 and folds the five into one
 test. The author's post of that evening, during the overflow incident, calls the last one "the most
 recent security lockin" (`docs/INCIDENT-2010-08-15.md`).
+
+*Note, 6 October 2026 — after 74000, no further checkpoint from the same author.* The tree at
+`s_nakamoto`'s last SVN commit (r202, 2010-12-15) still names five checkpoints ending at 74000, so
+0.3.11 to 0.3.19 added none. The next is `bd7d9140f` (2011-01-31, Gavin Andresen, "new checkpoint at
+block 105,000"). The intent stated when the mechanism shipped, *"I'll probably put a checkpoint in each
+version from now on"* (bitcointalk, 17 July 2010), was not carried through those releases.
 
 - **Kind:** consensus (a chain that does not pass through the named blocks is rejected).
   **message_match:** `true` for the first commit, `false` for the two that extended it. **Argument:**
