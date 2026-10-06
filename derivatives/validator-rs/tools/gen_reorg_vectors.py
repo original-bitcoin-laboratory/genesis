@@ -87,6 +87,38 @@ a2 = mine(block_hash(a1), 2, sub(2))
 f = mine(block_hash(a2), 3, sub(3), nbits=0x207FFFFE)  # nBits != expected -> wrong difficulty
 C = run_scenario([("genesis", g), ("A1", a1), ("A2", a2), ("F_forged_difficulty", f)])
 
+# ---- scenario D: a mutated body under an honest header is erased, and the honest block accepted ----
+# [cb, A, B] and [cb, A, B, B] share a Merkle root (v0.1 BuildMerkleTree duplicates the odd last hash),
+# so they share a header hash. The mutated body spends B's input twice and fails ConnectBlock; v0.1
+# erases it from mapBlockIndex (main.cpp:1104-1112), so the honest block is accepted when it arrives.
+def mine_txs(prev, height, txs, body=None):
+    mr = merkle_root(txs)
+    t = BASE + height * 30
+    for nonce in range(1 << 24):
+        raw = block_bytes(1, prev, mr, t, EASY, nonce, txs)
+        if pow_ok(raw, EASY):
+            return raw, block_bytes(1, prev, mr, t, EASY, nonce, body) if body else None
+    raise RuntimeError("no nonce")
+
+
+def coinbase_txid(raw):
+    from fullnode import parse_block_with_txids       # the parser ChainState itself connects with
+    return parse_block_with_txids(raw)[0][1]
+
+
+g = mine(ZERO, 0, 0)
+gh = block_hash(g)
+a1 = mine(gh, 1, sub(1))
+a2 = mine(block_hash(a1), 2, sub(2))
+spend_a = Tx(1, [TxIn(coinbase_txid(a1), 0, b"", 0xFFFFFFFF)], [TxOut(1, b"\x51")], 0)
+spend_b = Tx(1, [TxIn(coinbase_txid(a2), 0, b"", 0xFFFFFFFF)], [TxOut(1, b"\x51")], 0)
+_tag[0] += 1
+cb3 = Tx(1, [TxIn(ZERO, 0xFFFFFFFF, bytes([3, 0, _tag[0] & 0xFF, 0]), 0xFFFFFFFF)], [TxOut(sub(3), b"\x51")], 0)
+honest, mutated = mine_txs(block_hash(a2), 3, [cb3, spend_a, spend_b], [cb3, spend_a, spend_b, spend_b])
+assert block_hash(honest) == block_hash(mutated) and honest != mutated
+D_ = run_scenario([("genesis", g), ("A1", a1), ("A2", a2), ("D3_mutated_first", mutated),
+                   ("D3_honest_after", honest)])
+
 # ---- difficulty math (compact / jan09) ----
 WIN = 60 * 30
 retargets = [
@@ -113,6 +145,7 @@ lines += ["// (label, block_hex, expected_tip_hex, height, utxo_count, balance, 
 lines += emit_rows("REORG_A", A) + [""]
 lines += emit_rows("REORG_B", B) + [""]
 lines += emit_rows("REORG_C", C) + [""]
+lines += emit_rows("REORG_D", D_) + [""]
 lines += ["// (last_bits, actual, expected, floor_bits, result)"]
 lines += ["pub const RETARGET: &[(u32, i64, i64, u32, u32)] = &["]
 lines += [f"    (0x{lb:08x}, {ac}, {ex}, 0x{fl:08x}, 0x{r:08x})," for (lb, ac, ex, fl, r) in retarget_rows]
@@ -120,9 +153,9 @@ lines += ["];", ""]
 lines += ["pub const TARGET_ROUNDTRIP: &[u32] = &[" + ", ".join(f"0x{nb:08x}" for nb in roundtrip) + "];", ""]
 
 dst = D / "validator-rs" / "tests" / "data" / "reorg_data.rs"
-dst.write_text("\n".join(lines), encoding="utf-8")
+dst.write_bytes("\n".join(lines).encode("utf-8"))    # LF everywhere; write_text gives CRLF on Windows
 print("wrote", dst)
-for name, rows in (("A", A), ("B", B), ("C", C)):
+for name, rows in (("A", A), ("B", B), ("C", C), ("D", D_)):
     print(f"  scenario {name}: " + " ".join(f"{r[0]}=h{r[3]}{'!' if r[6] else ''}" for r in rows))
 print("  retargets:", [f"0x{r[4]:08x}" for r in retarget_rows])
 print("  roundtrip nbits:", [f"0x{nb:08x}" for nb in roundtrip])

@@ -12,7 +12,9 @@ Each test states what v0.1 does, with the source line, and asserts netnode does 
                   receivable on the wire.
 
 A shared flaw is documented, not "fixed": the 2012 duplicate-transaction Merkle ambiguity (two block
-bodies, one header hash) exists in v0.1 and is reproduced here as a faithful property.
+bodies, one header hash) exists in v0.1 and is reproduced here as a faithful property. What v0.1 does
+NEXT is matched too: a block that fails ConnectBlock is erased, not banned, so the honest body under
+the same hash is accepted afterwards (OBL-F-0049).
 Evidence: MODEL / NEW-EXP. Executed against netnode only; the 2009 binary column is replay/'s job.
 """
 
@@ -27,7 +29,7 @@ sys.path.insert(0, str(_HERE))
 import cscript                                              # noqa: E402
 import profiles                                             # noqa: E402
 from chainstate import ChainState                          # noqa: E402
-from chainsync import Chain                                 # noqa: E402
+from chainsync import Chain, block_hash                     # noqa: E402
 from p2p import block_bytes, merkle_root, pow_ok           # noqa: E402
 from spend import sign                                      # noqa: E402
 from tx_sighash import Tx, TxIn, TxOut, dsha256, new_key, serialize as ser_tx   # noqa: E402
@@ -207,3 +209,63 @@ def test_duplicate_tx_merkle_ambiguity_is_a_shared_property():
     b = Tx(1, [TxIn(b"\x22" * 32, 0, b"\x51", 0xFFFFFFFF)], [TxOut(1, b"\x51")], 0)
     cb = _coinbase(1, 0)
     assert merkle_root([cb, a, b]) == merkle_root([cb, a, b, b])
+
+
+# ---- 5. a block that fails ConnectBlock is ERASED, so an honest copy of it is accepted ---------
+#
+# v0.1 main.cpp:1104-1112 (AddToBlockIndex, extending the best chain) and :1024-1036 (Reorganize):
+# when ConnectBlock fails, the block is erased from disk, from the tx index AND from mapBlockIndex.
+# AcceptBlock's duplicate check (main.cpp:1196) is on mapBlockIndex, so a later block with the SAME
+# hash is accepted afresh. With the Merkle ambiguity above, a peer can send a mutated body under an
+# honest block's header hash first; a node that remembers the hash as invalid then refuses the honest
+# block for good, while every 2009 client recovers.
+
+def _two_spends(chain, st):
+    p1, s1, c1 = _matured(chain, st)
+    p2, s2, c2 = _matured(chain, st)
+    return _spend(p1, s1, c1, [TxOut(1, b"\x51")]), _spend(p2, s2, c2, [TxOut(1, b"\x51")])
+
+
+def _honest_and_mutated(chain, txs, mutated_txs):
+    prev = chain.tip
+    height = chain.by_hash[prev].height + 1
+    honest = _mine_raw(prev, height, txs)
+    nonce = int.from_bytes(honest[76:80], "little")
+    mutated = block_bytes(1, prev, merkle_root(txs), 1_231_006_506 + height, EASY, nonce, mutated_txs)
+    assert block_hash(mutated) == block_hash(honest) and mutated != honest
+    return honest, mutated
+
+
+def test_mutated_copy_does_not_lock_out_the_honest_block():
+    chain, st = _fresh()
+    a, b = _two_spends(chain, st)
+    h0 = st.height
+    cb = _coinbase(h0 + 1, _subsidy(h0 + 1))
+    honest, mutated = _honest_and_mutated(chain, [cb, a, b], [cb, a, b, b])
+
+    chain.process_block(mutated)                              # B twice: its input is spent twice
+    st.activate_best()
+    assert st.height == h0, "the mutated body fails ConnectBlock"
+    assert chain.tip == st.tip, "the index forgets it, as mapBlockIndex.erase does"
+
+    status, h = chain.process_block(honest)
+    assert status == "accepted", "v0.1 AcceptBlock: the hash is no longer in mapBlockIndex"
+    st.activate_best()
+    assert st.height == h0 + 1 and st.tip == h
+    assert h not in st.invalid
+
+
+def test_a_failed_block_takes_the_rest_of_its_branch_with_it():
+    """Reorganize() erases vConnect[i:] -- the failing block and every block above it."""
+    chain, st = _fresh()
+    a, b = _two_spends(chain, st)
+    h0 = st.height
+    cb = _coinbase(h0 + 1, _subsidy(h0 + 1))
+    honest, mutated = _honest_and_mutated(chain, [cb, a, b], [cb, a, b, b])
+    chain.process_block(mutated)
+    child = _mine_raw(block_hash(mutated), h0 + 2, [_coinbase(h0 + 2, _subsidy(h0 + 2))])
+    chain.process_block(child)                                # arrives before anything is validated
+    st.activate_best()
+    assert st.height == h0
+    assert block_hash(mutated) not in chain.by_hash and block_hash(child) not in chain.by_hash
+    assert chain.tip == st.tip

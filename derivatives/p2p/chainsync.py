@@ -190,6 +190,39 @@ class Chain:
             branch[i].pnext = branch[i - 1].hash if i > 0 else None
         self.tip = new_tip.hash
 
+    # -- erase a block that failed ConnectBlock (main.cpp:1024-1036, 1104-1112) --
+    def forget(self, h: bytes) -> list[bytes]:
+        """Erase `h` and every indexed block built on it, as v0.1 does when ConnectBlock fails
+        (EraseBlockFromDisk + EraseBlockIndex + mapBlockIndex.erase). The hash is then unknown again,
+        so AcceptBlock's duplicate check passes for a later block with the same hash -- which is what
+        lets an honest block in after a mutated body was sent under its header (the duplicate-tx
+        Merkle ambiguity). Returns the erased hashes."""
+        idx = self.by_hash.get(h)
+        if idx is None or h == self.genesis:
+            return []
+        children: dict[bytes, list[bytes]] = {}
+        for k, v in self.by_hash.items():
+            children.setdefault(v.prev, []).append(k)
+        doomed, queue = [], [h]
+        for cur in queue:
+            doomed.append(cur)
+            queue.extend(children.get(cur, []))
+        if idx.in_main:                            # rewind the best chain to the parent
+            cur = h
+            while cur is not None:
+                ci = self.by_hash[cur]; nxt = ci.pnext
+                ci.in_main = False; ci.pnext = None
+                cur = nxt
+            parent = self.by_hash[idx.prev]
+            parent.pnext = None
+            self.tip = parent.hash
+        for d in doomed:
+            del self.by_hash[d]
+        best = max(self.by_hash.values(), key=lambda i: i.height)
+        if best.height > self.by_hash[self.tip].height:   # a taller side branch survives: follow it
+            self._reorganize(best)
+        return doomed
+
     # -- CBlockLocator + getblocks support -------------------------------------
     def get_locator(self) -> list[bytes]:
         have, idx, step = [], self.by_hash[self.tip], 1

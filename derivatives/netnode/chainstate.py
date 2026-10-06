@@ -226,12 +226,13 @@ class ChainState:
         while len(self.active) > fork:                       # disconnect down to the fork
             self._disconnect()
         for h in target[fork:]:                              # connect the new branch, validating
-            if h in self.invalid:
-                break
             try:
                 self._connect(h)
+                self.invalid.discard(h)                      # an honest body under a hash once seen bad
             except InvalidBlock:
-                self.invalid.add(h)
+                self.invalid.add(h)                          # a record of the rejection, not a ban:
+                if hasattr(self.chain, "forget"):            # v0.1 erases the block and the branch
+                    self.chain.forget(h)                     # above it, so the hash can come again
                 break
         if self.height <= old_height and self.active != old_active:
             while len(self.active) > fork:                   # reorg didn't improve -> restore old chain

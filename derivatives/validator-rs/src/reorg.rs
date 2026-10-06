@@ -125,11 +125,13 @@ impl NodeState {
             self.disconnect();
         }
         for &h in &target[fork..] {
-            if self.invalid.contains(&h) {
-                break;
-            }
-            if self.connect(h).is_err() {
+            if self.connect(h).is_ok() {
+                self.invalid.remove(&h); // an honest body under a hash once seen bad
+            } else {
+                // A record of the rejection, not a ban: v0.1 erases the block and the branch
+                // above it, so the hash can come again (index::forget).
                 self.invalid.insert(h);
+                self.index.forget(&h);
                 break;
             }
         }

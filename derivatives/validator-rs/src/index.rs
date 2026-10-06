@@ -54,6 +54,33 @@ impl BlockIndex {
         h
     }
 
+    /// Erase `h` and every indexed block built on it, as v0.1 does when ConnectBlock fails
+    /// (main.cpp:1024-1036, 1104-1112: EraseBlockFromDisk + EraseBlockIndex + mapBlockIndex.erase).
+    /// The hash is then unknown again, so a later block with the same hash is added afresh — which
+    /// lets an honest block in after a mutated body was sent under its header (the duplicate-tx
+    /// Merkle ambiguity). Returns the erased hashes.
+    pub fn forget(&mut self, h: &[u8; 32]) -> Vec<[u8; 32]> {
+        if Some(*h) == self.genesis || !self.by_hash.contains_key(h) {
+            return Vec::new();
+        }
+        let mut doomed = vec![*h];
+        let mut i = 0;
+        while i < doomed.len() {
+            let cur = doomed[i];
+            for k in &self.order {
+                if self.by_hash[k].prev == cur && Some(*k) != self.genesis && !doomed.contains(k) {
+                    doomed.push(*k);
+                }
+            }
+            i += 1;
+        }
+        for d in &doomed {
+            self.by_hash.remove(d);
+        }
+        self.order.retain(|k| !doomed.contains(k));
+        doomed
+    }
+
     /// The best chain by **height** (first‑seen on ties), genesis .. tip.
     pub fn main_chain(&self) -> Vec<[u8; 32]> {
         let mut tip: Option<[u8; 32]> = None;

@@ -52,6 +52,13 @@ fn forged_difficulty_block_is_rejected() {
 }
 
 #[test]
+fn mutated_copy_is_erased_and_the_honest_block_accepted() {
+    // [cb, A, B, B] arrives first under the header of [cb, A, B]; v0.1 erases it on ConnectBlock
+    // failure, so the honest block with the same hash is accepted afterwards.
+    run_scenario(REORG_D);
+}
+
+#[test]
 fn difficulty_retarget_matches_python() {
     let rules = Rules::jan09();
     for (last_bits, actual, expected, floor, result) in RETARGET {
