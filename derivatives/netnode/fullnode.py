@@ -80,6 +80,28 @@ def is_coinbase(tx: Tx) -> bool:
     return len(tx.vin) == 1 and tx.vin[0].prevhash == ZERO and tx.vin[0].n == NULL_N
 
 
+MAX_SIZE = 0x02000000                                   # serialize.h (NOV08 main.h:33): 32 MiB
+
+
+def check_transaction_2009(tx: Tx, rules) -> str | None:
+    """`CTransaction::CheckTransaction` as v0.1 runs it inside `CheckBlock` -- None if it passes,
+    else the reason. Context-free. The coinbase scriptSig bound follows the chain's own profile:
+    JAN09 main.h requires 2..100 bytes; NOV08 main.h checks only `> 100`. Added 6 Oct 2026 after
+    test_fidelity_2009.py showed netnode accepted blocks v0.1 rejects (standing review)."""
+    if not tx.vin or not tx.vout:
+        return "vin or vout empty"
+    if any(o.value < 0 for o in tx.vout):
+        return "txout.nValue negative"
+    if is_coinbase(tx):
+        n = len(tx.vin[0].script)
+        lo = 0 if getattr(rules, "profile", "JAN09") == "NOV08" else 2
+        if n < lo or n > 100:
+            return "coinbase script size"
+    elif any(i.prevhash == ZERO and i.n == NULL_N for i in tx.vin):
+        return "prevout is null"
+    return None
+
+
 def validate_block(raw: bytes, chain, rules, min_bits=None):
     """(ok, reason). Context‑free checks (structure, merkle) always; difficulty when the parent is
     known (deferred for orphans, but re‑checked authoritatively in `ChainState._connect`). The
@@ -94,6 +116,12 @@ def validate_block(raw: bytes, chain, rules, min_bits=None):
         return False, "first tx is not a coinbase"
     if any(is_coinbase(t) for t in txs[1:]):
         return False, "more than one coinbase"
+    if len(raw) > MAX_SIZE:                            # CheckBlock: GetSerializeSize > MAX_SIZE
+        return False, "size limits failed"
+    for t in txs:                                      # CheckBlock -> CheckTransaction, every tx
+        why = check_transaction_2009(t, rules)
+        if why:
+            return False, "CheckTransaction: " + why
     if merkle_root(txs) != raw[36:68]:
         return False, "merkle root mismatch"
     prev = prev_hash(raw)

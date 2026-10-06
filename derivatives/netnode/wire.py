@@ -16,6 +16,14 @@ import asyncio
 import hashlib
 
 MAX_MESSAGE_SIZE = 4 * 1024 * 1024          # 4 MiB hard cap (DoS resistance)
+# A `block` may carry up to MAX_SIZE (serialize.h, 32 MiB): v0.1's CheckBlock accepts blocks that
+# large, so a 4 MiB cap on blocks made netnode unable to receive blocks the 2009 client accepts
+# (test_fidelity_2009.py; standing review 5 Oct 2026). Every other command keeps the 4 MiB cap.
+MAX_BLOCK_MESSAGE_SIZE = 0x02000000
+
+
+def max_payload(command: str) -> int:
+    return MAX_BLOCK_MESSAGE_SIZE if command == "block" else MAX_MESSAGE_SIZE
 HEADER = 24                                  # magic4 + command12 + length4 + checksum4
 HEADER_NO_CHECKSUM = 20                      # v0.1's CMessageHeader: magic4 + command12 + length4
 READ_TIMEOUT = 120.0                         # drop a peer that stalls mid-message
@@ -33,7 +41,7 @@ def frame(command: str, payload: bytes, magic: bytes, *, checksum: bool = True) 
     """Frame a message. `checksum=False` emits v0.1's original 20-byte header
     (magic|command|size, no checksum field) -- the exact framing CMessageHeader in the January 2009
     client reads, so a node in that mode is wire-compatible with the original binary."""
-    if len(payload) > MAX_MESSAGE_SIZE:
+    if len(payload) > max_payload(command):
         raise WireError(f"outgoing payload too large: {len(payload)}")
     cmd = command.encode("ascii").ljust(12, b"\x00")
     head = magic + cmd + len(payload).to_bytes(4, "little")
@@ -57,7 +65,7 @@ async def read_message(reader: asyncio.StreamReader, magic: bytes,
     command = hdr[4:16].rstrip(b"\x00").decode("ascii", "replace")
     length = int.from_bytes(hdr[16:20], "little")
     want = hdr[20:24] if checksum else None
-    if length > MAX_MESSAGE_SIZE:
+    if length > max_payload(command):
         raise WireError(f"declared size too large: {length}")
     try:
         payload = await asyncio.wait_for(reader.readexactly(length), timeout) if length else b""

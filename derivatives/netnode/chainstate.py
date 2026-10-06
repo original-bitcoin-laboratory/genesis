@@ -34,7 +34,24 @@ import cscript                                              # noqa: E402
 
 from difficulty import expected_bits                       # noqa: E402
 from fastverify import verify_spend_fast                    # noqa: E402  (== faithful verify_spend, accelerated)
-from fullnode import is_coinbase, parse_block_with_txids   # noqa: E402
+from fullnode import check_transaction_2009, is_coinbase, parse_block_with_txids   # noqa: E402
+
+
+def _i64(x: int) -> int:
+    """Two's-complement int64, as the C++ client's value arithmetic wraps. Python integers do not
+    overflow, which is why netnode rejected the Aug 2010 overflow block that v0.1 accepts
+    (test_fidelity_2009.py; standing review 5 Oct 2026). Fidelity, not hardening."""
+    x &= (1 << 64) - 1
+    return x - (1 << 64) if x >> 63 else x
+
+
+def _value_out(tx) -> int:
+    """`CTransaction::GetValueOut` (main.h:492): an int64 running sum. Negative outputs never reach
+    here -- check_transaction_2009 rejects them first, as CheckBlock does."""
+    total = 0
+    for o in tx.vout:
+        total = _i64(total + o.value)
+    return total
 
 COINBASE_MATURITY = 100
 
@@ -140,6 +157,10 @@ class ChainState:
         spent_prior: list = []                               # (outpoint, coin) pre-block coins consumed
         fees = 0
         try:
+            for tx, _ in txs:                                # CheckBlock -> CheckTransaction (authoritative)
+                why = check_transaction_2009(tx, self.rules)
+                if why:
+                    raise InvalidBlock("CheckTransaction: " + why)
             for tx, tid in txs:
                 coinbase = is_coinbase(tx)
                 if not coinbase:
@@ -153,16 +174,17 @@ class ChainState:
                             raise InvalidBlock("immature coinbase spend")
                         if not verify_spend_fast(cscript.parse(vin.script), coin.spk, tx, i, reopen=self.reopen):
                             raise InvalidBlock("input script does not satisfy output")
-                        value_in += coin.value
+                        value_in = _i64(value_in + coin.value)        # main.cpp:845, int64
                         del self.utxo[key]
                         if key in created:
                             del created[key]                 # same-block output consumed -> nets out
                         else:
                             spent_prior.append((key, coin))
-                    value_out = sum(o.value for o in tx.vout)
-                    if value_in < value_out:
+                    value_out = _value_out(tx)                    # main.h:492 GetValueOut, int64
+                    fee = _i64(value_in - value_out)              # main.cpp:849
+                    if fee < 0:                                   # main.cpp:850 nTxFee < 0
                         raise InvalidBlock("inflation (inputs < outputs)")
-                    fees += value_in - value_out
+                    fees = _i64(fees + fee)                       # main.cpp:854
                 for n, o in enumerate(tx.vout):
                     k = (tid, n)
                     c = Coin(o.value, cscript.parse(o.script), height, coinbase)
@@ -170,8 +192,8 @@ class ChainState:
                     created[k] = c
             if not is_genesis:
                 subsidy = self.rules.get_block_value(height - 1)
-                claimed = sum(o.value for o in txs[0][0].vout)
-                if not self.rules.coinbase_ok(claimed, subsidy + fees):
+                claimed = _value_out(txs[0][0])                   # main.cpp:953, int64 both sides
+                if not self.rules.coinbase_ok(claimed, _i64(subsidy + fees)):
                     raise InvalidBlock("coinbase value violates the chain rule")
         except InvalidBlock:                                 # atomic: revert partial mutations
             for k in created:

@@ -261,6 +261,9 @@ pub fn validate_context_free(raw: &[u8]) -> Result<Summary, &'static str> {
     if raw.len() < 81 {
         return Err("too short");
     }
+    if raw.len() > MAX_SIZE {
+        return Err("size limits failed"); // CheckBlock: GetSerializeSize > MAX_SIZE
+    }
     let body = &raw[80..];
     let (ntx, mut i) = read_compact(body, 0);
     if ntx < 1 {
@@ -406,17 +409,44 @@ pub fn is_coinbase(tx: &Tx) -> bool {
     tx.vin.len() == 1 && tx.vin[0].prevhash == [0u8; 32] && tx.vin[0].n == 0xffff_ffff
 }
 
-/// Sum of a transaction's output values.
+/// Sum of a transaction's output values -- `CTransaction::GetValueOut` (main.h:492), an int64 running
+/// sum that WRAPS, as the 2009 client's does. (A plain `.sum()` panics on overflow in a debug build
+/// and wraps silently in release; `wrapping_add` makes the v0.1 behaviour explicit in both.)
 pub fn sum_outputs(tx: &Tx) -> i64 {
-    tx.vout.iter().map(|o| o.value).sum()
+    tx.vout.iter().fold(0i64, |acc, o| acc.wrapping_add(o.value))
+}
+
+/// v0.1's block size bound: `MAX_SIZE` (serialize.h; NOV08 main.h:33), 32 MiB.
+pub const MAX_SIZE: usize = 0x0200_0000;
+
+/// `CTransaction::CheckTransaction` as v0.1 runs it inside `CheckBlock`: `None` if it passes, else
+/// the reason. `strict` is the NOV08 profile (coinbase value `==`), whose CheckTransaction bounds the
+/// coinbase scriptSig only by `> 100`; JAN09 requires 2..=100. Mirrors netnode
+/// `fullnode.check_transaction_2009` (added 6 Oct 2026, test_fidelity_2009.py).
+pub fn check_transaction_2009(tx: &Tx, strict: bool) -> Option<&'static str> {
+    if tx.vin.is_empty() || tx.vout.is_empty() {
+        return Some("CheckTransaction: vin or vout empty");
+    }
+    if tx.vout.iter().any(|o| o.value < 0) {
+        return Some("CheckTransaction: txout.nValue negative");
+    }
+    if is_coinbase(tx) {
+        let n = tx.vin[0].script.len();
+        let lo = if strict { 0 } else { 2 };
+        if n < lo || n > 100 {
+            return Some("CheckTransaction: coinbase script size");
+        }
+    } else if tx.vin.iter().any(|i| i.prevhash == [0u8; 32] && i.n == 0xffff_ffff) {
+        return Some("CheckTransaction: prevout is null");
+    }
+    None
 }
 
 /// The chain's coinbase‑value rule: NOV08 requires `claimed == subsidy + fees`; JAN09 allows
-/// `claimed <= subsidy + fees`. (Mirrors `consensus.Rules.coinbase_ok`.)
+/// `claimed <= subsidy + fees`. (Mirrors `consensus.Rules.coinbase_ok`.) `subsidy + fees` is
+/// `GetBlockValue(nFees)` (main.cpp:675-682), an int64 that wraps in v0.1, so it wraps here.
 pub fn check_coinbase_value(claimed: i64, subsidy: i64, fees: i64, strict: bool) -> bool {
-    // `subsidy + fees` in i128 so the comparison is exact whatever the operands.
-    let allowed = subsidy as i128 + fees as i128;
-    let claimed = claimed as i128;
+    let allowed = subsidy.wrapping_add(fees);
     if strict {
         claimed == allowed
     } else {

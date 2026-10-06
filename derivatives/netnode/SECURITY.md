@@ -14,9 +14,21 @@ research curiosities. **"Nothing disabled" is safe only because it is "not money
 value would force adding the 2010 guardrails — at which point it stops being the undrifted origin.
 **So: do not attach value; do not present it as money.** That is the security boundary.
 
+> **Correction, 6 October 2026.** The sentence above was true of the *intent* and, until today, not
+> of the code. Executed tests (`test_fidelity_2009.py`) showed netnode differed from the January 2009
+> client in six places a stranger could use to split the network along our own implementation
+> boundary: it **rejected** the August 2010 overflow block (Python integers do not wrap) and it
+> **accepted** blocks v0.1's `CheckTransaction` rejects (a negative output, an empty output list, a
+> coinbase script outside 2–100 bytes), and its 4 MiB message cap could not carry a block v0.1
+> accepts up to 32 MiB. All six now match v0.1: value sums are int64 and wrap, `CheckTransaction`
+> runs inside block validation, and a `block` message may carry up to `MAX_SIZE`. `validator-rs`
+> was brought into line the same day (superseding its 20 September i128 widening). **The
+> invariant now holds in code: the origin's guardrails are missing here because they were missing
+> there, and in the same way.**
+
 ## What *is* defended (Stages 1–4 + full‑node core)
 
-- **Wire & parsers**: message checksums, a 4 MiB size cap, read timeouts, and per‑peer misbehavior
+- **Wire & parsers**: message checksums, a 4 MiB size cap (32 MiB = `MAX_SIZE` for `block` messages, as v0.1 accepts blocks that large), read timeouts, and per‑peer misbehavior
   scoring → a peer that sends garbage, oversize, or bad‑magic frames is dropped. Every wire count
   (`inv` / `getblocks` / `addr` / tx‑input) is **bounded to the actual payload** before it drives a
   loop or allocation, and untrusted bytes pass a bounds‑safe gate before any indexing parser, so a

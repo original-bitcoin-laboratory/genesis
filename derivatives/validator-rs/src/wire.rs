@@ -9,6 +9,17 @@ use std::io::{self, Read};
 use crate::dsha256;
 
 pub const MAX_MESSAGE_SIZE: usize = 4 * 1024 * 1024;
+/// A `block` may carry up to `MAX_SIZE` (32 MiB): v0.1's CheckBlock accepts blocks that large.
+/// Mirrors netnode wire.max_payload (6 Oct 2026, test_fidelity_2009.py). Others keep 4 MiB.
+pub const MAX_BLOCK_MESSAGE_SIZE: usize = crate::MAX_SIZE;
+
+pub fn max_payload(command: &str) -> usize {
+    if command == "block" {
+        MAX_BLOCK_MESSAGE_SIZE
+    } else {
+        MAX_MESSAGE_SIZE
+    }
+}
 
 fn checksum(payload: &[u8]) -> [u8; 4] {
     let h = dsha256(payload);
@@ -44,7 +55,7 @@ pub fn read_message<R: Read>(r: &mut R, magic: &[u8; 4]) -> io::Result<Option<(S
     }
     let command = String::from_utf8_lossy(&hdr[4..16]).trim_end_matches('\0').to_string();
     let len = u32::from_le_bytes(hdr[16..20].try_into().unwrap()) as usize;
-    if len > MAX_MESSAGE_SIZE {
+    if len > max_payload(&command) {
         return Err(io::Error::new(io::ErrorKind::InvalidData, "message too large"));
     }
     let expect = [hdr[20], hdr[21], hdr[22], hdr[23]];

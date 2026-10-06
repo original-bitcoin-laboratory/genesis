@@ -39,11 +39,17 @@ pub(crate) fn apply_txs(
     let txs = parse_block_txs(raw);
     let mut created: Vec<Outpoint> = Vec::new();
     let mut spent_prior: Vec<(Outpoint, Coin)> = Vec::new();
-    // Value sums are taken in i128: v0.1's own `int64 nValueOut` wrapped (derivatives/overflow/
-    // models what that did), and the Python oracle sums unbounded integers, so a transaction whose
-    // outputs sum past i64 is rejected here as inflation rather than accepted by a wrapped sum in a
-    // release build or a panic in a debug build. Widened 20 September 2026 after an outside read.
-    let mut fees: i128 = 0;
+    // Value sums are int64 and WRAP, exactly as v0.1's do (main.h:492 GetValueOut; main.cpp:845-854
+    // ConnectInputs; main.cpp:953 vs GetBlockValue). So the Aug 2010 overflow transaction is
+    // ACCEPTED, as by the 2009 client this chain runs.
+    //
+    // SUPERSEDES the 20 Sep 2026 widening to i128, which made this node reject that transaction to
+    // agree with the Python oracle's unbounded integers. On 6 Oct 2026 executed tests
+    // (netnode/test_fidelity_2009.py) showed the Python oracle itself diverged from v0.1 -- a split
+    // any miner could trigger between our nodes and the 2009 binary -- and it was brought back to
+    // int64. This node follows. The 20 Sep concern (panic in debug, silent wrap in release) is met
+    // by explicit wrapping_* arithmetic, identical in both builds.
+    let mut fees: i64 = 0;
 
     macro_rules! bail {
         ($e:expr) => {{
@@ -57,10 +63,16 @@ pub(crate) fn apply_txs(
         }};
     }
 
+    for (tx, _) in &txs {
+        if let Some(why) = crate::check_transaction_2009(tx, strict) {
+            bail!(why); // CheckBlock -> CheckTransaction, authoritative on connect
+        }
+    }
+
     for (tx, tid) in &txs {
         let coinbase = is_coinbase(tx);
         if !coinbase {
-            let mut value_in: i128 = 0;
+            let mut value_in: i64 = 0;
             for (i_in, vin) in tx.vin.iter().enumerate() {
                 let key = (vin.prevhash, vin.n);
                 let coin = match utxo.get(&key) {
@@ -73,7 +85,7 @@ pub(crate) fn apply_txs(
                 if !verify_spend(&vin.script, &coin.spk, tx, i_in) {
                     bail!("input script does not satisfy output");
                 }
-                value_in += coin.value as i128;
+                value_in = value_in.wrapping_add(coin.value); // main.cpp:845
                 utxo.remove(&key);
                 if let Some(pos) = created.iter().position(|k| *k == key) {
                     created.remove(pos); // same-block output consumed -> nets out
@@ -81,11 +93,11 @@ pub(crate) fn apply_txs(
                     spent_prior.push((key, coin));
                 }
             }
-            let value_out: i128 = tx.vout.iter().map(|o| o.value as i128).sum();
-            if value_in < value_out {
-                bail!("inflation (inputs < outputs)");
+            let fee = value_in.wrapping_sub(crate::sum_outputs(tx)); // main.cpp:849
+            if fee < 0 {
+                bail!("inflation (inputs < outputs)"); // main.cpp:850 nTxFee < 0
             }
-            fees += value_in - value_out;
+            fees = fees.wrapping_add(fee); // main.cpp:854
         }
         for (n, o) in tx.vout.iter().enumerate() {
             let k = (*tid, n as u32);
@@ -95,11 +107,7 @@ pub(crate) fn apply_txs(
     }
 
     if !is_genesis {
-        let claimed: i128 = txs[0].0.vout.iter().map(|o| o.value as i128).sum();
-        let (claimed, fees) = match (i64::try_from(claimed), i64::try_from(fees)) {
-            (Ok(c), Ok(f)) => (c, f),
-            _ => bail!("coinbase value violates the chain rule"),
-        };
+        let claimed = crate::sum_outputs(&txs[0].0); // main.cpp:953, int64
         if !check_coinbase_value(claimed, subsidy, fees, strict) {
             bail!("coinbase value violates the chain rule");
         }

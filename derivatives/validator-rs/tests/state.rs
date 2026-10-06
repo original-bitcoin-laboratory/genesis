@@ -39,3 +39,19 @@ fn value_and_script_rules_reject_invalid_blocks() {
         assert_eq!((st.utxo_count(), st.balance()), before, "state unchanged after {name}");
     }
 }
+
+#[test]
+fn blocks_the_2009_client_accepts_connect_here_too() {
+    // e.g. the Aug 2010 value overflow: v0.1's int64 output sum wraps and the block is ACCEPTED.
+    // Rejecting it would split this node from the 2009 binary (test_fidelity_2009.py, 6 Oct 2026).
+    for (name, raw, height, subsidy) in ACCEPTED {
+        let mut st = ChainState::new(MATURITY, STRICT);
+        for (r, h, s, g, _uc, _bal) in VALID {
+            st.connect_block(&hexd(r), *h, *s, *g).unwrap();
+        }
+        let before = st.utxo_count();
+        let got = st.connect_block(&hexd(raw), *height, *subsidy, false);
+        assert_eq!(got, Ok(()), "case {name} must connect, as in v0.1");
+        assert!(st.utxo_count() > before, "case {name} must create outputs");
+    }
+}
