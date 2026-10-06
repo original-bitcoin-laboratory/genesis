@@ -22,7 +22,7 @@ from, and how to raise anything with it.
   them, and a re-run that disagrees outranks anything written here.
 - It is **neutral**. It endorses no chain, project, company or person, takes no side in any dispute,
   and cites public records rather than characterising anyone.
-- Its websites use **aggregate, cookie-less analytics** (page counts and which sections are read; two counters, GoatCounter and a self-hosted Umami instance at analytics.bitcoin-lab.org, neither storing an identifier),
+- Its websites use **aggregate, cookie-less analytics** (page counts and which sections are read),
   with no identifier stored on the device, no per-visitor tracking, and nothing sold or shared.
 
 ## Status of the work

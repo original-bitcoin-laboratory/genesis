@@ -357,7 +357,7 @@ single non-payee key is present in the previous round's wallet (852 keys, 851 pa
 and is the same key: the count has been `payees + 1` for as long as the series has reported it. The
 set presented a standing property of the wallet as if it were a transient artefact of this capture.
 
-**How it was found.** Regenerating `bitcoin-origin-claims/GENERATED-FIGURES.md` after the ingest
+**How it was found.** Regenerating the laboratory's internal figure sheet after the ingest
 produced the line *"distinct coinbase pubkeys 1158 — one key per block, v0.1 has NO keypool"*,
 which contradicts the set published an hour earlier. The source was then read, and the key's address
 was derived and compared with the address the client's own window shows: they are the same key.

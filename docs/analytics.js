@@ -1,21 +1,6 @@
-/* Analytics enrichment for the aggregate, cookie-less counters this site uses.
- *
- * One file, loaded by every page, so the behaviour lives in a single place. It adds EVENTS on
- * top of the pageview the counter already records: which outbound link was followed, which
- * section was jumped to, whether a page was printed, how long it stayed open, whether a script
- * threw. Every event is a fact about a VISIT, never about a VISITOR.
- *
- * What it does not do, deliberately: no cookies, no localStorage, no fingerprinting, no
- * cross-site or per-visitor identifier, nothing that identifies a person. What it does send
- * beyond what a server log sees: read depth, time open, print, script errors, and the KIND of
- * text copied (a hash, a command, an address, a key block), not the text. The list is
- * published at bitcoin-lab.org/about.html#counted so it cannot drift quietly.
- *
- * PATH PREFIX: this site is the account's DEFAULT and reports bare paths ("/verify.html").
- * satoshioncha.in and bitcoinwhitepaper.online prefix themselves with their host, so the three
- * do not merge in the dashboard. Do NOT add a prefix here: it would split every page's existing
- * history into a before and an after for no gain.
- */
+/* Event hooks for the site's page counters: outbound links, downloads, section jumps, read depth,
+ * print, script errors, and the KIND of text copied (never the text). No cookies, no storage, no
+ * per-visitor or cross-site identifier. */
 (function () {
   'use strict';
 
