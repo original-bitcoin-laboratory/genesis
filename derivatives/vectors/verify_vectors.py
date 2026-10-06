@@ -120,8 +120,19 @@ def is_coinbase(tx: dict) -> bool:
     return len(tx["vin"]) == 1 and tx["vin"][0]["prevhash"] == b"\x00" * 32 and tx["vin"][0]["n"] == 0xFFFFFFFF
 
 
+def i64(x: int) -> int:
+    """Two's-complement int64: v0.1's value arithmetic (nValueIn, GetValueOut, nTxFee, nFees) wraps.
+    Python integers do not, so an unbounded sum would reject the Aug 2010 overflow block v0.1 accepts."""
+    x &= (1 << 64) - 1
+    return x - (1 << 64) if x >> 63 else x
+
+
 def value_out(tx: dict) -> int:
-    return sum(o["value"] for o in tx["vout"])
+    """CTransaction::GetValueOut (main.h:492): an int64 running sum."""
+    total = 0
+    for o in tx["vout"]:
+        total = i64(total + o["value"])
+    return total
 
 
 def parse_block(b: bytes) -> dict:
@@ -635,8 +646,8 @@ class Chain2009:
             if key in pending_spent:
                 return "ConnectInputs() : prev tx already used", 0
             pending_spent[key] = txid(tx)
-            value_in += coin["value"]
-        fee = value_in - value_out(tx)
+            value_in = i64(value_in + coin["value"])                     # main.cpp:844, int64
+        fee = i64(value_in - value_out(tx))                                  # main.cpp:848, int64
         if fee < 0:
             return "ConnectInputs() : nTxFee < 0", 0
         return None, fee
@@ -831,12 +842,12 @@ class Chain2009:
             if err:
                 self._err(err)
                 return err
-            fees += fee
+            fees = i64(fees + fee)                                           # main.cpp:853, int64
             t = txid(tx)
             for n, o in enumerate(tx["vout"]):
                 pending[(t, n)] = {"value": o["value"], "script": o["script"], "height": height,
                                    "coinbase": is_coinbase(tx)}
-        if value_out(txs[0]) > self.subsidy(self.height) + fees:
+        if value_out(txs[0]) > i64(self.subsidy(self.height) + fees):     # main.cpp:953 GetBlockValue
             return "AddToBlockIndex() : ConnectBlock failed"      # main.cpp:953 returns false silently; the caller's line shows
         undo = {"spent": {}, "created": [], "txids": []}
         for key, spender in pending_spent.items():
