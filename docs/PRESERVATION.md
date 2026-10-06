@@ -150,6 +150,12 @@ authority.
 against any block explorer without trusting this file:
 
 ```
+v0.8.0-exp.      all FIVE assets      blocks 970201 + 970202   2026-10-06 16:38:25 / 16:42:41 UTC
+                 970201 merkle root eaf96c2585eb64d688881a6163a377e7b0e9847eb7b7d6eda40ca1690e1bea17
+                 970202 merkle root a6c4b2bd68a1548f7d00c4631d75c222979f782beac39905f349efd5ecb294ad
+                 -- each proof walked from the file's sha256 to the block's merkle root and
+                    compared against the chain, 7 October 2026
+
 Bitcoin-v0.1.4   all four assets      block 961652   2026-08-09 00:16:42 UTC
 Bitcoin-v0.1.5   all FIVE assets      block 961885   2026-08-10 14:28:15 UTC
                  (five, not four: SHA256SUMS.slhdsa, the post-quantum counter-signature,
@@ -242,14 +248,14 @@ independently arrive at.
 |---|---|---|
 | v0.8.0-experimental | `obl-genesis-0.8.0.tar.gz` | `QmTVfjkzaNhJqcqBQYX3oPGBVzwUe6MnNtxYGeNi2y4Twd` |
 |  | `obl-genesis-0.8.0.tar.gz.asc` | `QmQZ4U7BeE9tMpfxZU5Do8NLGmuwzs3AKEoix6f1p8bwND` |
-|  | `obl-genesis-0.8.0.tar.gz.ots` | `QmaBrxPYQpKBydi2hr3J8rGu1fvWKRg26RJKmcqTbxK4gT` |
-|  | `obl-genesis-0.8.0.tar.gz.asc.ots` | `QmeaYwYWSPBHF1z5j33MTimwDxCBncSqqQ6iiXrbDcQSxz` |
+|  | `obl-genesis-0.8.0.tar.gz.ots` | `QmakSrtaECWSKKnqNnGNT2XvuDduqffvinVhZU5Tkc1bXy` |
+|  | `obl-genesis-0.8.0.tar.gz.asc.ots` | `QmW498LP55xTnUKfericZLSsdULvVBBcWaQz38QpAyPUvB` |
 |  | `SHA256SUMS` | `QmcbE3RtmA9sT9w22sN5wD47TJpTM6HXwt2rnXzQ43vBMN` |
 |  | `SHA256SUMS.asc` | `QmaJ1kYrapr8dakTXj1oypEyQz7kq5YVt1iqLJiTs9Skag` |
-|  | `SHA256SUMS.ots` | `QmcdPMEd43wJJuc7EiLZh829P9r9Ynx7xn35MrA3cTLne9` |
-|  | `SHA256SUMS.asc.ots` | `QmTnh6esF3CirHbB8jUYNLbZDtYLDsKFLws67J1iBbRit5` |
+|  | `SHA256SUMS.ots` | `QmcrfiZN82Pn667iiy2ihp4p5beXRdU4KKRwCZqMNDJCUy` |
+|  | `SHA256SUMS.asc.ots` | `QmWCaUP1sfgoPajmatB7Bo5J5uZ2MyXuQfjoTsZ4YPqn1M` |
 |  | `SHA256SUMS.slhdsa` | `QmQMKP4WQmsVoJmDfNn5hDvW9zvVwHo3ygpKw8nVhgw3mQ` |
-|  | `SHA256SUMS.slhdsa.ots` | `QmSYqwMi21heGypStFrvyY8H1QgXMB3cPALAj1iKn1HzqK` |
+|  | `SHA256SUMS.slhdsa.ots` | `QmSAdofTjqvuqBkUoBhPS9H211swki3uunzqu1YdqVux48` |
 | v0.7.0-experimental | `obl-genesis-0.7.0.tar.gz` | `Qmdr6K1nF1WEsMg3iZdZ351tVv7VVqG6uWJWDmmDV2ZkpJ` |
 |  | `obl-genesis-0.7.0.tar.gz.asc` | `QmcdMoFpZwzuWkmeixay1ot14vwDUbGpuhYTbcym9TpMXX` |
 |  | `obl-genesis-0.7.0.tar.gz.ots` | `QmY6E8rEVFdSUNgA3tM8ANZdFMSprD1VsnxNBAFKCXcNcB` |
