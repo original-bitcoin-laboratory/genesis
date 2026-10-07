@@ -51,7 +51,22 @@ python3 "$DERIV/bitcoin/net.py"
 echo "==> firewall"
 ufw allow OpenSSH             >/dev/null
 ufw allow ${PORT}/tcp         >/dev/null
-ufw --force enable            >/dev/null
+if ufw status | grep -q "Status: active"; then
+    :                                           # already on: the two rules are added, nothing else changes
+else
+    # Turning ufw on denies every other inbound port. On a fresh VPS that is the point; on a host that
+    # already serves something else it would cut that service off. So do not enable it while anything
+    # besides SSH and this node listens on a public address -- say so and leave the decision to a person.
+    OTHERS=$(ss -H -lnt | awk '{print $4}' | grep -vE '^(127\.|\[::1\]|::1|\[::ffff:127\.)' \
+             | sed -E 's/.*:([0-9]+)$/\1/' | sort -un | grep -vxE "22|${PORT}" | tr '\n' ' ' || true)
+    if [[ -n "${OTHERS// /}" ]]; then
+        echo "    !! ufw is OFF and this host also listens on: ${OTHERS}"
+        echo "    !! NOT enabling it -- that would block those ports. Rules for SSH and ${PORT} are added;"
+        echo "    !! add 'ufw allow <port>/tcp' for each service above, then run: ufw enable"
+    else
+        ufw --force enable    >/dev/null
+    fi
+fi
 ufw status numbered | sed 's/^/    /'
 
 echo "==> systemd unit"
@@ -94,7 +109,10 @@ WantedBy=multi-user.target
 UNIT
 
 systemctl daemon-reload
-systemctl enable --now bitcoin-node >/dev/null
+systemctl enable bitcoin-node >/dev/null
+# restart, not 'enable --now': on a re-run the node is already running, and 'enable --now' leaves the
+# old process -- the old code and the old limits -- in place. Chain data in /var/lib/bitcoin-node stays.
+systemctl restart bitcoin-node
 sleep 3
 
 echo
