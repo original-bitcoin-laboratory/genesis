@@ -29,7 +29,7 @@ WHERE t.block_timestamp_month <= '2009-12-01'
 -- (3) controls for a zero in (2) — a filter that matches nothing also returns zero.
 --     (3a) the window is not empty: expect tens of thousands of transactions below height 31000.
 --     (3b) the column is populated: nonzero lock_time must appear in a later month (Jan 2016),
---          or the zero in (2) could be a column that is always 0.
+--          or the zero in (2) could be a column that holds only 0.
 SELECT COUNT(*) AS txs_in_window, MIN(block_number) AS first_block, MAX(block_number) AS last_block
 FROM `bigquery-public-data.crypto_bitcoin.transactions`
 WHERE block_timestamp_month <= '2009-12-01' AND block_number < 31000;
