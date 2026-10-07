@@ -68,6 +68,7 @@ Experimental laboratory research, in progress. Not money, not advice, no warrant
 - `OBL-F-nnnn`: findings (claims about the sources, the binaries or the reconstructions).
 - `OBL-C-nnnn`: consensus-rule entries of the constitution register, one per rule, each with the commit that
   introduced it, its message verbatim, whether the message describes the change (`message_match`), the argument
-  the record carries for it, and an executed witness or a stated reason for its absence. Not yet started; the
+  the record carries for it, and an executed witness or a stated reason for its absence. Kept in
+  [`CONSTITUTION-REGISTER.md`](CONSTITUTION-REGISTER.md) (17 rules, OBL-C-0001 to OBL-C-0017; no witness cell open). The
   checker reports its `message_match` tally with the number of surface rows as the denominator, counting rules,
   with origin commits as a sub-count (a rule with several commits lists them as `sha:false,sha:true`).
