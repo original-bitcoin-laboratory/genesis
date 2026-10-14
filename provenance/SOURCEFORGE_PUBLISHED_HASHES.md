@@ -48,7 +48,9 @@ held bitcoin-0.1.0.rar    md5 91e2dfa2af…  2,132,686 B    serialize.h VERSION 
                           (the SNI archive -- and see the note below on its real label)
 ```
 
-**VERSION 103 is v0.1.3's wire version; v0.1.0 and v0.1.1 carry 101.** So the bytes SourceForge
+**VERSION 103 is v0.1.3's wire version; the archive held as `bitcoin-0.1.0.rar`, which is v0.1.1
+(below), carries 101.** The 8 January v0.1.0 bytes are not held, so their value is not stated here.
+So the bytes SourceForge
 published under the **`bitcoin-0.1.0.rar`** row are **v0.1.3's code**, not v0.1.0's. The feed
 associated one later file with two releases.
 
@@ -68,15 +70,18 @@ laboratory anchors to reproduction rather than to a published digest.
 
 **The archive circulated as `bitcoin-0.1.0.rar` is v0.1.1.** Its size, 2,132,686 bytes, is precisely
 the figure Satoshi states for **`bitcoin-0.1.1.rar`** in a 10 January 2009 message; its shipped
-`bitcoin.exe` carries a PE `TimeDateStamp` of 2009-01-10, two days after v0.1.0 was announced. (Listings of
-the archive show its members dated 07 Jan 09; inside the `.rar` every member, `bitcoin.exe` included, carries
-the same modification time to the second, 2009-01-07 01:00:00, so those are the packer's uniform stamps, not
-authoring dates, and an executable cannot predate its own link time. The PE stamp is the datable field.
-Checked 20 September 2026 after an outside reader raised the two dates.) See
+`bitcoin.exe` carries a PE `TimeDateStamp` of 2009-01-10 23:16:00 UTC, two days after v0.1.0 was
+announced. (Inside the `.rar`, every file is stamped 2009-01-07 01:00 except `irc.cpp`,
+`serialize.h` and `bitcoin.exe`, which are stamped 2009-01-10 01:01, as `unrar l` shows. The
+minutes track the patch level, so these are version stamps, not modification records; RAR stores
+the packing machine's local time, and `bitcoin.exe`'s stamp falls before its own link time in any
+zone. The PE stamp is the datable field, and it too is a date the binary asserts about itself.
+Corrected 14 October 2026: an earlier wording here said every member carried the 7 January time.) See
 [`common/VERSION_LABEL.md`](https://github.com/original-bitcoin-laboratory/common/blob/main/VERSION_LABEL.md).
 
-**Neither correction changes any consensus result** — the v0.1.0→v0.1.1 delta is confined to
-`irc.cpp` and `serialize.h`, and `main.cpp` is untouched. **What changes is what may be claimed about
+**Neither correction changes any consensus result** — every identified v0.1.0→v0.1.1 change is in
+`irc.cpp` and `serialize.h`, and `main.cpp` carries the 7 January stamp, i.e. it is not marked as
+changed (the stamps are the archive's own assertion, so no consensus-surface change is *evidenced*). **What changes is what may be claimed about
 provenance**, which is the whole point of this file.
 
 ## Limits
