@@ -145,18 +145,22 @@ fn push_data(data: &[u8]) -> Vec<u8> {
     out
 }
 
-/// CScript::FindAndDelete — remove each opcode chunk equal to `needle`.
-fn find_and_delete(script: &[u8], needle: &[u8]) -> Vec<u8> {
+/// CScript::FindAndDelete (script.h:535) — remove each opcode chunk equal to `needle`. v0.1 stops
+/// when GetOp fails, so the bytes from a truncated push onward are kept as they are.
+pub fn find_and_delete(script: &[u8], needle: &[u8]) -> Vec<u8> {
     if needle.is_empty() {
         return script.to_vec();
     }
     let mut out = Vec::new();
+    let mut end = 0;
     for o in tokenize(script) {
         let chunk = &script[o.start..o.end];
         if chunk != needle {
             out.extend_from_slice(chunk);
         }
+        end = o.end;
     }
+    out.extend_from_slice(&script[end..]);
     out
 }
 

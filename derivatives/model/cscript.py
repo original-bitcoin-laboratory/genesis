@@ -98,12 +98,19 @@ def parse(script: bytes) -> list:
 
 
 def find_and_delete(script: bytes, needle: bytes) -> bytes:
-    """CScript::FindAndDelete — remove each opcode chunk equal to `needle`."""
+    """CScript::FindAndDelete (script.h:535) — remove each opcode chunk equal to `needle`.
+
+    v0.1 erases matches at opcode boundaries until GetOp fails, then stops: the bytes from a truncated
+    push onward are KEPT as they are. An earlier version dropped them, because `_iter_ops` simply
+    stops there; that changed the digest a CHECKSIG computes over such a scriptCode."""
     if not needle:
         return script
     out = bytearray()
+    end = 0
     for s, e, _op, _data in _iter_ops(script):
         chunk = script[s:e]
         if chunk != needle:
             out += chunk
+        end = e
+    out += script[end:]
     return bytes(out)

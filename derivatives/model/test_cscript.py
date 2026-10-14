@@ -37,3 +37,16 @@ def test_find_and_delete_removes_sig_push():
     script = cscript.assemble([sig, pub, "OP_CHECKSIG"])
     got = cscript.find_and_delete(script, cscript.assemble([sig]))
     assert got == cscript.assemble([pub, "OP_CHECKSIG"])
+
+
+def test_find_and_delete_codeseparator_only_at_opcode_boundaries():
+    # 0xab inside a pushed key is data, not OP_CODESEPARATOR; only the standalone opcode goes.
+    key = bytes([0x02]) + bytes([0xab]) * 32
+    script = cscript.assemble([key]) + bytes([0xab, 0xac])
+    assert cscript.find_and_delete(script, bytes([0xab])) == cscript.assemble([key]) + bytes([0xac])
+
+
+def test_find_and_delete_keeps_a_truncated_push_as_v01_does():
+    # script.h:535 stops when GetOp fails and erases nothing after: the truncated tail stays.
+    script = bytes.fromhex("ab5105ab01")          # OP_CODESEPARATOR OP_1 <push 5, only 2 bytes left>
+    assert cscript.find_and_delete(script, bytes([0xab])) == bytes.fromhex("5105ab01")

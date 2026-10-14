@@ -1,6 +1,8 @@
 //! The v0.1 signature hash (`SignatureHash`), ported to match the Python `tx_sighash.py`
-//! byte-for-byte — including its simplified `OP_CODESEPARATOR` find-and-delete (strip all 0xab
-//! bytes from the scriptCode). NOT money.
+//! byte-for-byte. `OP_CODESEPARATOR` is deleted from the scriptCode at opcode boundaries only, as
+//! `FindAndDelete` does (script.cpp:829, script.h:535); until 14 October 2026 this port stripped every
+//! 0xab byte, including bytes inside a pushed key, which the Python model and the C++ port had
+//! stopped doing in September (tests/sighash_codesep.rs). NOT money.
 
 use crate::{dsha256, Tx};
 
@@ -47,7 +49,7 @@ pub fn signature_hash(script_code: &[u8], tx: &Tx, n_in: usize, hash_type: u8) -
     if n_in >= tx.vin.len() {
         return one();
     }
-    let sc: Vec<u8> = script_code.iter().copied().filter(|&b| b != OP_CODESEPARATOR).collect();
+    let sc: Vec<u8> = crate::eval::find_and_delete(script_code, &[OP_CODESEPARATOR]);
     let ht = hash_type & 0x1f;
     let anyone = hash_type & SIGHASH_ANYONECANPAY != 0;
 
