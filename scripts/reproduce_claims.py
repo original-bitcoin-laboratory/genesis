@@ -56,10 +56,11 @@ CLAIMS = {
     # Each external claim carries its OWN carrier note: C1d (genesis) is the unmodified 2009 binary (block 0
     # of blk0001.dat); C1e-C1h are the unmodified-binary two-node RUN and its archived logs/block files.
     "C1d-historical-genesis": (
-        "The HISTORICAL January genesis (000000000019d668...) is re-derived by the unmodified 2009 binary "
-        "(the historical-binary witness) -- block 0 of its blk0001.dat. EXTERNAL -- author-reported and "
-        "hash-manifested; supporting artifacts public in the cited archival deposit; "
-        "not executed here",
+        "The unmodified January 2009 binary ran to block 0 and wrote the fixed historical genesis bytes "
+        "(000000000019d668...) as block 0 of its blk0001.dat. The genesis fields are constants in the "
+        "source, so this is not an independent derivation of the block: it shows the original code ran, "
+        "the precondition for C1e-C1h. EXTERNAL -- author-reported and hash-manifested; supporting "
+        "artifacts public in the cited archival deposit; not executed here",
         ("EXTERNAL", "carried by the unmodified 2009 binary (deposited separately) -- block 0 of blk0001.dat; "
                      "not by the differential C++/OpenSSL port; author-reported; deposit public"),
     ),
