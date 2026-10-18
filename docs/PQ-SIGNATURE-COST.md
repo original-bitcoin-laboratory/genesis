@@ -221,7 +221,8 @@ narrow. Every ML-DSA set verifies faster than secp256k1 in the same library, and
 **SLH-DSA-192s signs in 0.97 s in-process against 0.75 s as a whole process**, although the in-process
 figure has no process to start. The benchmark keeps every sample in run order, and the record locates
 the difference: in the 192s loop, about a hundred seconds of uninterrupted signing, the first twenty
-signatures have a median of 0.72 s and the last twenty 1.21 s. The whole-process instrument starts a
+signatures have a median of 0.72 s and the last twenty 1.21 s, and its verifications slow from 648 to
+1,032 µs; no other scheme's loop drifts so. The whole-process instrument starts a
 process between operations and never runs the processor that long without a pause. A sustained-load
 clock limit (power or temperature) is consistent with that record; the clock was not logged, so it is
 not established. Core type does not explain it: run pinned to one performance core
@@ -281,8 +282,8 @@ NOT   a claim about migration. Coins already in pay-to-pubkey outputs have their
       measurement settles it
 NOT   a cycle-accurate benchmark, or a node's validation throughput. Both instruments are
       wall-clock on one machine with a hybrid CPU, n = 100; the whole-process figures include
-      process start-up, and the in-process SLH-DSA-192s signing median includes a slowdown over its
-      long uninterrupted loop
+      process start-up, and the in-process SLH-DSA-192s sign and verify medians include a slowdown
+      over its long uninterrupted loop
 NOT   a forecast. "chain GB/yr" assumes every block full at 2009 pacing -- an upper bound
 NOT   applicable to aggregation. Schemes that aggregate signatures change this arithmetic
       completely, and none of the three NIST standards measured here aggregates
@@ -301,8 +302,9 @@ python verify/bench_inprocess.py --n 100 --out verify/inprocess-timings.json
 python verify/pq_settlement_capacity.py                     # the companion note's tables
 ```
 
-Writes `pq-cost-measurement.json` and `inprocess-timings.json` with every raw figure, the binaries'
-paths and SHA-256s, `openssl version -a` and the CPU. Without `--chain`, the validation uses
+Writes `pq-cost-measurement.json` and `inprocess-timings.json` with the measured sizes and medians
+(and, for the in-process run, every sample), the binaries' paths and SHA-256s, `openssl version -a` and
+the CPU; the process-spawn floor is printed by the run rather than stored. Without `--chain`, the validation uses
 `verify/data/v01-relayed-spend-blk0001.dat`. Requires OpenSSL 3.5+ for the PQ
 algorithms; nothing else is needed and nothing is installed.
 
