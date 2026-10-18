@@ -37,8 +37,8 @@
       "samples": 200,
       "sk_file": 242,
       "pk_onchain": 65,
-      "sign_ms": 23.68,
-      "verify_ms": 20.74
+      "sign_ms": 20.35,
+      "verify_ms": 19.71
     },
     {
       "scheme": "ML-DSA-44",
@@ -50,8 +50,8 @@
       "samples": 200,
       "sk_file": 3670,
       "pk_onchain": 1312,
-      "sign_ms": 23.09,
-      "verify_ms": 16.92
+      "sign_ms": 22.39,
+      "verify_ms": 16.51
     },
     {
       "scheme": "ML-DSA-65",
@@ -63,8 +63,8 @@
       "samples": 200,
       "sk_file": 5692,
       "pk_onchain": 1952,
-      "sign_ms": 24.76,
-      "verify_ms": 18.8
+      "sign_ms": 23.38,
+      "verify_ms": 21.16
     },
     {
       "scheme": "ML-DSA-87",
@@ -76,8 +76,8 @@
       "samples": 200,
       "sk_file": 6880,
       "pk_onchain": 2592,
-      "sign_ms": 22.25,
-      "verify_ms": 20.52
+      "sign_ms": 31.56,
+      "verify_ms": 27.97
     },
     {
       "scheme": "SLH-DSA-SHA2-128s",
@@ -89,8 +89,8 @@
       "samples": 200,
       "sk_file": 172,
       "pk_onchain": 32,
-      "sign_ms": 423.44,
-      "verify_ms": 17.13
+      "sign_ms": 354.54,
+      "verify_ms": 16.81
     },
     {
       "scheme": "SLH-DSA-SHA2-128f",
@@ -102,8 +102,8 @@
       "samples": 200,
       "sk_file": 172,
       "pk_onchain": 32,
-      "sign_ms": 48.86,
-      "verify_ms": 19.35
+      "sign_ms": 38.72,
+      "verify_ms": 17.49
     },
     {
       "scheme": "SLH-DSA-SHA2-192s",
@@ -115,8 +115,8 @@
       "samples": 200,
       "sk_file": 218,
       "pk_onchain": 48,
-      "sign_ms": 707.57,
-      "verify_ms": 14.87
+      "sign_ms": 747.92,
+      "verify_ms": 17.18
     }
   ],
   "tx_bytes": {

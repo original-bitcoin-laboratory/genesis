@@ -46,8 +46,17 @@ D, OK, W, AR = chr(0x26D4), "ok  ", chr(0x26A0), chr(0x21D2)
 NL = chr(10)
 
 # The schemes the paper reports, by the name OpenSSL knows them under.
-SCHEMES = ["ML-DSA-44", "ML-DSA-65", "ML-DSA-87",
+SCHEMES = ["secp256k1-ECDSA", "ML-DSA-44", "ML-DSA-65", "ML-DSA-87",
            "SLH-DSA-SHA2-128s", "SLH-DSA-SHA2-128f", "SLH-DSA-SHA2-192s"]
+
+# The baseline (added 18 October 2026): an EC key on secp256k1, signed through the same one-shot
+# message interface as the post-quantum schemes. OpenSSL's composite ECDSA-SHA256 algorithm hashes the
+# 32-byte message once before signing it; that hash is a small fraction of a microsecond.
+EC_SCHEMES = {"secp256k1-ECDSA": ("secp256k1", "ECDSA-SHA256")}
+
+
+def _algo_name(name):
+    return EC_SCHEMES[name][1] if name in EC_SCHEMES else name
 
 
 def find_libcrypto(explicit=None):
@@ -92,6 +101,7 @@ def _bind(lib):
     lib.EVP_PKEY_CTX_new_from_pkey.restype = c_void_p
     lib.EVP_PKEY_CTX_new_from_pkey.argtypes = [c_void_p, c_void_p, c_char_p]
     lib.EVP_PKEY_keygen_init.argtypes = [c_void_p]
+    lib.EVP_PKEY_CTX_set_group_name.argtypes = [c_void_p, c_char_p]
     lib.EVP_PKEY_generate.argtypes = [c_void_p, POINTER(c_void_p)]
     lib.EVP_SIGNATURE_fetch.restype = c_void_p
     lib.EVP_SIGNATURE_fetch.argtypes = [c_void_p, c_char_p, c_char_p]
@@ -118,12 +128,14 @@ def _err(lib):
 
 
 def keygen(lib, name):
-    ctx = lib.EVP_PKEY_CTX_new_from_name(None, name.encode(), None)
+    ctx = lib.EVP_PKEY_CTX_new_from_name(None, b"EC" if name in EC_SCHEMES else name.encode(), None)
     if not ctx:
         raise RuntimeError("no context for %s: %s" % (name, _err(lib)))
     try:
         if lib.EVP_PKEY_keygen_init(ctx) != 1:
             raise RuntimeError("keygen_init %s: %s" % (name, _err(lib)))
+        if name in EC_SCHEMES and lib.EVP_PKEY_CTX_set_group_name(ctx, EC_SCHEMES[name][0].encode()) != 1:
+            raise RuntimeError("set_group_name %s: %s" % (name, _err(lib)))
         pkey = c_void_p()
         if lib.EVP_PKEY_generate(ctx, byref(pkey)) != 1:
             raise RuntimeError("generate %s: %s" % (name, _err(lib)))
@@ -134,7 +146,7 @@ def keygen(lib, name):
 
 def time_one(lib, name, pkey, msg, n):
     """Returns (sign_ns list, verify_ns list, siglen). One context per operation, as a caller has."""
-    algo = lib.EVP_SIGNATURE_fetch(None, name.encode(), None)
+    algo = lib.EVP_SIGNATURE_fetch(None, _algo_name(name).encode(), None)
     if not algo:
         raise RuntimeError("no signature object for %s: %s" % (name, _err(lib)))
     m = (c_ubyte * len(msg)).from_buffer_copy(msg)
@@ -177,7 +189,7 @@ def time_one(lib, name, pkey, msg, n):
 def negative_control(lib, name, pkey, msg):
     """Negative control: a signature with one flipped byte must fail to verify. Without it, a verify
     call that succeeded unconditionally would be timed as a fast verification."""
-    algo = lib.EVP_SIGNATURE_fetch(None, name.encode(), None)
+    algo = lib.EVP_SIGNATURE_fetch(None, _algo_name(name).encode(), None)
     m = (c_ubyte * len(msg)).from_buffer_copy(msg)
     try:
         sctx = lib.EVP_PKEY_CTX_new_from_pkey(None, pkey, None)
@@ -201,8 +213,9 @@ def negative_control(lib, name, pkey, msg):
 
 def boundary_overhead(lib, n):
     """The cost of one ctypes call into the same library when the callee does no cryptography:
-    `OpenSSL_version_num` returns a constant. (Until 18 October 2026 this timed hashlib.sha256 instead,
-    which is not a ctypes call into libcrypto; an internal review caught it.)"""
+    `OpenSSL_version_num` returns a constant. It is calibration context for the figures, a zero-work
+    call of a different shape from the EVP calls, and nothing is subtracted from them. (Until 18 October
+    2026 this timed hashlib.sha256 instead, which is not a ctypes call into libcrypto.)"""
     lib.OpenSSL_version_num.restype = ctypes.c_ulong
     lib.OpenSSL_version_num.argtypes = []
     out = []
@@ -245,6 +258,7 @@ def main(argv=None):
     ap.add_argument("--lib", default=None, help="path to libcrypto, if the search picks wrongly")
     ap.add_argument("--out", default=None, help="write the measurement as JSON")
     ap.add_argument("--list", action="store_true", help="report the library and the schemes only")
+    ap.add_argument("--only", nargs="+", default=None, help="measure only these schemes (diagnostics)")
     a = ap.parse_args(argv)
 
     lib, path, ver, rejected = find_libcrypto(a.lib)
@@ -264,9 +278,13 @@ def main(argv=None):
     print("  %s %s %s, python %s"
           % (OK, platform.system(), platform.machine(), platform.python_version()))
 
+    if a.list:
+        print("  schemes: " + ", ".join(SCHEMES))
+        return 0
+
     msg = os.urandom(a.msglen)
     rows, missing = [], []
-    for name in SCHEMES:
+    for name in (a.only or SCHEMES):
         n_this = a.n                                    # the same count for every scheme
         try:
             pkey = keygen(lib, name)
@@ -286,7 +304,10 @@ def main(argv=None):
                      "sign_us_median": round(statistics.median(s_ns) / 1000, 1),
                      "sign_us_q1": _q(s_ns, 1), "sign_us_q3": _q(s_ns, 3),
                      "verify_us_median": round(statistics.median(v_ns) / 1000, 1),
-                     "verify_us_q1": _q(v_ns, 1), "verify_us_q3": _q(v_ns, 3)})
+                     "verify_us_q1": _q(v_ns, 1), "verify_us_q3": _q(v_ns, 3),
+                     # every sample, in run order, so drift within a run (a clock or power limit
+                     # settling, a core change) can be read from the record rather than guessed
+                     "sign_ns": s_ns, "verify_ns": v_ns})
     oh = boundary_overhead(lib, 2000)
     oh_med = round(statistics.median(oh) / 1000, 3)
 

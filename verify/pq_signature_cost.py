@@ -104,7 +104,8 @@ def raw_pubkey_len(name, kind, priv, d):
     pub = os.path.join(d, "pub.der")
     r = run(["openssl", "pkey", "-in", priv, "-pubout", "-outform", "DER", "-out", pub])
     if r.returncode != 0:
-        return None
+        raise SystemExit("%s: could not export the public key, so its raw size is unknown; refusing to "
+                         "continue" % name)
     b = open(pub, "rb").read()
     # walk to the outermost BIT STRING (tag 0x03) and return its payload minus the unused-bits byte
     i = 0
@@ -119,7 +120,10 @@ def raw_pubkey_len(name, kind, priv, d):
         if tag == 0x03:                     # BIT STRING -- payload less the unused-bits octet
             return ln - 1
         i += ln                             # skip any other element
-    return len(b)                           # fall back to the DER size, clearly wrong but visible
+    # No BIT STRING: the key's raw size is unknown. Fail rather than return the DER size, which would
+    # pass into every transaction and capacity figure as a plausible-looking key length.
+    raise SystemExit("%s: no BIT STRING in the exported public key, so its raw size is unknown; "
+                     "refusing to continue" % name)
 
 
 def measure(name, kind, curve):
@@ -130,7 +134,7 @@ def measure(name, kind, curve):
             return {"scheme": name, "available": False, "error": err}
 
         msg = os.path.join(d, "m.bin")
-        open(msg, "wb").write(b"OBL post-quantum cost measurement, 2026")
+        open(msg, "wb").write(b"post-quantum cost measurement, 2026")
 
         # Sample ACROSS KEYS, not just across messages. A DER length distribution is a property
         # of the (key, message) pairs; one key sampled many times understates the spread. The first
@@ -144,7 +148,7 @@ def measure(name, kind, curve):
                     keys.append(extra)
         for i in range(SAMPLES):
             priv_i = keys[i % len(keys)]
-            open(msg, "wb").write(b"OBL pq cost %d" % i)
+            open(msg, "wb").write(b"pq cost %d" % i)
             sig = os.path.join(d, "m.sig")
             if kind == "ec":
                 r = run(["openssl", "dgst", "-sha256", "-sign", priv_i, "-out", sig, msg])
@@ -265,8 +269,7 @@ def push_len(n):
     OP_PUSHDATA2 + 2 to 65,535 bytes, OP_PUSHDATA4 + 4 above. An ECDSA signature with its hash-type
     byte (70-73 B) and a 65-byte key take the one-byte form; every post-quantum signature and every
     lattice key take OP_PUSHDATA2. (Until 20 September 2026 this model charged one byte for every
-    push; an adversarial review caught it. The base row is unchanged; each post-quantum row grew by
-    two to four bytes.)"""
+    push, which left each post-quantum row two to four bytes short; the base row is unchanged.)"""
     return 1 if n < 0x4c else 2 if n <= 0xff else 3 if n <= 0xffff else 5
 
 
@@ -280,9 +283,9 @@ HEADER_BYTES = 80      # the block header; v0.1's MAX_SIZE test (main.cpp:1160) 
 
 def spends_per_block(block_bytes, tx_bytes):
     """How many spends of `tx_bytes` fit a block of `block_bytes` after the header, the transaction-count
-    varint and one coinbase. Until 18 October 2026 both scripts computed (block - coinbase) // tx and so
-    left the 80-byte header and the count out; an internal review caught it. Four counts fell by one
-    (4,999 -> 4,998 at 1 MB for secp256k1; 16,047 -> 16,046; 5,987 -> 5,986 twice)."""
+    varint and one coinbase. Until 18 October 2026 both scripts computed (block - coinbase) // tx, which
+    left the 80-byte header and the count out. Four counts fell by one (4,999 -> 4,998 at 1 MB for
+    secp256k1; 16,047 -> 16,046; 5,987 -> 5,986 twice)."""
     n = (block_bytes - HEADER_BYTES - COINBASE_BYTES) // tx_bytes
     while n > 0 and HEADER_BYTES + varint_len(n + 1) + COINBASE_BYTES + n * tx_bytes > block_bytes:
         n -= 1

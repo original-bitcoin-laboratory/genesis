@@ -61,7 +61,11 @@ recommends no scheme, predicts nothing about when any cryptography breaks, and f
 > scheme, the CPU and the binaries recorded; the in-process instrument's call-cost figure had timed a
 > hashing call in Python rather than a call into the library, and now times a call into the library.
 > (5) "Measured on the client this laboratory actually runs" overstated the method: the sizes are
-> computed under the client's serialization rules, not observed from it.
+> computed under the client's serialization rules, not observed from it. (6) Later the same day, after
+> two further reviews, both instruments were run again on final scripts: the in-process benchmark now
+> includes a secp256k1 baseline and keeps every sample in run order, the key-size parser fails rather
+> than returning a DER size, and the SLH-DSA-192s difference left "not explained" by the first run is
+> located by the per-sample record (§3a). The figures below are from that second run.
 
 ---
 
@@ -70,18 +74,18 @@ recommends no scheme, predicts nothing about when any cryptography breaks, and f
 ```
 scheme                     sig B  distinct   pk B   sign ms   verify ms
 -----------------------------------------------------------------------
-secp256k1-ECDSA            70-72         3     65     23.68       20.74
-ML-DSA-44                   2420         1   1312     23.09       16.92
-ML-DSA-65                   3309         1   1952     24.76       18.80
-ML-DSA-87                   4627         1   2592     22.25       20.52
-SLH-DSA-SHA2-128s           7856         1     32    423.44       17.13
-SLH-DSA-SHA2-128f          17088         1     32     48.86       19.35
-SLH-DSA-SHA2-192s          16224         1     48    707.57       14.87
+secp256k1-ECDSA            70-72         3     65     20.35       19.71
+ML-DSA-44                   2420         1   1312     22.39       16.51
+ML-DSA-65                   3309         1   1952     23.38       21.16
+ML-DSA-87                   4627         1   2592     31.56       27.97
+SLH-DSA-SHA2-128s           7856         1     32    354.54       16.81
+SLH-DSA-SHA2-128f          17088         1     32     38.72       17.49
+SLH-DSA-SHA2-192s          16224         1     48    747.92       17.18
 
-process-spawn floor, measured: 11.64 ms   (`openssl version`, no cryptography at all)
+process-spawn floor, measured: 13.68 ms   (`openssl version`, no cryptography at all)
 ```
 
-**OpenSSL 3.5.4, run of 18 October 2026, 12th Gen Intel Core i5-1240P** (a hybrid part with
+**OpenSSL 3.5.4, run of 18 October 2026 (16:21 UTC), 12th Gen Intel Core i5-1240P** (a hybrid part with
 performance and efficiency cores; the operating system chooses which core runs each process). The
 binary, its SHA-256 and `openssl version -a` are recorded in `verify/pq-cost-measurement.json`.
 `pk B` is the **raw** key — the bytes that would be on a
@@ -156,14 +160,14 @@ blocks full — **an upper bound, not a forecast**).
 ## 3. The finding: the objection is not CPU. It is bytes.
 
 **Verification cost sits below what this method can resolve.** Every timing in §1 is a whole
-`openssl` process, and the measured floor for a process that does no cryptography is 11.64 ms on this
+`openssl` process, and the measured floor for a process that does no cryptography is 13.68 ms on this
 run (16.66 ms on 20 September, 13.34 ms on 11 August). Every verify median, and the sign medians of
-secp256k1 and the lattice schemes, sit within about 13 ms of that floor; the hash-based schemes' signing sits far above it
-(412, 37 and 696 ms over the floor for 128s, 128f and 192s). A small excess over the floor is not a
-clean measurement of the cryptography: the floor itself has moved between 11.6 and 16.7 ms across three
-runs. **What this instrument
-establishes is that verification is within a few milliseconds of a bare process start for every
-scheme. The in-process instrument in §3a puts a number on it: 0.1 to 1.4 ms.**
+secp256k1 and the lattice schemes, sit within about 18 ms of that floor; the hash-based schemes' signing
+sits far above it (341, 25 and 734 ms over the floor for 128s, 128f and 192s). A small excess over the
+floor is not a clean measurement of the cryptography: the floor itself moves by several milliseconds
+between runs. **What this instrument establishes is that verification is within a few milliseconds of a
+bare process start for every scheme. The in-process instrument in §3a puts a number on it: 0.1 to
+0.9 ms for the post-quantum schemes, against 0.33 ms for secp256k1 in the same library.**
 
 **What the measurement does establish is size.** A transaction grows **19× to 86×**, and because a
 chain keeps everything, that multiplier applies to the entire history:
@@ -180,9 +184,9 @@ SLH-DSA-128f  4,515.2 GB/yr        four and a half terabytes a year
 
 ### Signing, unlike verifying, is visible
 
-**SLH-DSA-128s signs in ~0.33 s in-process (~0.42 s as a whole process) and 192s in ~1.2 s (~0.71 s)**,
+**SLH-DSA-128s signs in ~0.34 s in-process (~0.35 s as a whole process) and 192s in ~0.97 s (~0.75 s)**,
 against milliseconds or less for everything else. The `f` ("fast") variants invert it: **128f signs in
-~24 ms but produces 17,088 B — more than twice 128s.** The parameter sets are a direct trade.
+~16 ms but produces 17,088 B — more than twice 128s.** The parameter sets are a direct trade.
 
 ## 3a. In-process timings
 
@@ -192,26 +196,39 @@ whole-process run on the same machine. Microseconds, median [first–third quart
 
 ```
 scheme                  sign us                            verify us
-ML-DSA-44                   374.4  [199.4 – 654.5]             100.9  [100.0 – 101.8]
-ML-DSA-65                   692.3  [434.5 – 1,153.5]           177.5  [175.1 – 181.8]
-ML-DSA-87                   803.0  [620.8 – 1,174.6]           271.9  [267.4 – 277.9]
-SLH-DSA-SHA2-128s       326,329.4  [309,277 – 461,435]         328.1  [307.9 – 402.7]
-SLH-DSA-SHA2-128f        23,731.8  [16,576 – 27,141]         1,368.5  [984.6 – 1,641.7]
-SLH-DSA-SHA2-192s     1,175,501.2  [946,570 – 1,315,677]       940.9  [775.9 – 1,233.0]
+secp256k1-ECDSA             349.3  [342.5 – 359.1]             334.3  [329.6 – 342.6]
+ML-DSA-44                   541.6  [341.1 – 760.9]             126.1  [125.4 – 126.7]
+ML-DSA-65                   642.0  [490.2 – 972.9]             197.7  [191.5 – 202.3]
+ML-DSA-87                   724.5  [510.6 – 1,239.0]           290.9  [286.3 – 296.9]
+SLH-DSA-SHA2-128s       336,330.9  [322,423 – 394,747]         349.7  [319.8 – 385.2]
+SLH-DSA-SHA2-128f        15,576.8  [15,143 – 15,946]           931.3  [887.1 – 959.4]
+SLH-DSA-SHA2-192s       970,977.9  [782,506 – 1,192,576]       757.9  [660.5 – 1,103.7]
 
-one ctypes call into the same library that does no cryptography: 0.6 us median
+one ctypes call into the same library that does no cryptography: 0.4 us median (calibration
+context; nothing is subtracted)
 ```
+
+The secp256k1 row signs a 32-byte message with OpenSSL's composite ECDSA-SHA256, which hashes it once;
+OpenSSL's secp256k1 is a general-purpose implementation, not the specialised library Bitcoin nodes use.
 
 **The two instruments use the same library**: the `openssl` on the path links the `libcrypto` file in its
 own directory, which is the file the benchmark loads; its path and SHA-256 are in
 `inprocess-timings.json`, the CLI's in both JSON files. ML-DSA signing is variable by
 design (the scheme rejects and retries), which is why its quartiles are wide and its verify quartiles
-narrow. ML-DSA-44 verification at about 100 µs agrees in order of magnitude with the published
-Dilithium reference figures. **One result is not explained:** SLH-DSA-192s signs in 1.18 s in-process
-against 0.71 s as a whole process, although the in-process figure has no process to start. The hybrid
-CPU is a plausible cause (a long single-threaded loop can be scheduled on an efficiency core) and is
-not established. Verification is two to three orders of magnitude cheaper than signing for the
-hash-based schemes and well under 2 ms for every scheme.
+narrow. Every ML-DSA set verifies faster than secp256k1 in the same library, and ML-DSA-44 at about
+126 µs agrees in order of magnitude with the published Dilithium reference figures.
+
+**SLH-DSA-192s signs in 0.97 s in-process against 0.75 s as a whole process**, although the in-process
+figure has no process to start. The benchmark keeps every sample in run order, and the record locates
+the difference: in the 192s loop, about a hundred seconds of uninterrupted signing, the first twenty
+signatures have a median of 0.72 s and the last twenty 1.21 s. The whole-process instrument starts a
+process between operations and never runs the processor that long without a pause. A sustained-load
+clock limit (power or temperature) is consistent with that record; the clock was not logged, so it is
+not established. Core type does not explain it: run pinned to one performance core
+(`verify/run_pinned.py 0`), 30 signatures had a median of 1.34 s, and pinned to one efficiency core
+(`verify/run_pinned.py 15`) 0.95 s, both straight after the main run (`verify/diag/`). Verification is
+two to three orders of magnitude cheaper than signing for the hash-based schemes and under 1 ms for
+every scheme.
 
 ## 3c. Output type and fan-out
 
@@ -241,8 +258,8 @@ SLH-DSA-SHA2-128s   p2pkh    7,980   8,014   8,048   8,082   8,116   8,150
 ```
 
 **Under pay-to-pubkey, ML-DSA-87, -65 and -44 become larger than SLH-DSA-128s from 2, 3 and 5 outputs.
-Under pay-to-pubkey-hash every output is 25 bytes whatever the scheme, and no ML-DSA set becomes larger
-at any fan-out up to six.** Per coin over its whole life the two forms carry the same thing, one
+Under pay-to-pubkey-hash every output is 25 bytes whatever the scheme, so each further output adds the
+same 34 bytes under every scheme, and no ML-DSA set becomes larger at any fan-out.** Per coin over its whole life the two forms carry the same thing, one
 signature and one key; they differ in which transaction carries the key, and so in what a single
 transaction costs. A comparison of schemes by transaction size has to state the output type and the
 fan-out it assumes.
@@ -262,9 +279,10 @@ NOT   a recommendation. This measures costs; it does not weigh them, and it favo
 NOT   a claim about migration. Coins already in pay-to-pubkey outputs have their keys exposed, and
       moving them REQUIRES a signature under the old scheme. That is a governance question, and no
       measurement settles it
-NOT   a cycle-accurate benchmark. Both instruments are wall-clock on one machine with a hybrid CPU,
-      n = 100; the whole-process figures include process start-up, and one in-process result
-      (SLH-DSA-192s signing) is not explained
+NOT   a cycle-accurate benchmark, or a node's validation throughput. Both instruments are
+      wall-clock on one machine with a hybrid CPU, n = 100; the whole-process figures include
+      process start-up, and the in-process SLH-DSA-192s signing median includes a slowdown over its
+      long uninterrupted loop
 NOT   a forecast. "chain GB/yr" assumes every block full at 2009 pacing -- an upper bound
 NOT   applicable to aggregation. Schemes that aggregate signatures change this arithmetic
       completely, and none of the three NIST standards measured here aggregates

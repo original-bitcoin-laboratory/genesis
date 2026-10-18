@@ -17,10 +17,9 @@ and the arithmetic behind its limit: an output whose public key is already on th
 moved by a signature under the old scheme, so a second layer does nothing for it.
 
 Two block ceilings are computed, and the January 2009 one comes first: MAX_SIZE = 0x02000000
-(32 MiB), the rule v0.1 itself enforces in CheckBlock (OBL-F-0016), and the 1 MB rule Bitcoin
-acquired in September 2010 (OBL-C-0001). Until 20 September 2026 this script computed the 1 MB
-table only, in a repository whose own register records that rule as a retrofit; an adversarial
-review pointed that out.
+(32 MiB), the rule v0.1 itself enforces in CheckBlock (main.cpp:1160), and the 1 MB rule Bitcoin
+acquired in September 2010 (bitcoin/bitcoin commits a30b56e and 8c9479c). Until 20 September 2026
+this script computed the 1 MB table only, although that rule is not part of the January 2009 design.
 
 Inputs are the measured signature and key sizes of the note (FIPS 204/205 sizes, matched exactly);
 the transaction sizes come from the SAME serialisation model the note uses (verify/pq_signature_cost.py,
@@ -107,6 +106,11 @@ def output_type() -> dict:
             "first_fan_out_where_larger_than_" + ref: cross}
 
 
+def _days(d: float) -> float:
+    """Days to one decimal; under a tenth of a day, two decimals, so a short time does not print as 0.0."""
+    return round(d, 2) if d < 0.1 else round(d, 1)
+
+
 def compute() -> dict:
     out = {"not_money": True, "blocks_per_day": BLOCKS_PER_DAY, "coinbase_bytes": COINBASE_BYTES,
            "source": "docs/PQ-SIGNATURE-COST.md (measured sizes); verify/pq_signature_cost.py (serialisation model); this script (arithmetic)",
@@ -124,8 +128,8 @@ def compute() -> dict:
                 "sig_bytes": sig, "pk_bytes": pk, "tx_1in1out_bytes": tx1,
                 "spends_per_block": pb, "spends_per_day": pd,
                 "migration_tx_bytes": mig, "migrations_per_block": mig_pb, "migrations_per_day": mig_pd,
-                "days_for_population_to_spend_once": {str(n): round(n / pd, 1) for n in POPULATIONS},
-                "days_for_population_to_migrate": {str(n): round(n / mig_pd, 1) for n in POPULATIONS},
+                "days_for_population_to_spend_once": {str(n): _days(n / pd) for n in POPULATIONS},
+                "days_for_population_to_migrate": {str(n): _days(n / mig_pd) for n in POPULATIONS},
             }
         out["ceilings"][label] = {"block_bytes": block_bytes, "schemes": rows}
     out["output_type"] = output_type()
