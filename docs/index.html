@@ -257,8 +257,8 @@
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/VERIFY_RELEASES.md" style="color:var(--focus)">How to verify →</a></p>
   <p class="note"><b>Post-quantum signing, measured.</b> What a quantum-resistant signature would
     actually cost a 2009-shaped chain — signature and key sizes cross-checked against FIPS 204/205,
-    sign and verify timings against a measured process-spawn floor, and the transaction arithmetic
-    that follows. <b>Verification cost sits below what a per-process measurement resolves; size is the constraint</b> — a transaction grows 19× to 86×.
+    sign and verify timed both per process and in-process, and the transaction arithmetic
+    that follows. <b>Verification takes 0.1 to 1.4&nbsp;ms in-process for every scheme; size is the constraint</b> — a transaction grows 19× to 86×.
     Reproducible in one command, and it takes no position on whether Bitcoin should change anything.
     <a href="https://github.com/original-bitcoin-laboratory/genesis/blob/main/docs/PQ-SIGNATURE-COST.md" style="color:var(--focus)">The measurement →</a></p>
   <p class="note"><b>And what that costs a base layer: the second half, computed.</b> At the measured sizes a block at v0.1's own

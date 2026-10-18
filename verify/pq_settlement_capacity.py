@@ -35,7 +35,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pq_signature_cost import COINBASE_BYTES, model_p2pk_spend   # noqa: E402  (one model for both notes)
+from pq_signature_cost import COINBASE_BYTES, model_p2pk_spend, push_len, spends_per_block, varint_len   # noqa: E402  (one model for both notes)
 
 BLOCKS = {                               # ceiling name: bytes
     "v0.1 (32 MiB, MAX_SIZE)": 0x02000000,   # main.h:17, tested in CheckBlock; the January 2009 rule
@@ -59,8 +59,9 @@ POPULATIONS = (1_000_000, 10_000_000, 100_000_000)      # outputs that must each
 
 
 def per_block(block_bytes: int, tx_bytes: int) -> int:
-    """One coinbase, then as many spends as fit."""
-    return (block_bytes - COINBASE_BYTES) // tx_bytes
+    """The header, the transaction count and one coinbase, then as many spends as fit (shared with
+    verify/pq_signature_cost.py, so the two scripts count the same block)."""
+    return spends_per_block(block_bytes, tx_bytes)
 
 
 def migration_tx_bytes(new_pk: int) -> int:
@@ -68,6 +69,42 @@ def migration_tx_bytes(new_pk: int) -> int:
     signed under the OLD scheme (the exposed key's), so the input carries the ECDSA signature and the
     output carries the new key. Same model as every other row."""
     return model_p2pk_spend(OLD_SIG_BYTES, new_pk)
+
+
+P2PKH_SCRIPT_BYTES = 25                  # OP_DUP OP_HASH160 <20> OP_EQUALVERIFY OP_CHECKSIG, v0.1's address form
+FAN_OUT = range(1, 7)
+
+
+def model_p2pkh_spend(sig_len: int, pk_len: int, n_out: int = 1) -> int:
+    """One spend of a pay-to-pubkey-hash output into `n_out` pay-to-pubkey-hash outputs: the scriptSig
+    pushes the signature (with its hash-type byte) and then the key; every output is the 25-byte script.
+    The same framing as model_p2pk_spend, which a real v0.1 spend validates."""
+    ss = push_len(sig_len + 1) + sig_len + 1 + push_len(pk_len) + pk_len
+    inp = 36 + varint_len(ss) + ss + 4
+    out = 8 + varint_len(P2PKH_SCRIPT_BYTES) + P2PKH_SCRIPT_BYTES
+    return 4 + 1 + inp + 1 + out * n_out + 4
+
+
+def output_type() -> dict:
+    """Per-transaction size by output type and fan-out. Under pay-to-pubkey every output carries a
+    key, so a transaction's size grows with its outputs by the key size, and a scheme with small
+    signatures and large keys (ML-DSA) loses to one with large signatures and small keys (SLH-DSA-128s)
+    once a spend creates enough outputs. Under pay-to-pubkey-hash every output is 25 bytes whatever the
+    scheme and the key is carried once, in the spending input, so fan-out does not move the ranking.
+    Per coin over its life both forms carry one signature and one key; they differ in which
+    transaction carries the key."""
+    rows = {}
+    for name, (sig, pk) in SCHEMES.items():
+        rows[name] = {"p2pk": {str(n): model_p2pk_spend(sig, pk, n) for n in FAN_OUT},
+                      "p2pkh": {str(n): model_p2pkh_spend(sig, pk, n) for n in FAN_OUT}}
+    ref = "SLH-DSA-SHA2-128s"
+    cross = {}
+    for name in ("ML-DSA-44", "ML-DSA-65", "ML-DSA-87"):
+        for form in ("p2pk", "p2pkh"):
+            first = next((n for n in FAN_OUT if rows[name][form][str(n)] > rows[ref][form][str(n)]), None)
+            cross.setdefault(name, {})[form] = first
+    return {"fan_out": list(FAN_OUT), "sizes": rows,
+            "first_fan_out_where_larger_than_" + ref: cross}
 
 
 def compute() -> dict:
@@ -91,6 +128,7 @@ def compute() -> dict:
                 "days_for_population_to_migrate": {str(n): round(n / mig_pd, 1) for n in POPULATIONS},
             }
         out["ceilings"][label] = {"block_bytes": block_bytes, "schemes": rows}
+    out["output_type"] = output_type()
     return out
 
 
@@ -111,6 +149,16 @@ def report(d: dict) -> None:
     print("  days pass before a population of that many outputs has each moved once. 3,650 days is ten years.")
     print("  The migration column is the spend that moves an exposed key to a post-quantum one: it is signed under")
     print("  the OLD scheme, so its size is the old signature plus the NEW key, and no second layer can do it.")
+    ot = d["output_type"]
+    print("\n  == output type and fan-out: one-input spends, bytes ==")
+    print(f"  {'scheme':<20} {'form':<6} " + " ".join(f"{n:>4}-out" for n in ot["fan_out"]))
+    for name, r in ot["sizes"].items():
+        for form in ("p2pk", "p2pkh"):
+            print(f"  {name:<20} {form:<6} " + " ".join(f"{r[form][str(n)]:>8,}" for n in ot["fan_out"]))
+    key = [k for k in ot if k.startswith("first_fan_out")][0]
+    for name, c in ot[key].items():
+        print(f"  {name}: larger than SLH-DSA-SHA2-128s from {c['p2pk']} outputs under p2pk; "
+              f"{'from ' + str(c['p2pkh']) + ' outputs' if c['p2pkh'] else 'at no fan-out up to ' + str(ot['fan_out'][-1])} under p2pkh")
 
 
 if __name__ == "__main__":

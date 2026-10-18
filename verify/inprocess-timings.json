@@ -1,0 +1,85 @@
+{
+ "_readme": "In-process EVP timings: one process, many operations. Wall-clock around the EVP_PKEY_sign / EVP_PKEY_verify call only; medians with first and third quartiles in microseconds. The ctypes call cost is measured on the same library.",
+ "library": "OpenSSL 3.5.4 30 Sep 2025",
+ "library_path": "C:\\Program Files\\Git\\mingw64\\bin\\libcrypto-3-x64.dll",
+ "library_sha256": "9325e8486c61b3227abeacf635279a10b828a3b39bc1124a6b5159ae00174181",
+ "openssl_cli_path": "C:\\Program Files\\Git\\mingw64\\bin\\openssl.EXE",
+ "openssl_cli_sha256": "060b787efc1e058068bfe4ff1c162fc40173df33fff8ceac6543d1ebaf340424",
+ "openssl_version_a": "OpenSSL 3.5.4 30 Sep 2025 (Library: OpenSSL 3.5.4 30 Sep 2025)\nbuilt on: Tue Sep 30 17:48:53 2025 UTC\nplatform: mingw64\noptions:  bn(64,64)\ncompiler: gcc -m64 -Wall -O3 -DL_ENDIAN -DOPENSSL_PIC -DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -D_MT -DOPENSSL_BUILDING_OPENSSL -DZLIB -DZLIB_SHARED -DNDEBUG -DOPENSSLBIN=\"\\\\\"/mingw64/bin\\\\\"\"\nOPENSSLDIR: \"/mingw64/etc/ssl\"\nENGINESDIR: \"/mingw64/lib/engines-3\"\nMODULESDIR: \"/mingw64/lib/ossl-modules\"\nSeeding source: os-specific\nCPUINFO: OPENSSL_ia32cap=0xfffaf38bffcbffff:0x184007a4239ca7a9:0x00400810bc18c410:0x0000000000000000:0x0000000000000000",
+ "cpu": "12th Gen Intel(R) Core(TM) i5-1240P",
+ "platform": "Windows AMD64",
+ "python": "3.14.3",
+ "n_requested": 100,
+ "msg_bytes": 32,
+ "ctypes_call_us_median": 0.6,
+ "negative_control": "a flipped signature byte must fail; checked per scheme",
+ "schemes": [
+  {
+   "scheme": "ML-DSA-44",
+   "n": 100,
+   "sig_bytes": 2420,
+   "sign_us_median": 374.4,
+   "sign_us_q1": 199.4,
+   "sign_us_q3": 654.5,
+   "verify_us_median": 100.9,
+   "verify_us_q1": 100.0,
+   "verify_us_q3": 101.8
+  },
+  {
+   "scheme": "ML-DSA-65",
+   "n": 100,
+   "sig_bytes": 3309,
+   "sign_us_median": 692.3,
+   "sign_us_q1": 434.5,
+   "sign_us_q3": 1153.5,
+   "verify_us_median": 177.5,
+   "verify_us_q1": 175.1,
+   "verify_us_q3": 181.8
+  },
+  {
+   "scheme": "ML-DSA-87",
+   "n": 100,
+   "sig_bytes": 4627,
+   "sign_us_median": 803.0,
+   "sign_us_q1": 620.8,
+   "sign_us_q3": 1174.6,
+   "verify_us_median": 271.9,
+   "verify_us_q1": 267.4,
+   "verify_us_q3": 277.9
+  },
+  {
+   "scheme": "SLH-DSA-SHA2-128s",
+   "n": 100,
+   "sig_bytes": 7856,
+   "sign_us_median": 326329.4,
+   "sign_us_q1": 309277.3,
+   "sign_us_q3": 461434.5,
+   "verify_us_median": 328.1,
+   "verify_us_q1": 307.9,
+   "verify_us_q3": 402.7
+  },
+  {
+   "scheme": "SLH-DSA-SHA2-128f",
+   "n": 100,
+   "sig_bytes": 17088,
+   "sign_us_median": 23731.8,
+   "sign_us_q1": 16575.8,
+   "sign_us_q3": 27141.0,
+   "verify_us_median": 1368.5,
+   "verify_us_q1": 984.6,
+   "verify_us_q3": 1641.7
+  },
+  {
+   "scheme": "SLH-DSA-SHA2-192s",
+   "n": 100,
+   "sig_bytes": 16224,
+   "sign_us_median": 1175501.2,
+   "sign_us_q1": 946570.4,
+   "sign_us_q3": 1315676.6,
+   "verify_us_median": 940.9,
+   "verify_us_q1": 775.9,
+   "verify_us_q3": 1233.0
+  }
+ ],
+ "not_measured": []
+}

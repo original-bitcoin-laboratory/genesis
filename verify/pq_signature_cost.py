@@ -13,11 +13,14 @@ WHAT IS MEASURED VS WHAT IS COMPUTED
   MEASURED   key sizes, from real generated keys
   MEASURED   sign and verify wall-clock, median of N operations
   COMPUTED   transaction and block sizes, from Bitcoin v0.1's serialization rules -- and the model
-             is VALIDATED against 51 real coinbase transactions parsed from this project's own chain
-             before any of it is used
+             is VALIDATED against a real v0.1 chain file before any of it is used: the bundled sample
+             (verify/data/v01-relayed-spend-blk0001.dat, SHA-256 7563b699...) is the unmodified 2009
+             binary's own 124-block chain from a published evidence set of that binary's runs, and it
+             holds a relayed spend of a pay-to-pubkey output whose exact size the model must reproduce
 
-The baseline is secp256k1 ECDSA because that is what v0.1 actually calls: `EC_KEY_new_by_curve_name
-(NID_secp256k1)` and `ECDSA_sign` in key.h. Not an approximation of Bitcoin -- the thing itself.
+The baseline is secp256k1 ECDSA because that is what v0.1 calls: `EC_KEY_new_by_curve_name
+(NID_secp256k1)` and `ECDSA_sign` in key.h. The transaction model reuses v0.1's serialisation rules;
+the timings measure a modern OpenSSL, not the archived client.
 
   python verify/pq_signature_cost.py            # full run
   python verify/pq_signature_cost.py --quick    # fewer samples, for a smoke test
@@ -49,6 +52,7 @@ def find_chain():
     # Newest round first: a longer chain validates the parser against more real records.
     # Older rounds stay as fallbacks so this still works for anyone holding only those.
     for cand in (
+        os.path.join(HERE, "data", "v01-relayed-spend-blk0001.dat"),
         os.path.join(HERE, "blk0001.dat"),
         os.path.join(os.path.expanduser("~"), "AppData", "Roaming", "Bitcoin", "blk0001.dat"),
         os.path.join(os.path.expanduser("~"), ".bitcoin", "blk0001.dat"),
@@ -152,27 +156,31 @@ def measure(name, kind, curve):
             sizes.append(os.path.getsize(sig))
 
         # timing: median of TIMING_N sign and verify operations
-        open(msg, "wb").write(b"timing")
+        open(msg, "wb").write(os.urandom(32))      # 32 bytes, as the in-process instrument signs
         sig = os.path.join(d, "t.sig")
         st = []
         for _ in range(TIMING_N):
             t0 = time.perf_counter()
             if kind == "ec":
-                run(["openssl", "dgst", "-sha256", "-sign", priv, "-out", sig, msg])
+                r = run(["openssl", "dgst", "-sha256", "-sign", priv, "-out", sig, msg])
             else:
-                run(["openssl", "pkeyutl", "-sign", "-inkey", priv, "-rawin", "-in", msg, "-out", sig])
+                r = run(["openssl", "pkeyutl", "-sign", "-inkey", priv, "-rawin", "-in", msg, "-out", sig])
             st.append(time.perf_counter() - t0)
+            if r.returncode != 0:                   # a failed operation is not a timing
+                raise RuntimeError("timed sign failed for %s: %s" % (name, r.stderr.decode()[:120]))
         pub = os.path.join(d, "pub.pem")
         run(["openssl", "pkey", "-in", priv, "-pubout", "-out", pub])
         vt = []
         for _ in range(TIMING_N):
             t0 = time.perf_counter()
             if kind == "ec":
-                run(["openssl", "dgst", "-sha256", "-verify", pub, "-signature", sig, msg])
+                r = run(["openssl", "dgst", "-sha256", "-verify", pub, "-signature", sig, msg])
             else:
-                run(["openssl", "pkeyutl", "-verify", "-pubin", "-inkey", pub, "-rawin",
-                     "-in", msg, "-sigfile", sig])
+                r = run(["openssl", "pkeyutl", "-verify", "-pubin", "-inkey", pub, "-rawin",
+                         "-in", msg, "-sigfile", sig])
             vt.append(time.perf_counter() - t0)
+            if r.returncode != 0:
+                raise RuntimeError("timed verify failed for %s: %s" % (name, r.stderr.decode()[:120]))
 
         return {
             "scheme": name, "available": True,
@@ -196,29 +204,45 @@ def varint(b, i):
     return struct.unpack("<Q", b[i+1:i+9])[0], i + 9
 
 
+MAGICS = (bytes.fromhex("f9beb4d9"), bytes.fromhex("f00ba726"))   # the 2009 network's, then a lab chain's
+
+
 def parse_chain(path):
+    """Walk every block of a v0.1 blk0001.dat. Coinbases (each block's first transaction) and spends
+    are recorded separately; for a spend, the scriptSig and output-script lengths are kept so that the
+    model can be asked to reproduce its exact size. A block whose transactions do not end exactly at
+    its recorded length is a parse failure and is counted as one."""
     if not path or not os.path.exists(path):
         return None
     d = open(path, "rb").read()
-    MAGIC = bytes.fromhex("f00ba726")
-    i, txs, blocks = 0, [], 0
+    i, blocks, bad, coinbases, spends = 0, 0, 0, [], []
     while i < len(d) - 8:
-        if d[i:i+4] != MAGIC:
+        if d[i:i+4] not in MAGICS:
             i += 1; continue
         sz = struct.unpack("<I", d[i+4:i+8])[0]; raw = d[i+8:i+8+sz]
         j = 80; ntx, j = varint(raw, j)
-        for _ in range(ntx):
+        for k in range(ntx):
             st = j; j += 4
             nin, j = varint(raw, j)
+            sigs = []
             for _ in range(nin):
-                j += 36; sl, j = varint(raw, j); j += sl + 4
+                j += 36; sl, j = varint(raw, j); sigs.append(raw[j:j+sl]); j += sl + 4
             nout, j = varint(raw, j)
+            outs = []
             for _ in range(nout):
-                j += 8; sl, j = varint(raw, j); j += sl
+                j += 8; sl, j = varint(raw, j); outs.append(sl); j += sl
             j += 4
-            txs.append(j - st)
+            if k == 0:
+                coinbases.append(j - st)
+            else:
+                spends.append({"bytes": j - st, "nin": nin, "nout": nout, "out_script_bytes": outs,
+                               "scriptsig_bytes": [len(s) for s in sigs],
+                               "sig_bytes": [s[0] - 1 for s in sigs]})   # one push of sig||hashtype
+        if j != sz:
+            bad += 1
         blocks += 1; i += 8 + sz
-    return {"blocks": blocks, "txs": len(txs), "tx_sizes": txs}
+    return {"blocks": blocks, "blocks_not_ending_exactly": bad, "coinbase_bytes": coinbases,
+            "spends": spends, "txs": len(coinbases) + len(spends)}
 
 
 def spawn_overhead_ms():
@@ -230,8 +254,9 @@ def spawn_overhead_ms():
     return round(statistics.median(ts) * 1000, 2)
 
 
-COINBASE_BYTES = 135   # the mean coinbase the validation step parsed on the published run (min 134, max 189);
-                       # fixed here so that this script and verify/pq_settlement_capacity.py count the same block
+COINBASE_BYTES = 134   # the 2009 binary's own coinbase in the bundled sample (123 of its 124; one is 204 B).
+                       # Until 18 October 2026 this was 135, a mean from a later sample; no per-block count
+                       # differs between the two. Fixed here so both scripts count the same block.
 
 
 def push_len(n):
@@ -247,6 +272,30 @@ def push_len(n):
 
 def varint_len(n):
     return 1 if n < 0xfd else 3 if n <= 0xffff else 5
+
+
+HEADER_BYTES = 80      # the block header; v0.1's MAX_SIZE test (main.cpp:1160) and the 2010 MAX_BLOCK_SIZE
+                       # test both measure the WHOLE serialised block: header, transaction count, transactions
+
+
+def spends_per_block(block_bytes, tx_bytes):
+    """How many spends of `tx_bytes` fit a block of `block_bytes` after the header, the transaction-count
+    varint and one coinbase. Until 18 October 2026 both scripts computed (block - coinbase) // tx and so
+    left the 80-byte header and the count out; an internal review caught it. Four counts fell by one
+    (4,999 -> 4,998 at 1 MB for secp256k1; 16,047 -> 16,046; 5,987 -> 5,986 twice)."""
+    n = (block_bytes - HEADER_BYTES - COINBASE_BYTES) // tx_bytes
+    while n > 0 and HEADER_BYTES + varint_len(n + 1) + COINBASE_BYTES + n * tx_bytes > block_bytes:
+        n -= 1
+    return n
+
+
+def model_spend(sig_len, out_script_len, n_out=1):
+    """A one-input v0.1 spend of a pay-to-pubkey output (scriptSig = one push of sig||hashtype) into
+    `n_out` outputs whose scripts are `out_script_len` bytes. Validated against a real spend."""
+    ss = push_len(sig_len + 1) + sig_len + 1
+    inp = 36 + varint_len(ss) + ss + 4
+    out = 8 + varint_len(out_script_len) + out_script_len
+    return 4 + 1 + inp + 1 + out * n_out + 4
 
 
 def model_p2pk_spend(sig_len, pk_len, n_out=1):
@@ -285,19 +334,33 @@ def main():
         print()
         chain = None
     elif chain:
-        s = chain["tx_sizes"]
+        s = chain["coinbase_bytes"]
         print(f"  MODEL VALIDATION against a real v0.1 chain file:")
         print(f"    {CHAIN}")
-        print(f"    parsed {chain['blocks']} blocks, {chain['txs']} transactions")
-        print(f"    real coinbase tx sizes: min {min(s)} max {max(s)} mean {sum(s)/len(s):.1f} B")
-        print(f"    -> the serialization walker above reads real blocks correctly, so the")
-        print(f"       size model below rests on verified parsing rather than a guess\n")
+        print(f"    parsed {chain['blocks']} blocks, {chain['txs']} transactions; "
+              f"{chain['blocks_not_ending_exactly']} block(s) not ending exactly at their recorded length")
+        print(f"    coinbase sizes: min {min(s)} max {max(s)}")
+        chain["spend_checks"] = []
+        for sp in chain["spends"]:
+            if sp["nin"] != 1:
+                continue
+            want = model_spend(sp["sig_bytes"][0], sp["out_script_bytes"][0], sp["nout"]) \
+                if len(set(sp["out_script_bytes"])) == 1 else None
+            chain["spend_checks"].append({"real": sp["bytes"], "model": want})
+            print(f"    spend: {sp['bytes']} B real, {want} B by the model "
+                  f"(signature {sp['sig_bytes'][0]} B, {sp['nout']} output(s) of {sp['out_script_bytes'][0]} B)")
+        if chain["blocks_not_ending_exactly"] or any(c["real"] != c["model"] for c in chain["spend_checks"]):
+            print("    VALIDATION FAILED: the walker or the model disagrees with the file. Nothing below")
+            print("    may be read as validated.")
+            return 1
+        print(f"    -> the walker reads every block to its exact length and the model reproduces")
+        print(f"       every spend's size, so the computed columns rest on checked framing\n")
     else:
         print("  MODEL VALIDATION SKIPPED - no v0.1 blk0001.dat found.")
         print("    The measured columns (signature sizes, key sizes, timings) are unaffected.")
         print("    The COMPUTED columns rest on an unvalidated serialization walker in this run.")
         print("    Point it at a chain file to validate:  --chain /path/to/blk0001.dat")
-        print("    The published run validated against 51 real blocks; see docs/PQ-SIGNATURE-COST.md.\n")
+        print("    The bundled sample is verify/data/v01-relayed-spend-blk0001.dat.\n")
 
     results = [measure(n, k, c) for n, k, c in SCHEMES]
 
@@ -335,15 +398,15 @@ def main():
     BLOCK = 1_000_000            # the 2010 rule (MAX_BLOCK_SIZE)
     BLOCK_V01 = 0x02000000       # the January 2009 ceiling (MAX_SIZE, 32 MiB), the rule v0.1 itself enforces
     b_tx = model_p2pk_spend(base["sig_median"], base["pk_onchain"])
-    b_per = (BLOCK - COINBASE_BYTES) // b_tx
+    b_per = spends_per_block(BLOCK, b_tx)
     print(f"  {'scheme':<20}{'1-in':>8}{'1-in':>8}{'x base':>8}{'tx/1MB':>10}{'tx/32MiB':>10}{'blk MB for':>12}{'chain GB/yr':>13}")
     print(f"  {'':<20}{'1-out':>8}{'2-out':>8}{'':>8}{'block':>10}{'block':>10}{'same rate':>12}{'same rate':>13}")
     print("  " + "-" * 90)
     for r in results:
         if not r["available"]: continue
         tx = model_p2pk_spend(r["sig_median"], r["pk_onchain"])
-        per = (BLOCK - COINBASE_BYTES) // tx            # one coinbase per block, then spends
-        per_v01 = (BLOCK_V01 - COINBASE_BYTES) // tx
+        per = spends_per_block(BLOCK, tx)               # header, count, one coinbase, then spends
+        per_v01 = spends_per_block(BLOCK_V01, tx)
         # The honest comparison holds THROUGHPUT constant, not block size. Holding block size
         # constant makes chain growth identical for every scheme by construction -- it measures
         # the block limit, not the signature. Ask instead: to carry the SAME transactions per
@@ -352,16 +415,31 @@ def main():
         gb_yr = b_per * tx * 52560 / 1e9      # 2009 pacing: 6 blocks/h, 52,560 blocks/year
         tx2 = model_p2pk_spend(r["sig_median"], r["pk_onchain"], n_out=2)
         print(f"  {r['scheme']:<20}{tx:>8}{tx2:>8}{tx/b_tx:>7.1f}x{per:>10,}{per_v01:>10,}{need_mb:>12.1f}{gb_yr:>13.1f}")
-    print(f"\n  baseline: secp256k1 tx = {b_tx} B, {b_per:,} per 1 MB block after a {COINBASE_BYTES} B coinbase, "
+    print(f"\n  baseline: secp256k1 tx = {b_tx} B, {b_per:,} per 1 MB block after the header and a {COINBASE_BYTES} B coinbase, "
           f"{b_per*b_tx*52560/1e9:.1f} GB/yr")
+    print("  'chain GB/yr' counts the spends only; coinbases and headers add the same amount to every row.")
     print("  'same rate' = the block size and annual growth needed to carry the SAME number of")
     print("  transactions per block as secp256k1 at 1 MB. Holding BLOCK SIZE fixed instead would make")
     print("  growth identical for every scheme, which measures the block cap and not the signature.")
     print("  'tx/32MiB' is the same count under the January 2009 ceiling, the rule v0.1 enforces.")
 
     out = os.path.join(HERE, "pq-cost-measurement.json")
-    json.dump({"openssl": v, "samples": SAMPLES, "timing_n": TIMING_N,
-               "chain_validation": {k: chain[k] for k in ("blocks", "txs")} if chain else None,
+    import hashlib, platform, shutil
+    exe = shutil.which("openssl")
+    env = {"openssl_cli_path": exe,
+           "openssl_cli_sha256": hashlib.sha256(open(exe, "rb").read()).hexdigest() if exe else None,
+           "openssl_version_a": run(["openssl", "version", "-a"]).stdout.decode().strip(),
+           "cpu": platform.processor(), "system": platform.system() + " " + platform.machine(),
+           "python": platform.python_version()}
+    json.dump({"openssl": v, "environment": env, "samples": SAMPLES, "timing_n": TIMING_N,
+               "timing_message_bytes": 32,
+               "chain_validation": ({"file": os.path.basename(CHAIN),
+                                     "sha256": hashlib.sha256(open(CHAIN, "rb").read()).hexdigest(),
+                                     "blocks": chain["blocks"], "txs": chain["txs"],
+                                     "blocks_not_ending_exactly": chain["blocks_not_ending_exactly"],
+                                     "coinbase_bytes_min": min(chain["coinbase_bytes"]),
+                                     "coinbase_bytes_max": max(chain["coinbase_bytes"]),
+                                     "spend_checks": chain.get("spend_checks", [])} if chain else None),
                "schemes": results,
                "tx_bytes": {r["scheme"]: model_p2pk_spend(r["sig_median"], r["pk_onchain"])
                             for r in results if r["available"]}},

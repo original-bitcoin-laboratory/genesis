@@ -1,10 +1,30 @@
 {
   "openssl": "OpenSSL 3.5.4 30 Sep 2025 (Library: OpenSSL 3.5.4 30 Sep 2025)",
+  "environment": {
+    "openssl_cli_path": "C:\\Program Files\\Git\\mingw64\\bin\\openssl.EXE",
+    "openssl_cli_sha256": "060b787efc1e058068bfe4ff1c162fc40173df33fff8ceac6543d1ebaf340424",
+    "openssl_version_a": "OpenSSL 3.5.4 30 Sep 2025 (Library: OpenSSL 3.5.4 30 Sep 2025)\r\nbuilt on: Tue Sep 30 17:48:53 2025 UTC\r\nplatform: mingw64\r\noptions:  bn(64,64)\r\ncompiler: gcc -m64 -Wall -O3 -DL_ENDIAN -DOPENSSL_PIC -DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -D_MT -DOPENSSL_BUILDING_OPENSSL -DZLIB -DZLIB_SHARED -DNDEBUG -DOPENSSLBIN=\"\\\\\"/mingw64/bin\\\\\"\"\r\nOPENSSLDIR: \"/mingw64/etc/ssl\"\r\nENGINESDIR: \"/mingw64/lib/engines-3\"\r\nMODULESDIR: \"/mingw64/lib/ossl-modules\"\r\nSeeding source: os-specific\r\nCPUINFO: OPENSSL_ia32cap=0xfffaf38bffcbffff:0x184007a4239ca7a9:0x00400810bc18c410:0x0000000000000000:0x0000000000000000",
+    "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "system": "Windows AMD64",
+    "python": "3.14.3"
+  },
   "samples": 200,
   "timing_n": 100,
+  "timing_message_bytes": 32,
   "chain_validation": {
-    "blocks": 2,
-    "txs": 2
+    "file": "v01-relayed-spend-blk0001.dat",
+    "sha256": "7563b699bd6edd19a151c0c1a2a3d7402bdabad8e388abffc1176f2a61e6e8f8",
+    "blocks": 124,
+    "txs": 125,
+    "blocks_not_ending_exactly": 0,
+    "coinbase_bytes_min": 134,
+    "coinbase_bytes_max": 204,
+    "spend_checks": [
+      {
+        "real": 158,
+        "model": 158
+      }
+    ]
   },
   "schemes": [
     {
@@ -17,8 +37,8 @@
       "samples": 200,
       "sk_file": 242,
       "pk_onchain": 65,
-      "sign_ms": 15.24,
-      "verify_ms": 14.07
+      "sign_ms": 23.68,
+      "verify_ms": 20.74
     },
     {
       "scheme": "ML-DSA-44",
@@ -30,8 +50,8 @@
       "samples": 200,
       "sk_file": 3670,
       "pk_onchain": 1312,
-      "sign_ms": 15.83,
-      "verify_ms": 11.97
+      "sign_ms": 23.09,
+      "verify_ms": 16.92
     },
     {
       "scheme": "ML-DSA-65",
@@ -43,8 +63,8 @@
       "samples": 200,
       "sk_file": 5692,
       "pk_onchain": 1952,
-      "sign_ms": 15.57,
-      "verify_ms": 12.64
+      "sign_ms": 24.76,
+      "verify_ms": 18.8
     },
     {
       "scheme": "ML-DSA-87",
@@ -56,8 +76,8 @@
       "samples": 200,
       "sk_file": 6880,
       "pk_onchain": 2592,
-      "sign_ms": 19.38,
-      "verify_ms": 15.46
+      "sign_ms": 22.25,
+      "verify_ms": 20.52
     },
     {
       "scheme": "SLH-DSA-SHA2-128s",
@@ -69,8 +89,8 @@
       "samples": 200,
       "sk_file": 172,
       "pk_onchain": 32,
-      "sign_ms": 305.57,
-      "verify_ms": 13.5
+      "sign_ms": 423.44,
+      "verify_ms": 17.13
     },
     {
       "scheme": "SLH-DSA-SHA2-128f",
@@ -82,8 +102,8 @@
       "samples": 200,
       "sk_file": 172,
       "pk_onchain": 32,
-      "sign_ms": 35.68,
-      "verify_ms": 17.06
+      "sign_ms": 48.86,
+      "verify_ms": 19.35
     },
     {
       "scheme": "SLH-DSA-SHA2-192s",
@@ -95,8 +115,8 @@
       "samples": 200,
       "sk_file": 218,
       "pk_onchain": 48,
-      "sign_ms": 621.66,
-      "verify_ms": 17.84
+      "sign_ms": 707.57,
+      "verify_ms": 14.87
     }
   ],
   "tx_bytes": {

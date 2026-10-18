@@ -1,6 +1,6 @@
 # What a 2009-shaped base layer can settle under post-quantum signatures — computed
 
-**20 September 2026, corrected the same day.** [`PQ-SIGNATURE-COST.md`](PQ-SIGNATURE-COST.md) measured
+**20 September 2026, corrected the same day and on 18 October 2026.** [`PQ-SIGNATURE-COST.md`](PQ-SIGNATURE-COST.md) measured
 the sizes and found that size binds: a transaction grows 19× to 86× and a chain keeps everything. This
 note is the second half of that question. At those sizes, how many spends fit a block, how many settle
 in a day, and how long does it take for a population of outputs to each move once? The answer is
@@ -27,11 +27,19 @@ and names no chain's output count. Populations are parameters, stated as such.
 > sibling note's model; both notes now use one serialisation model (`verify/pq_signature_cost.py`,
 > `model_p2pk_spend`). The earlier text is in this repository's history.
 
+> **Correction, 18 October 2026, from two internal reviews.** The per-block counts left out the 80-byte
+> block header and the transaction-count varint, although both ceilings apply to the whole serialized
+> block; the shared model now counts them, and takes the 134 B smallest coinbase of the validation file
+> rather than a 135 B mean. The cells that move: secp256k1 at 1 MB, 4,999 to 4,998 a block; and two
+> migration rows, ML-DSA-65 at 32 MiB and SLH-DSA-128s/128f at 1 MB, by one spend a block. No figure
+> in days moves at one decimal place. The model is now validated against a real v0.1 spend as well as
+> coinbases. Section 3's pointer to the output-type argument now points to its corrected form.
+
 > **What is measured and what is computed.** Signature and raw public-key sizes come from
 > `PQ-SIGNATURE-COST.md` §1 (FIPS 204 and 205 sizes, matched exactly). Transaction sizes come from the
 > same serialisation model that note uses, with the push opcode each element costs, validated against
-> real coinbase transactions before use. A block holds one 135-byte coinbase and then as many spends as
-> fit. The day is 144 blocks, 2009 pacing; the executed fixed point of 600.30 s makes it 143.9.
+> a real v0.1 chain file (124 blocks, including a real spend) before use. A block holds the 80-byte
+> header, the transaction-count varint, one 134-byte coinbase and then as many spends as fit. The day is 144 blocks, 2009 pacing; the executed fixed point of 600.30 s makes it 143.9.
 
 ---
 
@@ -43,7 +51,7 @@ moved once with every block full of nothing else:
 ```
 scheme                 tx B   per block      per day   N = 1,000,000   N = 10,000,000   N = 100,000,000
 --------------------------------------------------------------------------------------------------------
-secp256k1-ECDSA         200     167,771   24,159,024             0.0              0.4              4.1
+secp256k1-ECDSA         200     167,771   24,159,024            0.04              0.4              4.1
 ML-DSA-44              3804       8,820    1,270,080             0.8              7.9             78.7
 ML-DSA-65              5333       6,291      905,904             1.1             11.0            110.4
 ML-DSA-87              7291       4,602      662,688             1.5             15.1            150.9
@@ -60,12 +68,13 @@ hundred million outputs move once in 79 to 356 days.
 
 ## 2. Under the 2010 rule: `MAX_BLOCK_SIZE` = 1 MB
 
-The same arithmetic at the ceiling Bitcoin acquired on 7 September 2010 (`OBL-C-0001`):
+The same arithmetic at the ceiling Bitcoin acquired on 7 September 2010 (version 0.3.12, commit
+`8c9479c`; the constant and the miner's limit date from commit `a30b56e`, 15 July 2010):
 
 ```
 scheme                 tx B   per block      per day   N = 1,000,000   N = 10,000,000   N = 100,000,000
 --------------------------------------------------------------------------------------------------------
-secp256k1-ECDSA         200       4,999      719,856             1.4             13.9            138.9
+secp256k1-ECDSA         200       4,998      719,712             1.4             13.9            138.9
 ML-DSA-44              3804         262       37,728            26.5            265.1          2,650.6
 ML-DSA-65              5333         187       26,928            37.1            371.4          3,713.6
 ML-DSA-87              7291         137       19,728            50.7            506.9          5,068.9
@@ -92,10 +101,10 @@ and a new-scheme output. Its size is the old signature plus the new key, not the
 scheme                       tx B    per day   N = 1e8 (days)    per day   N = 1e8 (days)
 ------------------------------------------------------------------------------------------
 ML-DSA-44                   1,451  3,329,856             30.0     99,216          1,007.9
-ML-DSA-65                   2,091  2,310,768             43.3     68,832          1,452.8
+ML-DSA-65                   2,091  2,310,624             43.3     68,832          1,452.8
 ML-DSA-87                   2,731  1,769,184             56.5     52,704          1,897.4
-SLH-DSA-SHA2-128s             167 28,932,912              3.5    862,128            116.0
-SLH-DSA-SHA2-128f             167 28,932,912              3.5    862,128            116.0
+SLH-DSA-SHA2-128s             167 28,932,912              3.5    861,984            116.0
+SLH-DSA-SHA2-128f             167 28,932,912              3.5    861,984            116.0
 SLH-DSA-SHA2-192s             183 26,403,264              3.8    786,672            127.1
 ```
 
@@ -104,9 +113,11 @@ Two things fall out of that table, both consequences of the sizes and not of any
 - **The migration is cheaper than the steady state, and its cost is the key, not the signature.** A
   hash-based key is 32 bytes and a migration to it is smaller than today's spend; a lattice key is
   1.3 to 2.6 KB and the migration is seven to fourteen times larger. Under pay-to-pubkey-hash, where
-  the chain holds only a hash until spend, the lattice key is deferred and the difference closes;
-  `PQ-SIGNATURE-COST.md` §3 makes the same point for the steady state. A scheme cannot be chosen
-  without choosing an output type.
+  the chain holds only a hash until spend, the lattice key is deferred and the difference closes.
+  `PQ-SIGNATURE-COST.md` §3c gives the steady-state form: under pay-to-pubkey the key cost grows
+  with each output, and ML-DSA-87, -65 and -44 spends become larger than SLH-DSA-128s ones from 2, 3
+  and 5 outputs; under pay-to-pubkey-hash they do not. A comparison of schemes has to state the output
+  type and fan-out it assumes.
 - **A second layer does nothing for an exposed key.** The migration spend needs a signature under the
   scheme the exposed key belongs to; that is a base-layer transaction by construction, and the
   population that must make one is bounded by the base layer's capacity in the tables above, not by
