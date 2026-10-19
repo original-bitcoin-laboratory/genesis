@@ -121,7 +121,16 @@ UTC as a Unix time), is not argued for in the commit. The source comment attribu
 version, 0.1.6, between the 0.1.5 the record starts from and the next release, and gives a reason for
 deferring the time-based form: until most 0.1.5 nodes have upgraded. The same commit adds to
 `AcceptTransaction` in `main.cpp` a refusal of any `nLockTime` above `INT_MAX`, "To help v0.1.5 clients
-who would see it as negative number. please delete this later."
+who would see it as negative number. please delete this later." It also adds to `AcceptBlock` a
+refusal of any block that carries a non-final transaction:
+
+```
++            if (!tx.IsFinal(nTime))
++                return error("AcceptBlock() : contains a non-final transaction");
+```
+
+The January release calls `IsFinal` only in the miner and the wallet. The block rule is named in
+`OBL-C-0007`'s origin cell and has no row of its own (*added 19 October 2026*).
 
 Two later commits touch the check without changing the rule: `2c06be915` (2010-08-03, "new safety
 feature displays a warning message and locks down RPC if it detects a problem that may require an
@@ -537,6 +546,12 @@ the same boundary (201 counted opcodes pass, the 202nd fails); `a790fa46f` (2010
   `OP_1`–`OP_16` do not count (`derivatives/script_limits/`). Grade: `MODEL`.
 - **Lineage:** no second copy within nine days of the same first line.
 
+**Two further changes in this row's commits** (*added 19 October 2026*). `757f0769d` makes `OP_RETURN` fail
+the script (`return false`) where the January release ends evaluation successfully at it (`pc = pend`).
+`6ff5f718b` evaluates the input script and the output script separately, two calls to `EvalScript` on one stack,
+where the January release evaluates `txin.scriptSig + CScript(OP_CODESEPARATOR) + txout.scriptPubKey` as one
+script. Neither is a resource cap; both are named in `OBL-C-0002`'s origin cell and neither has a row of its own.
+
 ## 14–18. The four rules already written up
 
 | rule | row | note |
@@ -585,5 +600,7 @@ WITNESS gaps stated         none remain. The DER rule's acceptance side was witn
 ```
 
 **Corrections, 20 September 2026, from two adversarial reviews.** The merge commits of PR 7692, PR 5713 and PR 3965 had been cited as `9e17aac6b`, `bd03a1cb9` and `681f02551`, the `merge_commit_sha` values of GitHub's pull-request records; none is on the repository's history. They are `29b2be6ad`, `41e6e4cab` and `1c0319bb2`. The 18 March 2016 commit of PR 7692 is Thomas Kerin's, not BtcDrak's. `401926283`'s message is two lines, quoted here as one. The `dd519206a` hunk was quoted as two adjacent lines; it is seven, and the omitted comment line gives a reason. Section 13 (the op-count limit) is new. Section 6's witness and section 9's grade wording are corrected as marked. The earlier text is kept in this repository's history.
+
+**Corrections, 19 October 2026, from a completeness check against Bitcoin Core v0.11.2.** Three rules introduced by commits this atlas already dates were not stated: the block rule that every transaction in a block is final (`dd519206a`, §2), and `OP_RETURN` failing the script and the separate evaluation of the input and output scripts (`757f0769d` and `6ff5f718b`, §13). Each is now quoted from the commit's diff where it is described. The register's rows name them in the same way.
 
 **Corrections to this document are published, dated, and not made silently.**
