@@ -122,9 +122,13 @@ version, 0.1.6, between the 0.1.5 the record starts from and the next release, a
 deferring the time-based form: until most 0.1.5 nodes have upgraded. The same commit adds to
 `AcceptTransaction` in `main.cpp` a refusal of any `nLockTime` above `INT_MAX`, "To help v0.1.5 clients
 who would see it as negative number. please delete this later." It also adds to `AcceptBlock` a
-refusal of any block that carries a non-final transaction:
+refusal of any block that carries a non-final transaction, once the best chain is above height 31,000
+(the hunk in full):
 
 ```
++    // Check that all transactions are finalized (starting around 30 Nov 2009)
++    if (nBestHeight > 31000) // 25620 + 5320
++        foreach(const CTransaction& tx, vtx)
 +            if (!tx.IsFinal(nTime))
 +                return error("AcceptBlock() : contains a non-final transaction");
 ```
@@ -601,6 +605,6 @@ WITNESS gaps stated         none remain. The DER rule's acceptance side was witn
 
 **Corrections, 20 September 2026, from two adversarial reviews.** The merge commits of PR 7692, PR 5713 and PR 3965 had been cited as `9e17aac6b`, `bd03a1cb9` and `681f02551`, the `merge_commit_sha` values of GitHub's pull-request records; none is on the repository's history. They are `29b2be6ad`, `41e6e4cab` and `1c0319bb2`. The 18 March 2016 commit of PR 7692 is Thomas Kerin's, not BtcDrak's. `401926283`'s message is two lines, quoted here as one. The `dd519206a` hunk was quoted as two adjacent lines; it is seven, and the omitted comment line gives a reason. Section 13 (the op-count limit) is new. Section 6's witness and section 9's grade wording are corrected as marked. The earlier text is kept in this repository's history.
 
-**Corrections, 19 October 2026, from a completeness check against Bitcoin Core v0.11.2.** Three rules introduced by commits this atlas already dates were not stated: the block rule that every transaction in a block is final (`dd519206a`, §2), and `OP_RETURN` failing the script and the separate evaluation of the input and output scripts (`757f0769d` and `6ff5f718b`, §13). Each is now quoted from the commit's diff where it is described. The register's rows name them in the same way.
+**Corrections, 19 October 2026, from a completeness check against Bitcoin Core v0.11.2.** Three rules introduced by commits this atlas already dates were not stated: the block rule that every transaction in a block is final (`dd519206a`, §2), and `OP_RETURN` failing the script and the separate evaluation of the input and output scripts (`757f0769d` and `6ff5f718b`, §13). Each is now quoted from the commit's diff where it is described. The register's rows name them in the same way. *Corrected later the same day:* §2 first quoted two lines of `dd519206a`'s `AcceptBlock` hunk and omitted its height gate, `nBestHeight > 31000`; the hunk is now quoted in full.
 
 **Corrections to this document are published, dated, and not made silently.**
