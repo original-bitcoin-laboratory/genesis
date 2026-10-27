@@ -223,7 +223,7 @@ figure has no process to start. The benchmark keeps every sample in run order, a
 the difference: in the 192s loop, about a hundred seconds of uninterrupted signing, the first twenty
 signatures have a median of 0.72 s and the last twenty 1.21 s, and its verifications slow from 648 to
 1,032 µs; no other scheme's loop drifts so. The whole-process instrument starts a
-process between operations and never runs the processor that long without a pause. A sustained-load
+process between operations, so it does not run the processor that long without a pause. A sustained-load
 clock limit (power or temperature) is consistent with that record; the clock was not logged, so it is
 not established. Core type does not explain it: run pinned to one performance core
 (`verify/run_pinned.py 0`), 30 signatures had a median of 1.34 s, and pinned to one efficiency core
