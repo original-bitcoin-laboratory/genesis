@@ -150,14 +150,26 @@ The release itself is published and verifies: ten assets, the tarball reproducin
 the tag, GPG good on the tarball and on `SHA256SUMS`, and the SLH-DSA counter-signature verifying
 against the public key in this repository. ★ **Its tag is signed**, which v0.8.0's was not.
 
-⚠️ **All three preservation legs are OUTSTANDING, and they are listed here rather than left absent:**
+**Two of the three preservation legs are now done; the third is waiting on a Bitcoin block:**
 
 ```
 OpenTimestamps   5 proofs created 28 Oct 2026, PENDING -- no Bitcoin block carries them yet.
                  Upgrade with `python _ots_upgrade.py`, then add the block row below.
-Radicle          NOT synced. The rad remote is configured but its helper lives in WSL, so the
-                 sync and the public-seed head check are an operator step.
-IPFS             NOT pinned. No CIDs for 0.9.0 in the table below.
+Radicle          SYNCED 28 Oct 2026. main at 8223085 and the tag v0.9.0-experimental pushed;
+                 announced with `rad sync --announce --timeout 180sec` -> 2 seeds, and
+                 `rad sync status` then showed TEN public seeds holding the same SigRefs
+                 (da8d272) within seconds of each other.
+                 ! The node was STOPPED and had to be started first, and the FIRST announce
+                   reported "Synced with 0 seed(s) / all seeds timed out" even at 120sec --
+                   not the documented short-timeout trap but a node that had not finished
+                   connecting. It worked after ~45 s once 16 peers were up. Start the node,
+                   let it connect, THEN announce.
+                 ! `rad` is at ~/.radicle/bin/rad in WSL and is not on the non-interactive
+                   PATH, so `command -v rad` finds nothing. Call it by full path.
+IPFS             PINNED by preserve.yml on the release tag, 28 Oct 12:07 UTC -- all TEN assets.
+                 CIDs in the table below. The workflow fires on `release: published` and
+                 downloads the release's assets, so creating the release WITH its assets
+                 attached is what made this work first time.
 ```
 
 ⇒ A release is published the moment GitHub has it; it is *preserved* only once these three are
@@ -265,6 +277,16 @@ independently arrive at.
 
 | release | file | CID |
 |---|---|---|
+| v0.9.0-experimental | `obl-genesis-0.9.0.tar.gz` | `QmbTLkUnm4XCbf7rBcpVnKy532UziG2Ajvw5DZYbeipFsR` |
+|  | `obl-genesis-0.9.0.tar.gz.asc` | `QmVWDEG6LcE4V7GLajBAKxtgg32gRvgq6h4gHpg66cbvJ9` |
+|  | `obl-genesis-0.9.0.tar.gz.ots` | `QmP6DqmJ8bNDYKcBBYTjpyuaJiWw8zLhdzpzafV4ZRcJBG` |
+|  | `obl-genesis-0.9.0.tar.gz.asc.ots` | `QmW4twz6GpB4bg5ipMXp2FnY2rx5Bv7eCqBBs43puLCtvN` |
+|  | `SHA256SUMS` | `QmNePXxasyJN6BfG7v2FaC8UuSY48JCX5aeM2L4WUXbpD9` |
+|  | `SHA256SUMS.asc` | `QmTMrh5Psr7tqJCV4fX2P1Ai5k8mwLFUjn3yousecxM39J` |
+|  | `SHA256SUMS.ots` | `QmVwhGmsxZY2gYNVFPhftqGM7iJFj4xfMF78kzTNRkr82B` |
+|  | `SHA256SUMS.asc.ots` | `QmaeHKo2cJeYHHxmqzPzAYBqv8Ez6fXw3HqnSusxibjtPq` |
+|  | `SHA256SUMS.slhdsa` | `QmUPS7wda7yRJoiPFenawGLbi8rhEtY2zfDF9akj9PJ46F` |
+|  | `SHA256SUMS.slhdsa.ots` | `QmUDLeThcAMKSv8wbSLJjJgWyM3P3UXNGBBCwNYMp9RFSS` |
 | v0.8.0-experimental | `obl-genesis-0.8.0.tar.gz` | `QmTVfjkzaNhJqcqBQYX3oPGBVzwUe6MnNtxYGeNi2y4Twd` |
 |  | `obl-genesis-0.8.0.tar.gz.asc` | `QmQZ4U7BeE9tMpfxZU5Do8NLGmuwzs3AKEoix6f1p8bwND` |
 |  | `obl-genesis-0.8.0.tar.gz.ots` | `QmakSrtaECWSKKnqNnGNT2XvuDduqffvinVhZU5Tkc1bXy` |
