@@ -144,6 +144,25 @@ calendars fold them into a Bitcoin block, the proof shows the file existed befor
 that is attested by Bitcoin's own proof-of-work rather than by us, a host, or a certificate
 authority.
 
+### v0.9.0-experimental, published 28 October 2026 — what is preserved and what is not yet
+
+The release itself is published and verifies: ten assets, the tarball reproducing byte-for-byte from
+the tag, GPG good on the tarball and on `SHA256SUMS`, and the SLH-DSA counter-signature verifying
+against the public key in this repository. ★ **Its tag is signed**, which v0.8.0's was not.
+
+⚠️ **All three preservation legs are OUTSTANDING, and they are listed here rather than left absent:**
+
+```
+OpenTimestamps   5 proofs created 28 Oct 2026, PENDING -- no Bitcoin block carries them yet.
+                 Upgrade with `python _ots_upgrade.py`, then add the block row below.
+Radicle          NOT synced. The rad remote is configured but its helper lives in WSL, so the
+                 sync and the public-seed head check are an operator step.
+IPFS             NOT pinned. No CIDs for 0.9.0 in the table below.
+```
+
+⇒ A release is published the moment GitHub has it; it is *preserved* only once these three are
+done. Recording the gap is the point — an empty row reads as "nothing to do".
+
 ### Where the proofs actually landed
 
 **A stamp is a request; an attestation is the answer.** These are the answers, and each is checkable
