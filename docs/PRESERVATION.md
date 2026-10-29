@@ -150,11 +150,11 @@ The release itself is published and verifies: ten assets, the tarball reproducin
 the tag, GPG good on the tarball and on `SHA256SUMS`, and the SLH-DSA counter-signature verifying
 against the public key in this repository. ★ **Its tag is signed**, which v0.8.0's was not.
 
-**Two of the three preservation legs are now done; the third is waiting on a Bitcoin block:**
+**All three preservation legs are done. Software Heritage took a full visit on 29 October, after the release.**
 
 ```
-OpenTimestamps   5 proofs created 28 Oct 2026, PENDING -- no Bitcoin block carries them yet.
-                 Upgrade with `python _ots_upgrade.py`, then add the block row below.
+OpenTimestamps   ANCHORED 29 Oct 2026 in blocks 973549 and 973564, and the upgraded proofs
+                 replaced the pending ones on the release. See the block row below.
 Radicle          SYNCED 28 Oct 2026. main at 8223085 and the tag v0.9.0-experimental pushed;
                  announced with `rad sync --announce --timeout 180sec` -> 2 seeds, and
                  `rad sync status` then showed TEN public seeds holding the same SigRefs
@@ -181,6 +181,15 @@ done. Recording the gap is the point — an empty row reads as "nothing to do".
 against any block explorer without trusting this file:
 
 ```
+v0.9.0-exp.      all FIVE assets      blocks 973549 + 973564   2026-10-28 12:15:16 / 14:11:53 UTC
+                 973549 merkle root a9d45f74bee23a2076696f05f1fda9d7ed2d098cc020369d934702ed29e29fb8
+                 973564 merkle root 372db6b48bb1e5d04909e68510bd681cf73affb8ff73eee026a22148362a44d9
+                 -- all 15 attestations (5 proofs x 3 calendars) walked from each file's own bytes
+                    to those roots and compared against an explorer, 29 October 2026. Every proof
+                    reads `committed`: a well-formed proof over exactly those bytes.
+                 -- the ANCHORED proofs were uploaded over the pending ones on the release, so a
+                    downloader gets a finished proof rather than one they must upgrade themselves.
+
 v0.8.0-exp.      all FIVE assets      blocks 970201 + 970202   2026-10-06 16:38:25 / 16:42:41 UTC
                  970201 merkle root eaf96c2585eb64d688881a6163a377e7b0e9847eb7b7d6eda40ca1690e1bea17
                  970202 merkle root a6c4b2bd68a1548f7d00c4631d75c222979f782beac39905f349efd5ecb294ad
