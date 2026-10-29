@@ -6,7 +6,8 @@ use std::io::Cursor;
 use obl_validator::wire::{frame, read_message};
 use obl_validator::{check_coinbase_value, check_transaction_2009, sum_outputs, Tx, TxIn, TxOut};
 
-const OVERFLOW_OUT: i64 = 9_223_372_036_854_277_039; // block 74638, 15 Aug 2010
+const OVERFLOW_OUT: i64 = 0x7FFF_FFFF_FFF8_5EE0; // block 74638, 15 Aug 2010: 9_223_372_036_854_275_808
+// (corrected 29 Oct 2026 from 9_223_372_036_854_277_039, a floating-point rendering of the amount)
 const MAGIC: [u8; 4] = [0xf9, 0xbe, 0xb4, 0xd9];
 
 fn tx(vin: Vec<TxIn>, vout: Vec<TxOut>) -> Tx {
@@ -25,7 +26,7 @@ fn out(v: i64) -> TxOut {
 #[test]
 fn overflow_output_sum_wraps_as_v01() {
     let t = tx(vec![spend_in()], vec![out(OVERFLOW_OUT), out(OVERFLOW_OUT)]);
-    assert_eq!(sum_outputs(&t), -997_538); // int64 wrap, the Aug 2010 mechanism
+    assert_eq!(sum_outputs(&t), -1_000_000); // int64 wrap to -0.01 BTC, the Aug 2010 mechanism
     assert!(check_transaction_2009(&t, false).is_none()); // each output non-negative: passes
 }
 

@@ -46,7 +46,7 @@ def test_hardened_running_sum_clause_catches_what_the_per_output_bound_does_not(
 
 def test_int64_sum_wraps_negative_while_true_value_is_enormous():
     tx = overflow_tx()
-    assert output_total_int64(tx) == -997_538            # C++ int64 accumulator wraps
+    assert output_total_int64(tx) == -1_000_000          # C++ int64 accumulator wraps to -0.01 BTC
     assert output_total_true(tx) == 2 * OVERFLOW_SAT     # big-int: no wrap
     assert output_total_true(tx) // COIN > 184_000_000_000   # > 184 billion BTC minted
 
@@ -88,8 +88,10 @@ def test_the_gap_is_the_missing_upper_bound():
 # ---- fidelity checks ---------------------------------------------------------
 
 def test_historical_values_are_the_block_74638_amounts():
-    # two outputs of 92,233,720,368.54277039 BTC each (the tx in block 74638)
-    assert OVERFLOW_SAT == 9_223_372_036_854_277_039
+    # two outputs of 92,233,720,368.54275808 BTC each (the tx in block 74638; hex 7ffffffffff85ee0)
+    assert OVERFLOW_SAT == 9_223_372_036_854_275_808
+    # their int64 sum is -0.01 BTC, so with the 0.50 BTC input the block's coinbase claimed a 0.51 fee
+    assert to_int64(2 * OVERFLOW_SAT) == -COIN // 100
     # each is below the signed-int64 max (2^63-1), but two of them exceed it -> wrap
     assert OVERFLOW_SAT < 2 ** 63 <= 2 * OVERFLOW_SAT
 

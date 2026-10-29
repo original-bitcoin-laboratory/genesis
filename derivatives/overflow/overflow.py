@@ -11,7 +11,8 @@ MoneyRange() four days later.
 Same shape as ../crypto_conformance/ (Thread A executed): port the v0.1 rule and the
 post-2010 hardened rule side by side, and exhibit the exact input one accepts and the
 other rejects. The historical exploit (tx in block 74638, 15 Aug 2010) used two outputs
-of 92,233,720,368.54277039 BTC; we use those exact satoshi amounts.
+of 92,233,720,368.54275808 BTC (hex 7ffffffffff85ee0); we use those exact satoshi amounts.
+(corrected 29 Oct 2026: earlier text used 9223372036854277039 (...54277039), a floating-point rendering in a JSON dump of the block; the forum thread's hex is 7ffffffffff85ee0.)
 
 Every check returns (ok, clause): `clause` is the identifier of the clause that fired, from a
 fixed vocabulary (CLAUSES), not a sentence. A test asserts the clause, not a substring of a
@@ -38,8 +39,9 @@ MAX_MONEY = 21_000_000 * COIN            # introduced with the Aug-2010 fix
 ZERO = b"\x00" * 32
 NULL_N = 0xFFFFFFFF
 
-# the historical exploit outputs (tx in block 74638): 92,233,720,368.54277039 BTC each
-OVERFLOW_SAT = 9_223_372_036_854_277_039  # satoshi, per output; two of them wrap int64
+# the historical exploit outputs (tx in block 74638): 92,233,720,368.54275808 BTC each
+# (corrected 29 Oct 2026: earlier text used 9223372036854277039 (...54277039), a floating-point rendering in a JSON dump of the block; the forum thread's hex is 7ffffffffff85ee0)
+OVERFLOW_SAT = 0x7FFFFFFFFFF85EE0          # = 9_223_372_036_854_275_808 satoshi per output; two wrap int64
 
 # the clauses a check can fail on, one identifier each (the v0.1 clauses first, then the 2010 additions)
 CLAUSES = ("ok", "vin-or-vout-empty", "output-negative", "coinbase-script-size", "prevout-null",

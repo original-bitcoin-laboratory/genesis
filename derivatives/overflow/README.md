@@ -10,12 +10,12 @@ other **rejects**.
 ## What it shows
 
 ```
-two outputs of 9223372036854277039 sat each (~92,233,720,368.54 BTC)
+two outputs of 9223372036854275808 sat each (0x7ffffffffff85ee0, ~92,233,720,368.54 BTC)
   v0.1 CheckTransaction (main.h:442) : ACCEPT  (ok)
   2010 CheckTransaction (d4c6b90ca)  : REJECT  (output-above-max-money)
-  output total as int64 (C++)  :                  -997538 sat  <- wraps negative
-  output total, true value     :     18446744073708554078 sat  = 184,467,440,737 BTC minted
-  => v0.1's 'inputs >= outputs' sees outputs = -997538 and passes with a tiny input.
+  output total as int64 (C++)  :                 -1000000 sat  <- wraps negative (-0.01 BTC)
+  output total, true value     :     18446744073708551616 sat  = 184,467,440,737 BTC minted
+  => v0.1's 'inputs >= outputs' sees outputs = -1000000 and passes with a tiny input.
 ```
 
 - **v0.1 `CheckTransaction`** ([`main.h:442`], ported verbatim) checks only `nValue < 0` per
@@ -29,6 +29,15 @@ two outputs of 9223372036854277039 sat each (~92,233,720,368.54 BTC)
   transaction in **block 74638 (15 Aug 2010)**; the incident and its 184,467,440,737 BTC total are recorded on
   the Bitcoin wiki's [Value overflow incident](https://en.bitcoin.it/wiki/Value_overflow_incident) page. The overflow block was replaced
   after the fix, so a present-day explorer at height 74638 ([blockstream.info](https://blockstream.info/block/000000000069e1affe7161ab4bcbeacebb4ddf155b50e807f42de971b688a09b)) shows a different block.
+
+*Corrected 29 Oct 2026: this page, `overflow.py` and its test used 9223372036854277039 per output
+("...54277039"), a floating-point rendering of the amount in a JSON dump of the block, and so gave the
+wrapped total as -997538. The bitcoin forum thread of 15 August 2010 (topic 822) gives each output as hex
+`7ffffffffff85ee0` = 9223372036854275808; two of them wrap to -1000000 (-0.01 BTC), and with the
+transaction's 0.50 BTC input that is the 0.51 BTC fee the block claimed. Only the true value makes that
+arithmetic close. The verdicts do not change: v0.1 accepts, the 2010 rule rejects. The clean-room
+reproduction record of 20 Sep 2026 (`reproductions/2026-09-20-clean-room-ai-sessions/`) used the old
+value and is kept as recorded; the register row `OBL-F-0004` carries this correction.*
 
 ## Why the wrap is modelled explicitly
 
@@ -44,7 +53,7 @@ real, historical input.
 ## Tests (`test_overflow.py`, 10)
 
 The finding (v0.1 accepts, hardened rejects the overflow tx); the mechanism (int64 sum wraps
-to `-997538` while the true total is 2× the historical amount, > 184 billion BTC); the
+to `-1000000`, that is -0.01 BTC, while the true total is 2× the historical amount, > 184 billion BTC); the
 divergence (`value_in >= value_out` passes on the wrapped total); controls (both rules reject
 a negative output, both accept a normal tx, both keep the coinbase‑script‑size bound); and the
 missing‑upper‑bound gap (v0.1 accepts an output of `MAX_MONEY + 1`, the 2010 rule rejects it).

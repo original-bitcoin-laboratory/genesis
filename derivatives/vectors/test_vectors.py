@@ -33,11 +33,11 @@ def test_manifest_covers_every_json_file():
 
 def test_oracle_value_sums_wrap_as_int64():
     """The from-spec oracle sums values as v0.1 does (int64, main.h:492, main.cpp:844-853), so the
-    Aug 2010 overflow transaction (block 74638: two outputs of 92,233,720,368.54277039) wraps to a
+    Aug 2010 overflow transaction (block 74638: two outputs of 92,233,720,368.54275808) wraps to a
     small negative total rather than an unbounded one. Checked here, not as a corpus vector, so the
     pinned corpus and its replay record against the release client are unchanged."""
     sys.path.insert(0, str(HERE))
     import verify_vectors as vv
-    each = 9223372036854277039
-    assert vv.value_out({"vout": [{"value": each}, {"value": each}]}) == -997538
+    each = 0x7FFFFFFFFFF85EE0   # 9223372036854275808 (corrected 29 Oct 2026 from a float rendering)
+    assert vv.value_out({"vout": [{"value": each}, {"value": each}]}) == -1000000
     assert vv.i64(2**63) == -(2**63) and vv.i64(2**63 - 1) == 2**63 - 1

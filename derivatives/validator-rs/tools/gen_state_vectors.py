@@ -146,7 +146,7 @@ invalid.append(("coinbase_script_short",) + make_invalid("coinbase_script_short"
 # Until 6 Oct 2026 both lab nodes rejected this as inflation (unbounded / i128 sums); the 2009 client
 # this chain runs ACCEPTS it, so a miner could split our nodes from it. Both now wrap, as v0.1 does.
 accepted = []  # (name, raw, height, subsidy)
-BIG = 9_223_372_036_854_277_039
+BIG = 0x7FFFFFFFFFF85EE0  # block 74638's outputs, 9_223_372_036_854_275_808 (corrected 29 Oct 2026)
 ov = Tx(1, [TxIn(SPENDABLE_TXID, 0, b"", 0xFFFFFFFF)], [TxOut(BIG, bytes([0x51])), TxOut(BIG, bytes([0x52]))], 0)
 ov.vin[0].script = cscript.assemble([sign(priv, [pub, "OP_CHECKSIG"], ov, 0)])
 _raw, _h, _sub, _err = make_invalid("value_overflow", [coinbase(3, subsidy_at(3), P2PK), ov])

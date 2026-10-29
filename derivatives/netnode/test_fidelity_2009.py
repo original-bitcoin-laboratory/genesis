@@ -39,7 +39,8 @@ ZERO = b"\x00" * 32
 NULL_N = 0xFFFFFFFF
 EASY = 0x207FFFFF
 RULES = profiles.load("jan09-faithful").rules()
-OVERFLOW_OUT = 9223372036854277039          # block 74638 (15 Aug 2010), each of two outputs
+OVERFLOW_OUT = 0x7FFFFFFFFFF85EE0             # block 74638 (15 Aug 2010), each of two outputs = 9223372036854275808
+# (corrected 29 Oct 2026 from 9223372036854277039, a floating-point rendering; see derivatives/overflow/README.md)
 _tag = [0]
 
 
@@ -104,7 +105,7 @@ def test_overflow_transaction_is_accepted_as_v01_does():
     h0 = st.height
     bad = _spend(priv, spk, cb, [TxOut(OVERFLOW_OUT, b"\x51"), TxOut(OVERFLOW_OUT, b"\x51")])
     _add(chain, st, [_coinbase(h0 + 1, _subsidy(h0 + 1)), bad])
-    assert st.height == h0 + 1, "v0.1 accepts the block: int64 output sum wraps to -997538"
+    assert st.height == h0 + 1, "v0.1 accepts the block: int64 output sum wraps to -1000000 (-0.01 BTC)"
     assert st.utxo[(_txid(bad), 0)].value == OVERFLOW_OUT
 
 
