@@ -1,6 +1,6 @@
 {
   "not_money": true,
-  "updated": "2026-11-01T06:52:05Z",
+  "updated": "2026-11-01T13:57:45Z",
   "anchors": [
     "178.62.236.102"
   ],
@@ -143,111 +143,111 @@
       "online": true,
       "money": false,
       "reachable_anchors": 1,
-      "height": 201037,
-      "tip": "00000e22a1ce2b28e6c00028e836e215fd851abe0f2c9ac3c499faebe2010527",
+      "height": 201436,
+      "tip": "000004c71b3f77d69a8672931b8107f9e9340d77b0da66a5de6d2a169e4bc1f8",
       "recent": [
         {
-          "height": 201037,
-          "hash": "00000e22a1ce2b28e6c00028e836e215fd851abe0f2c9ac3c499faebe2010527",
-          "time": 1793515767,
+          "height": 201436,
+          "hash": "000004c71b3f77d69a8672931b8107f9e9340d77b0da66a5de6d2a169e4bc1f8",
+          "time": 1793541395,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201036,
-          "hash": "00000522859f41082a6563de5b155f77a81089f8da4a2c25f098f7de671a54e5",
-          "time": 1793515730,
+          "height": 201435,
+          "hash": "00000daa0d2fd6c5e2e430b5abada7585ea8340e8d33216195610d39337af035",
+          "time": 1793541334,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201035,
-          "hash": "000000593cbba36bfa1a0643947c29c7a7934b973534d7f58cb110ab53cfb003",
-          "time": 1793515666,
+          "height": 201434,
+          "hash": "00000e5c6fc9ad74bfbf523f9428d5f8ff9e2315bcb9856bb92afc04bb7e4fe7",
+          "time": 1793541303,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201034,
-          "hash": "000003e9da1878b82ee51f2ef1fb1d1e79e7ee173f6a653229a9d3e406601166",
-          "time": 1793515547,
+          "height": 201433,
+          "hash": "00000bde4996a9e91e44fcefe38f23d70404395110417d35ef7213be01c590d4",
+          "time": 1793541271,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201033,
-          "hash": "000008b8190368d724fcc3ab84f0d0294f309250b908705eddb3c3d141e982e4",
-          "time": 1793515477,
+          "height": 201432,
+          "hash": "000000b69db30c045ca09078775c457f8591bb01cd0e26e7129cbdd991f6cd42",
+          "time": 1793541193,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201032,
-          "hash": "0000050de8a223aa4bd75f2ac7dc5e3d2991e99438ee599400dcef6a91117d29",
-          "time": 1793515405,
+          "height": 201431,
+          "hash": "00000a9454c4c5901fc1c9c45b039e2462f06a95123cf890394a6b061d772fd6",
+          "time": 1793541137,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201031,
-          "hash": "00000871b035ffb16f5532a957c629779ffeef07c8e88d3bcc822e9c70e53ff2",
-          "time": 1793515328,
+          "height": 201430,
+          "hash": "00000aa4045c8ca4b3d18a4f22b0a2e9f327ef68d9d04aa561922e3cd2b27686",
+          "time": 1793541096,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201030,
-          "hash": "00000cb98715941f56ea15e0f7aa14a4a8557285f4d38161a928a75c6ad83641",
-          "time": 1793515284,
+          "height": 201429,
+          "hash": "000002e4d89d74fbfd4991fd5d82e4cc86f14a51de5b6decec3147750dd2dce2",
+          "time": 1793540995,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201029,
-          "hash": "00000f96d2b1844239cf1581d67c8b7ab596d28012a5a9abb759b6cad92b19d4",
-          "time": 1793515253,
+          "height": 201428,
+          "hash": "000009b22899ca6772fccc79aad48d975a4970d286df585a1a7b4b9d644e4c5e",
+          "time": 1793540951,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201028,
-          "hash": "000009c1948d5609781ad6b207711ee0f1656b95f3bca0bc40544dba06ef8b9b",
-          "time": 1793515173,
+          "height": 201427,
+          "hash": "0000002571d01958c6659286c85fea01f6911e37333e40924f3acf42d6f2fa33",
+          "time": 1793540904,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201027,
-          "hash": "000006aa542798993a85678ce3a2bd1cb90fcdc7b35f680ea7524414fb3210e6",
-          "time": 1793514990,
+          "height": 201426,
+          "hash": "00000ef6d18a43ab044161b086e609c355c3f836700e7b6562f99ea22aba060e",
+          "time": 1793540854,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201026,
-          "hash": "00000f4f44aca882f69e65133a0490831fcd3353b9a17a9afb71c0b2b3d1a7c7",
-          "time": 1793514905,
+          "height": 201425,
+          "hash": "00000957b7fd7ad4e08ba959d108248a18bac3196dddeed34d54e1bf79f8ca59",
+          "time": 1793540798,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201025,
-          "hash": "00000bfcae9fa4b56c81dc9d7a88c9417393fa4d959f15ffde0a2c7e7efcd7a4",
-          "time": 1793514831,
+          "height": 201424,
+          "hash": "000006df3ec80837bf2d91d4fb8fc5a8e7d1c81784142b728e0d23fed1138f7b",
+          "time": 1793540720,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201024,
-          "hash": "00000186022d890e6e7b2bbbe0230d44c0e1573d378d0e197bd3a4be63aa1866",
-          "time": 1793514740,
+          "height": 201423,
+          "hash": "0000054eebdb442001f1c58b2e3f5b67852a48147b6a312febdbd8afb6ab5137",
+          "time": 1793540657,
           "ntx": 1,
           "bytes": 212
         },
         {
-          "height": 201023,
-          "hash": "00000f59967dbc8129c26648bd23591cc9a158982918063be667a88bc3492655",
-          "time": 1793514700,
+          "height": 201422,
+          "hash": "000006a7887bd245970848299547ffda39341f14a5467db70c0750d947450569",
+          "time": 1793540618,
           "ntx": 1,
           "bytes": 212
         }
