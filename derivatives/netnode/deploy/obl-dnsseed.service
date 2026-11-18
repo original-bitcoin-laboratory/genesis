@@ -1,9 +1,10 @@
 # The concrete crawling DNS seed unit as deployed (see dnsseed/ACTIVATION.md).  NOT money.
 #
-# Binds the node's PUBLIC IP on :53 (systemd-resolved keeps the 127.0.0.53 stub, so the public IP:53
-# is free). Crawls both anchors on jan09x, verifies each is a reachable node on the right chain, and
-# answers A queries for seed.bitcoin-lab.org with the live healthy set. Delegate the zone to this host
-# (NS record) to make it the network's bootstrap. NOT money.
+# Binds the node's PUBLIC IPv4 and IPv6 addresses on :53 (systemd-resolved keeps the 127.0.0.53 stub,
+# so the public addresses' port 53 is free). Crawls both anchors on jan09x, verifies each is a
+# reachable node on the right chain, and answers A (IPv4 peers) and AAAA (IPv6 peers) queries for
+# seed.bitcoin-lab.org with the live healthy set. Delegate the zone to this host (NS record) to make it
+# the network's bootstrap. NOT money.
 #
 #   ufw allow 53/udp
 #   cp obl-dnsseed.service /etc/systemd/system/ && systemctl enable --now obl-dnsseed
@@ -16,11 +17,15 @@ Wants=network-online.target
 [Service]
 Type=simple
 WorkingDirectory=/opt/genesis/derivatives
-# --listen must be the PUBLIC IP (not 0.0.0.0) so it doesn't collide with systemd-resolved's 127.0.0.53
+# --listen must name the PUBLIC addresses (not 0.0.0.0 or ::) so it doesn't collide with
+# systemd-resolved's 127.0.0.53. For a dual-stack host list both, comma-separated, before the port:
+# the port is split off at the LAST colon, so the IPv6 address is written WITHOUT brackets
+# ([2001:db8::11] would be taken literally and fail to bind), and one UDP endpoint is bound per address. The deployed seeds run exactly this form with their own IPv4 and IPv6.
 ExecStart=/opt/genesis/.venv/bin/python -m dnsseed --chain jan09x --zone seed.bitcoin-lab.org \
           --seed 203.0.113.10:18009 --seed 203.0.113.11:18009 \
-          --listen 203.0.113.11:53 --interval 60
-# 203.0.113.x are documentation addresses: replace them with your anchors' public addresses.
+          --listen 203.0.113.11,2001:db8::11:53 --interval 60
+# 203.0.113.x and 2001:db8::/32 are documentation addresses: replace them with this host's public
+# IPv4 and IPv6 and the anchors' addresses. An IPv4-only host lists just its IPv4: --listen 203.0.113.11:53
 Restart=always
 RestartSec=5
 

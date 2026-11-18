@@ -27,11 +27,14 @@ releases, a faster node, and — above all — other operators).
 
 from __future__ import annotations
 
+import array
 import asyncio
+import os
 import pathlib
 import random
 import socket
 import sys
+import zlib
 
 _HERE = pathlib.Path(__file__).resolve().parent
 for _p in ("model", "p2p", "nov08x"):
@@ -187,17 +190,81 @@ class Node:
 
     # -- persistence / genesis -------------------------------------------------
     def _load_or_init(self):
-        raws = self.store.read_all()
-        if raws:
-            self.chain.add_genesis(raws[0], nbits_of(raws[0]))
-            for raw in raws[1:]:
-                self.chain.process_block(raw)
-            self._log(f"loaded {len(raws)} block(s); height={self.chain.best_height}")
+        # ⛔ 18 Nov 2026. This read the whole block file into memory and kept every block's bytes in
+        #    the index for the life of the node -- the largest single item (~66 MB at 283,612 jan09x
+        #    blocks) on 1 GB hosts where the node was being killed for lack of memory. Records are now
+        #    read one at a time, and once a block is indexed its bytes are handed back to the file
+        #    (BlockIndex.spill): the index reads them by offset when validation, serving or a
+        #    retarget needs them. Blocks accepted after start-up stay in memory until the next restart.
+        if self.store.torn_tail is not None:
+            self._log(f"block store: a partial record (a write cut short) was set aside as "
+                      f"{self.store.torn_tail.name}")
+        self._spill_off = array.array("Q")              # slot -> record offset in blocks.dat
+        self._spill_crc = array.array("I")              # slot -> CRC-32 of the record's bytes
+        self._reader = self._read_spilled                # one bound method, shared by every index
+        records = self.store.iter_records()
+        first = next(records, None)
+        if first is not None:
+            off0, g = first
+            self.chain.add_genesis(g, nbits_of(g))
+            self._spill(self.chain.by_hash[self.chain.genesis], off0, g)
+            pending = {}                                 # records not indexed when read: orphans, dups
+            n = 1
+            for off, raw in records:
+                n += 1
+                _status, h = self.chain.process_block(raw)
+                idx = self.chain.by_hash.get(h)
+                if idx is not None and idx._raw is raw:  # indexed from THIS record
+                    self._spill(idx, off, raw)
+                else:
+                    pending.setdefault(h, off)
+            for h, off in pending.items():               # orphans connected later, by a later record
+                idx = self.chain.by_hash.get(h)
+                if idx is not None and not idx.spilled and self.store.read_at(off) == idx._raw:
+                    self._spill(idx, off, idx._raw)
+            self._log(f"loaded {n} block(s); height={self.chain.best_height}")
         else:
             g = self.cfg.mint_genesis()
             self.chain.add_genesis(g, nbits_of(g))
             self.store.append(g)
             self._log(f"minted genesis {block_hash(g)[::-1].hex()[:16]}…")
+
+    # A spilled block's reference is a slot number in two packed arrays: the record's offset and a
+    # CRC-32 of its bytes (12 bytes a block). The block hash covers only the 80-byte header, so the
+    # CRC is what catches a damaged transaction. Every index shares ONE reader object: naming
+    # `self._read_spilled` per block builds a new bound method each time (~22 MB at 283,612 blocks).
+    def _spill(self, idx, off: int, raw: bytes) -> None:
+        ref = len(self._spill_off)
+        self._spill_off.append(off)
+        self._spill_crc.append(zlib.crc32(raw))
+        idx.spill(self._reader, ref)
+
+    def _read_spilled(self, ref: int, h: bytes) -> bytes:
+        """Read a spilled block back from the store, checked against the hash it was indexed under
+        and the checksum of the bytes it was indexed from.
+
+        A block the node cannot read back, or whose bytes differ from what it indexed, means the
+        block file changed underneath a running node. Carrying on could leave the validated chain
+        half-reorganised, drop an honest block as invalid, or serve a peer the wrong block, so the
+        node stops; systemd restarts it and the restart reloads (and re-validates) the chain from
+        what is actually on disk."""
+        off, crc = self._spill_off[ref], self._spill_crc[ref]
+        try:
+            data = self.store.read_at(off)
+        except Exception as e:                           # any failure to read is the same failure
+            self._fail_stop(f"block store: cannot read block {h[::-1].hex()} at offset {off}: {e!r}")
+        if block_hash(data) != h:
+            self._fail_stop(f"block store: bytes at offset {off} do not hash to block {h[::-1].hex()}")
+        if zlib.crc32(data) != crc:
+            self._fail_stop(f"block store: block {h[::-1].hex()} at offset {off} has the right header "
+                            f"but its bytes changed since it was loaded")
+        return data
+
+    def _fail_stop(self, why: str):
+        self._log(f"FATAL {why} -- stopping so the node restarts and reloads its chain from disk")
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(70)
 
     @property
     def height(self) -> int:

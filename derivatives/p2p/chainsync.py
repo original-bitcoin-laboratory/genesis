@@ -82,12 +82,36 @@ def parse_getblocks(payload: bytes):
 # ---- block-index + chain (faithful ProcessBlock / AddToBlockIndex) ------------
 
 class BlockIndex:
-    __slots__ = ("hash", "prev", "height", "raw", "nBits", "pnext", "in_main")
+    __slots__ = ("hash", "prev", "height", "_raw", "_off", "nBits", "pnext", "in_main")
 
     def __init__(self, h, prev, height, raw, nBits):
         self.hash = h; self.prev = prev; self.height = height
-        self.raw = raw; self.nBits = nBits
+        self._raw = raw; self._off = None; self.nBits = nBits
         self.pnext = None; self.in_main = False
+
+    # ⛔ 18 Nov 2026. Every block's serialized bytes used to live here for the whole life of a node:
+    #    ~66 MB of a jan09x node's memory at 283,612 blocks, on 1 GB hosts. A node that has the bytes
+    #    in its own append-only block file can `spill` them: `_raw` then holds a reader (shared by
+    #    every block of that node) and `_off` an integer the reader uses to find and check the record
+    #    (for netnode: its offset and a checksum of its bytes), and `raw` reads the same bytes back on
+    #    demand. Nothing that uses `raw` changes; an index that never spills behaves as before.
+    @property
+    def raw(self) -> bytes:
+        r = self._raw
+        return r(self._off, self.hash) if callable(r) else r
+
+    @raw.setter
+    def raw(self, value: bytes) -> None:
+        self._raw, self._off = value, None
+
+    def spill(self, reader, ref: int) -> None:
+        """Hand the bytes to `reader(ref, hash)` and drop them from memory. The reader must return
+        exactly the bytes this index was built from, or not return at all."""
+        self._raw, self._off = reader, ref
+
+    @property
+    def spilled(self) -> bool:
+        return callable(self._raw)
 
 
 class Chain:
