@@ -16,6 +16,7 @@ import json
 import pathlib
 import sys
 import socket
+import time
 from datetime import datetime, timezone
 
 _HERE = pathlib.Path(__file__).resolve().parent
@@ -26,7 +27,7 @@ sys.path.insert(0, str(_HERE))
 from chains import CHAINS                                              # noqa: E402
 from chainsync import block_hash, locator_payload, read_compact       # noqa: E402
 from p2p import MSG_BLOCK, inv_payload, parse_inv, version_payload    # noqa: E402
-from wire import frame, read_message                                  # noqa: E402
+from wire import WireError, frame, read_message                       # noqa: E402
 
 
 # ~500 hashes per inv, so this must comfortably exceed tip_height/500 for the longest chain
@@ -154,22 +155,59 @@ async def _recent(reader, writer, magic, want, tip_height, timeout, ck=True):
     return out
 
 
+_PROBE_ERRORS = (OSError, asyncio.TimeoutError, WireError, ValueError, ConnectionError)
+
+
+def _note(host, port, stage, e):
+    print(f"probe {host}:{port} {stage}: {e!r}", file=sys.stderr)
+
+
 async def _probe_anchor(host, port, magic, genesis, recent_n, timeout, ck=True):
-    """Handshake + height-walk + recent blocks from one anchor. Returns (hashes, recent) or None."""
+    """Handshake + height-walk + recent blocks from one anchor.
+
+    Returns None if the anchor did not complete the version handshake (it is not reachable for this
+    probe), else (hashes, recent, complete).
+
+    ⛔ 18 Nov 2026. wire.read_message raises WireError for a closed connection, bad magic, a bad
+       checksum, an oversized message, a truncated payload or its own read timeout -- by design,
+       "the caller drops the peer" (wire.py).
+       WireError is not an OSError, so on 10 Nov 2026 a peer that closed mid-walk raised it straight
+       through this function, asyncio.gather() aborted the probe of every chain, and the run failed
+       without publishing.
+
+       It is now caught, and WHERE it happens decides what is published. Before the handshake
+       completes, the anchor did not answer: None, reported unreachable. After it, the anchor DID
+       answer, so a failure during the walk returns `complete=False` -- reachable, height unmeasured,
+       exactly what _walk_height's docstring says a dropped connection must mean -- and a failure
+       while fetching recent blocks after a complete walk keeps the measured height and drops only
+       the recent list. Every caught error is written to stderr, so a peer that starts failing for a
+       new reason is visible in the run log instead of silently reported as down.
+    """
     try:
         reader, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout)
-    except (OSError, asyncio.TimeoutError):
+    except (OSError, asyncio.TimeoutError) as e:
+        _note(host, port, "connect", e)
         return None
     try:
-        writer.write(frame("version", version_payload(), magic, checksum=ck))
-        await writer.drain()
-        if await _read_until(reader, magic, "version", timeout, ck=ck) is None:
-            return None                                      # wrong chain / not a node
-        hashes, complete = await _walk_height(reader, writer, magic, genesis, timeout, ck=ck)
-        recent = await _recent(reader, writer, magic, hashes[-recent_n:], len(hashes), timeout, ck=ck)
+        try:
+            writer.write(frame("version", version_payload(), magic, checksum=ck))
+            await writer.drain()
+            if await _read_until(reader, magic, "version", timeout, ck=ck) is None:
+                return None                                  # wrong chain / not a node
+        except _PROBE_ERRORS as e:
+            _note(host, port, "handshake", e)
+            return None
+        try:
+            hashes, complete = await _walk_height(reader, writer, magic, genesis, timeout, ck=ck)
+        except _PROBE_ERRORS as e:
+            _note(host, port, "walk", e)
+            return [], [], False                             # answered, but not read to the end
+        try:
+            recent = await _recent(reader, writer, magic, hashes[-recent_n:], len(hashes), timeout, ck=ck)
+        except _PROBE_ERRORS as e:
+            _note(host, port, "recent", e)
+            recent = []
         return hashes, recent, complete
-    except (OSError, asyncio.TimeoutError, ValueError, ConnectionError):
-        return None
     finally:
         try:
             writer.close()
@@ -192,7 +230,9 @@ async def probe_chain(name, port, anchors, recent_n, timeout):
         if res is not None:
             any_reachable = True
             # only a COMPLETED walk may set the height; among completed walks take the longest
-            if res[2] and (best is None or len(res[0]) > len(best[0])):
+            # on a tie, prefer the anchor that also returned its recent blocks
+            if res[2] and (best is None or len(res[0]) > len(best[0])
+                           or (len(res[0]) == len(best[0]) and res[1] and not best[1])):
                 best = res
     entry["reachable_anchors"] = sum(1 for a in entry["anchors"] if a["reachable"])
     entry["online"] = any_reachable
@@ -208,6 +248,50 @@ async def probe_chain(name, port, anchors, recent_n, timeout):
         #    figure that is not a measurement.
         entry["height_unmeasured"] = True
     return entry
+
+
+DNS_ATTEMPTS = 4
+DNS_DELAYS = (5, 15, 30)                     # seconds between attempts; at most 50 s in total
+
+
+def resolve_anchor_host(host, attempts=DNS_ATTEMPTS, delays=DNS_DELAYS, getaddrinfo=None, sleep=None):
+    """The A records of `host`, sorted. Retries a failed lookup before giving up.
+
+    ⛔ 18 Nov 2026. A single failed lookup used to end the run. On 31 Oct (two runs) and 16 Nov,
+       getaddrinfo returned EAI_NODATA ("No address associated with hostname") for
+       seed.bitcoin-lab.org, while the runs before and after resolved it. The name is served by the
+       lab's own seeder (derivatives/dnsseed/server.py), which answers NOERROR with no records when
+       its crawler's healthy set for the asked family is empty -- so an empty answer can be the
+       seeder's own view of the anchors at that moment, and the record's TTL is 60 s.
+
+       Retrying covers a short gap. A name that still returns nothing after the last attempt is
+       raised, and the caller exits WITHOUT writing status.json: with no address there is nothing to
+       measure, and the page keeps its last measured state rather than a probe that did not run.
+    """
+    getaddrinfo = getaddrinfo or socket.getaddrinfo
+    sleep = sleep or time.sleep
+    for i in range(attempts):
+        try:
+            return sorted({ai[4][0] for ai in getaddrinfo(host, None, socket.AF_INET)})
+        except socket.gaierror:
+            if i == attempts - 1:
+                raise
+            sleep(delays[min(i, len(delays) - 1)])
+
+
+def summary_line(chain_status):
+    """One word per chain for the log: h<height>, `unmeasured`, or `offline`.
+
+    ⛔ 18 Nov 2026. This read c['height'] for every online chain. But an online chain whose walk did
+       not complete has NO height by design (`height_unmeasured`, see probe_chain), so the run raised
+       KeyError on 11 Nov and 18 Nov -- after status.json was already written correctly, failing the
+       job and skipping the publish step for a file that had nothing wrong with it.
+    """
+    def word(c):
+        if isinstance(c.get("height"), int):
+            return "h%d" % c["height"]
+        return "unmeasured" if c.get("online") else "offline"
+    return ", ".join(f"{n}={word(c)}" for n, c in chain_status.items())
 
 
 async def _run(chains, anchors, recent_n, timeout):
@@ -235,9 +319,9 @@ def main(argv=None):
     a = ap.parse_args(argv)
     for h in a.anchor_host:
         try:
-            found = sorted({ai[4][0] for ai in socket.getaddrinfo(h, None, socket.AF_INET)})
+            found = resolve_anchor_host(h)
         except socket.gaierror as e:
-            sys.exit("cannot resolve %s: %s" % (h, e))
+            sys.exit("cannot resolve %s after %d attempts: %s" % (h, DNS_ATTEMPTS, e))
         a.anchor.extend(x for x in found if x not in a.anchor)
     if not a.anchor:
         sys.exit("no anchors: pass --anchor or --anchor-host")
@@ -262,9 +346,7 @@ def main(argv=None):
     tmp = p.with_suffix(p.suffix + ".tmp")
     tmp.write_text(json.dumps(status, indent=2), encoding="utf-8")
     tmp.replace(p)
-    summary = ", ".join(f"{n}={'h' + str(c['height']) if c.get('online') else 'offline'}"
-                        for n, c in chain_status.items())
-    print(f"wrote {a.out}: {summary}")
+    print(f"wrote {a.out}: {summary_line(chain_status)}")
 
 
 if __name__ == "__main__":
