@@ -35,6 +35,40 @@ jobs:
             --anchor-host seed.bitcoin-lab.org \
             --recent 15 --timeout 8
 
+      # From about 31 Oct to 18 Nov 2026 the jan09x miner was killed for lack of memory during
+      # start-up, over and over, while its service reported "active", and nothing noticed. This
+      # watches the chains themselves: a height that stops advancing opens one issue per chain. It
+      # also records height_seen / height_advanced_at in the published status.json. Thresholds are
+      # explained in stall_watch.py. continue-on-error: this step must never stop the publish.
+      - name: Stall watch (a chain whose height stops advancing opens an issue)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git fetch -q --depth=1 origin status 2>/dev/null; then
+            git show FETCH_HEAD:status.json > /tmp/prev-status.json 2>/dev/null || echo '{}' > /tmp/prev-status.json
+          else
+            echo '{}' > /tmp/prev-status.json
+          fi
+          set +e
+          python derivatives/netnode/stall_watch.py --status /tmp/status.json --prev /tmp/prev-status.json \
+            --stall-hours jan09x=18 --stall-hours nov08x=18 --stall-hours bitcoin=72 > /tmp/stall.txt
+          rc=$?
+          set -e
+          cat /tmp/stall.txt
+          if [ "$rc" = 2 ]; then
+            for chain in $(sed -n 's/^STALLED \([A-Za-z0-9_]*\).*/\1/p' /tmp/stall.txt); do
+              title="X-chain $chain has stopped advancing: check its nodes"
+              if [ -z "$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$title\" in:title" --json number --jq '.[0].number')" ]; then
+                gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" \
+                  --body "$(grep "^STALLED $chain " /tmp/stall.txt). A height that does not advance means the miner is not running or not reachable, even when its service reports active. First checks on the host: \`dmesg -T | grep -i 'killed process'\` (out-of-memory kills), \`systemctl show -p NRestarts <service>\`, and \`ss -ltn\` for the chain's port. Opened by the status workflow; not money." \
+                  || echo "stall watch: could not open the issue for $chain (the publish step still runs)"
+              fi
+            done
+          elif [ "$rc" != 0 ]; then
+            echo "stall watch could not read the status (rc=$rc); the publish step still runs"
+          fi
+
       - name: Height watch (Bitcoin (2026) against the first retarget, 2016)
         env:
           GH_TOKEN: ${{ github.token }}

@@ -92,7 +92,7 @@ class ChainState:
         self.reopen = frozenset(reopen)                     # script posture: {} faithful | {'OP_NOTEQUAL'} experimental (token-macro, not a wire opcode)
         self.utxo: dict[tuple[bytes, int], Coin] = {}
         self.active: list[bytes] = []                       # genesis .. validated tip
-        self.undo: dict[bytes, tuple[list, list]] = {}      # block -> (spent_prior, created_keys)
+        self.undo: dict[bytes, tuple[tuple, tuple]] = {}    # block -> (spent_prior, created_keys)
         self.invalid: set[bytes] = set()
         if chain.genesis is not None:
             self._connect(chain.genesis)                    # genesis coinbase seeds the UTXO
@@ -201,7 +201,13 @@ class ChainState:
             for key, coin in reversed(spent_prior):
                 self.utxo[key] = coin
             raise
-        self.undo[h] = (spent_prior, list(created.keys()))
+        # ⛔ 18 Nov 2026. Undo is kept for every connected block, and almost every block of a running
+        #    X-chain spends nothing and creates one coinbase output. On the real jan09x chain at
+        #    283,612 blocks, undo records were ~66 MB of a ~400 MB peak (tracemalloc), on a 1 GB host
+        #    whose node was being killed for lack of memory. Tuples instead of lists save ~26 MB of
+        #    that (peak working set 410 -> 384 MB). They hold the same entries in the same order, an
+        #    empty tuple is a shared singleton, and _disconnect reads them exactly as it read lists.
+        self.undo[h] = (tuple(spent_prior), tuple(created))
         self.active.append(h)
 
     def _disconnect(self):
