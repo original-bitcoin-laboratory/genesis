@@ -347,19 +347,27 @@ public hands.
 Aug 2008     "Electronic Cash Without a Trusted Third Party"     lost
 3 Oct 2008   the draft we hold          created 20:49:58 UTC     held
 9 Nov 2008   Satoshi proposes transaction fees on the list
-Jan 2009     a fourth version, downloaded by a member of the public   in the court record; date not public
+Jan 2009     a fourth version, downloaded by a member of the public   in the court record; hashes not public
 24 Mar 2009  the canonical              created 17:33:15 UTC     held, chain-anchored
 ```
 
 Whether that version contains the Section 6 transaction-fee paragraph would date the fee mechanism's
-arrival against the 9 November proposal; its text is not in the public record, so the question stays
+arrival against the 9 November proposal; its text is not published by the court or the parties, so the question stays
 open here.
 
 **Court material.** This note cites the judgment by paragraph and nothing else from the proceedings:
-the expert appendices and witness statements it refers to are not published by the court or the
-parties, and this project does not reproduce, re-host or rely on copies of them in circulation. Until
-14 September 2026 this section quoted an expert report and a witness statement for the version's
-exhibit references, download time and creation date; that material was removed.
+the expert appendices and the exhibits it refers to are not published by the court or the parties,
+and this project does not reproduce, re-host or rely on copies of them in circulation. A party, COPA,
+published some witness statements and expert reports; this project does not draw on them either, so
+that each statement here can be checked against the judgment alone. Until 14 September 2026 this
+section quoted an expert report and a witness statement for the version's exhibit references, download
+time and creation date; that material was removed.
+
+*Corrected 21 Nov 2026.* This paragraph previously said that the witness statements the judgment refers
+to were not published by the court or the parties, and the table above said the January 2009 version's
+date was not public. The expert report and the witness statement this section quoted before
+14 September 2026 are among those COPA published; Mr Bohm's statement gives the version's download date
+and the creation date in its metadata (¶19; [archived copy](https://web.archive.org/web/20240519201158/https://bitcoindefense.org/wp-content/uploads/2024/03/Witness-Statement-of-Nicholas-Bohm.pdf)).
 
 ### The clock across the two dated files
 

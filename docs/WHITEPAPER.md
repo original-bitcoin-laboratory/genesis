@@ -47,7 +47,7 @@ PRE-RELEASE    3 Oct 2008    183,697 B   8 pages
 A JANUARY 2009 DOWNLOAD — IN THE COURT RECORD, NOT IN PUBLIC HANDS
   The judgment in COPA v Wright [2024] EWHC 1198 (Ch) records (¶271.9) that Nicholas Bohm, who died shortly before the trial began, provided
   a version he downloaded in January 2009, authenticated in evidence (¶271.9) and used as a control
-  copy. Its date, hashes and text are in evidence that is not published and are not reproduced here.
+  copy. Its hashes and text are not published by the court or the parties and are not reproduced here.
 ```
 
 **Hash any copy you have and look it up.** If it matches nothing above, it is not one of the
@@ -55,11 +55,15 @@ documents this project has identified — and that is worth investigating, not a
 
 ## Court material
 
-This project cites the published judgment by paragraph and nothing else from the proceedings: the
-expert appendices and witness statements it refers to are not published by the court or the parties,
-and this project does not reproduce, re-host or rely on copies of them in circulation. Until
-14 September 2026 this note carried the court-record version's hashes and three sentences of its text
-from such an appendix; that material was removed.
+This project cites the published judgment by paragraph and nothing else from the proceedings. The
+expert appendices and the exhibits it refers to are not published by the court or the parties, and this
+project does not reproduce, re-host or rely on copies of them in circulation. A party, COPA, published
+some witness statements and expert reports; this project does not draw on them either, so that each
+statement here can be checked against the judgment alone. Until 14 September 2026 this note carried the
+court-record version's hashes and three sentences of its text from an expert appendix; that material was
+removed.
+
+*Corrected 21 Nov 2026.* This section previously said that the witness statements the judgment refers to were not published by the court or the parties, and the January 2009 version's date was listed as unpublished. COPA published Mr Bohm's witness statement, which gives that version's download date and the creation date in its metadata (¶19; [archived copy](https://web.archive.org/web/20240519201158/https://bitcoindefense.org/wp-content/uploads/2024/03/Witness-Statement-of-Nicholas-Bohm.pdf)).
 
 ---
 
