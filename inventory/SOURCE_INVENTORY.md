@@ -64,7 +64,7 @@ resources (`rc/` bitmaps + icons, `ui.rc`, `uiproject.fbp`). The `.tgz` ships th
 | File | lines | Key classes / symbols | Role |
 |---|--:|---|---|
 | `ui.h` / `ui.cpp` | 417 / 3228 | CMainFrame + Send/AddressBook/Options/Product/Review dialogs | desktop wallet GUI |
-| `uibase.h` / `uibase.cpp` | 720 / 1806 | generated `*Base` dialog classes | wxFormBuilder bases — **incl. `CPokerLobbyDialogBase`, `CPokerDialogBase` (dormant poker UI)** |
+| `uibase.h` / `uibase.cpp` | 720 / 1806 | generated `*Base` dialog classes | wxFormBuilder bases — **incl. `CPokerLobbyDialogBase`, `CPokerDialogBase` (dormant poker UI)**. Line 6 of both files reads `C++ code generated with wxFormBuilder (version Apr 16 2008)`: the generator's version string, not a date of writing |
 
 ## Support / utility
 
